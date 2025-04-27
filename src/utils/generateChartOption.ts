@@ -46,7 +46,6 @@ export const generateDamageCompareRadar = (
             monster
         );
         const { name } = monster;
-        console.table([monster, monsterAfterDebuff]);
         monsterAfterDebuffArray.push(monsterAfterDebuff);
 
         indicatorData.push({ name, max: finalMax });
@@ -60,7 +59,6 @@ export const generateDamageCompareRadar = (
                 const protect = isPhysical
                     ? monster.physicalProtect
                     : monster.magicalProtect;
-                console.log({ monster });
                 return Math.floor(calculateDamage(damage, pLevel, protect));
             }
         );
@@ -96,9 +94,6 @@ export const generateDamageCompareRadar = (
         ],
     };
 
-    console.table(monsterAfterDebuffArray);
-
-    console.log(JSON.stringify(option));
     return option;
 };
 
@@ -193,7 +188,5 @@ export const generateDamageCompareBar = (
         series: seriesData,
     };
 
-    console.table(monsterAfterDebuffArray);
-    console.log(JSON.stringify(option));
     return option;
 };

@@ -30,7 +30,7 @@ export const calculateMonsterStatusAfterDebuff = (
             }
         });
     const newMonsterStatus = { ...targetMonster };
-    console.log(targetMonster.name);
+
     activeDebuffs.forEach((debuff) => {
         const {
             physicalDefense,
@@ -53,13 +53,6 @@ export const calculateMonsterStatusAfterDebuff = (
             newMonsterStatus.magicalProtect,
             magicalProtect.value
         );
-        console.log(debuff);
-        console.log({
-            physicalDefense: newMonsterStatus.physicalDefense,
-            physicalProtect: newMonsterStatus.physicalProtect,
-            magicalDefense: newMonsterStatus.magicalDefense,
-            magicalProtect: newMonsterStatus.magicalProtect,
-        });
     });
 
     return newMonsterStatus;
