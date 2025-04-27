@@ -116,11 +116,15 @@ const isReadyToDraw = computed(() => {
     );
 });
 
-watch(isReadyToDraw, (ready) => {
-    if (ready) {
-        applyChanges();
-    }
-});
+watch(
+    [statusData, debuffData, monsterData],
+    ([,]) => {
+        if (isReadyToDraw.value) {
+            applyChanges();
+        }
+    },
+    { deep: true }
+);
 
 </script>
 <style scoped>
