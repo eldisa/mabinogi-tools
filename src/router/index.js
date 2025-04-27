@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import About from '../views/About.vue';
 
 import PierecingLevelAnalysis from '../views/PierecingLevelAnalysis.vue';
