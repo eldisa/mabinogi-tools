@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "esnext", // ✅ 或 "es2020", "es2022"
+    "target": "esnext",
+    "forceConsistentCasingInFileNames": true, // Ensures consistent file name casing
+    "strict": true, // Enables strict type checking
+    "types": [
+      "vite,client"
+    ]
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}
