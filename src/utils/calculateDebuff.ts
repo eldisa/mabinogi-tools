@@ -55,5 +55,19 @@ export const calculateMonsterStatusAfterDebuff = (
         );
     });
 
+    (
+        [
+            "physicalDefense",
+            "physicalProtect",
+            "magicalDefense",
+            "magicalProtect",
+        ] as const
+    ).forEach((key) => {
+        const value = newMonsterStatus[key];
+        if (typeof value === "number" && value < 0) {
+            (newMonsterStatus[key] as number) = 0;
+        }
+    });
+
     return newMonsterStatus;
 };
