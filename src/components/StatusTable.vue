@@ -60,7 +60,7 @@
         <el-tooltip v-if="tableData.length > 12" content="資料太多了" placement="top">
             <el-button type="success" size="small" :disabled="true">Apply</el-button>
         </el-tooltip>
-        <el-tooltip v-else-if="tableData.length < 2" content="資料不足，請至少填2組" placement="top">
+        <el-tooltip v-else-if="tableData.length < 1" content="資料不足，請至少填1組" placement="top">
             <el-button type="success" size="small" :disabled="true">Apply</el-button>
         </el-tooltip>
         <el-button v-else type="success" size="small" @click="apply">

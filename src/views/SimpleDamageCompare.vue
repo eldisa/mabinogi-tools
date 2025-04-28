@@ -23,7 +23,7 @@
             <!-- <v-chart class="w-full h-[400px]" :option="option" /> -->
             <!-- <v-chart v-if="option && Array.isArray(option.series) && option.series.length" autoresize
                 class="w-full h-[400px]" :option="option" /> -->
-            <div v-if="!isReadyToDraw">資料設定完後才會顯示圖表</div>
+            <div v-if="!isReadyToDraw">角色素質和怪物資料設定完後才會顯示圖表</div>
             <div v-else>
                 <v-chart autoresize class="w-full h-[400px]" :option="option" />
             </div>
@@ -110,9 +110,9 @@ const handleMonsterUpdate = (data: MonsterEntry[]) => {
 
 const isReadyToDraw = computed(() => {
     return (
-        Array.isArray(statusData.value) && statusData.value.length > 1 &&
+        Array.isArray(statusData.value) && statusData.value.length > 0 &&
         Array.isArray(debuffData.value) && debuffData.value.length > 1 &&
-        Array.isArray(monsterData.value) && monsterData.value.length > 1
+        Array.isArray(monsterData.value) && monsterData.value.length > 0
     );
 });
 
