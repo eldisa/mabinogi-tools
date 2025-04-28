@@ -1,3 +1,4 @@
+import { protectionData } from "../data/protectionData";
 import { CompareEntry, Debuff, MonsterEntry } from "../types";
 import { calculateMonsterStatusAfterDebuff } from "../utils/calculateDebuff";
 import { calculateDamage } from "../utils/damageCalculate";
@@ -135,10 +136,19 @@ export const generateDamageCompareBar = (
             monster
         );
         const { name, physicalProtect, magicalProtect } = monsterAfterDebuff;
+        let infoText = ``;
+        if (isPhysical) {
+            infoText = `物保 ${physicalProtect} -${(
+                protectionData[physicalProtect] * 100
+            ).toFixed(1)}%`;
+        } else {
+            infoText = `魔保 ${magicalProtect} -${(
+                protectionData[magicalProtect] * 100
+            ).toFixed(1)}%`;
+        }
+
         monsterAfterDebuffArray.push(monsterAfterDebuff);
-        categoryAxisData.push(
-            `${name} 保${isPhysical ? physicalProtect : magicalProtect}`
-        );
+        categoryAxisData.push(`${name} ${infoText}`);
     });
 
     statusData.forEach((status: CompareEntry) => {
@@ -161,9 +171,9 @@ export const generateDamageCompareBar = (
     });
 
     option = {
-        title: {
-            text: "Damage Comparison (Bar Chart)",
-        },
+        // title: {
+        //     text: "Damage Comparison (Bar Chart)",
+        // },
         tooltip: {
             trigger: "axis",
             axisPointer: {
