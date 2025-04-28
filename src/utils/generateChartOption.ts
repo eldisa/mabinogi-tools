@@ -134,8 +134,11 @@ export const generateDamageCompareBar = (
             sortedDebuffArray,
             monster
         );
+        const { name, physicalProtect, magicalProtect } = monsterAfterDebuff;
         monsterAfterDebuffArray.push(monsterAfterDebuff);
-        categoryAxisData.push(monster.name);
+        categoryAxisData.push(
+            `${name} (${isPhysical ? physicalProtect : magicalProtect})`
+        );
     });
 
     statusData.forEach((status: CompareEntry) => {
