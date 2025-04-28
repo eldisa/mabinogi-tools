@@ -137,7 +137,7 @@ export const generateDamageCompareBar = (
         const { name, physicalProtect, magicalProtect } = monsterAfterDebuff;
         monsterAfterDebuffArray.push(monsterAfterDebuff);
         categoryAxisData.push(
-            `${name} (${isPhysical ? physicalProtect : magicalProtect})`
+            `${name} 保${isPhysical ? physicalProtect : magicalProtect}`
         );
     });
 
