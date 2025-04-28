@@ -91,7 +91,8 @@ const newRow = ref<CompareEntry>({ ...defaultData });
 
 const addRow = () => {
     if (!newRow.value.name) {
-        newRow.value.name = `組合${tableData.value.length + 1}`;
+        const { damage, pLevel } = newRow.value;
+        newRow.value.name = `大${damage}銳${pLevel}`;
     }
     tableData.value.push({ ...newRow.value });
     newRow.value = { name: '', damage: 0, pLevel: 0 };
