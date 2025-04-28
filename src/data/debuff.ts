@@ -411,7 +411,37 @@ export const debuffData: Debuff[] = [
         physicalDefense: {
             operation: "subtract",
             value: 0,
+            editable: true,
+        },
+        physicalProtect: {
+            operation: "subtract",
+            value: 0,
             editable: false,
+        },
+        magicalDefense: {
+            operation: "subtract",
+            value: 0,
+            editable: true,
+        },
+        magicalProtect: {
+            operation: "subtract",
+            value: 0,
+            editable: true,
+        },
+    },
+    {
+        name: "寵物氣場",
+        active: false,
+        description: `大多數具有螢幕顯示血條的BOSS不受氣場影響
+        魔族牌摩托車35秒破物防20物保10
+        雪人傑克7秒破物防16物保7
+        戰士柯基破物防15物保10
+        巫師柯基破魔防15魔保10
+        `,
+        physicalDefense: {
+            operation: "subtract",
+            value: 0,
+            editable: true,
         },
         physicalProtect: {
             operation: "subtract",
