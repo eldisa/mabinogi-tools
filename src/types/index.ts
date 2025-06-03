@@ -72,3 +72,9 @@ export interface MonsterEntry {
     magicalProtect: number; // 魔法保護
     isCustom: boolean; // 這一列是否自訂怪物
 }
+
+// 標準 select option 類型
+export interface Option {
+    value: number; // 值
+    label: string; // 顯示名稱
+}

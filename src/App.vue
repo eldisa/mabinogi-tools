@@ -8,6 +8,7 @@ const isCollapsed = ref(false);
 const menuItems = [
     // { name: "Grid Demo", path: "/", icon: "📊" },
     { name: "Damage Analysis", path: "/pierecing-analysis", icon: "📈" },
+    { name: "裝備製作模擬器", path: "/equipment-craft-simulator", icon: "🎰" },
     { name: "About", path: "/about", icon: "ℹ️" },
     // { name: "Settings", path: "/settings", icon: "⚙️" },
 ];
@@ -27,17 +28,12 @@ const toggleSidebar = () => {
                 </button>
             </div>
             <nav class="sidebar-nav">
-                <router-link
-                    v-for="item in menuItems"
-                    :key="item.path"
-                    :to="item.path"
-                    class="nav-item"
-                    active-class="active"
-                >
+                <router-link v-for="item in menuItems" :key="item.path" :to="item.path" class="nav-item"
+                    active-class="active">
                     <span class="icon">{{ item.icon }}</span>
-                    <span v-if="!isCollapsed" class="text">{{
-                        item.name
-                    }}</span>
+                    <span v-if="!isCollapsed" class="text">
+                        {{ item.name }}
+                    </span>
                 </router-link>
             </nav>
         </aside>
