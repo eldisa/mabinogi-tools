@@ -354,7 +354,7 @@ const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boole
 
 const testCraftByInput = (data?: EstimatedCraftItem[]) => {
     const { simulateTimes, baseProgressPerCraft, isBillionUnit, exchangeRate, costPerCraft } = form.value;
-    const tobeEstimateData = data || estimateData.value;
+    const tobeEstimateData = data && data.length > 0 ? data : estimateData.value;
 
     tobeEstimateData.forEach((data, index) => {
         const { currentProgress, cost, isRoyalCraft } = data;
