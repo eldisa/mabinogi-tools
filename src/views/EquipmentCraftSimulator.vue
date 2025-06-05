@@ -109,7 +109,7 @@
 
                                 <el-table-column align="center" label="單次完成度">
                                     <template #default>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2 p-1 rounded">
                                             <el-icon>
                                                 <DataLine />
                                             </el-icon>
@@ -223,7 +223,8 @@
                                 :label="`製作 ${count} 次`" :min-width="100">
                                 <template #default="{ row }">
                                     <span v-if="row.simulateResult[count]">{{ row.simulateResult[count].rate.toFixed(2)
-                                    }}%</span>
+                                    }}%
+                                    </span>
                                     <span v-else>-</span>
                                 </template>
                             </el-table-column>
@@ -306,7 +307,7 @@ const setupTestData = () => {
     const end = 99.99 - baseProgress + 1;
 
     for (let i = start; i < end; i++) {
-        const name = `${i}% 開始製作`;
+        const name = `進度${i}%`;
         const obj = {
             ...emptyEstimateEntry,
             currentProgress: i,
