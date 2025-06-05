@@ -220,10 +220,20 @@
                         </div> -->
                         <el-table :data="estimateData" stripe border style="width: 100%;">
                             <el-table-column align="center" prop="name" label="裝備名稱" />
-                            <el-table-column align="center" prop="expectedTimes" label="預期次數" />
                             <el-table-column align="center" prop="cost" label="已投入成本" />
-                            <el-table-column align="center" v-for="count in allCraftCounts" :key="count"
-                                :label="`製作 ${count} 次`" :min-width="100">
+                            <el-table-column align="center" prop="expectedTimes" label="預期次數" />
+                            <el-table-column align="center" v-if="form.showCost" label="總成本">
+                                <template #default="{ row }">
+                                    <span v-if="row.expectedTimes && form.showCost">
+                                        {{ (row.cost + (row.expectedTimes * form.costPerCraft)).toFixed(2) }}
+                                        {{ form.isBillionUnit ? '億' : '萬' }}
+                                    </span>
+                                    <span v-else>-</span>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column align="center" v-if="form.showResultDetails"
+                                v-for="count in allCraftCounts" :key="count" :label="`製作 ${count} 次`" :min-width="100">
                                 <template #default="{ row }">
                                     <span v-if="row.simulateResult[count] && row.simulateResult[count].rate >= 0.1">{{
                                         row.simulateResult[count].rate.toFixed(2)
