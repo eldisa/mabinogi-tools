@@ -178,7 +178,7 @@
 
                                 <el-table-column align="center" label="操作" width="120">
                                     <template #default>
-                                        <el-button type="primary" @click="addEstimateEntry">
+                                        <el-button type="success" plain @click="addEstimateEntry">
                                             ➕ 新增
                                         </el-button>
                                     </template>
@@ -189,16 +189,19 @@
                         <!-- 📌 操作按鈕 -->
                         <div class="mt-4 flex gap-4 justify-center">
                             <!--todo: 新增 clear 功能-->
-                            <el-button type="danger" size="large" @click="clearEstimateData" :disabled="isCalculating">
+                            <el-button type="danger" size="large" plain @click="clearEstimateData"
+                                :disabled="isCalculating">
                                 🗑️ 清空
                             </el-button>
-                            <el-button type="warning" size="large" @click="testAllData" :disabled="isCalculating">
+                            <el-button type="info" size="large" plain @click="testAllData" :disabled="isCalculating">
                                 ⚙️ 全體測試
                             </el-button>
-                            <el-button type="warning" size="large" @click="drawer = true" :disabled="isCalculating">
+                            <el-button type="warning" size="large" plain @click="drawer = true"
+                                :disabled="isCalculating">
                                 ⚙️ 計算參數設定
                             </el-button>
-                            <el-button type="success" size="large" @click="testCraftByInput" :disabled="isCalculating">
+                            <el-button type="primary" size="large" plain @click="testCraftByInput"
+                                :disabled="isCalculating">
                                 🚀 開始計算
                             </el-button>
                         </div>
@@ -223,7 +226,7 @@
                                 :label="`製作 ${count} 次`" :min-width="100">
                                 <template #default="{ row }">
                                     <span v-if="row.simulateResult[count]">{{ row.simulateResult[count].rate.toFixed(2)
-                                    }}%
+                                        }}%
                                     </span>
                                     <span v-else>-</span>
                                 </template>
