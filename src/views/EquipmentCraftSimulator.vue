@@ -348,7 +348,7 @@ const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boole
 
     const singleRate = baseProgress + (isRoyal ? 1 : 0);
     const floatOffset = randOffset / 2;
-    const progress = Math.round(singleRate * 1.45 * (base + floatOffset));
+    const progress = parseFloat((singleRate * 1.45 * (base + floatOffset)).toFixed(2));
     result = progress + Number(result);
     return Math.max(0, Math.min(100, result));
 };
