@@ -208,7 +208,7 @@
                     </el-card>
                 </div>
 
-                <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
+                <el-card class="bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
                     <CardHeader title="計算結果" subtitle="資料有更新，要再按一次計算才會更新唷" />
                     <div class="p-4 bg-white rounded-lg shadow">
                         <!-- 摘要數據 -->
@@ -218,7 +218,7 @@
                             <p v-if="form.showExchangeRate">總已投入成本 (台幣)：{{ summary.totalCostInTWD.toFixed(2) || '-' }} 元
                             </p>
                         </div> -->
-                        <el-table :data="estimateData" stripe border style="width: 100%;">
+                        <el-table :data="estimateData" stripe border style="width: 100%;" max-height="300">
                             <el-table-column align="center" prop="name" label="裝備名稱" />
                             <el-table-column align="center" prop="cost" label="已投入成本" />
                             <el-table-column align="center" prop="expectedTimes" label="預期次數" />
@@ -237,7 +237,7 @@
                                 <template #default="{ row }">
                                     <span v-if="row.simulateResult[count] && row.simulateResult[count].rate >= 0.1">{{
                                         row.simulateResult[count].rate.toFixed(2)
-                                    }}%
+                                        }}%
                                     </span>
                                     <span v-else>-</span>
                                 </template>
