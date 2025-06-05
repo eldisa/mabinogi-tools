@@ -225,8 +225,9 @@
                             <el-table-column align="center" v-for="count in allCraftCounts" :key="count"
                                 :label="`製作 ${count} 次`" :min-width="100">
                                 <template #default="{ row }">
-                                    <span v-if="row.simulateResult[count]">{{ row.simulateResult[count].rate.toFixed(2)
-                                        }}%
+                                    <span v-if="row.simulateResult[count] && row.simulateResult[count].rate >= 0.1">{{
+                                        row.simulateResult[count].rate.toFixed(2)
+                                    }}%
                                     </span>
                                     <span v-else>-</span>
                                 </template>
