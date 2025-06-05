@@ -45,50 +45,8 @@
                 <!-- 資料輸入區 -->
 
                 <div class="mb-4">
-                    <!-- <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-                        <el-icon class="mr-2">
-                            <Edit />
-                        </el-icon>
-                        製作項目資料
-                    </h2>
-                    <el-card>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <el-icon>
-                                    <Edit />
-                                </el-icon>
-                                <span class="font-bold w-25">目標：</span>
-                                <el-select v-model="form.itemName" size="large" @change="onSelectCraftItem"
-                                    class="w-40">
-                                    <el-option v-for="opt in itemOptions" :key="opt.value" :label="opt.label"
-                                        :value="opt.label" />
-                                </el-select>
-                            </div>
-
-                            <div class="flex items-center gap-2">
-                                <el-icon>
-                                    <DataLine />
-                                </el-icon>
-                                <span class="font-bold">單次完成度：</span>
-                                <el-input-number controls-position="right" v-model="form.baseProgressPerCraft" /> %
-                            </div>
-
-                            <div class="flex items-center gap-2">
-                                <el-icon>
-                                    <Money />
-                                </el-icon>
-                                <span class="font-bold">單次成本：</span>
-                                <el-input-number controls-position="right" v-model="form.costPerCraft" :min="1"
-                                    :step="1" :max="1000000" :disabled="!form.showCost">
-                                    <template #suffix>{{ form.isBillionUnit ? '億' : '萬' }}</template>
-                                </el-input-number>
-                            </div>
-                        </div>
-                    </el-card> -->
-
                     <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
                         <CardHeader title="製作項目資料" subtitle="設定你想要模擬的目標與條件" />
-
                         <div class="bg-white rounded-md shadow-sm p-4 mt-4 w-fit mx-auto border border-gray-200">
                             <el-table
                                 :data="[{ name: form.itemName, progress: form.baseProgressPerCraft, cost: form.costPerCraft }]"
@@ -237,7 +195,7 @@
                                 <template #default="{ row }">
                                     <span v-if="row.simulateResult[count] && row.simulateResult[count].rate >= 0.1">{{
                                         row.simulateResult[count].rate.toFixed(2)
-                                        }}%
+                                    }}%
                                     </span>
                                     <span v-else>-</span>
                                 </template>
