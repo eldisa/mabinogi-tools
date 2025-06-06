@@ -84,7 +84,7 @@
                             >
                                 <el-table-column align="center" label="目標">
                                     <template #default>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center justify-center gap-2">
                                             <el-icon>
                                                 <Edit />
                                             </el-icon>
@@ -102,7 +102,7 @@
 
                                 <el-table-column align="center" label="單次完成度">
                                     <template #default>
-                                        <div class="flex items-center gap-2 p-1 rounded">
+                                        <div class="flex items-center justify-center gap-2 p-1 rounded">
                                             <el-icon>
                                                 <DataLine />
                                             </el-icon>
@@ -119,7 +119,7 @@
 
                                 <el-table-column align="center" label="單次成本">
                                     <template #default>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center justify-center gap-2">
                                             <el-icon>
                                                 <Money />
                                             </el-icon>
