@@ -5,62 +5,68 @@
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">製作成本計算模擬器</h1>
                 <p class="text-gray-600 mt-2">輕鬆計算各種裝備的完成度和成本預估</p>
             </header>
-            <el-drawer v-model="drawer" title="輸入與參數設定">
-                <div class="p-4 bg-gray-50 rounded-lg shadow">
-                    <el-form :model="form" :label-position="'left'" label-width="auto" class="max-w-[600px]">
-                        <!-- 參數調整區 -->
-                        <div class="mb-4">
-                            <h3 class="text-md font-medium mb-2">參數調整</h3>
-                            <el-form-item label="是否顯示模擬的詳細結果">
-                                <el-switch v-model="form.showResultDetails" size="small" />
-                            </el-form-item>
-                            <el-form-item label="模擬次數">
-                                <el-input-number
-                                    controls-position="right"
-                                    v-model="form.simulateTimes"
-                                    :min="1"
-                                    :max="10000"
-                                    :step="100"
-                                />
-                            </el-form-item>
-                            <el-form-item label="成功率">
-                                <el-input-number
-                                    controls-position="right"
-                                    v-model="form.successRate"
-                                    :min="1"
-                                    :step="1"
-                                >
-                                    <template #prefix></template>
-                                    <template #suffix>%</template>
-                                </el-input-number>
-                            </el-form-item>
-                            <el-form-item label="是否顯示成本估算">
-                                <el-switch v-model="form.showCost" size="small" />
-                            </el-form-item>
-                            <el-form-item label="金錢單位">
-                                <el-switch
-                                    v-model="form.isBillionUnit"
-                                    class="mb-2"
-                                    active-text="億"
-                                    inactive-text="萬"
-                                />
-                            </el-form-item>
-                            <el-form-item label="是否換算成台幣">
-                                <el-switch v-model="form.showExchangeRate" size="small" />
-                            </el-form-item>
-                            <el-form-item label="匯率">
-                                <el-input-number
-                                    controls-position="right"
-                                    v-model="form.exchangeRate"
-                                    :min="1"
-                                    :step="0.1"
-                                    :disabled="!form.showExchangeRate"
-                                >
-                                    <template #prefix>1:</template>
-                                    <template #suffix>萬</template>
-                                </el-input-number>
-                            </el-form-item>
-                        </div>
+            <el-drawer v-model="drawer" title="輸入與參數設定" size="500px" :with-header="true">
+                <!-- 區塊：參數調整 -->
+                <div class="p-5 bg-gradient-to-b from-blue-50 to-white rounded-lg shadow-sm mb-6">
+                    <h3 class="text-base font-semibold mb-4 text-blue-800">🎯 模擬設定</h3>
+                    <el-form :model="form" label-width="120px" label-position="left" class="space-y-4">
+                        <el-form-item label="模擬次數">
+                            <el-input-number
+                                controls-position="right"
+                                v-model="form.simulateTimes"
+                                :min="1"
+                                :max="10000"
+                                :step="100"
+                                size="medium"
+                                class="w-40"
+                            />
+                        </el-form-item>
+                        <el-form-item label="成功率">
+                            <el-input-number
+                                controls-position="right"
+                                v-model="form.successRate"
+                                :min="1"
+                                :max="100"
+                                :step="1"
+                                size="medium"
+                                class="w-40"
+                            >
+                                <template #suffix>%</template>
+                            </el-input-number>
+                        </el-form-item>
+                    </el-form>
+                </div>
+
+                <!-- 區塊：顯示設定 -->
+                <div class="p-5 bg-gradient-to-b from-gray-50 to-white rounded-lg shadow-sm">
+                    <h3 class="text-base font-semibold mb-4 text-gray-700">📊 顯示設定</h3>
+                    <el-form :model="form" label-width="140px" label-position="left" class="space-y-4">
+                        <el-form-item label="顯示模擬詳細">
+                            <el-switch v-model="form.showResultDetails" size="small" />
+                        </el-form-item>
+                        <el-form-item label="顯示成本估算">
+                            <el-switch v-model="form.showCost" size="small" />
+                        </el-form-item>
+                        <el-form-item label="金錢單位（萬 / 億）">
+                            <el-switch v-model="form.isBillionUnit" active-text="億" inactive-text="萬" class="w-20" />
+                        </el-form-item>
+                        <el-form-item label="換算成台幣">
+                            <el-switch v-model="form.showExchangeRate" size="small" />
+                        </el-form-item>
+                        <el-form-item label="匯率">
+                            <el-input-number
+                                controls-position="right"
+                                v-model="form.exchangeRate"
+                                :min="1"
+                                :step="0.1"
+                                size="medium"
+                                :disabled="!form.showExchangeRate"
+                                class="w-40"
+                            >
+                                <template #prefix>1:</template>
+                                <template #suffix>萬</template>
+                            </el-input-number>
+                        </el-form-item>
                     </el-form>
                 </div>
             </el-drawer>
@@ -222,7 +228,7 @@
                                 @click="drawer = true"
                                 :disabled="isCalculating"
                             >
-                                ⚙️ 計算參數設定
+                                ⚙️ 模擬與顯示設定
                             </el-button>
                             <el-button
                                 type="primary"
