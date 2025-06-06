@@ -23,6 +23,17 @@
                                     :step="100"
                                 />
                             </el-form-item>
+                            <el-form-item label="成功率">
+                                <el-input-number
+                                    controls-position="right"
+                                    v-model="form.successRate"
+                                    :min="1"
+                                    :step="1"
+                                >
+                                    <template #prefix></template>
+                                    <template #suffix>%</template>
+                                </el-input-number>
+                            </el-form-item>
                             <el-form-item label="是否顯示成本估算">
                                 <el-switch v-model="form.showCost" size="small" />
                             </el-form-item>
@@ -334,6 +345,7 @@ const form = ref({
     showExchangeRate: false,
     exchangeRate: 20,
     isBillionUnit: true,
+    successRate: 100,
 });
 
 const itemOptions: Option[] = [
@@ -379,7 +391,7 @@ const testAllData = () => {
 
 const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boolean): number => {
     let result = completeRate;
-    const successRate = 100; // 目前都預設100，之後或許要拉出來
+    const { successRate } = form.value; // 目前都預設100，之後或許要拉出來
 
     const randSuccess = Math.random() * 100;
     const randOffset = Math.random();
