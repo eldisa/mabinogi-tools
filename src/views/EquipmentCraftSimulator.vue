@@ -303,10 +303,11 @@ import { Option } from "../types";
 import { EstimatedCraftItem, SampleResult } from "../types/CraftItem";
 import CardHeader from "../components/CardHeader.vue";
 
+const CUSTOM_LABEL = "自訂";
 const drawer = ref(false);
 const emptyEstimateEntry: EstimatedCraftItem = {
     id: -10000,
-    name: "自訂",
+    name: CUSTOM_LABEL,
     isRoyalCraft: true,
     currentProgress: 0,
     baseCost: 0,
@@ -341,7 +342,7 @@ const itemOptions: Option[] = [
     { value: 13, label: "安安秘術系列" },
     { value: 13, label: "安安重甲系列" },
     { value: 13, label: "兇猛系列武器" },
-    { value: 0, label: "自訂" },
+    { value: 0, label: CUSTOM_LABEL },
 ];
 
 const clearEstimateData = () => {
@@ -446,7 +447,7 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
 };
 
 const onSelectCraftItem = (item: any) => {
-    if (item === "自訂") {
+    if (item === CUSTOM_LABEL) {
         form.value.baseProgressPerCraft = 0;
     } else {
         const matched = itemOptions.find((opt) => opt.label === item);
@@ -459,7 +460,7 @@ const onSelectCraftItem = (item: any) => {
 const addEstimateEntry = () => {
     const { itemName } = form.value;
     const { name: customedName, currentProgress, baseCost } = newEstimateEntry.value;
-    const name = customedName && customedName !== "自訂" ? customedName : `${itemName}-${currentProgress}%`;
+    const name = customedName && customedName !== CUSTOM_LABEL ? customedName : `${itemName}-${currentProgress}%`;
     const id = estimateData.value.length + 1;
 
     estimateData.value.push({
