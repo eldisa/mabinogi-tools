@@ -178,12 +178,12 @@
                         </div> -->
                         <el-table :data="estimateData" stripe border style="width: 100%;" max-height="300">
                             <el-table-column align="center" prop="name" label="裝備名稱" />
-                            <el-table-column align="center" prop="cost" label="已投入成本" />
+                            <el-table-column align="center" prop="baseCost" label="已投入成本" />
                             <el-table-column align="center" prop="expectedTimes" label="預期次數" />
                             <el-table-column align="center" v-if="form.showCost" label="總成本">
                                 <template #default="{ row }">
                                     <span v-if="row.expectedTimes && form.showCost">
-                                        {{ (row.cost + (row.expectedTimes * form.costPerCraft)).toFixed(2) }}
+                                        {{ row.totalCost.toFixed(2) }}
                                         {{ form.isBillionUnit ? '億' : '萬' }}
                                     </span>
                                     <span v-else>-</span>
@@ -195,7 +195,7 @@
                                 <template #default="{ row }">
                                     <span v-if="row.simulateResult[count] && row.simulateResult[count].rate >= 0.1">{{
                                         row.simulateResult[count].rate.toFixed(2)
-                                    }}%
+                                        }}%
                                     </span>
                                     <span v-else>-</span>
                                 </template>
@@ -221,7 +221,9 @@ const emptyEstimateEntry: EstimatedCraftItem = {
     name: '自訂',
     isRoyalCraft: true,
     currentProgress: 0,
-    cost: 0,
+    baseCost: 0,
+    expectedCost: 0,
+    totalCost: 0,
     expectedTimes: 0,
     simulateResult: [],
 };
@@ -230,7 +232,7 @@ const isCalculating = ref(false);
 const newEstimateEntry = ref({ ...emptyEstimateEntry });
 const estimateData = ref<EstimatedCraftItem[]>([
     { ...emptyEstimateEntry, id: 0, name: '破滅長袍-0%' },
-    { ...emptyEstimateEntry, currentProgress: 79, cost: 120, id: 1, name: '破滅長袍-70%' },
+    { ...emptyEstimateEntry, currentProgress: 79, baseCost: 120, id: 1, name: '破滅長袍-70%' },
 ]);
 
 const form = ref({
@@ -257,7 +259,7 @@ const itemOptions: Option[] = [
 // 計算摘要數據
 const summary = computed(() => {
     const totalExpectedTimes = estimateData.value.reduce((sum, item) => sum + (item.expectedTimes || 0), 0);
-    const totalCost = estimateData.value.reduce((sum, item) => sum + (item.cost || 0), 0);
+    const totalCost = estimateData.value.reduce((sum, item) => sum + (item.baseCost || 0), 0);
     const totalCostInTWD = form.value.showExchangeRate
         ? totalCost / form.value.exchangeRate * (form.value.isBillionUnit ? 10000 : 1)
         : 0;
@@ -330,7 +332,7 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
     const tobeEstimateData = data && data.length > 0 ? data : estimateData.value;
 
     tobeEstimateData.forEach((data, index) => {
-        const { currentProgress, cost, isRoyalCraft } = data;
+        const { currentProgress, baseCost, isRoyalCraft } = data;
         const record: number[] = [];
         const freq = new Map<number, number>();
         const simulateResult: Record<number, SampleResult> = {};
@@ -358,11 +360,13 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
                     times: value,
                 };
             });
-        const expectedCost = (costPerCraft * expectValue) + cost;
+        const expectedCost = (costPerCraft * expectValue);
         const expectCostInTWD = (expectedCost / exchangeRate * (isBillionUnit ? 10000 : 1));
         tobeEstimateData[index] = {
             ...tobeEstimateData[index],
             simulateResult,
+            expectedCost,
+            totalCost: expectedCost + baseCost,
             expectedTimes: parseFloat(expectValue.toFixed(2)),
         };
     });
@@ -381,7 +385,7 @@ const onSelectCraftItem = (item: any) => {
 
 const addEstimateEntry = () => {
     const { itemName } = form.value;
-    const { currentProgress, cost } = newEstimateEntry.value;
+    const { currentProgress, baseCost } = newEstimateEntry.value;
     const name = `${itemName}-${currentProgress}%`;
     const id = estimateData.value.length + 1;
 
@@ -390,7 +394,7 @@ const addEstimateEntry = () => {
         id,
         name,
         currentProgress,
-        cost,
+        baseCost,
     });
     newEstimateEntry.value = { ...emptyEstimateEntry };
 };
