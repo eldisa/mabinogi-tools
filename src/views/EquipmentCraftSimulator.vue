@@ -439,8 +439,8 @@ const onSelectCraftItem = (item: any) => {
 
 const addEstimateEntry = () => {
     const { itemName } = form.value;
-    const { currentProgress, baseCost } = newEstimateEntry.value;
-    const name = `${itemName}-${currentProgress}%`;
+    const { name: customedName, currentProgress, baseCost } = newEstimateEntry.value;
+    const name = customedName && customedName !== "自訂" ? customedName : `${itemName}-${currentProgress}%`;
     const id = estimateData.value.length + 1;
 
     estimateData.value.push({
