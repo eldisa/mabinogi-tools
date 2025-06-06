@@ -232,15 +232,39 @@
                         </div> -->
                         <el-table :data="estimateData" stripe border style="width: 100%" max-height="300">
                             <el-table-column align="center" prop="name" label="裝備名稱" />
-                            <el-table-column align="center" prop="baseCost" label="已投入成本" />
+                            <el-table-column align="center" label="已投入成本">
+                                <template #default="{ row }">
+                                    <span v-if="form.showExchangeRate">
+                                        {{ convertToDisplayCurrency(row.baseCost) }}
+                                    </span>
+                                    <span v-else>
+                                        {{ row.baseCost.toFixed(2) }} {{ form.isBillionUnit ? "億" : "萬" }}
+                                    </span>
+                                </template>
+                            </el-table-column>
                             <el-table-column align="center" prop="expectedTimes" label="預期次數" />
+                            <el-table-column align="center" v-if="form.showCost" label="預計要再投入">
+                                <template #default="{ row }">
+                                    <div v-if="row.expectedTimes && form.showCost">
+                                        <span v-if="form.showExchangeRate">
+                                            {{ convertToDisplayCurrency(row.expectedCost) }}
+                                        </span>
+                                        <span v-else>
+                                            {{ row.expectedCost.toFixed(2) }} {{ form.isBillionUnit ? "億" : "萬" }}
+                                        </span>
+                                    </div>
+                                </template>
+                            </el-table-column>
                             <el-table-column align="center" v-if="form.showCost" label="總成本">
                                 <template #default="{ row }">
-                                    <span v-if="row.expectedTimes && form.showCost">
-                                        {{ row.totalCost.toFixed(2) }}
-                                        {{ form.isBillionUnit ? "億" : "萬" }}
-                                    </span>
-                                    <span v-else>-</span>
+                                    <div v-if="row.expectedTimes && form.showCost">
+                                        <span v-if="form.showExchangeRate">
+                                            {{ convertToDisplayCurrency(row.totalCost) }}
+                                        </span>
+                                        <span v-else>
+                                            {{ row.totalCost.toFixed(2) }} {{ form.isBillionUnit ? "億" : "萬" }}
+                                        </span>
+                                    </div>
                                 </template>
                             </el-table-column>
 
@@ -386,7 +410,7 @@ const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boole
 };
 
 const testCraftByInput = (data?: EstimatedCraftItem[]) => {
-    const { simulateTimes, baseProgressPerCraft, isBillionUnit, exchangeRate, costPerCraft } = form.value;
+    const { simulateTimes, baseProgressPerCraft, costPerCraft } = form.value;
     const tobeEstimateData = data && data.length > 0 ? data : estimateData.value;
 
     tobeEstimateData.forEach((data, index) => {
@@ -419,7 +443,6 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
                 };
             });
         const expectedCost = costPerCraft * expectValue;
-        const expectCostInTWD = (expectedCost / exchangeRate) * (isBillionUnit ? 10000 : 1);
         tobeEstimateData[index] = {
             ...tobeEstimateData[index],
             simulateResult,
@@ -468,6 +491,15 @@ const allCraftCounts = computed(() => {
     });
     return Array.from(keys).sort((a, b) => a - b);
 });
+
+const convertToDisplayCurrency = (value: number): string => {
+    const { exchangeRate, isBillionUnit } = form.value;
+    const currency = exchangeRate || 1;
+    const unit = isBillionUnit ? 10000 : 1;
+    const base = (value / currency) * unit;
+
+    return `$ ${base.toLocaleString()}`;
+};
 
 watch(
     () => form.value.itemName,
