@@ -185,7 +185,6 @@
 
                         <!-- 📌 操作按鈕 -->
                         <div class="mt-4 flex gap-4 justify-center">
-                            <!--todo: 新增 clear 功能-->
                             <el-button
                                 type="danger"
                                 size="large"
@@ -223,13 +222,6 @@
                 <el-card class="bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
                     <CardHeader title="計算結果" subtitle="資料有更新，要再按一次計算才會更新唷" />
                     <div class="p-4 bg-white rounded-lg shadow">
-                        <!-- 摘要數據 -->
-                        <!-- <div class="mb-4">
-                            <p>總預期次數：{{ summary.expectedTimes.toFixed(2) || '-' }}</p>
-                            <p>總已投入成本：{{ summary.totalCost.toFixed(2) || '-' }} {{ form.isBillionUnit ? '億' : '萬' }}</p>
-                            <p v-if="form.showExchangeRate">總已投入成本 (台幣)：{{ summary.totalCostInTWD.toFixed(2) || '-' }} 元
-                            </p>
-                        </div> -->
                         <el-table :data="estimateData" stripe border style="width: 100%" max-height="300">
                             <el-table-column align="center" prop="name" label="裝備名稱" />
                             <el-table-column align="center" label="已投入成本">
@@ -338,20 +330,6 @@ const itemOptions: Option[] = [
     { value: 0, label: "自訂" },
 ];
 
-// 計算摘要數據
-const summary = computed(() => {
-    const totalExpectedTimes = estimateData.value.reduce((sum, item) => sum + (item.expectedTimes || 0), 0);
-    const totalCost = estimateData.value.reduce((sum, item) => sum + (item.baseCost || 0), 0);
-    const totalCostInTWD = form.value.showExchangeRate
-        ? (totalCost / form.value.exchangeRate) * (form.value.isBillionUnit ? 10000 : 1)
-        : 0;
-    return {
-        expectedTimes: totalExpectedTimes,
-        totalCost: totalCost,
-        totalCostInTWD: totalCostInTWD,
-    };
-});
-
 const clearEstimateData = () => {
     estimateData.value = [];
 };
@@ -432,7 +410,7 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
             .forEach(([key, value]) => {
                 expectValue += key * (value / simulateTimes);
                 simulateResult[key] = {
-                    count: key, // 修正此處，原為 "функций"
+                    count: key,
                     rate: Number(((value / simulateTimes) * 100).toFixed(6)),
                     times: value,
                 };
