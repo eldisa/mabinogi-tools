@@ -6,10 +6,7 @@ const showFunDisclaimer = ref(false);
 onMounted(() => {
     if (typeof window !== "undefined" && location.hostname === "localhost") {
         (window as any).showFunDisclaimer = () => {
-            console.log(
-                "%c🚨 開啟彩蛋頁啦！",
-                "color: hotpink; font-weight: bold;"
-            );
+            console.log("%c🚨 開啟彩蛋頁啦！", "color: hotpink; font-weight: bold;");
             showFunDisclaimer.value = true;
         };
     }
@@ -53,8 +50,7 @@ onMounted(() => {
                 <h2>歡迎回報錯誤或建議</h2>
                 <p>
                     如您發現錯誤或有改進建議，歡迎透過留言、Discord
-                    或其他方式回饋。但由於個人時間與能力有限，更新速度不保證，即使讀了也不一定會改
-                    😅
+                    或其他方式回饋。但由於個人時間與能力有限，更新速度不保證，即使讀了也不一定會改 😅
                 </p>
             </section>
 
@@ -70,38 +66,40 @@ onMounted(() => {
             <section class="section">
                 <h3>1. 數據來源不是天啟，是玩家的肝和錢包堆出來的</h3>
                 <p>
-                    不是我抓 package 抓到的啦。<br />
-                    大多資料都是靠有愛的玩家群體燃燒肝膽與理智，用
-                    Excel、影片慢格、甚至純靠直覺推測出來的。
+                    不是我抓 package 抓到的啦。
+                    <br />
+                    大多資料都是靠有愛的玩家群體燃燒肝膽與理智，用 Excel、影片慢格、甚至純靠直覺推測出來的。
                 </p>
                 <p>
-                    準嗎？<br />
-                    我只能說．……<strong>比沒用好一點啦。</strong>
+                    準嗎？
+                    <br />
+                    我只能說．……
+                    <strong>比沒用好一點啦。</strong>
                 </p>
             </section>
 
             <section class="section">
                 <h3>2. 本工具只是給你參考一下，不要太當真</h3>
                 <p>
-                    你要用它決定怎麼打王、買裝備、洗錢、拼傷害榜都可以。<br />
+                    你要用它決定怎麼打王、買裝備、洗錢、拼傷害榜都可以。
+                    <br />
                     但最後打不贏、被噹裝、投資失利我一概不負責。
                 </p>
                 <blockquote>
                     <p><del>不然你行你自己算啊。</del></p>
                 </blockquote>
+                <p>起初我只是想拿來算「換哪個裝備 CP 值比較高」而已，誰知道做著做著變這樣。</p>
                 <p>
-                    起初我只是想拿來算「換哪個裝備 CP
-                    值比較高」而已，誰知道做著做著變這樣。
-                </p>
-                <p>
-                    你如果很想知道正確值，不如直接提供你帳號給我，我親自幫你測試也行（<strong>誠徵乾爸乾婦</strong>）。
+                    你如果很想知道正確值，不如直接提供你帳號給我，我親自幫你測試也行（
+                    <strong>誠徵乾爸乾婦</strong>
+                    ）。
                 </p>
                 <p>畢竟有些裝備真的好貴喔営営営。</p>
                 <blockquote>
                     <p>
-                        <del>好不容易刷到換上去，竟然只提升個雞毛</del><br />
-                        <del>惡魔貓數值部門死後要手動刷完銳5破袍+
-                            日月劍才能選擇重生</del>
+                        <del>好不容易刷到換上去，竟然只提升個雞毛</del>
+                        <br />
+                        <del>惡魔貓數值部門死後要手動刷完銳5破袍+ 日月劍才能選擇重生</del>
                     </p>
                 </blockquote>
                 <p class="comment">
@@ -125,36 +123,41 @@ onMounted(() => {
                 <h3>4. 改版之後，這網站可能會變廁墓</h3>
                 <p>平衡一改、加成邏輯一變，之前算的就全變笑話了。</p>
                 <p>
-                    尤其是那種 <strong>惡魔貓爽就改</strong>、<strong>橘子 patch note 沒寫</strong>
+                    尤其是那種
+                    <strong>惡魔貓爽就改</strong>
+                    、
+                    <strong>橘子 patch note 沒寫</strong>
                     的情況，我根本無法預測。
                 </p>
             </section>
 
             <section class="section">
                 <h3>5. 回報錯誤我會很感動，但可能會先放著看心情</h3>
-                <p>
-                    我一定會看，但會不會修、什麼時候修，就看我那週有沒有被工作打爆。
-                </p>
-                <p>
-                    畢竟這不是我正職，也不是收費工具，就當作我跟遊戲一起沈沮的遺產吧。
-                </p>
+                <p>我一定會看，但會不會修、什麼時候修，就看我那週有沒有被工作打爆。</p>
+                <p>畢竟這不是我正職，也不是收費工具，就當作我跟遊戲一起沈沮的遺產吧。</p>
             </section>
 
             <div class="thank-you fun-thank-you">
                 <p>
-                    如果你能笑著看完，那這工具也沒發廢。<br />
+                    如果你能笑著看完，那這工具也沒發廢。
+                    <br />
                     如果你真的覺得這工具有幫助……幫我祈禱裝備好掉一點也行 🙏
                 </p>
             </div>
             <section class="section">
                 <h2>聯絡方式</h2>
-                <p>
-                    如果你真的想找我，可以在以下地方找到：
-                </p>
+                <p>如果你真的想找我，可以在以下地方找到：</p>
                 <ul>
-                    <li><strong>遊戲伺服器：</strong> 娜歐</li>
-                    <li><strong>角色ID：</strong> 楓羽戀情</li>
-                    <li><strong>GitHub：</strong>
+                    <li>
+                        <strong>遊戲伺服器：</strong>
+                        娜歐
+                    </li>
+                    <li>
+                        <strong>角色ID：</strong>
+                        楓羽戀情
+                    </li>
+                    <li>
+                        <strong>GitHub：</strong>
                         <a href="https://github.com/eldisa" target="_blank" rel="noopener noreferrer">eldisa</a>
                     </li>
                 </ul>

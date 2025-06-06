@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
-
-const menuItems = [
-    { id: "damage-calc", name: "傷害計算與武器比較", active: true },
-];
+const menuItems = [{ id: "damage-calc", name: "傷害計算與武器比較", active: true }];
 </script>
 <script lang="ts">
 import { defineComponent } from "vue";

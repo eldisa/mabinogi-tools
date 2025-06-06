@@ -105,11 +105,7 @@ document.addEventListener("editComplex", editComplexData as EventListener);
             @cellValueChanged="handleCellValueChanged"
         />
 
-        <ComplexDataModal
-            v-model:visible="modalVisible"
-            :row-data="selectedRow"
-            @save="handleSaveComplexData"
-        />
+        <ComplexDataModal v-model:visible="modalVisible" :row-data="selectedRow" @save="handleSaveComplexData" />
     </div>
 </template>
 

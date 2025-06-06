@@ -94,12 +94,7 @@ export default defineComponent({
                 placeholder="Select visible columns"
                 @change="handleColumnVisibilityChange"
             >
-                <el-option
-                    v-for="col in allColumns"
-                    :key="col"
-                    :label="col"
-                    :value="col"
-                />
+                <el-option v-for="col in allColumns" :key="col" :label="col" :value="col" />
             </el-select>
         </div>
 

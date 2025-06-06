@@ -2,9 +2,7 @@
     <div class="craft-calculator min-h-screen bg-gray-100 py-6 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto">
             <header class="mb-6 text-center">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
-                    製作成本計算模擬器
-                </h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">製作成本計算模擬器</h1>
                 <p class="text-gray-600 mt-2">輕鬆計算各種裝備的完成度和成本預估</p>
             </header>
             <el-drawer v-model="drawer" title="輸入與參數設定">
@@ -17,22 +15,36 @@
                                 <el-switch v-model="form.showResultDetails" size="small" />
                             </el-form-item>
                             <el-form-item label="模擬次數">
-                                <el-input-number controls-position="right" v-model="form.simulateTimes" :min="1"
-                                    :max="10000" :step="100" />
+                                <el-input-number
+                                    controls-position="right"
+                                    v-model="form.simulateTimes"
+                                    :min="1"
+                                    :max="10000"
+                                    :step="100"
+                                />
                             </el-form-item>
                             <el-form-item label="是否顯示成本估算">
                                 <el-switch v-model="form.showCost" size="small" />
                             </el-form-item>
                             <el-form-item label="金錢單位">
-                                <el-switch v-model="form.isBillionUnit" class="mb-2" active-text="億"
-                                    inactive-text="萬" />
+                                <el-switch
+                                    v-model="form.isBillionUnit"
+                                    class="mb-2"
+                                    active-text="億"
+                                    inactive-text="萬"
+                                />
                             </el-form-item>
                             <el-form-item label="是否換算成台幣">
                                 <el-switch v-model="form.showExchangeRate" size="small" />
                             </el-form-item>
                             <el-form-item label="匯率">
-                                <el-input-number controls-position="right" v-model="form.exchangeRate" :min="1"
-                                    :step="0.1" :disabled="!form.showExchangeRate">
+                                <el-input-number
+                                    controls-position="right"
+                                    v-model="form.exchangeRate"
+                                    :min="1"
+                                    :step="0.1"
+                                    :disabled="!form.showExchangeRate"
+                                >
                                     <template #prefix>1:</template>
                                     <template #suffix>萬</template>
                                 </el-input-number>
@@ -49,8 +61,16 @@
                         <CardHeader title="製作項目資料" subtitle="設定你想要模擬的目標與條件" />
                         <div class="bg-white rounded-md shadow-sm p-4 mt-4 w-fit mx-auto border border-gray-200">
                             <el-table
-                                :data="[{ name: form.itemName, progress: form.baseProgressPerCraft, cost: form.costPerCraft }]"
-                                style="min-width: 900px; --el-table-border-color: #dcdfe6;" highlight-current-row>
+                                :data="[
+                                    {
+                                        name: form.itemName,
+                                        progress: form.baseProgressPerCraft,
+                                        cost: form.costPerCraft,
+                                    },
+                                ]"
+                                style="min-width: 900px; --el-table-border-color: #dcdfe6"
+                                highlight-current-row
+                            >
                                 <el-table-column align="center" label="目標">
                                     <template #default>
                                         <div class="flex items-center gap-2">
@@ -58,8 +78,12 @@
                                                 <Edit />
                                             </el-icon>
                                             <el-select v-model="form.itemName" @change="onSelectCraftItem" class="w-40">
-                                                <el-option v-for="opt in itemOptions" :key="opt.value"
-                                                    :label="opt.label" :value="opt.label" />
+                                                <el-option
+                                                    v-for="opt in itemOptions"
+                                                    :key="opt.value"
+                                                    :label="opt.label"
+                                                    :value="opt.label"
+                                                />
                                             </el-select>
                                         </div>
                                     </template>
@@ -71,8 +95,12 @@
                                             <el-icon>
                                                 <DataLine />
                                             </el-icon>
-                                            <el-input-number controls-position="right"
-                                                v-model="form.baseProgressPerCraft" :min="1" :max="100" />
+                                            <el-input-number
+                                                controls-position="right"
+                                                v-model="form.baseProgressPerCraft"
+                                                :min="1"
+                                                :max="100"
+                                            />
                                             %
                                         </div>
                                     </template>
@@ -84,9 +112,15 @@
                                             <el-icon>
                                                 <Money />
                                             </el-icon>
-                                            <el-input-number controls-position="right" v-model="form.costPerCraft"
-                                                :min="1" :step="1" :max="1000000" :disabled="!form.showCost">
-                                                <template #suffix>{{ form.isBillionUnit ? '億' : '萬' }}</template>
+                                            <el-input-number
+                                                controls-position="right"
+                                                v-model="form.costPerCraft"
+                                                :min="1"
+                                                :step="1"
+                                                :max="1000000"
+                                                :disabled="!form.showCost"
+                                            >
+                                                <template #suffix>{{ form.isBillionUnit ? "億" : "萬" }}</template>
                                             </el-input-number>
                                         </div>
                                     </template>
@@ -101,8 +135,11 @@
 
                         <!-- ⚙️ 表單區（改為非卡片） -->
                         <div class="bg-white rounded-md shadow-sm p-4 mt-4 w-fit mx-auto border border-gray-200">
-                            <el-table :data="[newEstimateEntry]"
-                                style="min-width: 900px; --el-table-border-color: #dcdfe6;" highlight-current-row>
+                            <el-table
+                                :data="[newEstimateEntry]"
+                                style="min-width: 900px; --el-table-border-color: #dcdfe6"
+                                highlight-current-row
+                            >
                                 <el-table-column align="center" prop="name" label="名稱">
                                     <template #default="{ row }">
                                         <el-input v-model="row.name" />
@@ -119,8 +156,12 @@
 
                                 <el-table-column align="center" prop="currentProgress" label="當前完成度">
                                     <template #default="{ row }">
-                                        <el-input-number v-model="row.currentProgress" :min="0" :max="99.99"
-                                            controls-position="right">
+                                        <el-input-number
+                                            v-model="row.currentProgress"
+                                            :min="0"
+                                            :max="99.99"
+                                            controls-position="right"
+                                        >
                                             <template #suffix>%</template>
                                         </el-input-number>
                                     </template>
@@ -129,16 +170,14 @@
                                 <el-table-column align="center" prop="cost" label="已投入之成本" width="180">
                                     <template #default="{ row }">
                                         <el-input-number v-model="row.cost" :min="0" controls-position="right">
-                                            <template #suffix>{{ form.isBillionUnit ? '億' : '萬' }}</template>
+                                            <template #suffix>{{ form.isBillionUnit ? "億" : "萬" }}</template>
                                         </el-input-number>
                                     </template>
                                 </el-table-column>
 
                                 <el-table-column align="center" label="操作" width="120">
                                     <template #default>
-                                        <el-button type="success" plain @click="addEstimateEntry">
-                                            ➕ 新增
-                                        </el-button>
+                                        <el-button type="success" plain @click="addEstimateEntry">➕ 新增</el-button>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -147,19 +186,34 @@
                         <!-- 📌 操作按鈕 -->
                         <div class="mt-4 flex gap-4 justify-center">
                             <!--todo: 新增 clear 功能-->
-                            <el-button type="danger" size="large" plain @click="clearEstimateData"
-                                :disabled="isCalculating">
+                            <el-button
+                                type="danger"
+                                size="large"
+                                plain
+                                @click="clearEstimateData"
+                                :disabled="isCalculating"
+                            >
                                 🗑️ 清空
                             </el-button>
                             <el-button type="info" size="large" plain @click="testAllData" :disabled="isCalculating">
                                 ⚙️ 全體測試
                             </el-button>
-                            <el-button type="warning" size="large" plain @click="drawer = true"
-                                :disabled="isCalculating">
+                            <el-button
+                                type="warning"
+                                size="large"
+                                plain
+                                @click="drawer = true"
+                                :disabled="isCalculating"
+                            >
                                 ⚙️ 計算參數設定
                             </el-button>
-                            <el-button type="primary" size="large" plain @click="testCraftByInput"
-                                :disabled="isCalculating">
+                            <el-button
+                                type="primary"
+                                size="large"
+                                plain
+                                @click="testCraftByInput"
+                                :disabled="isCalculating"
+                            >
                                 🚀 開始計算
                             </el-button>
                         </div>
@@ -176,7 +230,7 @@
                             <p v-if="form.showExchangeRate">總已投入成本 (台幣)：{{ summary.totalCostInTWD.toFixed(2) || '-' }} 元
                             </p>
                         </div> -->
-                        <el-table :data="estimateData" stripe border style="width: 100%;" max-height="300">
+                        <el-table :data="estimateData" stripe border style="width: 100%" max-height="300">
                             <el-table-column align="center" prop="name" label="裝備名稱" />
                             <el-table-column align="center" prop="baseCost" label="已投入成本" />
                             <el-table-column align="center" prop="expectedTimes" label="預期次數" />
@@ -184,18 +238,23 @@
                                 <template #default="{ row }">
                                     <span v-if="row.expectedTimes && form.showCost">
                                         {{ row.totalCost.toFixed(2) }}
-                                        {{ form.isBillionUnit ? '億' : '萬' }}
+                                        {{ form.isBillionUnit ? "億" : "萬" }}
                                     </span>
                                     <span v-else>-</span>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column align="center" v-if="form.showResultDetails"
-                                v-for="count in allCraftCounts" :key="count" :label="`製作 ${count} 次`" :min-width="100">
+                            <el-table-column
+                                align="center"
+                                v-if="form.showResultDetails"
+                                v-for="count in allCraftCounts"
+                                :key="count"
+                                :label="`製作 ${count} 次`"
+                                :min-width="100"
+                            >
                                 <template #default="{ row }">
-                                    <span v-if="row.simulateResult[count] && row.simulateResult[count].rate >= 0.1">{{
-                                        row.simulateResult[count].rate.toFixed(2)
-                                        }}%
+                                    <span v-if="row.simulateResult[count] && row.simulateResult[count].rate >= 0.1">
+                                        {{ row.simulateResult[count].rate.toFixed(2) }}%
                                     </span>
                                     <span v-else>-</span>
                                 </template>
@@ -210,15 +269,14 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import { Option } from '../types';
-import { EstimatedCraftItem, SampleResult } from '../types/CraftItem';
-import CardHeader from '../components/CardHeader.vue';
+import { Option } from "../types";
+import { EstimatedCraftItem, SampleResult } from "../types/CraftItem";
+import CardHeader from "../components/CardHeader.vue";
 
-
-const drawer = ref(false)
+const drawer = ref(false);
 const emptyEstimateEntry: EstimatedCraftItem = {
     id: -10000,
-    name: '自訂',
+    name: "自訂",
     isRoyalCraft: true,
     currentProgress: 0,
     baseCost: 0,
@@ -231,29 +289,29 @@ const isCalculating = ref(false);
 
 const newEstimateEntry = ref({ ...emptyEstimateEntry });
 const estimateData = ref<EstimatedCraftItem[]>([
-    { ...emptyEstimateEntry, id: 0, name: '破滅長袍-0%' },
-    { ...emptyEstimateEntry, currentProgress: 79, baseCost: 120, id: 1, name: '破滅長袍-70%' },
+    { ...emptyEstimateEntry, id: 0, name: "破滅長袍-0%" },
+    { ...emptyEstimateEntry, currentProgress: 79, baseCost: 120, id: 1, name: "破滅長袍-70%" },
 ]);
 
 const form = ref({
-    itemName: '破滅長袍',
+    itemName: "破滅長袍",
     baseProgressPerCraft: 10,
     simulateTimes: 100000,
     showResultDetails: false,
     showCost: true,
     costPerCraft: 20,
     showExchangeRate: false,
-    exchangeRate: 19,
+    exchangeRate: 20,
     isBillionUnit: true,
 });
 
 const itemOptions: Option[] = [
-    { value: 10, label: '破滅長袍' },
-    { value: 13, label: '安安輕靈系列' },
-    { value: 13, label: '安安秘術系列' },
-    { value: 13, label: '安安重甲系列' },
-    { value: 13, label: '兇猛系列武器' },
-    { value: 0, label: '自訂' },
+    { value: 10, label: "破滅長袍" },
+    { value: 13, label: "安安輕靈系列" },
+    { value: 13, label: "安安秘術系列" },
+    { value: 13, label: "安安重甲系列" },
+    { value: 13, label: "兇猛系列武器" },
+    { value: 0, label: "自訂" },
 ];
 
 // 計算摘要數據
@@ -261,7 +319,7 @@ const summary = computed(() => {
     const totalExpectedTimes = estimateData.value.reduce((sum, item) => sum + (item.expectedTimes || 0), 0);
     const totalCost = estimateData.value.reduce((sum, item) => sum + (item.baseCost || 0), 0);
     const totalCostInTWD = form.value.showExchangeRate
-        ? totalCost / form.value.exchangeRate * (form.value.isBillionUnit ? 10000 : 1)
+        ? (totalCost / form.value.exchangeRate) * (form.value.isBillionUnit ? 10000 : 1)
         : 0;
     return {
         expectedTimes: totalExpectedTimes,
@@ -287,23 +345,23 @@ const setupTestData = () => {
             currentProgress: i,
             cost: 0,
             id: i,
-            name
+            name,
         };
-        tmp.push(obj)
+        tmp.push(obj);
     }
 
     estimateData.value = [...tmp];
-}
+};
 
 const testAllData = () => {
     isCalculating.value = true;
     const orignSimulateTimes = form.value.simulateTimes;
-    form.value.simulateTimes = 10000
+    form.value.simulateTimes = 10000;
     setupTestData();
     testCraftByInput();
     form.value.simulateTimes = orignSimulateTimes;
     isCalculating.value = false;
-}
+};
 
 const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boolean): number => {
     let result = completeRate;
@@ -356,12 +414,12 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
                 expectValue += key * (value / simulateTimes);
                 simulateResult[key] = {
                     count: key, // 修正此處，原為 "функций"
-                    rate: Number((value / simulateTimes * 100).toFixed(6)),
+                    rate: Number(((value / simulateTimes) * 100).toFixed(6)),
                     times: value,
                 };
             });
-        const expectedCost = (costPerCraft * expectValue);
-        const expectCostInTWD = (expectedCost / exchangeRate * (isBillionUnit ? 10000 : 1));
+        const expectedCost = costPerCraft * expectValue;
+        const expectCostInTWD = (expectedCost / exchangeRate) * (isBillionUnit ? 10000 : 1);
         tobeEstimateData[index] = {
             ...tobeEstimateData[index],
             simulateResult,
@@ -373,10 +431,10 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
 };
 
 const onSelectCraftItem = (item: any) => {
-    if (item === '自訂') {
+    if (item === "自訂") {
         form.value.baseProgressPerCraft = 0;
     } else {
-        const matched = itemOptions.find(opt => opt.label === item);
+        const matched = itemOptions.find((opt) => opt.label === item);
         if (matched) {
             form.value.baseProgressPerCraft = matched.value;
         }
@@ -405,20 +463,23 @@ const handleDeleteEstimateEntry = (index: number) => {
 
 const allCraftCounts = computed(() => {
     const keys = new Set<number>();
-    estimateData.value.forEach(item => {
-        Object.keys(item.simulateResult).forEach(k => keys.add(Number(k)));
+    estimateData.value.forEach((item) => {
+        Object.keys(item.simulateResult).forEach((k) => keys.add(Number(k)));
     });
     return Array.from(keys).sort((a, b) => a - b);
 });
 
-watch(() => form.value.itemName, (newValue) => {
-    const matched = itemOptions.find((opt) => opt.label === newValue);
-    if (matched) {
-        form.value.baseProgressPerCraft = matched.value;
-    } else {
-        form.value.baseProgressPerCraft = 0;
+watch(
+    () => form.value.itemName,
+    (newValue) => {
+        const matched = itemOptions.find((opt) => opt.label === newValue);
+        if (matched) {
+            form.value.baseProgressPerCraft = matched.value;
+        } else {
+            form.value.baseProgressPerCraft = 0;
+        }
     }
-});
+);
 </script>
 
 <style scoped>
@@ -442,7 +503,7 @@ watch(() => form.value.itemName, (newValue) => {
 
 html,
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .craft-calculator {

@@ -20,9 +20,7 @@ const talentTabs = ref<TalentTabs[]>([
 
 const initialTalentTabs = () => {
     talents.forEach((talent) => {
-        const filteredSkills: Skill[] = skills.filter(
-            (skill: Skill) => skill.talentId === talent.id
-        );
+        const filteredSkills: Skill[] = skills.filter((skill: Skill) => skill.talentId === talent.id);
 
         talentTabs.value.push({
             name: talent.name,
@@ -97,11 +95,7 @@ export default defineComponent({
         <div class="mb-6">
             <h3 class="text-lg font-medium mb-3">技能選擇</h3>
             <div class="flex flex-wrap gap-4">
-                <label
-                    v-for="skill in selectedJob.skills"
-                    :key="skill.id"
-                    class="inline-flex items-center"
-                >
+                <label v-for="skill in selectedJob.skills" :key="skill.id" class="inline-flex items-center">
                     <input
                         type="checkbox"
                         :checked="skill.selected"
@@ -119,11 +113,7 @@ export default defineComponent({
         <!-- Monster Selection (Placeholder) -->
         <div class="mb-6">
             <h3 class="text-lg font-medium mb-3">選擇目標</h3>
-            <input
-                type="text"
-                placeholder="搜尋或輸入目標"
-                class="w-full max-w-xs px-4 py-2 border rounded-md"
-            />
+            <input type="text" placeholder="搜尋或輸入目標" class="w-full max-w-xs px-4 py-2 border rounded-md" />
         </div>
 
         <!-- Damage Chart -->

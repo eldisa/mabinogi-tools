@@ -11,7 +11,8 @@
                         <DebuffTable @updateDebuff="handleDebuffUpdate" />
                     </el-tab-pane>
                     <el-tab-pane label="Buff(施工中)" disabled>Config</el-tab-pane>
-                    <el-tab-pane label="選擇目標怪物"><!-- 🟨 怪物選擇區塊 -->
+                    <el-tab-pane label="選擇目標怪物">
+                        <!-- 🟨 怪物選擇區塊 -->
                         <MonsterTable @updateMonster="handleMonsterUpdate" />
                     </el-tab-pane>
                 </el-tabs>
@@ -27,9 +28,6 @@
             <div v-else>
                 <v-chart autoresize class="w-full h-[400px]" :option="option" />
             </div>
-
-
-
         </div>
     </div>
 </template>
@@ -48,13 +46,13 @@ import {
     RadarComponent,
 } from "echarts/components";
 
-import { CompareEntry, Debuff, MonsterEntry } from '../types';
+import { CompareEntry, Debuff, MonsterEntry } from "../types";
 import VChart from "vue-echarts";
 import DebuffTable from "../components/DebuffTable.vue";
 import StatusTable from "../components/StatusTable.vue";
 import MonsterTable from "../components/MonsterTable.vue";
-import { generateDamageCompareRadar, generateDamageCompareBar } from '../utils/generateChartOption';
-import * as echarts from 'echarts';
+import { generateDamageCompareRadar, generateDamageCompareBar } from "../utils/generateChartOption";
+import * as echarts from "echarts";
 use([
     CanvasRenderer,
     BarChart,
@@ -90,29 +88,32 @@ const applyChanges = (): void => {
         debuffData.value,
         monsterData.value,
         isPhysical.value as boolean
-    )
+    );
 };
 
 const handleStatusUpdate = (data: CompareEntry[]) => {
-    localStorage.setItem('statusData', JSON.stringify(data));
+    localStorage.setItem("statusData", JSON.stringify(data));
     statusData.value = data;
 };
 
 const handleDebuffUpdate = (data: Debuff[]) => {
-    localStorage.setItem('debuffData', JSON.stringify(data));
+    localStorage.setItem("debuffData", JSON.stringify(data));
     debuffData.value = data;
 };
 
 const handleMonsterUpdate = (data: MonsterEntry[]) => {
-    localStorage.setItem('monsterData', JSON.stringify(data));
+    localStorage.setItem("monsterData", JSON.stringify(data));
     monsterData.value = data;
 };
 
 const isReadyToDraw = computed(() => {
     return (
-        Array.isArray(statusData.value) && statusData.value.length > 0 &&
-        Array.isArray(debuffData.value) && debuffData.value.length > 1 &&
-        Array.isArray(monsterData.value) && monsterData.value.length > 0
+        Array.isArray(statusData.value) &&
+        statusData.value.length > 0 &&
+        Array.isArray(debuffData.value) &&
+        debuffData.value.length > 1 &&
+        Array.isArray(monsterData.value) &&
+        monsterData.value.length > 0
     );
 });
 
@@ -125,7 +126,6 @@ watch(
     },
     { deep: true }
 );
-
 </script>
 <style scoped>
 .radar-chart {

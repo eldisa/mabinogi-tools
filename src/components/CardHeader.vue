@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { StarFilled } from '@element-plus/icons-vue'
+import { StarFilled } from "@element-plus/icons-vue";
 
 defineProps({
     title: {
@@ -8,9 +8,9 @@ defineProps({
     },
     subtitle: {
         type: String,
-        default: '',
+        default: "",
     },
-})
+});
 import { defineComponent } from "vue";
 defineComponent({
     name: "CardHeader",

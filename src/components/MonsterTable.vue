@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="monsterTableData" style="width: 850px;">
+    <el-table :data="monsterTableData" style="width: 850px">
         <el-table-column prop="name" label="怪物名稱" width="150">
             <template #default="{ row }">
                 <div>
@@ -46,8 +46,12 @@
     </el-table>
 
     <!-- 新增列 -->
-    <el-table :data="[newMonsterRow]" style="width: 850px; --el-table-border-color: none;" :show-header="false"
-        height="60">
+    <el-table
+        :data="[newMonsterRow]"
+        style="width: 850px; --el-table-border-color: none"
+        :show-header="false"
+        height="60"
+    >
         <el-table-column width="150">
             <template #default="{ row }">
                 <el-select v-model="row.name" size="small" @change="onSelectMonster(row)">
@@ -95,24 +99,22 @@
         <el-tooltip v-else-if="monsterTableData.length < 1" content="資料不足，請至少填1組" placement="top">
             <el-button type="success" size="small" :disabled="true">Apply</el-button>
         </el-tooltip>
-        <el-button v-else type="success" size="small" @click="apply">
-            Apply
-        </el-button>
+        <el-button v-else type="success" size="small" @click="apply">Apply</el-button>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { MonsterEntry } from '../types';
-import { monsterArray } from '../data/monster';
+import { ref } from "vue";
+import { MonsterEntry } from "../types";
+import { monsterArray } from "../data/monster";
 
 const monsterOptions: MonsterEntry[] = [...monsterArray];
 
 const monsterTableData = ref<MonsterEntry[]>([]);
 
 const newMonsterRow = ref({
-    id: 'custom',
-    name: '自訂',
+    id: "custom",
+    name: "自訂",
     physicalDefense: 0,
     physicalProtect: 0,
     magicalDefense: 0,
@@ -121,22 +123,22 @@ const newMonsterRow = ref({
 });
 
 const onSelectMonster = (row: MonsterEntry) => {
-    const isCustom = (row.name === '自訂');
+    const isCustom = row.name === "自訂";
     const matchedIndex = monsterOptions.findIndex((option) => option.name === row.name);
 
     if (isCustom) {
         row.name = `自訂${monsterTableData.value.length + 1}`;
     } else if (matchedIndex > -1) {
         newMonsterRow.value = {
-            ...monsterOptions[matchedIndex]
-        }
+            ...monsterOptions[matchedIndex],
+        };
     }
 };
 
 const addMonster = () => {
     // todo: should identify by id
     // 檢查是不是非自訂的怪物
-    const matched = monsterOptions.find(opt => opt.name === newMonsterRow.value.name);
+    const matched = monsterOptions.find((opt) => opt.name === newMonsterRow.value.name);
 
     if (matched) {
         // 如果有找到對應選項 → 用 monsterOptions 裡的防禦保護覆蓋
@@ -146,17 +148,23 @@ const addMonster = () => {
         });
     } else {
         // 沒有找到，代表是自訂
-        const { name, physicalDefense, physicalProtect, magicalDefense, magicalProtect, isCustom } = newMonsterRow.value;
+        const { name, physicalDefense, physicalProtect, magicalDefense, magicalProtect, isCustom } =
+            newMonsterRow.value;
         const counter: number = monsterTableData.value.length + 1;
         const id = `custom${counter}`;
         monsterTableData.value.push({
             id,
-            name, physicalDefense, physicalProtect, magicalDefense, magicalProtect, isCustom
+            name,
+            physicalDefense,
+            physicalProtect,
+            magicalDefense,
+            magicalProtect,
+            isCustom,
         });
     }
     newMonsterRow.value = {
-        id: 'custom',
-        name: '自訂',
+        id: "custom",
+        name: "自訂",
         physicalDefense: 0,
         physicalProtect: 0,
         magicalDefense: 0,
@@ -170,22 +178,22 @@ const handleDeleteMonster = (index: number) => {
 };
 
 const emit = defineEmits<{
-    (e: 'updateMonster', data: MonsterEntry[]): void
+    (e: "updateMonster", data: MonsterEntry[]): void;
 }>();
 
 const apply = () => {
-    emit('updateMonster', monsterTableData.value);
+    emit("updateMonster", monsterTableData.value);
 };
 
-const raw = localStorage.getItem('monsterData');
+const raw = localStorage.getItem("monsterData");
 
-if (raw && raw.trim() !== '') {
+if (raw && raw.trim() !== "") {
     try {
         const storedData = JSON.parse(raw);
-        monsterTableData.value = [...storedData]
+        monsterTableData.value = [...storedData];
         apply();
     } catch (error) {
-        console.error('解析 localStorage 中的 monsterData 失敗:', error);
+        console.error("解析 localStorage 中的 monsterData 失敗:", error);
     }
 }
 </script>

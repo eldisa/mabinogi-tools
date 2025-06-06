@@ -1,26 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import * as echarts from "echarts/core";
-import {
-    TitleComponent,
-    TooltipComponent,
-    GridComponent,
-    LegendComponent,
-} from "echarts/components";
+import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from "echarts/components";
 import { BarChart } from "echarts/charts";
 import { CanvasRenderer } from "echarts/renderers";
 import weapons from "../data/weapon";
 import skills from "../data/skills";
 import { Skill, SkillBonus, Weapon } from "../types/index";
 
-echarts.use([
-    TitleComponent,
-    TooltipComponent,
-    GridComponent,
-    LegendComponent,
-    BarChart,
-    CanvasRenderer,
-]);
+echarts.use([TitleComponent, TooltipComponent, GridComponent, LegendComponent, BarChart, CanvasRenderer]);
 
 const chartContainer = ref<HTMLElement | null>(null);
 let chart: echarts.ECharts | null = null;
@@ -43,18 +31,13 @@ skills
         let { id, name, damage, calculate } = skill;
         weapons.forEach((weapon: Weapon) => {
             const { maxAtk, skillBonus } = weapon;
-            let index = skillBonus.findIndex(
-                (bonus: SkillBonus) => bonus.skillId === id
-            );
+            let index = skillBonus.findIndex((bonus: SkillBonus) => bonus.skillId === id);
             if (index > -1) {
                 damage *= 1 + skillBonus[index].bonus;
             }
 
             const atkWhenEquipped = maxAtk + strength / 2.5 + enhanceAtk;
-            const calculateResult =
-                typeof calculate === "function"
-                    ? calculate(atkWhenEquipped, damage)
-                    : 0;
+            const calculateResult = typeof calculate === "function" ? calculate(atkWhenEquipped, damage) : 0;
             let result = Math.floor(calculateResult);
             atkWhenEquippedArray.push(atkWhenEquipped);
             data.push(result);
@@ -129,10 +112,6 @@ export default defineComponent({
 
 <template>
     <div class="h-[400px]" style="height: 400px">
-        <div
-            ref="chartContainer"
-            class="w-full h-[400px]"
-            style="height: 400px"
-        ></div>
+        <div ref="chartContainer" class="w-full h-[400px]" style="height: 400px"></div>
     </div>
 </template>

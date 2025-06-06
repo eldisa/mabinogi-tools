@@ -1,9 +1,4 @@
-type CraftType =
-    | "Smithing"
-    | "Alchemy"
-    | "Cooking"
-    | "Enchanting"
-    | "MagicCraft";
+type CraftType = "Smithing" | "Alchemy" | "Cooking" | "Enchanting" | "MagicCraft";
 // todo:　打鐵 裁縫 魔法製造 稀原工學
 
 type Materials = {

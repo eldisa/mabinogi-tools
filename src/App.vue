@@ -28,8 +28,13 @@ const toggleSidebar = () => {
                 </button>
             </div>
             <nav class="sidebar-nav">
-                <router-link v-for="item in menuItems" :key="item.path" :to="item.path" class="nav-item"
-                    active-class="active">
+                <router-link
+                    v-for="item in menuItems"
+                    :key="item.path"
+                    :to="item.path"
+                    class="nav-item"
+                    active-class="active"
+                >
                     <span class="icon">{{ item.icon }}</span>
                     <span v-if="!isCollapsed" class="text">
                         {{ item.name }}
@@ -116,7 +121,7 @@ const toggleSidebar = () => {
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+        "Helvetica Neue", sans-serif;
 }
 </style>

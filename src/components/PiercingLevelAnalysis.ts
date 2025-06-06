@@ -38,11 +38,7 @@ export const usePiercingLevelAnalysis = () => {
         protectionReductionPerLevel: 10, // Reduces protection by 10% per level
     });
 
-    const calculateDamage = (
-        baseDmg: number,
-        piercingLevel: number,
-        protection: number
-    ): number => {
+    const calculateDamage = (baseDmg: number, piercingLevel: number, protection: number): number => {
         // Calculate protection index after piercing and debuff
         let protectionIndex = protection - piercingLevel * 5 - debuffProtection;
 
@@ -65,9 +61,7 @@ export const usePiercingLevelAnalysis = () => {
 
         for (let i = 0; i < protectionData.length - 1; i++) {
             const protection = i;
-            const rawDamages = testData.map((level) =>
-                calculateDamage(damage.value, level, protection)
-            );
+            const rawDamages = testData.map((level) => calculateDamage(damage.value, level, protection));
 
             if (i >= 350) {
                 console.log("📈 高保護區測試", {
@@ -80,9 +74,7 @@ export const usePiercingLevelAnalysis = () => {
 
             result.push({
                 protection,
-                damages: rawDamages.map((val) =>
-                    calculateIncrease(rawDamages[0], val)
-                ),
+                damages: rawDamages.map((val) => calculateIncrease(rawDamages[0], val)),
             });
         }
 
