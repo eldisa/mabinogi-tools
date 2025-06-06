@@ -378,7 +378,7 @@ const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boole
     let base = randSuccess <= successRate ? 0.5 : -0.5; // 預設基礎值為0.5或-0.5
     const singleRate = baseProgress + (isRoyal ? 1 : 0);
     const progress = roundTo(singleRate * 1.45 * (base + randOffset));
-    result = progress + Number(result);
+    result = progress + result;
     return Math.max(0, Math.min(100, result));
 };
 
@@ -411,7 +411,7 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
                 expectValue += key * (value / simulateTimes);
                 simulateResult[key] = {
                     count: key,
-                    rate: Number(((value / simulateTimes) * 100).toFixed(6)),
+                    rate: roundTo((value / simulateTimes) * 100, 6),
                     times: value,
                 };
             });
@@ -421,7 +421,7 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
             simulateResult,
             expectedCost,
             totalCost: expectedCost + baseCost,
-            expectedTimes: parseFloat(expectValue.toFixed(2)),
+            expectedTimes: roundTo(expectValue, 2),
         };
     });
 };
