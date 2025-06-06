@@ -177,7 +177,14 @@
 
                                 <el-table-column align="center" label="操作" width="120">
                                     <template #default>
-                                        <el-button type="success" plain @click="addEstimateEntry">➕ 新增</el-button>
+                                        <el-button
+                                            type="success"
+                                            plain
+                                            @click="addEstimateEntry"
+                                            :disabled="isCalculating"
+                                        >
+                                            ➕ 新增
+                                        </el-button>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -210,7 +217,7 @@
                                 type="primary"
                                 size="large"
                                 plain
-                                @click="testCraftByInput"
+                                @click="startSimulate"
                                 :disabled="isCalculating"
                             >
                                 🚀 開始計算
@@ -222,7 +229,14 @@
                 <el-card class="bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
                     <CardHeader title="計算結果" subtitle="資料有更新，要再按一次計算才會更新唷" />
                     <div class="p-4 bg-white rounded-lg shadow">
-                        <el-table :data="estimateData" stripe border style="width: 100%" max-height="300">
+                        <el-table
+                            v-loading="isCalculating"
+                            :data="estimateData"
+                            stripe
+                            border
+                            style="width: 100%"
+                            max-height="300"
+                        >
                             <el-table-column align="center" prop="name" label="裝備名稱" />
                             <el-table-column align="center" label="已投入成本">
                                 <template #default="{ row }">
@@ -356,13 +370,10 @@ const setupTestData = () => {
 };
 
 const testAllData = () => {
-    isCalculating.value = true;
     const orignSimulateTimes = form.value.simulateTimes;
     form.value.simulateTimes = 10000;
     setupTestData();
-    testCraftByInput();
     form.value.simulateTimes = orignSimulateTimes;
-    isCalculating.value = false;
 };
 
 const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boolean): number => {
@@ -380,6 +391,14 @@ const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boole
     const progress = roundTo(singleRate * 1.45 * (base + randOffset));
     result = progress + result;
     return Math.max(0, Math.min(100, result));
+};
+
+const startSimulate = () => {
+    isCalculating.value = true;
+    setTimeout(() => {
+        testCraftByInput();
+        isCalculating.value = false;
+    }, 1000);
 };
 
 const testCraftByInput = (data?: EstimatedCraftItem[]) => {
