@@ -389,22 +389,17 @@ const testAllData = () => {
 
 const startCraftv2 = (completeRate: number, baseProgress: number, isRoyal: boolean): number => {
     let result = completeRate;
-    const successRate = 100;
+    const successRate = 100; // 目前都預設100，之後或許要拉出來
 
     const randSuccess = Math.random() * 100;
     const randOffset = Math.random();
-
-    let base = 0;
-
-    if (randSuccess <= successRate) {
-        base = randOffset >= 0.5 ? 1 : 0.5;
-    } else {
-        base = randOffset >= 0.5 ? 0 : -0.5;
-    }
-
+    /*
+    成功    0.5~ 1 大成功 1~  1.5
+    大失敗 -0.5~ 0 失敗   0~ -0.5
+    */
+    let base = randSuccess <= successRate ? 0.5 : -0.5; // 預設基礎值為0.5或-0.5
     const singleRate = baseProgress + (isRoyal ? 1 : 0);
-    const floatOffset = randOffset / 2;
-    const progress = parseFloat((singleRate * 1.45 * (base + floatOffset)).toFixed(2));
+    const progress = roundTo(singleRate * 1.45 * (base + randOffset));
     result = progress + Number(result);
     return Math.max(0, Math.min(100, result));
 };
@@ -421,7 +416,7 @@ const testCraftByInput = (data?: EstimatedCraftItem[]) => {
         for (let i = 0; i < simulateTimes; i++) {
             let result = currentProgress;
             let count = 0;
-            while (result < 100) {
+            while (result < 99.99) {
                 result = startCraftv2(result, baseProgressPerCraft, isRoyalCraft);
                 count++;
             }
@@ -501,6 +496,10 @@ const convertToDisplayCurrency = (value: number): string => {
     return `$ ${base.toLocaleString()}`;
 };
 
+const roundTo = (value: number, digits: number = 2): number => {
+    const factor = Math.pow(10, digits);
+    return Math.round(value * factor) / factor;
+};
 watch(
     () => form.value.itemName,
     (newValue) => {
