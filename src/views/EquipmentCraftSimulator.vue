@@ -257,36 +257,21 @@
                             <el-table-column align="center" prop="name" label="裝備名稱" />
                             <el-table-column align="center" label="已投入成本">
                                 <template #default="{ row }">
-                                    <span v-if="form.showExchangeRate">
-                                        {{ convertToDisplayCurrency(row.baseCost) }}
-                                    </span>
-                                    <span v-else>
-                                        {{ row.baseCost.toFixed(2) }} {{ form.isBillionUnit ? "億" : "萬" }}
-                                    </span>
+                                    <span>{{ formatCurrency(row.baseCost) }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column align="center" prop="expectedTimes" label="預期次數" />
                             <el-table-column align="center" v-if="form.showCost" label="預計要再投入">
                                 <template #default="{ row }">
                                     <div v-if="row.expectedTimes && form.showCost">
-                                        <span v-if="form.showExchangeRate">
-                                            {{ convertToDisplayCurrency(row.expectedCost) }}
-                                        </span>
-                                        <span v-else>
-                                            {{ row.expectedCost.toFixed(2) }} {{ form.isBillionUnit ? "億" : "萬" }}
-                                        </span>
+                                        <span>{{ formatCurrency(row.expectedCost) }}</span>
                                     </div>
                                 </template>
                             </el-table-column>
                             <el-table-column align="center" v-if="form.showCost" label="總成本">
                                 <template #default="{ row }">
                                     <div v-if="row.expectedTimes && form.showCost">
-                                        <span v-if="form.showExchangeRate">
-                                            {{ convertToDisplayCurrency(row.totalCost) }}
-                                        </span>
-                                        <span v-else>
-                                            {{ row.totalCost.toFixed(2) }} {{ form.isBillionUnit ? "億" : "萬" }}
-                                        </span>
+                                        <span>{{ formatCurrency(row.totalCost) }}</span>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -503,15 +488,6 @@ const allCraftCounts = computed(() => {
     return Array.from(keys).sort((a, b) => a - b);
 });
 
-const convertToDisplayCurrency = (value: number): string => {
-    const { exchangeRate, isBillionUnit } = form.value;
-    const currency = exchangeRate || 1;
-    const unit = isBillionUnit ? 10000 : 1;
-    const base = (value / currency) * unit;
-
-    return `$ ${base.toLocaleString()}`;
-};
-
 const roundTo = (value: number, digits: number = 2): number => {
     const factor = Math.pow(10, digits);
     return Math.round(value * factor) / factor;
@@ -527,6 +503,25 @@ watch(
         }
     }
 );
+
+const formatCurrency = (value: number): string => {
+    if (!value || value === 0) return "0";
+
+    const { showExchangeRate, isBillionUnit, exchangeRate } = form.value;
+    let formattedValue = "";
+
+    if (showExchangeRate) {
+        const currency = exchangeRate || 1;
+        const unit = isBillionUnit ? 10000 : 1;
+        formattedValue = ((value / currency) * unit).toLocaleString();
+    } else {
+        formattedValue = value.toLocaleString();
+    }
+
+    const unitString = showExchangeRate ? "台幣" : isBillionUnit ? "億" : "萬";
+
+    return `${formattedValue} ${unitString}`;
+};
 </script>
 
 <style scoped>
