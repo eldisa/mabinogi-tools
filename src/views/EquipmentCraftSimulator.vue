@@ -184,9 +184,9 @@
                                     </template>
                                 </el-table-column>
 
-                                <el-table-column align="center" prop="cost" label="已投入之成本" width="180">
+                                <el-table-column align="center" prop="baseCost" label="已投入之成本" width="180">
                                     <template #default="{ row }">
-                                        <el-input-number v-model="row.cost" :min="0" controls-position="right">
+                                        <el-input-number v-model="row.baseCost" :min="0" controls-position="right">
                                             <template #suffix>{{ form.isBillionUnit ? "億" : "萬" }}</template>
                                         </el-input-number>
                                     </template>
