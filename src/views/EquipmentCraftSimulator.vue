@@ -17,7 +17,6 @@
                                 :min="1"
                                 :max="10000"
                                 :step="100"
-                                size="medium"
                                 class="w-40"
                             />
                         </el-form-item>
@@ -28,7 +27,6 @@
                                 :min="1"
                                 :max="100"
                                 :step="1"
-                                size="medium"
                                 class="w-40"
                             >
                                 <template #suffix>%</template>
@@ -50,21 +48,34 @@
                         <el-form-item label="金錢單位（萬 / 億）">
                             <el-switch v-model="form.isBillionUnit" active-text="億" inactive-text="萬" class="w-20" />
                         </el-form-item>
-                        <el-form-item label="換算成台幣">
-                            <el-switch v-model="form.showExchangeRate" size="small" />
+                        <el-form-item label="金錢單位轉換">
+                            <el-select v-model="form.currencyType" placeholder="選擇幣別" size="small" class="w-40">
+                                <el-option label="遊戲幣" value="game" />
+                                <el-option label="新台幣 (NTD)" value="ntd" />
+                                <el-option label="港幣 (HKD)" value="hkd" />
+                            </el-select>
                         </el-form-item>
-                        <el-form-item label="匯率">
+                        <el-form-item label="匯率" v-if="form.currencyType === 'ntd'">
                             <el-input-number
                                 controls-position="right"
                                 v-model="form.exchangeRate"
                                 :min="1"
                                 :step="0.1"
-                                size="medium"
-                                :disabled="!form.showExchangeRate"
                                 class="w-40"
                             >
                                 <template #prefix>1:</template>
                                 <template #suffix>萬</template>
+                            </el-input-number>
+                        </el-form-item>
+                        <el-form-item label="匯率" v-else-if="form.currencyType === 'hkd'">
+                            <el-input-number
+                                controls-position="right"
+                                v-model="form.exchangeRate"
+                                :min="1"
+                                :step="1"
+                                class="w-40"
+                            >
+                                <template #suffix>:1億</template>
                             </el-input-number>
                         </el-form-item>
                     </el-form>
@@ -334,6 +345,7 @@ const form = ref({
     showCost: true,
     costPerCraft: 20,
     showExchangeRate: false,
+    currencyType: "game", // 遊戲幣
     exchangeRate: 20,
     isBillionUnit: true,
     successRate: 100,
@@ -507,20 +519,27 @@ watch(
 const formatCurrency = (value: number): string => {
     if (!value || value === 0) return "0";
 
-    const { showExchangeRate, isBillionUnit, exchangeRate } = form.value;
-    let formattedValue = "";
+    const { currencyType, exchangeRate, isBillionUnit } = form.value;
 
-    if (showExchangeRate) {
-        const currency = exchangeRate || 1;
-        const unit = isBillionUnit ? 10000 : 1;
-        formattedValue = ((value / currency) * unit).toLocaleString();
-    } else {
-        formattedValue = value.toLocaleString();
+    if (currencyType === "game") {
+        return `${value.toLocaleString()} ${isBillionUnit ? "億" : "萬"}`;
     }
 
-    const unitString = showExchangeRate ? "台幣" : isBillionUnit ? "億" : "萬";
+    const rate = exchangeRate || 1;
+    const unit = isBillionUnit ? 10000 : 1;
+    const label = currencyType === "ntd" ? "NTD$" : "HKD$";
+    let converted = 0;
 
-    return `${formattedValue} ${unitString}`;
+    if (currencyType === "ntd") {
+        converted = (value / rate) * unit;
+    } else if (currencyType === "hkd") {
+        const tmpRate = 10000 / rate; // rate HKD: 1E遊戲幣 => 1 HKD = tmpRate 遊戲幣
+        converted = (value / tmpRate) * unit;
+    } else {
+        converted = value; // 遊戲幣不做轉換
+    }
+
+    return `${label} ${converted.toLocaleString()}`;
 };
 </script>
 
