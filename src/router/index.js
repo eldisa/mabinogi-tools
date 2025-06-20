@@ -3,6 +3,7 @@ import About from '../views/About.vue';
 import EquipmentCraftSimulator from '../views/EquipmentCraftSimulator.vue';
 
 import PierecingLevelAnalysis from '../views/PierecingLevelAnalysis.vue';
+import MaterialSimulator from '../views/MaterialSimulator.vue';
 // import GridDemo from '../views/GridDemo.vue';
 // import Settings from '../views/Settings.vue';
 
@@ -31,7 +32,13 @@ const routes = [
         path: '/pierecing-analysis',
         name: 'PierecingLevelAnalysis',
         component: PierecingLevelAnalysis
+    },
+    {
+        path: '/material-simulator',
+        name: '材料計算機',
+        component: MaterialSimulator,
     }
+
 ];
 
 const router = createRouter({
