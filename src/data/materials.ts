@@ -1598,7 +1598,7 @@ export const materials: CraftableItem[] = [
             type: "craft",
             materials: [
                 {
-                    id: 67101,
+                    id: 67101, //沒資料
                     amount: 2,
                 },
                 {
@@ -1662,6 +1662,80 @@ export const materials: CraftableItem[] = [
             en: "Iron Plate",
             kr: "철판",
             tw: "鐵板",
+        },
+        source: {
+            type: "",
+        },
+    },
+
+    {
+        id: 67101,
+        name: {
+            en: "Heulwen",
+            kr: "힐웬",
+            tw: "稀原",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67100,
+                    amount: 5,
+                },
+            ],
+        },
+    },
+    {
+        id: 67100,
+        name: {
+            en: "Fragment of Heulwen Ore",
+            kr: "힐웬 광석 조각",
+            tw: "稀原礦石碎片",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 67102,
+        name: {
+            en: "Hex Bolt",
+            kr: "육각 볼트",
+            tw: "六角螺絲",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67100,
+                    amount: 1,
+                },
+            ],
+        },
+    },
+    {
+        id: 67100,
+        name: {
+            en: "Fragment of Heulwen Ore",
+            kr: "힐웬 광석 조각",
+            tw: "稀原礦石碎片",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67100,
+                    amount: 1,
+                },
+            ],
+        },
+    },
+    {
+        id: 64644,
+        name: {
+            en: "Awakening Force Crystal",
+            kr: "각성된 힘의 결정",
+            tw: "擁有覺醒能量的結晶",
         },
         source: {
             type: "",
