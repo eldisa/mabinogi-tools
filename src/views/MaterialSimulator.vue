@@ -200,3 +200,10 @@ watch(
     { immediate: true }
 );
 </script>
+
+<style>
+tr td:first-child .cell {
+    display: flex;
+    align-items: center;
+}
+</style>
