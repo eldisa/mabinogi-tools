@@ -2,341 +2,46 @@ import type { CraftableItem } from "../types/CraftItem";
 
 export const materials: CraftableItem[] = [
     {
-        id: 5100303,
+        id: 60054,
         name: {
-            en: "Bri Leith's Core",
-            kr: "브리 레흐의 코어",
+            en: "Wood Plate",
+            kr: "나무판",
+            tw: "木板",
         },
         source: {
             type: "",
         },
     },
     {
-        id: 5100304,
+        id: 63221,
         name: {
-            en: "Bri Leith's Essence",
-            kr: "브리 레흐의 정수",
+            en: "The Highest Grade Firewood",
+            kr: "최고급 나무장작",
+            tw: "優質木柴",
         },
         source: {
             type: "",
         },
     },
     {
-        id: 5100273,
+        id: 63348,
         name: {
-            en: "Gemstone Powder",
-            kr: "젬스톤 파우더",
-        },
-        source: {
-            type: "dissolution",
-            materials: "新寶石",
-        },
-    },
-    {
-        id: 5100275,
-        name: {
-            en: "Brilliant Memory Crystal",
-            kr: "찬란한 기억의 결정",
+            en: "Special Grade Firewood",
+            kr: "특급 나무장작",
+            tw: "特級木柴",
         },
         source: {
             type: "craft",
             materials: [
                 {
-                    id: 5100305,
-                    amount: 3,
-                },
-                {
-                    id: 5100313,
-                    amount: 10,
-                },
-                {
-                    id: 5100274,
-                    amount: 5,
-                },
-                {
-                    id: 5100289,
-                    amount: 2,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100278,
-        name: {
-            en: "Magic Charged Spin Gear",
-            kr: "마력이 충만한 스핀 기어",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100308,
-                    amount: 3,
-                },
-                {
-                    id: 5100316,
-                    amount: 10,
-                },
-                {
-                    id: 5100274,
-                    amount: 3,
-                },
-                {
-                    id: 5100300,
-                    amount: 3,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100281,
-        name: {
-            en: "High Purity Fusion Heulwen Alloy",
-            kr: "순도 높은 융합의 힐웬 합금",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100319,
-                    amount: 10,
-                },
-                {
-                    id: 5100284,
-                    amount: 5,
-                },
-                {
-                    id: 5100274,
+                    id: 63221,
                     amount: 1,
                 },
                 {
-                    id: 67110,
-                    amount: 100,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100285,
-        name: {
-            en: "Sharp Blade",
-            kr: "예리한 칼날",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100309,
-                    amount: 5,
-                },
-                {
-                    id: 5100274,
+                    id: 64639,
                     amount: 1,
                 },
-                {
-                    id: 5100289,
-                    amount: 1,
-                },
-                {
-                    id: 64109,
-                    amount: 6,
-                },
             ],
-        },
-    },
-    {
-        id: 5100290,
-        name: {
-            en: "Magic Infused Blade Shard",
-            kr: "마력이 깃든 칼날",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100320,
-                    amount: 7,
-                },
-                {
-                    id: 5100330,
-                    amount: 20,
-                },
-                {
-                    id: 5100273,
-                    amount: 20,
-                },
-                {
-                    id: 64642,
-                    amount: 10,
-                },
-            ],
-        },
-    },
-    {
-        id: 64100,
-        name: {
-            en: "Cover of Battlefield's Energy",
-            kr: "전장의 기운이 깃든 덮개",
-            tw: "聚集戰場氣息的蓋子",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64118,
-        name: {
-            en: "Thorn Tree Mineral",
-            kr: "가시나무 광석",
-            tw: "荊棘礦石",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64671,
-        name: {
-            en: "Crystal of Aurora",
-            kr: "극광의 결정",
-            tw: "極光的結晶",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 5100279,
-        name: {
-            en: "Magic Charged Magical Crystal",
-            kr: "마력이 충만한 마력석",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100308,
-                    amount: 3,
-                },
-                {
-                    id: 5100317,
-                    amount: 10,
-                },
-                {
-                    id: 5100274,
-                    amount: 3,
-                },
-                {
-                    id: 5100301,
-                    amount: 3,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100282,
-        name: {
-            en: "High Purity Fusion Sulien",
-            kr: "순도 높은 융합의 실리엔",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100319,
-                    amount: 10,
-                },
-                {
-                    id: 5100284,
-                    amount: 5,
-                },
-                {
-                    id: 5100274,
-                    amount: 1,
-                },
-                {
-                    id: 67209,
-                    amount: 100,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100287,
-        name: {
-            en: "Exquisite String",
-            kr: "정교한 스트링",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100311,
-                    amount: 5,
-                },
-                {
-                    id: 5100274,
-                    amount: 1,
-                },
-                {
-                    id: 5100289,
-                    amount: 1,
-                },
-                {
-                    id: 64646,
-                    amount: 6,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100296,
-        name: {
-            en: "Magic Infused Feather",
-            kr: "마력이 깃든 깃털",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100326,
-                    amount: 7,
-                },
-                {
-                    id: 5100330,
-                    amount: 20,
-                },
-                {
-                    id: 5100273,
-                    amount: 20,
-                },
-                {
-                    id: 64642,
-                    amount: 10,
-                },
-            ],
-        },
-    },
-    {
-        id: 64678,
-        name: {
-            en: "Runestone of Sleeping Will",
-            kr: "의지가 잠든 룬스톤",
-            tw: "沉睡意志的符文石",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64650,
-        name: {
-            en: "Sharpen Weapon Fragment",
-            kr: "벼린 무기 조각",
-            tw: "磨損的武器碎片",
-        },
-        source: {
-            type: "",
         },
     },
     {
@@ -384,11 +89,77 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 64025,
+        name: {
+            en: "Iron Plate",
+            kr: "철판",
+            tw: "鐵板",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64026,
+        name: {
+            en: "Copper Plate",
+            kr: "동판",
+            tw: "銅板",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64027,
+        name: {
+            en: "Silver Plate",
+            kr: "은판",
+            tw: "銀板",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64028,
+        name: {
+            en: "Gold Plate",
+            kr: "금판",
+            tw: "金板",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64029,
+        name: {
+            en: "Mythril Plate",
+            kr: "미스릴판",
+            tw: "秘銀板",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
         id: 64099,
         name: {
             en: "Eroding Mineral Fragment",
             kr: "침식된 광물 조각",
             tw: "被侵蝕的礦物碎片",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64100,
+        name: {
+            en: "Cover of Battlefield's Energy",
+            kr: "전장의 기운이 깃든 덮개",
+            tw: "聚集戰場氣息的蓋子",
         },
         source: {
             type: "",
@@ -461,11 +232,33 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 64114,
+        name: {
+            en: "Tear Drop Gemstone",
+            kr: "티어드롭 젬스톤",
+            tw: "淚滴寶石",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
         id: 64117,
         name: {
             en: "Stone Vine Mineral",
             kr: "돌줄기 광석",
             tw: "藤條礦石",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64118,
+        name: {
+            en: "Thorn Tree Mineral",
+            kr: "가시나무 광석",
+            tw: "荊棘礦石",
         },
         source: {
             type: "",
@@ -488,6 +281,72 @@ export const materials: CraftableItem[] = [
             en: "Magical Golden Yarn",
             kr: "마력의 황금 실",
             tw: "附有魔力的金絲線",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64639,
+        name: {
+            en: "Fine Strengthening",
+            kr: "순도 높은 강화제",
+            tw: "高純度強化劑",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64642,
+        name: {
+            en: "Awakening Force Powder",
+            kr: "각성된 힘의 가루",
+            tw: "擁有覺醒能量的粉末",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64642,
+        name: {
+            en: "Awakening Force Powder",
+            kr: "각성된 힘의 가루",
+            tw: "擁有覺醒能量的粉末",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64643,
+        name: {
+            en: "Awakening Force Piece",
+            kr: "각성된 힘의 조각",
+            tw: "擁有覺醒能量的碎片",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64644,
+        name: {
+            en: "Awakening Force Crystal",
+            kr: "각성된 힘의 결정",
+            tw: "擁有覺醒能量的結晶",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64646,
+        name: {
+            en: "Shattered Black Metal",
+            kr: "산산조각난 검은 금속",
+            tw: "支離破碎的黑色金屬",
         },
         source: {
             type: "",
@@ -521,6 +380,17 @@ export const materials: CraftableItem[] = [
             en: "Broken Black Metal",
             kr: "균열된 검은 금속",
             tw: "龜裂的黑色金屬",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64650,
+        name: {
+            en: "Sharpen Weapon Fragment",
+            kr: "벼린 무기 조각",
+            tw: "磨損的武器碎片",
         },
         source: {
             type: "",
@@ -593,11 +463,44 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 64671,
+        name: {
+            en: "Crystal of Aurora",
+            kr: "극광의 결정",
+            tw: "極光的結晶",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64674,
+        name: {
+            en: "Awakened Power Essence",
+            kr: "깨어난 힘의 정수",
+            tw: "甦醒力量的精華液",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
         id: 64675,
         name: {
             en: "Jewel of Brave Warrior",
             kr: "용맹한 전사의 보석",
             tw: "勇猛戰士的寶石",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 64678,
+        name: {
+            en: "Runestone of Sleeping Will",
+            kr: "의지가 잠든 룬스톤",
+            tw: "沉睡意志的符文石",
         },
         source: {
             type: "",
@@ -612,6 +515,176 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "",
+        },
+    },
+    {
+        id: 67100,
+        name: {
+            en: "Fragment of Heulwen Ore",
+            kr: "힐웬 광석 조각",
+            tw: "稀原礦石碎片",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 67100,
+        name: {
+            en: "Fragment of Heulwen Ore",
+            kr: "힐웬 광석 조각",
+            tw: "稀原礦石碎片",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67100,
+                    amount: 1,
+                },
+            ],
+        },
+    },
+    {
+        id: 67101,
+        name: {
+            en: "Heulwen",
+            kr: "힐웬",
+            tw: "稀原",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67100,
+                    amount: 5,
+                },
+            ],
+        },
+    },
+    {
+        id: 67102,
+        name: {
+            en: "Hex Bolt",
+            kr: "육각 볼트",
+            tw: "六角螺絲",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67100,
+                    amount: 1,
+                },
+            ],
+        },
+    },
+    {
+        id: 67110,
+        name: {
+            en: "Heulwen Alloy",
+            kr: "힐웬 합금",
+            tw: "稀原合金",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 67111,
+        name: {
+            en: "Spin Gear",
+            kr: "스핀 기어",
+            tw: "旋轉齒輪",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67101,
+                    amount: 2,
+                },
+                {
+                    id: 67102,
+                    amount: 5,
+                },
+                {
+                    id: 67103,
+                    amount: 5,
+                },
+            ],
+        },
+    },
+    {
+        id: 67209,
+        name: {
+            en: "Intact Sulien",
+            kr: "온전한 실리엔",
+            tw: "完整的希里原",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 5100273,
+        name: {
+            en: "Gemstone Powder",
+            kr: "젬스톤 파우더",
+        },
+        source: {
+            type: "dissolution",
+            materials: "新寶石",
+        },
+    },
+    {
+        id: 5100273,
+        name: {
+            en: "Gemstone Powder",
+            kr: "젬스톤 파우더",
+            tw: "",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 5100274,
+        name: {
+            en: "Magic Infused Catalyst",
+            kr: "마력이 깃든 융합제",
+            tw: "",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 5100275,
+        name: {
+            en: "Brilliant Memory Crystal",
+            kr: "찬란한 기억의 결정",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100305,
+                    amount: 3,
+                },
+                {
+                    id: 5100313,
+                    amount: 10,
+                },
+                {
+                    id: 5100274,
+                    amount: 5,
+                },
+                {
+                    id: 5100289,
+                    amount: 2,
+                },
+            ],
         },
     },
     {
@@ -655,6 +728,62 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 5100278,
+        name: {
+            en: "Magic Charged Spin Gear",
+            kr: "마력이 충만한 스핀 기어",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100308,
+                    amount: 3,
+                },
+                {
+                    id: 5100316,
+                    amount: 10,
+                },
+                {
+                    id: 5100274,
+                    amount: 3,
+                },
+                {
+                    id: 5100300,
+                    amount: 3,
+                },
+            ],
+        },
+    },
+    {
+        id: 5100279,
+        name: {
+            en: "Magic Charged Magical Crystal",
+            kr: "마력이 충만한 마력석",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100308,
+                    amount: 3,
+                },
+                {
+                    id: 5100317,
+                    amount: 10,
+                },
+                {
+                    id: 5100274,
+                    amount: 3,
+                },
+                {
+                    id: 5100301,
+                    amount: 3,
+                },
+            ],
+        },
+    },
+    {
         id: 5100280,
         name: {
             en: "Magic Charged Loop",
@@ -682,6 +811,62 @@ export const materials: CraftableItem[] = [
                 },
                 {
                     id: 63348,
+                    amount: 100,
+                },
+            ],
+        },
+    },
+    {
+        id: 5100281,
+        name: {
+            en: "High Purity Fusion Heulwen Alloy",
+            kr: "순도 높은 융합의 힐웬 합금",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100319,
+                    amount: 10,
+                },
+                {
+                    id: 5100284,
+                    amount: 5,
+                },
+                {
+                    id: 5100274,
+                    amount: 1,
+                },
+                {
+                    id: 67110,
+                    amount: 100,
+                },
+            ],
+        },
+    },
+    {
+        id: 5100282,
+        name: {
+            en: "High Purity Fusion Sulien",
+            kr: "순도 높은 융합의 실리엔",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100319,
+                    amount: 10,
+                },
+                {
+                    id: 5100284,
+                    amount: 5,
+                },
+                {
+                    id: 5100274,
+                    amount: 1,
+                },
+                {
+                    id: 67209,
                     amount: 100,
                 },
             ],
@@ -717,6 +902,67 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 5100284,
+        name: {
+            en: "High Purity Force Crystal",
+            kr: "순도 높은 힘의 결정",
+            tw: "",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100274,
+                    amount: 3,
+                },
+                {
+                    id: 64643,
+                    amount: 10,
+                },
+                {
+                    id: 64644,
+                    amount: 10,
+                },
+                {
+                    id: 64674,
+                    amount: 20,
+                },
+                {
+                    id: 64642,
+                    amount: 10,
+                },
+            ],
+        },
+    },
+    {
+        id: 5100285,
+        name: {
+            en: "Sharp Blade",
+            kr: "예리한 칼날",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100309,
+                    amount: 5,
+                },
+                {
+                    id: 5100274,
+                    amount: 1,
+                },
+                {
+                    id: 5100289,
+                    amount: 1,
+                },
+                {
+                    id: 64109,
+                    amount: 6,
+                },
+            ],
+        },
+    },
+    {
         id: 5100286,
         name: {
             en: "Sturdy Metal",
@@ -740,6 +986,34 @@ export const materials: CraftableItem[] = [
                 },
                 {
                     id: 64105,
+                    amount: 6,
+                },
+            ],
+        },
+    },
+    {
+        id: 5100287,
+        name: {
+            en: "Exquisite String",
+            kr: "정교한 스트링",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100311,
+                    amount: 5,
+                },
+                {
+                    id: 5100274,
+                    amount: 1,
+                },
+                {
+                    id: 5100289,
+                    amount: 1,
+                },
+                {
+                    id: 64646,
                     amount: 6,
                 },
             ],
@@ -770,6 +1044,63 @@ export const materials: CraftableItem[] = [
                 {
                     id: 64099,
                     amount: 6,
+                },
+            ],
+        },
+    },
+    {
+        id: 5100289,
+        name: {
+            en: "Pure Gemstone",
+            kr: "퓨어 젬스톤",
+            tw: "",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100274,
+                    amount: 3,
+                },
+                {
+                    id: 5100273,
+                    amount: 30,
+                },
+                {
+                    id: 64114,
+                    amount: 30,
+                },
+                {
+                    id: 64639,
+                    amount: 10,
+                },
+            ],
+        },
+    },
+    {
+        id: 5100290,
+        name: {
+            en: "Magic Infused Blade Shard",
+            kr: "마력이 깃든 칼날",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100320,
+                    amount: 7,
+                },
+                {
+                    id: 5100330,
+                    amount: 20,
+                },
+                {
+                    id: 5100273,
+                    amount: 20,
+                },
+                {
+                    id: 64642,
+                    amount: 10,
                 },
             ],
         },
@@ -924,6 +1255,34 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 5100296,
+        name: {
+            en: "Magic Infused Feather",
+            kr: "마력이 깃든 깃털",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100326,
+                    amount: 7,
+                },
+                {
+                    id: 5100330,
+                    amount: 20,
+                },
+                {
+                    id: 5100273,
+                    amount: 20,
+                },
+                {
+                    id: 64642,
+                    amount: 10,
+                },
+            ],
+        },
+    },
+    {
         id: 5100297,
         name: {
             en: "Magic Infused Alchemy Crystal",
@@ -1005,90 +1364,6 @@ export const materials: CraftableItem[] = [
                 },
                 {
                     id: 64642,
-                    amount: 10,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100273,
-        name: {
-            en: "Gemstone Powder",
-            kr: "젬스톤 파우더",
-            tw: "",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 5100274,
-        name: {
-            en: "Magic Infused Catalyst",
-            kr: "마력이 깃든 융합제",
-            tw: "",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 5100284,
-        name: {
-            en: "High Purity Force Crystal",
-            kr: "순도 높은 힘의 결정",
-            tw: "",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100274,
-                    amount: 3,
-                },
-                {
-                    id: 64643,
-                    amount: 10,
-                },
-                {
-                    id: 64644,
-                    amount: 10,
-                },
-                {
-                    id: 64674,
-                    amount: 20,
-                },
-                {
-                    id: 64642,
-                    amount: 10,
-                },
-            ],
-        },
-    },
-    {
-        id: 5100289,
-        name: {
-            en: "Pure Gemstone",
-            kr: "퓨어 젬스톤",
-            tw: "",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 5100274,
-                    amount: 3,
-                },
-                {
-                    id: 5100273,
-                    amount: 30,
-                },
-                {
-                    id: 64114,
-                    amount: 30,
-                },
-                {
-                    id: 64639,
                     amount: 10,
                 },
             ],
@@ -1179,6 +1454,26 @@ export const materials: CraftableItem[] = [
                     amount: 50,
                 },
             ],
+        },
+    },
+    {
+        id: 5100303,
+        name: {
+            en: "Bri Leith's Core",
+            kr: "브리 레흐의 코어",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
+        id: 5100304,
+        name: {
+            en: "Bri Leith's Essence",
+            kr: "브리 레흐의 정수",
+        },
+        source: {
+            type: "",
         },
     },
     {
@@ -1440,302 +1735,6 @@ export const materials: CraftableItem[] = [
             en: "Magical Crystal",
             kr: "마력석",
             tw: "",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 60054,
-        name: {
-            en: "Wood Plate",
-            kr: "나무판",
-            tw: "木板",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 63221,
-        name: {
-            en: "The Highest Grade Firewood",
-            kr: "최고급 나무장작",
-            tw: "優質木柴",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 63348,
-        name: {
-            en: "Special Grade Firewood",
-            kr: "특급 나무장작",
-            tw: "特級木柴",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 63221,
-                    amount: 1,
-                },
-                {
-                    id: 64639,
-                    amount: 1,
-                },
-            ],
-        },
-    },
-    {
-        id: 64642,
-        name: {
-            en: "Awakening Force Powder",
-            kr: "각성된 힘의 가루",
-            tw: "擁有覺醒能量的粉末",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64646,
-        name: {
-            en: "Shattered Black Metal",
-            kr: "산산조각난 검은 금속",
-            tw: "支離破碎的黑色金屬",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 67110,
-        name: {
-            en: "Heulwen Alloy",
-            kr: "힐웬 합금",
-            tw: "稀原合金",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 67209,
-        name: {
-            en: "Intact Sulien",
-            kr: "온전한 실리엔",
-            tw: "完整的希里原",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64643,
-        name: {
-            en: "Awakening Force Piece",
-            kr: "각성된 힘의 조각",
-            tw: "擁有覺醒能量的碎片",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64642,
-        name: {
-            en: "Awakening Force Powder",
-            kr: "각성된 힘의 가루",
-            tw: "擁有覺醒能量的粉末",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64674,
-        name: {
-            en: "Awakened Power Essence",
-            kr: "깨어난 힘의 정수",
-            tw: "甦醒力量的精華液",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64114,
-        name: {
-            en: "Tear Drop Gemstone",
-            kr: "티어드롭 젬스톤",
-            tw: "淚滴寶石",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64639,
-        name: {
-            en: "Fine Strengthening",
-            kr: "순도 높은 강화제",
-            tw: "高純度強化劑",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 67111,
-        name: {
-            en: "Spin Gear",
-            kr: "스핀 기어",
-            tw: "旋轉齒輪",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 67101, //沒資料
-                    amount: 2,
-                },
-                {
-                    id: 67102,
-                    amount: 5,
-                },
-                {
-                    id: 67103,
-                    amount: 5,
-                },
-            ],
-        },
-    },
-    {
-        id: 64029,
-        name: {
-            en: "Mythril Plate",
-            kr: "미스릴판",
-            tw: "秘銀板",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64028,
-        name: {
-            en: "Gold Plate",
-            kr: "금판",
-            tw: "金板",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64027,
-        name: {
-            en: "Silver Plate",
-            kr: "은판",
-            tw: "銀板",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64026,
-        name: {
-            en: "Copper Plate",
-            kr: "동판",
-            tw: "銅板",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 64025,
-        name: {
-            en: "Iron Plate",
-            kr: "철판",
-            tw: "鐵板",
-        },
-        source: {
-            type: "",
-        },
-    },
-
-    {
-        id: 67101,
-        name: {
-            en: "Heulwen",
-            kr: "힐웬",
-            tw: "稀原",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 67100,
-                    amount: 5,
-                },
-            ],
-        },
-    },
-    {
-        id: 67100,
-        name: {
-            en: "Fragment of Heulwen Ore",
-            kr: "힐웬 광석 조각",
-            tw: "稀原礦石碎片",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
-        id: 67102,
-        name: {
-            en: "Hex Bolt",
-            kr: "육각 볼트",
-            tw: "六角螺絲",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 67100,
-                    amount: 1,
-                },
-            ],
-        },
-    },
-    {
-        id: 67100,
-        name: {
-            en: "Fragment of Heulwen Ore",
-            kr: "힐웬 광석 조각",
-            tw: "稀原礦石碎片",
-        },
-        source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 67100,
-                    amount: 1,
-                },
-            ],
-        },
-    },
-    {
-        id: 64644,
-        name: {
-            en: "Awakening Force Crystal",
-            kr: "각성된 힘의 결정",
-            tw: "擁有覺醒能量的結晶",
         },
         source: {
             type: "",
