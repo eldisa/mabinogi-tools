@@ -514,13 +514,7 @@ export const materials: CraftableItem[] = [
             tw: "稀原礦石碎片",
         },
         source: {
-            type: "craft",
-            materials: [
-                {
-                    id: 67100,
-                    amount: 1,
-                },
-            ],
+            type: "",
         },
     },
     {
