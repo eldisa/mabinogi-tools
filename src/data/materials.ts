@@ -309,17 +309,6 @@ export const materials: CraftableItem[] = [
         },
     },
     {
-        id: 64642,
-        name: {
-            en: "Awakening Force Powder",
-            kr: "각성된 힘의 가루",
-            tw: "擁有覺醒能量的粉末",
-        },
-        source: {
-            type: "",
-        },
-    },
-    {
         id: 64643,
         name: {
             en: "Awakening Force Piece",
@@ -525,17 +514,6 @@ export const materials: CraftableItem[] = [
             tw: "稀原礦石碎片",
         },
         source: {
-            type: "",
-        },
-    },
-    {
-        id: 67100,
-        name: {
-            en: "Fragment of Heulwen Ore",
-            kr: "힐웬 광석 조각",
-            tw: "稀原礦石碎片",
-        },
-        source: {
             type: "craft",
             materials: [
                 {
@@ -635,17 +613,6 @@ export const materials: CraftableItem[] = [
         source: {
             type: "dissolution",
             materials: "新寶石",
-        },
-    },
-    {
-        id: 5100273,
-        name: {
-            en: "Gemstone Powder",
-            kr: "젬스톤 파우더",
-            tw: "",
-        },
-        source: {
-            type: "",
         },
     },
     {
