@@ -692,7 +692,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Intense Memory Crystal",
             kr: "강렬한 기억의 결정",
-            tw: "強烈記憶的決定",
+            tw: "",
         },
         source: {
             type: "craft",
