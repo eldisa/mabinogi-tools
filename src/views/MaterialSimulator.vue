@@ -112,6 +112,7 @@ interface CraftTreeNode {
     id: number;
     name: string;
     amount: number;
+    unitAmount: number;
     source: MaterialSource;
     children?: CraftTreeNode[];
 }
@@ -158,35 +159,40 @@ const calculate = () => {
     results.value = res;
 };
 
-function buildCraftTree(item: CraftableItem, allItems: CraftableItem[], amount: number = 1): CraftTreeNode {
+const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multiplier: number = 1): CraftTreeNode => {
+    const unitAmount = 1; // 頂層預設為 1
+    const totalAmount = multiplier * unitAmount;
+
     const node: CraftTreeNode = {
         id: item.id,
-        name: item.name.tw || item.name.en || item.name.kr,
-        amount,
+        name: item.name.tw || item.name.en,
+        amount: totalAmount,
+        unitAmount: unitAmount,
         source: item.source,
         children: [],
     };
 
     if (item.source.type === "craft") {
-        for (const mat of item.source.materials) {
-            const subItem = allItems.find((i) => i.id === mat.id);
-            if (subItem) {
-                const childNode = buildCraftTree(subItem, allItems, mat.amount);
-                node.children!.push(childNode);
+        node.children = item.source.materials.map((mat) => {
+            const matched = allItems.find((x) => x.id === mat.id);
+
+            if (matched) {
+                return buildCraftTree(matched, allItems, mat.amount * multiplier);
             } else {
-                // 萬一找不到子素材，仍建立基本節點
-                node.children!.push({
+                return {
                     id: mat.id,
                     name: `未知素材 #${mat.id}`,
-                    amount: mat.amount,
+                    amount: mat.amount * multiplier,
+                    unitAmount: mat.amount,
                     source: { type: "" },
-                });
+                    children: [],
+                };
             }
-        }
+        });
     }
 
     return node;
-}
+};
 
 watch(
     () => selectedWeapons.value,
