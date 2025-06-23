@@ -1,4 +1,3 @@
-import { materials } from "./../data/materials";
 export interface SampleResult {
     count: number; // 製作次數
     rate: number; // 機率
