@@ -37,44 +37,44 @@
                             </el-select>
                         </div>
                     </el-card>
-                    <el-card class="mb-4 bg-gradient-to-r from-blue-50 to-white shadow-sm rounded-md">
-                        <div v-for="obj in craftTarget">
+                    <el-card class="mb-8 p-4 rounded-xl shadow border border-gray-200 bg-white">
+                        <div v-for="obj in displayData">
                             <CardHeader title="製作目標" subtitle="" />
                             <div class="flex gap-8 justify-center items-center w-full">
                                 <img :src="`${baseUrl}itemImage/${obj.id}.png`" />
-                                <span>{{ obj.name.tw || obj.name.en }}</span>
+                                <span>{{ obj.name }}</span>
                             </div>
                             <CardHeader title="計算結果" subtitle="" />
                             <div class="p-4">
                                 <el-table
-                                    v-if="obj?.source?.type === 'craft' && obj?.source?.materials?.length"
-                                    :data="obj.source.materials"
+                                    v-if="obj?.children?.length"
+                                    :data="obj.children"
                                     style="width: 100%"
                                     row-key="id"
                                     border
                                     lazy
                                     :tree-props="{
-                                        children: 'materials',
+                                        children: 'children',
                                     }"
                                 >
                                     <el-table-column label="名稱">
                                         <template #default="{ row }">
-                                            <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-3 h-full">
                                                 <img
                                                     :src="`${baseUrl}itemImage/${row.id}.png`"
-                                                    style="width: 40px; height: 40px"
+                                                    class="w-10 h-10 object-contain"
                                                 />
-                                                <span>{{ getName(row.id) }}</span>
+                                                <span>{{ row.name }}</span>
                                             </div>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="" label="持有數量">
+                                    <el-table-column label="持有數量" align="right">
                                         <!-- todo: 補上api-->
                                         <!-- <template>
                                         </template> -->
                                         0
                                     </el-table-column>
-                                    <el-table-column prop="amount" label="需求數量" />
+                                    <el-table-column prop="amount" label="需求數量" align="right" />
                                 </el-table>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { Option } from "../types";
-import { CraftableItem } from "../types/CraftItem";
+import { CraftableItem, MaterialSource } from "../types/CraftItem";
 import CardHeader from "../components/CardHeader.vue";
 import { materials } from "../data/materials";
 import { G27Weapons } from "../data/G27Weapon";
@@ -106,6 +106,14 @@ import { G27Weapons } from "../data/G27Weapon";
 interface TargetItem {
     id: number;
     count: number;
+}
+
+interface CraftTreeNode {
+    id: number;
+    name: string;
+    amount: number;
+    source: MaterialSource;
+    children?: CraftTreeNode[];
 }
 
 const baseUrl = import.meta.env.BASE_URL;
@@ -121,6 +129,7 @@ const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
 const inventory = ref<Record<string, number>>({});
 const targets = ref<TargetItem[]>([]);
 const results = ref<any[]>([]);
+const displayData = ref<CraftTreeNode[]>([]);
 
 const showInventoryDrawer = ref(false);
 const showTargetDrawer = ref(false);
@@ -149,16 +158,35 @@ const calculate = () => {
     results.value = res;
 };
 
-// const isCraftable = (obj: any) =>
-//     obj?.source?.type === "craft" && Array.isArray(obj.source.materials) && obj.source.materials.length > 0;
+function buildCraftTree(item: CraftableItem, allItems: CraftableItem[], amount: number = 1): CraftTreeNode {
+    const node: CraftTreeNode = {
+        id: item.id,
+        name: item.name.tw || item.name.en || item.name.kr,
+        amount,
+        source: item.source,
+        children: [],
+    };
 
-const getName = (id: number) => {
-    const target = materials.find((m) => m.id === id);
-    console.log(target);
-    if (!target) return "";
-    const { tw = "", en } = target.name;
-    return tw || en;
-};
+    if (item.source.type === "craft") {
+        for (const mat of item.source.materials) {
+            const subItem = allItems.find((i) => i.id === mat.id);
+            if (subItem) {
+                const childNode = buildCraftTree(subItem, allItems, mat.amount);
+                node.children!.push(childNode);
+            } else {
+                // 萬一找不到子素材，仍建立基本節點
+                node.children!.push({
+                    id: mat.id,
+                    name: `未知素材 #${mat.id}`,
+                    amount: mat.amount,
+                    source: { type: "" },
+                });
+            }
+        }
+    }
+
+    return node;
+}
 
 watch(
     () => selectedWeapons.value,
@@ -166,6 +194,7 @@ watch(
         console.log(newData);
         if (newData) {
             craftTarget.value = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
+            displayData.value = craftTarget.value.map((target) => buildCraftTree(target, materials, 1));
         }
     },
     { immediate: true }
