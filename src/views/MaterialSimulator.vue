@@ -37,7 +37,7 @@
                             </el-select>
                         </div>
                     </el-card>
-                    <el-card class="mb-8 p-4 rounded-xl shadow border border-gray-200 bg-white">
+                    <el-card class="mb-8 p-4 rounded-xl shadow border border-gray-200 bg-white max-h-[800px]">
                         <el-tabs type="border-card" class="demo-tabs">
                             <el-tab-pane label="Preview">
                                 <template v-if="displayData.length > 0">
@@ -58,6 +58,7 @@
                                             row-key="id"
                                             border
                                             lazy
+                                            height="500"
                                             :tree-props="{
                                                 children: 'children',
                                             }"
