@@ -38,47 +38,90 @@
                         </div>
                     </el-card>
                     <el-card class="mb-8 p-4 rounded-xl shadow border border-gray-200 bg-white">
-                        <div v-for="obj in displayData">
-                            <CardHeader title="製作目標" subtitle="" />
-                            <div class="flex gap-8 justify-center items-center w-full">
-                                <img :src="`${baseUrl}itemImage/${obj.id}.png`" />
-                                <span>{{ obj.name }}</span>
-                            </div>
-                            <CardHeader title="計算結果" subtitle="" />
-                            <div class="p-4">
-                                <el-table
-                                    v-if="obj?.children?.length"
-                                    :data="obj.children"
-                                    style="width: 100%"
-                                    row-key="id"
-                                    border
-                                    lazy
-                                    :tree-props="{
-                                        children: 'children',
-                                    }"
-                                >
-                                    <el-table-column label="名稱">
-                                        <template #default="{ row }">
-                                            <div class="flex items-center gap-3 h-full">
-                                                <img
-                                                    :src="`${baseUrl}itemImage/${row.id}.png`"
-                                                    class="w-10 h-10 object-contain"
-                                                />
-                                                <span>{{ row.name }}</span>
-                                            </div>
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column label="持有數量" align="right">
-                                        <!-- todo: 補上api-->
-                                        <!-- <template>
-                                        </template> -->
-                                        0
-                                    </el-table-column>
-                                    <el-table-column prop="amount" label="需求數量" align="right" />
-                                </el-table>
-                            </div>
-                        </div>
+                        <el-tabs type="border-card" class="demo-tabs">
+                            <el-tab-pane label="Preview">
+                                <template v-if="displayData.length > 0">
+                                    <div class="flex gap-8 px-8">
+                                        <img
+                                            v-for="(obj, index) in displayData"
+                                            :src="`${baseUrl}itemImage/${obj.id}.png`"
+                                            class="tab-icon"
+                                            @click="handleSelectDisplayData(index)"
+                                        />
+                                    </div>
+                                    <h2 class="text-lg font-semibold">所需材料</h2>
+                                    <div class="mt-4">
+                                        <el-table
+                                            v-if="dataInPreviewTable?.children?.length"
+                                            :data="dataInPreviewTable.children"
+                                            style="width: 100%"
+                                            row-key="id"
+                                            border
+                                            lazy
+                                            :tree-props="{
+                                                children: 'children',
+                                            }"
+                                        >
+                                            <el-table-column label="名稱">
+                                                <template #default="{ row }">
+                                                    <div class="flex items-center gap-3 h-full">
+                                                        <img
+                                                            :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                            class="w-10 h-10 object-contain"
+                                                        />
+                                                        <span>{{ row.name }}</span>
+                                                    </div>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column label="持有數量" align="right">0</el-table-column>
+                                            <el-table-column prop="amount" label="需求數量" align="right" />
+                                        </el-table>
+                                    </div>
+                                </template>
+                            </el-tab-pane>
+                            <el-tab-pane label="Stock">Role</el-tab-pane>
+                            <el-tab-pane label="Result">Task</el-tab-pane>
+                        </el-tabs>
                     </el-card>
+
+                    <!-- origin -->
+                    <!-- <div v-for="obj in displayData">
+                        <CardHeader title="製作目標" subtitle="" />
+                        <div class="flex gap-8 justify-center items-center w-full">
+                            <img :src="`${baseUrl}itemImage/${obj.id}.png`" />
+                            <span>{{ obj.name }}</span>
+                        </div>
+                        <CardHeader title="計算結果" subtitle="" />
+                        <div class="p-4">
+                            <el-table
+                                v-if="obj?.children?.length"
+                                :data="obj.children"
+                                style="width: 100%"
+                                row-key="id"
+                                border
+                                lazy
+                                :tree-props="{
+                                    children: 'children',
+                                }"
+                            >
+                                <el-table-column label="名稱">
+                                    <template #default="{ row }">
+                                        <div class="flex items-center gap-3 h-full">
+                                            <img
+                                                :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                class="w-10 h-10 object-contain"
+                                            />
+                                            <span>{{ row.name }}</span>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="持有數量" align="right">
+                                    0
+                                </el-table-column>
+                                <el-table-column prop="amount" label="需求數量" align="right" />
+                            </el-table>
+                        </div>
+                    </div> -->
 
                     <!-- 庫存展示 -->
                     <!-- <inventory-table :inventory="inventory" /> -->
@@ -122,9 +165,10 @@ const inventory = ref<Record<string, number>>({});
 const targets = ref<TargetItem[]>([]);
 const results = ref<any[]>([]);
 const displayData = ref<CraftTreeNode[]>([]);
-
+const selectedDisplayDataIndex = ref(0);
 const showInventoryDrawer = ref(false);
 const showTargetDrawer = ref(false);
+const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataIndex.value]);
 
 const clearAll = () => {
     inventory.value = {};
@@ -209,6 +253,11 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
     return node;
 };
 
+const handleSelectDisplayData = (index: number) => {
+    const selectIndex = index > displayData.value.length - 1 ? 0 : index;
+    selectedDisplayDataIndex.value = selectIndex;
+};
+
 watch(
     () => selectedWeapons.value,
     (newData) => {
@@ -226,5 +275,48 @@ watch(
 tr td:first-child .cell {
     display: flex;
     align-items: center;
+}
+
+.preview-header {
+    display: flex;
+    gap: 12px;
+    padding: 0 16px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tab-icon {
+    /* width: 40px;
+    height: 40px; */
+    border-radius: 8px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.tab-icon:hover {
+    transform: scale(1.1);
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 16px;
+    margin-top: 12px;
+}
+
+::v-deep(.el-table .cell) {
+    padding: 8px 12px;
+    line-height: 1.5;
+}
+
+::v-deep(.el-table .el-table__row) {
+    height: 56px;
+}
+
+::v-deep(.el-table img) {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
 }
 </style>
