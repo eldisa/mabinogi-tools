@@ -39,3 +39,18 @@ export type MaterialSource =
     | { type: "craft"; materials: { id: number; amount: number }[] } // 製作所需材料
     | { type: "dissolution"; materials: string } // 分解
     | { type: "" };
+
+export interface MaterialCount {
+    id: number;
+    name: string;
+    amount: number;
+}
+
+export interface CraftTreeNode {
+    id: number;
+    name: string;
+    amount: number;
+    unitAmount: number;
+    source: MaterialSource;
+    children?: CraftTreeNode[];
+}

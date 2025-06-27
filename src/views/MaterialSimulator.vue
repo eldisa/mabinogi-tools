@@ -92,9 +92,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { Option } from "../types";
-import { CraftableItem, MaterialSource } from "../types/CraftItem";
+import { CraftableItem, CraftTreeNode, MaterialSource } from "../types/CraftItem";
 import CardHeader from "../components/CardHeader.vue";
 import { materials } from "../data/materials";
 import { G27Weapons } from "../data/G27Weapon";
@@ -106,15 +106,6 @@ import { G27Weapons } from "../data/G27Weapon";
 interface TargetItem {
     id: number;
     count: number;
-}
-
-interface CraftTreeNode {
-    id: number;
-    name: string;
-    amount: number;
-    unitAmount: number;
-    source: MaterialSource;
-    children?: CraftTreeNode[];
 }
 
 const baseUrl = import.meta.env.BASE_URL;
@@ -159,8 +150,10 @@ const calculate = () => {
     results.value = res;
 };
 
+const materialMap: Record<number, { id: number; name: string; total: number }> = {};
+
 const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multiplier: number = 1): CraftTreeNode => {
-    const unitAmount = 1; // 頂層預設為 1
+    const unitAmount = 1;
     const totalAmount = multiplier * unitAmount;
 
     const node: CraftTreeNode = {
@@ -179,16 +172,38 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
             if (matched) {
                 return buildCraftTree(matched, allItems, mat.amount * multiplier);
             } else {
-                return {
+                const fallback = {
                     id: mat.id,
                     name: `未知素材 #${mat.id}`,
                     amount: mat.amount * multiplier,
                     unitAmount: mat.amount,
-                    source: { type: "" },
+                    source: { type: "" } as MaterialSource,
                     children: [],
                 };
+
+                // ✅ 是 leaf node，可累加
+                if (!materialMap[mat.id]) {
+                    materialMap[mat.id] = {
+                        id: mat.id,
+                        name: fallback.name,
+                        total: 0,
+                    };
+                }
+                materialMap[mat.id].total += fallback.amount;
+
+                return fallback;
             }
         });
+    } else {
+        // ✅ 非 craft，無 children，可累加
+        if (!materialMap[item.id]) {
+            materialMap[item.id] = {
+                id: item.id,
+                name: node.name,
+                total: 0,
+            };
+        }
+        materialMap[item.id].total += totalAmount;
     }
 
     return node;
