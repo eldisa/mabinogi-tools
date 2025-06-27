@@ -552,6 +552,23 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 67103,
+        name: {
+            en: "Hex Nut",
+            kr: "육각 너트",
+            tw: "六角螺帽",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 67100,
+                    amount: 1,
+                },
+            ],
+        },
+    },
+    {
         id: 67110,
         name: {
             en: "Heulwen Alloy",
