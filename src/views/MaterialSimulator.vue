@@ -221,7 +221,7 @@ const handleSelectDisplayData = (index: number) => {
 watch(
     () => selectedWeapons.value,
     (newData) => {
-        console.log(newData);
+        materialMap.value = []; // 清除歷史資料
         if (newData) {
             craftTarget.value = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
             displayData.value = craftTarget.value.map((target) => buildCraftTree(target, materials, 1));
