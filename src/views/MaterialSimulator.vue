@@ -55,7 +55,7 @@
                                             v-if="dataInPreviewTable?.children?.length"
                                             :data="dataInPreviewTable.children"
                                             style="width: 100%"
-                                            row-key="id"
+                                            :row-key="(row:CraftableItem ) => `preview-${row.id}`"
                                             border
                                             lazy
                                             height="500"
@@ -74,13 +74,39 @@
                                                     </div>
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column label="持有數量" align="right">0</el-table-column>
                                             <el-table-column prop="amount" label="需求數量" align="right" />
                                         </el-table>
                                     </div>
                                 </template>
                             </el-tab-pane>
-                            <el-tab-pane label="Stock">Role</el-tab-pane>
+                            <el-tab-pane label="Stock">
+                                <h2 class="text-lg font-semibold">庫存與所需材料</h2>
+                                <div class="mt-4">
+                                    <el-table
+                                        :data="materialSummaryTable"
+                                        style="width: 100%"
+                                        :row-key="(row:CraftableItem ) => `stock-${row.id}`"
+                                        border
+                                        lazy
+                                        height="500"
+                                    >
+                                        <el-table-column label="名稱">
+                                            <template #default="{ row }">
+                                                <div class="flex items-center gap-3 h-full">
+                                                    <img
+                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                        class="w-10 h-10 object-contain"
+                                                    />
+                                                    <span>{{ row.name }}</span>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="owned" label="持有數量" align="right" sortable />
+                                        <el-table-column prop="total" label="所需數量" align="right" sortable />
+                                        <el-table-column prop="shortage" label="差額" align="right" sortable />
+                                    </el-table>
+                                </div>
+                            </el-tab-pane>
                             <el-tab-pane label="Result">Task</el-tab-pane>
                         </el-tabs>
                     </el-card>
@@ -195,8 +221,22 @@ const calculate = () => {
     results.value = res;
 };
 
-const materialMap: Record<number, { id: number; name: string; total: number }> = {};
+const materialMap = ref<{ id: number; total: number }[]>([]);
 
+const materialSummaryTable = computed(() => {
+    return materials.map((item) => {
+        const { id, name } = item;
+        const total = materialMap.value.find((ele) => ele.id === id)?.total || 0;
+
+        return {
+            id,
+            name: name.tw || name.en,
+            total,
+            owned: inventory.value[id] || 0,
+            shortage: Math.max(0, total - (inventory.value[id] || 0)),
+        };
+    });
+});
 const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multiplier: number = 1): CraftTreeNode => {
     const unitAmount = 1;
     const totalAmount = multiplier * unitAmount;
@@ -226,29 +266,31 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
                     children: [],
                 };
 
+                const index = materialMap.value.findIndex((ele) => ele.id === mat.id) || -1;
+
                 // ✅ 是 leaf node，可累加
-                if (!materialMap[mat.id]) {
-                    materialMap[mat.id] = {
+                if (index === -1) {
+                    materialMap.value.push({
                         id: mat.id,
-                        name: fallback.name,
                         total: 0,
-                    };
+                    });
                 }
-                materialMap[mat.id].total += fallback.amount;
+                materialMap.value[index].total += fallback.amount;
 
                 return fallback;
             }
         });
     } else {
         // ✅ 非 craft，無 children，可累加
-        if (!materialMap[item.id]) {
-            materialMap[item.id] = {
+        const index = materialMap.value.findIndex((ele) => ele.id === item.id) || -1;
+        if (index === -1) {
+            materialMap.value.push({
                 id: item.id,
-                name: node.name,
-                total: 0,
-            };
+                total: totalAmount,
+            });
+        } else {
+            materialMap.value[index].total += totalAmount;
         }
-        materialMap[item.id].total += totalAmount;
     }
 
     return node;
