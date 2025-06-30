@@ -13,10 +13,8 @@
                     <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
                         <CardHeader title="製作項目資料" subtitle="設定你想要模擬的目標與條件" />
                         <div class="bg-white rounded-md shadow-sm p-4 mt-4 w-fit mx-auto border border-gray-200">
-                            <el-button type="danger" @click="clearAll">清除</el-button>
                             <el-button @click="showInventoryDrawer = true">設定庫存</el-button>
                             <el-button @click="showTargetDrawer = true">設定目標</el-button>
-                            <el-button type="primary" @click="calculate">計算</el-button>
                         </div>
                         <!-- select craft target-->
                         <!--  todo: optimized-->
@@ -110,51 +108,6 @@
                             <el-tab-pane label="Result">Task</el-tab-pane>
                         </el-tabs>
                     </el-card>
-
-                    <!-- origin -->
-                    <!-- <div v-for="obj in displayData">
-                        <CardHeader title="製作目標" subtitle="" />
-                        <div class="flex gap-8 justify-center items-center w-full">
-                            <img :src="`${baseUrl}itemImage/${obj.id}.png`" />
-                            <span>{{ obj.name }}</span>
-                        </div>
-                        <CardHeader title="計算結果" subtitle="" />
-                        <div class="p-4">
-                            <el-table
-                                v-if="obj?.children?.length"
-                                :data="obj.children"
-                                style="width: 100%"
-                                row-key="id"
-                                border
-                                lazy
-                                :tree-props="{
-                                    children: 'children',
-                                }"
-                            >
-                                <el-table-column label="名稱">
-                                    <template #default="{ row }">
-                                        <div class="flex items-center gap-3 h-full">
-                                            <img
-                                                :src="`${baseUrl}itemImage/${row.id}.png`"
-                                                class="w-10 h-10 object-contain"
-                                            />
-                                            <span>{{ row.name }}</span>
-                                        </div>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column label="持有數量" align="right">
-                                    0
-                                </el-table-column>
-                                <el-table-column prop="amount" label="需求數量" align="right" />
-                            </el-table>
-                        </div>
-                    </div> -->
-
-                    <!-- 庫存展示 -->
-                    <!-- <inventory-table :inventory="inventory" /> -->
-
-                    <!-- 目標展示 -->
-                    <!-- <target-table :targets="targets" /> -->
                 </div>
             </div>
         </div>
@@ -168,18 +121,8 @@ import { CraftableItem, CraftTreeNode, MaterialSource } from "../types/CraftItem
 import CardHeader from "../components/CardHeader.vue";
 import { materials } from "../data/materials";
 import { G27Weapons } from "../data/G27Weapon";
-// import InventoryTable from "@/components/InventoryTable.vue";
-// import TargetTable from "@/components/TargetTable.vue";
-// import InventoryDrawer from "@/components/InventoryDrawer.vue";
-// import TargetDrawer from "@/components/TargetDrawer.vue";
-
-interface TargetItem {
-    id: number;
-    count: number;
-}
 
 const baseUrl = import.meta.env.BASE_URL;
-
 const selectedWeapons = ref<number[]>([]);
 const craftTarget = ref<CraftableItem[]>([]);
 
@@ -189,37 +132,11 @@ const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
 });
 
 const inventory = ref<Record<string, number>>({});
-const targets = ref<TargetItem[]>([]);
-const results = ref<any[]>([]);
 const displayData = ref<CraftTreeNode[]>([]);
 const selectedDisplayDataIndex = ref(0);
 const showInventoryDrawer = ref(false);
 const showTargetDrawer = ref(false);
 const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataIndex.value]);
-
-const clearAll = () => {
-    inventory.value = {};
-    targets.value = [];
-    results.value = [];
-};
-
-const calculate = () => {
-    // Example logic: 遍歷 targets，計算總缺少數量與總成本
-    const res: any[] = [];
-    for (const t of targets.value) {
-        const mat = materials.find((m) => m.id === t.id);
-        // TODO: 為每項目展開數量計算
-        res.push({
-            name: mat?.name,
-            required: t.count,
-            stock: inventory.value[t.id] || 0,
-            missing: Math.max(0, t.count - (inventory.value[t.id] || 0)),
-            unitCost: 1000, // placeholder
-            totalCost: t.count * 1000,
-        });
-    }
-    results.value = res;
-};
 
 const materialMap = ref<{ id: number; total: number }[]>([]);
 
