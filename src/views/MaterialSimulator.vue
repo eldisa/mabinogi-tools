@@ -199,7 +199,7 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
         });
     } else {
         // ✅ 非 craft，無 children，可累加
-        const index = materialMap.value.findIndex((ele) => ele.id === item.id) || -1;
+        const index = materialMap.value.findIndex((ele) => ele.id === item.id);
         if (index === -1) {
             materialMap.value.push({
                 id: item.id,
