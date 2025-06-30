@@ -183,16 +183,16 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
                     children: [],
                 };
 
-                const index = materialMap.value.findIndex((ele) => ele.id === mat.id) || -1;
+                const index = materialMap.value.findIndex((ele) => ele.id === mat.id);
 
-                // ✅ 是 leaf node，可累加
                 if (index === -1) {
                     materialMap.value.push({
                         id: mat.id,
-                        total: 0,
+                        total: fallback.amount,
                     });
+                } else {
+                    materialMap.value[index].total += fallback.amount;
                 }
-                materialMap.value[index].total += fallback.amount;
 
                 return fallback;
             }
