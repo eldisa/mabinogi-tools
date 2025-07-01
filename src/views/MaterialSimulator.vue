@@ -80,29 +80,13 @@
                             <el-tab-pane label="Stock">
                                 <h2 class="text-lg font-semibold">庫存與所需材料</h2>
                                 <div class="mt-4">
-                                    <el-table
+                                    <el-table-v2
+                                        :columns="summaryColumns"
                                         :data="materialSummaryTable"
-                                        style="width: 100%"
-                                        :row-key="(row:CraftableItem ) => `stock-${row.id}`"
-                                        border
-                                        lazy
-                                        height="500"
-                                    >
-                                        <el-table-column label="名稱">
-                                            <template #default="{ row }">
-                                                <div class="flex items-center gap-3 h-full">
-                                                    <img
-                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
-                                                        class="w-10 h-10 object-contain"
-                                                    />
-                                                    <span>{{ row.name }}</span>
-                                                </div>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column prop="owned" label="持有數量" align="right" sortable />
-                                        <el-table-column prop="total" label="所需數量" align="right" sortable />
-                                        <el-table-column prop="shortage" label="差額" align="right" sortable />
-                                    </el-table>
+                                        :width="900"
+                                        :height="500"
+                                        :row-key="'id'"
+                                    />
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="Result">Task</el-tab-pane>
@@ -121,6 +105,7 @@ import { CraftableItem, CraftTreeNode, MaterialSource } from "../types/CraftItem
 import CardHeader from "../components/CardHeader.vue";
 import { materials } from "../data/materials";
 import { G27Weapons } from "../data/G27Weapon";
+import { ElTableV2 } from "element-plus";
 
 const baseUrl = import.meta.env.BASE_URL;
 const selectedWeapons = ref<number[]>([]);
@@ -154,6 +139,7 @@ const materialSummaryTable = computed(() => {
         };
     });
 });
+
 const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multiplier: number = 1): CraftTreeNode => {
     const unitAmount = 1;
     const totalAmount = multiplier * unitAmount;
@@ -217,6 +203,33 @@ const handleSelectDisplayData = (index: number) => {
     const selectIndex = index > displayData.value.length - 1 ? 0 : index;
     selectedDisplayDataIndex.value = selectIndex;
 };
+
+const summaryColumns = [
+    {
+        key: "name",
+        title: "名稱",
+        dataKey: "name",
+        width: 300,
+    },
+    {
+        key: "owned",
+        title: "持有數量",
+        dataKey: "owned",
+        width: 120,
+    },
+    {
+        key: "total",
+        title: "所需數量",
+        dataKey: "total",
+        width: 120,
+    },
+    {
+        key: "shortage",
+        title: "差額",
+        dataKey: "shortage",
+        width: 120,
+    },
+];
 
 watch(
     () => selectedWeapons.value,
