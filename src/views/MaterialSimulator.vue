@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, h } from "vue";
 import { Option } from "../types";
 import { CraftableItem, CraftTreeNode, MaterialSource } from "../types/CraftItem";
 import CardHeader from "../components/CardHeader.vue";
@@ -206,28 +206,46 @@ const handleSelectDisplayData = (index: number) => {
 
 const summaryColumns = [
     {
+        key: "id",
+        title: "圖片",
+        dataKey: "id",
+        width: 80,
+        cellRenderer: ({ rowData }: any) => {
+            return h("img", {
+                src: `${baseUrl}itemImage/${rowData.id}.png`,
+                class: "w-8 h-8 object-contain mx-auto",
+            });
+        },
+    },
+    {
         key: "name",
         title: "名稱",
         dataKey: "name",
-        width: 300,
+        width: 220,
+        cellRenderer: ({ rowData }: any) => {
+            return h("span", rowData.name);
+        },
     },
     {
         key: "owned",
         title: "持有數量",
         dataKey: "owned",
         width: 120,
+        align: "right" as any,
     },
     {
         key: "total",
         title: "所需數量",
         dataKey: "total",
         width: 120,
+        align: "right" as any,
     },
     {
         key: "shortage",
         title: "差額",
         dataKey: "shortage",
         width: 120,
+        align: "right" as any,
     },
 ];
 
