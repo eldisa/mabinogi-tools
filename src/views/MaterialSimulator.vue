@@ -36,7 +36,11 @@
                                 <img
                                     v-for="(obj, index) in displayData"
                                     :src="`${baseUrl}itemImage/${obj.id}.png`"
-                                    :class="`tab-icon p-2`"
+                                    :class="`tab-icon p-2 ${
+                                        obj.id === selectedWeapons[selectedDisplayDataIndex]
+                                            ? 'ring-4 ring-blue-400 ring-offset-2 ring-offset-blue-100 animate-pulse scale-110 bg-white rounded-xl shadow-xl'
+                                            : 'hover:scale-105 hover:ring-2 hover:ring-gray-300 rounded-md'
+                                    }`"
                                     @click="handleSelectDisplayData(index)"
                                 />
                             </div>
@@ -343,5 +347,18 @@ tr td:first-child .cell {
     width: 32px;
     height: 32px;
     object-fit: contain;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 10px 8px rgba(96, 165, 250, 0.3);
+    }
+}
+.animate-pulse {
+    animation: pulse 2s infinite;
 }
 </style>
