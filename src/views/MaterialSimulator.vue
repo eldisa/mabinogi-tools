@@ -12,19 +12,15 @@
                 <div class="mb-4">
                     <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
                         <CardHeader title="製作項目資料" subtitle="設定你想要模擬的目標與條件" />
-                        <div class="bg-white rounded-md shadow-sm p-4 mt-4 w-fit mx-auto border border-gray-200">
-                            <el-button @click="showInventoryDrawer = true">設定庫存</el-button>
-                            <el-button @click="showTargetDrawer = true">設定目標</el-button>
-                        </div>
                         <!-- select craft target-->
                         <!--  todo: optimized-->
-                        <div>
+                        <div class="flex justify-center">
                             <el-select
                                 v-model="selectedWeapons"
                                 filterable
                                 multiple
                                 placeholder="Select"
-                                style="width: 240px"
+                                style="width: 60%"
                             >
                                 <el-option
                                     v-for="item in craftWeaponOptions"
@@ -34,19 +30,22 @@
                                 />
                             </el-select>
                         </div>
+                        <div v-if="displayData.length > 0" class="mt-4">
+                            <div class="flex gap-8 px-8 justify-center">
+                                <!-- todo: 圖片右上新增 delete button -->
+                                <img
+                                    v-for="(obj, index) in displayData"
+                                    :src="`${baseUrl}itemImage/${obj.id}.png`"
+                                    :class="`tab-icon p-2`"
+                                    @click="handleSelectDisplayData(index)"
+                                />
+                            </div>
+                        </div>
                     </el-card>
                     <el-card class="mb-8 p-4 rounded-xl shadow border border-gray-200 bg-white max-h-[800px]">
                         <el-tabs type="border-card" class="demo-tabs">
                             <el-tab-pane label="Preview">
                                 <template v-if="displayData.length > 0">
-                                    <div class="flex gap-8 px-8">
-                                        <img
-                                            v-for="(obj, index) in displayData"
-                                            :src="`${baseUrl}itemImage/${obj.id}.png`"
-                                            class="tab-icon"
-                                            @click="handleSelectDisplayData(index)"
-                                        />
-                                    </div>
                                     <h2 class="text-lg font-semibold">所需材料</h2>
                                     <div class="mt-4">
                                         <el-table
