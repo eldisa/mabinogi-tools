@@ -258,13 +258,13 @@ const summaryColumns = [
             return h("span", rowData.name);
         },
     },
-    {
-        key: "owned",
-        title: "持有數量",
-        dataKey: "owned",
-        width: 120,
-        align: "right" as any,
-    },
+    // {
+    //     key: "owned",
+    //     title: "持有數量",
+    //     dataKey: "owned",
+    //     width: 120,
+    //     align: "right" as any,
+    // },
     {
         key: "total",
         title: "所需數量",
@@ -273,13 +273,13 @@ const summaryColumns = [
         align: "right" as any,
         sortable: true,
     },
-    {
-        key: "shortage",
-        title: "差額",
-        dataKey: "shortage",
-        width: 120,
-        align: "right" as any,
-    },
+    // {
+    //     key: "shortage",
+    //     title: "差額",
+    //     dataKey: "shortage",
+    //     width: 120,
+    //     align: "right" as any,
+    // },
 ];
 
 watch(
