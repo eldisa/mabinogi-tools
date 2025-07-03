@@ -52,5 +52,6 @@ export interface CraftTreeNode {
     amount: number;
     unitAmount: number;
     source: MaterialSource;
+    uniqueKey: string; // 用於唯一識別此節點的鍵
     children?: CraftTreeNode[];
 }

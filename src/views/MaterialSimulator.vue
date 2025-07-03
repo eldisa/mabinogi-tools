@@ -59,7 +59,7 @@
                                             v-if="dataInPreviewTable?.children?.length"
                                             :data="dataInPreviewTable.children"
                                             style="width: 100%"
-                                            :row-key="(row:CraftableItem ) => `preview-${row.id}`"
+                                            :row-key="(row:CraftTreeNode) => row.uniqueKey"
                                             border
                                             lazy
                                             height="500"
@@ -160,9 +160,15 @@ const materialSummaryTable = computed(() => {
         .filter((ele) => ele.total > 0);
 });
 
-const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multiplier: number = 1): CraftTreeNode => {
+const buildCraftTree = (
+    item: CraftableItem,
+    allItems: CraftableItem[],
+    multiplier: number = 1,
+    path = ""
+): CraftTreeNode => {
     const unitAmount = 1;
     const totalAmount = multiplier * unitAmount;
+    const currentPath = `${path}-${item.id}`;
 
     const node: CraftTreeNode = {
         id: item.id,
@@ -170,6 +176,7 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
         amount: totalAmount,
         unitAmount: unitAmount,
         source: item.source,
+        uniqueKey: currentPath,
         children: [],
     };
 
@@ -178,7 +185,7 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
             const matched = allItems.find((x) => x.id === mat.id);
 
             if (matched) {
-                return buildCraftTree(matched, allItems, mat.amount * multiplier);
+                return buildCraftTree(matched, allItems, mat.amount * multiplier, currentPath);
             } else {
                 const fallback = {
                     id: mat.id,
@@ -186,6 +193,7 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
                     amount: mat.amount * multiplier,
                     unitAmount: mat.amount,
                     source: { type: "" } as MaterialSource,
+                    uniqueKey: currentPath,
                     children: [],
                 };
 
