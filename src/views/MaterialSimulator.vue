@@ -138,18 +138,20 @@ const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataI
 const materialMap = ref<{ id: number; total: number }[]>([]);
 
 const materialSummaryTable = computed(() => {
-    return materials.map((item) => {
-        const { id, name } = item;
-        const total = materialMap.value.find((ele) => ele.id === id)?.total || 0;
+    return materials
+        .map((item) => {
+            const { id, name } = item;
+            const total = materialMap.value.find((ele) => ele.id === id)?.total || 0;
 
-        return {
-            id,
-            name: name.tw || name.en,
-            total,
-            owned: inventory.value[id] || 0,
-            shortage: Math.max(0, total - (inventory.value[id] || 0)),
-        };
-    });
+            return {
+                id,
+                name: name.tw || name.en,
+                total,
+                owned: inventory.value[id] || 0,
+                shortage: Math.max(0, total - (inventory.value[id] || 0)),
+            };
+        })
+        .filter((ele) => ele.total > 0);
 });
 
 const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multiplier: number = 1): CraftTreeNode => {
