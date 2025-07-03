@@ -127,7 +127,6 @@ interface MaterialSummary {
 
 const baseUrl = import.meta.env.BASE_URL;
 const selectedWeapons = ref<number[]>([]);
-const craftTarget = ref<CraftableItem[]>([]);
 
 const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
     const { id, name } = weapon;
@@ -301,8 +300,8 @@ watch(
     (newData) => {
         materialMap.value = []; // 清除歷史資料
         if (newData) {
-            craftTarget.value = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
-            displayData.value = craftTarget.value.map((target) => buildCraftTree(target, materials, 1));
+            const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
+            displayData.value = craftTarget.map((target) => buildCraftTree(target, materials, 1));
         }
     },
     { immediate: true }
