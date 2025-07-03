@@ -137,8 +137,6 @@ const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
 const inventory = ref<Record<string, number>>({});
 const displayData = ref<CraftTreeNode[]>([]);
 const selectedDisplayDataIndex = ref(0);
-const showInventoryDrawer = ref(false);
-const showTargetDrawer = ref(false);
 const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataIndex.value]);
 
 const materialMap = ref<{ id: number; total: number }[]>([]);
