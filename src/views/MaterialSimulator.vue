@@ -82,10 +82,12 @@
                                 <div class="mt-4">
                                     <el-table-v2
                                         :columns="summaryColumns"
-                                        :data="materialSummaryTable"
+                                        :data="sortedData"
+                                        :sort-by="sortState"
                                         :width="900"
                                         :height="500"
                                         :row-key="'id'"
+                                        @column-sort="onSort"
                                     />
                                 </div>
                             </el-tab-pane>
@@ -106,6 +108,16 @@ import CardHeader from "../components/CardHeader.vue";
 import { materials } from "../data/materials";
 import { G27Weapons } from "../data/G27Weapon";
 import { ElTableV2 } from "element-plus";
+import { TableV2SortOrder } from "element-plus";
+import type { SortBy } from "element-plus";
+
+interface MaterialSummary {
+    id: number;
+    name: string;
+    total: number;
+    owned: number;
+    shortage: number;
+}
 
 const baseUrl = import.meta.env.BASE_URL;
 const selectedWeapons = ref<number[]>([]);
@@ -199,6 +211,26 @@ const buildCraftTree = (item: CraftableItem, allItems: CraftableItem[], multipli
     return node;
 };
 
+const sortState = ref<SortBy>({
+    key: "total",
+    order: TableV2SortOrder.ASC,
+});
+const onSort = (sortBy: SortBy) => {
+    sortState.value = sortBy;
+};
+
+const sortedData = computed(() => {
+    const { order } = sortState.value;
+    const key = sortState.value!.key as keyof MaterialSummary;
+    if (!key || !order) return materialSummaryTable.value;
+
+    return [...materialSummaryTable.value].sort((a, b) => {
+        const aVal = a[key];
+        const bVal = b[key];
+        return order === TableV2SortOrder.ASC ? Number(aVal) - Number(bVal) : Number(bVal) - Number(aVal);
+    });
+});
+
 const handleSelectDisplayData = (index: number) => {
     const selectIndex = index > displayData.value.length - 1 ? 0 : index;
     selectedDisplayDataIndex.value = selectIndex;
@@ -239,6 +271,7 @@ const summaryColumns = [
         dataKey: "total",
         width: 120,
         align: "right" as any,
+        sortable: true,
     },
     {
         key: "shortage",
