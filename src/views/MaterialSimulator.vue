@@ -28,7 +28,9 @@
                                     :label="item.label"
                                     :value="item.value"
                                 />
-                                <template #tag>{{ `已選擇 ${selectedWeapons.length} 樣` }}</template>
+                                <template #tag>
+                                    {{ selectedWeapons.length > 0 ? `已選擇 ${selectedWeapons.length} 樣` : "" }}
+                                </template>
                             </el-select>
                         </div>
                         <div v-if="displayData.length > 0" class="mt-4">
