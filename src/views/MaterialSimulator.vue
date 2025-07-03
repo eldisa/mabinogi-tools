@@ -19,8 +19,8 @@
                                 v-model="selectedWeapons"
                                 filterable
                                 multiple
-                                placeholder="Select"
-                                style="width: 60%"
+                                placeholder="選擇製作項目"
+                                class="w-full max-w-xl mb-4"
                             >
                                 <el-option
                                     v-for="item in craftWeaponOptions"
@@ -28,6 +28,7 @@
                                     :label="item.label"
                                     :value="item.value"
                                 />
+                                <template #tag>{{ `已選擇 ${selectedWeapons.length} 樣` }}</template>
                             </el-select>
                         </div>
                         <div v-if="displayData.length > 0" class="mt-4">
