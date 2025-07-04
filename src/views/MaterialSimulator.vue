@@ -97,7 +97,6 @@
                                     />
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="Result">Task</el-tab-pane>
                         </el-tabs>
                     </el-card>
                 </div>
