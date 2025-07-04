@@ -959,6 +959,51 @@ export const G27Weapons: CraftableItem[] = [
         },
     },
     {
+        id: 1420006,
+        name: {
+            en: "Soul Liberat Eternal Arrow",
+            kr: "소울 리버레이트 이터널 애로우",
+            tw: "",
+        },
+        source: {
+            type: "craft",
+            materials: [
+                {
+                    id: 5100303,
+                    amount: 4,
+                },
+                {
+                    id: 5100304,
+                    amount: 8,
+                },
+                {
+                    id: 5100277,
+                    amount: 5,
+                },
+                {
+                    id: 5100280,
+                    amount: 1,
+                },
+                {
+                    id: 5100283,
+                    amount: 1,
+                },
+                {
+                    id: 5100286,
+                    amount: 10,
+                },
+                {
+                    id: 5100299,
+                    amount: 24,
+                },
+                {
+                    id: 64634,
+                    amount: 100,
+                },
+            ],
+        },
+    },
+    {
         id: 1420007,
         name: {
             en: "Soul Liberat Eternal Bolt",
