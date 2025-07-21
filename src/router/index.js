@@ -4,6 +4,7 @@ import EquipmentCraftSimulator from '../views/EquipmentCraftSimulator.vue';
 
 import PierecingLevelAnalysis from '../views/PierecingLevelAnalysis.vue';
 import MaterialSimulator from '../views/MaterialSimulator.vue';
+import TransferSimulator from '../views/TransferSimulator.vue';
 // import GridDemo from '../views/GridDemo.vue';
 // import Settings from '../views/Settings.vue';
 
@@ -37,6 +38,11 @@ const routes = [
         path: '/material-simulator',
         name: '材料計算機',
         component: MaterialSimulator,
+    },
+    {
+        path: '/transfer-simulator',
+        name: '裝備能力轉移費用估算',
+        component: TransferSimulator,
     }
 
 ];
