@@ -32,6 +32,14 @@
                                     {{ selectedWeapons.length > 0 ? `已選擇 ${selectedWeapons.length} 樣` : "" }}
                                 </template>
                             </el-select>
+                            <el-button type="danger" class="ml-4" @click="selectedWeapons = []">clear</el-button>
+                            <el-button
+                                type="primary"
+                                class="ml-4"
+                                @click="selectedWeapons = craftWeaponOptions.map((ele) => ele.value)"
+                            >
+                                all
+                            </el-button>
                         </div>
                         <div v-if="displayData.length > 0" class="mt-4">
                             <div class="flex gap-8 px-8 justify-center">
