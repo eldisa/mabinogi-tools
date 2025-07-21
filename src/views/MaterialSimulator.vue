@@ -42,7 +42,10 @@
                             </el-button>
                         </div>
                         <div v-if="displayData.length > 0" class="mt-4">
-                            <div class="flex gap-8 px-8 justify-center">
+                            <div
+                                class="flex gap-8 px-8 justify-center scroll-row overflow-x-auto overflow-y-hidden"
+                                ref="scrollRow"
+                            >
                                 <!-- todo: 圖片右上新增 delete button -->
                                 <img
                                     v-for="(obj, index) in displayData"
@@ -139,6 +142,7 @@ const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
     return { label: name.tw || name.en, value: id };
 });
 
+const scrollRow = ref<HTMLElement | null>(null);
 const inventory = ref<Record<string, number>>({});
 const displayData = ref<CraftTreeNode[]>([]);
 const selectedDisplayDataIndex = ref(0);
@@ -301,6 +305,8 @@ const summaryColumns = [
     // },
 ];
 
+const hasAddEvent = ref(false);
+
 watch(
     () => selectedWeapons.value,
     (newData) => {
@@ -308,6 +314,15 @@ watch(
         if (newData) {
             const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
             displayData.value = craftTarget.map((target) => buildCraftTree(target, materials, 1));
+        }
+
+        if (!hasAddEvent.value && selectedWeapons.value.length >= 10) {
+            scrollRow.value?.addEventListener("wheel", (e: WheelEvent) => {
+                if (e.deltaY === 0) return;
+                e.preventDefault();
+                scrollRow.value!.scrollLeft += e.deltaY;
+            });
+            hasAddEvent.value = true;
         }
     },
     { immediate: true }
