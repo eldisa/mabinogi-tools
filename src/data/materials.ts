@@ -642,7 +642,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Gemstone Powder",
             kr: "젬스톤 파우더",
-            tw: "純淨寶石",
+            tw: "寶石粉末",
         },
         source: {
             type: "dissolution",
@@ -725,7 +725,25 @@ export const materials: CraftableItem[] = [
             tw: "",
         },
         source: {
-            type: "",
+            type: "craft",
+            materials: [
+                {
+                    id: 5100307,
+                    amount: 3,
+                },
+                {
+                    id: 5100315,
+                    amount: 10,
+                },
+                {
+                    id: 5100274,
+                    amount: 5,
+                },
+                {
+                    id: 5100289,
+                    amount: 2,
+                },
+            ],
         },
     },
     {
@@ -1578,6 +1596,18 @@ export const materials: CraftableItem[] = [
             type: "",
         },
     },
+    {
+        id: 5100315,
+        name: {
+            en: "Orpiment",
+            kr: "오피먼트",
+            tw: "",
+        },
+        source: {
+            type: "",
+        },
+    },
+
     {
         id: 5100316,
         name: {
