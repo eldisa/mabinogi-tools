@@ -265,6 +265,17 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 64634,
+        name: {
+            en: "Magical Essence",
+            kr: "마력의 정수",
+            tw: "魔力精華液",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
         id: 64636,
         name: {
             en: "Confusional Rune",
