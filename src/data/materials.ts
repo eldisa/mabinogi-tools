@@ -309,6 +309,17 @@ export const materials: CraftableItem[] = [
         },
     },
     {
+        id: 64640,
+        name: {
+            en: "Resurrective Powder",
+            kr: "재생의 가루",
+            tw: "再生粉末",
+        },
+        source: {
+            type: "",
+        },
+    },
+    {
         id: 64642,
         name: {
             en: "Awakening Force Powder",
@@ -631,6 +642,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Gemstone Powder",
             kr: "젬스톤 파우더",
+            tw: "純淨寶石",
         },
         source: {
             type: "dissolution",
@@ -1450,6 +1462,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Bri Leith's Core",
             kr: "브리 레흐의 코어",
+            tw: "布里萊赫的核心",
         },
         source: {
             type: "",
@@ -1460,6 +1473,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Bri Leith's Essence",
             kr: "브리 레흐의 정수",
+            tw: "布里萊赫的精髓",
         },
         source: {
             type: "",
