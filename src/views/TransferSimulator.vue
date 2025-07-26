@@ -174,6 +174,10 @@
 .el-table .el-input-number__decrease:hover {
     background-color: #718096;
 }
+
+.el-input__wrapper {
+    padding: 1px 30px !important;
+}
 </style>
 
 <script setup lang="ts">
