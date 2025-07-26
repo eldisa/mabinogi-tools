@@ -109,7 +109,7 @@
     </div>
 </template>
 
-<style scoped>
+<style>
 /* 保持 Element UI 預設樣式覆蓋，並調整輸入框的文字顏色 */
 .el-form-item {
     margin-bottom: 1rem;
