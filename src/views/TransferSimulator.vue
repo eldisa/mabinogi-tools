@@ -178,7 +178,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import CardHeader from "../components/CardHeader.vue";
 import { Option } from "../types";
 
 interface Cost {
@@ -270,39 +269,6 @@ const evaluateCost = computed(() => {
 
     return roundTo(totalCost * basicCostUnit);
 });
-
-// watch(
-//     () => form.value,
-//     (newForm) => {
-//         const { targetCategory, hasSR, hasBlessing, hasEnhancement, hasReforge, reforgeAbilityArray } = newForm;
-
-//         let totalCost = 0;
-
-//         const targetCost = costArray.find((cost) => cost.level === targetCategory) || costArray[0];
-
-//         const { reforgeBasicCost, reforgeBreakCost, otherCost } = targetCost;
-
-//         totalCost += (Number(hasSR) + Number(hasBlessing) + Number(hasEnhancement)) * otherCost;
-
-//         if (hasReforge) {
-//             reforgeAbilityArray.forEach((ability) => {
-//                 // todo: 有些項目 max 為5, 可能要另外寫 case 處理
-//                 const { currentLevel, maxLevel } = ability;
-//                 if (currentLevel > maxLevel) {
-//                     const breaks = currentLevel - maxLevel;
-//                     totalCost += reforgeBreakCost * breaks + reforgeBasicCost * maxLevel;
-//                 } else {
-//                     totalCost += reforgeBasicCost * currentLevel;
-//                 }
-
-//                 //totalCost += reforgeBasicCost + reforgeBreakCost * currentLevel;
-//             });
-//         }
-
-//         result.value = totalCost * basicCostUnit;
-//     },
-//     { deep: true }
-// );
 
 const roundTo = (value: number, digits: number = 2): number => {
     const factor = Math.pow(10, digits);
