@@ -194,6 +194,7 @@ interface Reforge {
 
 const basicCostUnit = 10000; // 基礎費用單位
 
+//level: 1: 凱爾特 2: 兇猛/章魚 3: 貓武 4: 靈魂/日月
 const costArray: Cost[] = [
     {
         level: 1,
@@ -222,7 +223,6 @@ const costArray: Cost[] = [
 ];
 
 const form = ref({
-    targetCategory: 3, // 1: 凱爾特 2: 兇猛/章魚 3: 貓武 4: 靈魂/日月
     hasSR: true, // 是否有SR
     hasBlessing: true, // 是否有祝福/聖火/聖水
     hasEnhancement: true, // 是否有賦予
@@ -245,11 +245,11 @@ const options: Option[] = [
 ];
 
 const evaluateCost = computed(() => {
-    const { targetCategory, hasSR, hasBlessing, hasEnhancement, hasReforge, reforgeAbilityArray } = form.value;
+    const { hasSR, hasBlessing, hasEnhancement, hasReforge, reforgeAbilityArray } = form.value;
 
     let totalCost = 0;
 
-    const targetCost = costArray.find((cost) => cost.level === targetCategory) || costArray[0];
+    const targetCost = costArray.find((cost) => cost.level === selectedCategory.value) || costArray[0];
 
     const { reforgeBasicCost, reforgeBreakCost, otherCost } = targetCost;
 
