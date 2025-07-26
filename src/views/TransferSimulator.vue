@@ -1,68 +1,180 @@
 <template>
-    <div class="craft-calculator min-h-screen bg-gray-100 py-6 px-4 sm:px-6">
-        <div class="max-w-7xl mx-auto">
-            <header class="mb-6 text-center">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">裝備能力轉移費用估算</h1>
-                <p class="text-gray-600 mt-2">計算轉移的費用</p>
+    <div
+        class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8"
+        style="background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png')"
+    >
+        <div class="max-w-5xl mx-auto space-y-8">
+            <header class="text-center relative pt-8">
+                <h1
+                    class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400 mb-2 tracking-wide font-serif drop-shadow-lg"
+                >
+                    <span class="inline-block relative text-white">
+                        <svg
+                            class="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 absolute -left-12 top-1/2 -translate-y-1/2"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.5 8a.5.5 0 01.5-.5h8a.5.5 0 01.5.5v3a.5.5 0 01-.5.5h-8a.5.5 0 01-.5-.5V8zM10 5a1 1 0 00-1 1v1a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            />
+                        </svg>
+                        裝備能力轉移
+                    </span>
+                </h1>
+                <p class="text-lg text-gray-400 mt-4 font-sans">模擬轉移費用，為你的冒險旅程做足準備。</p>
             </header>
-            <div>
-                <!-- 資料輸入區 -->
 
-                <div class="mb-4">
-                    <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
-                        <CardHeader title="填寫資料" subtitle="設定你想要模擬的目標與條件" />
-
-                        <el-form :model="form" label-width="200px" class="mx-auto">
-                            <el-form-item label="選擇要被繼承的項目">
-                                <el-select v-model="selectedCategory" placeholder="" class="w-[200px] mb-4">
-                                    <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    />
-                                </el-select>
-                            </el-form-item>
-
-                            <el-form-item label="是否有 SR">
-                                <el-switch v-model="form.hasSR" />
-                            </el-form-item>
-                            <el-form-item label="是否有祝福/聖火/聖水">
-                                <el-switch v-model="form.hasBlessing" />
-                            </el-form-item>
-                            <el-form-item label="是否有賦予">
-                                <el-switch v-model="form.hasEnhancement" />
-                            </el-form-item>
-                            <el-form-item label="是否有細工">
-                                <el-switch v-model="form.hasReforge" />
-                            </el-form-item>
-                            <el-table :data="form.reforgeAbilityArray" style="width: 480px" border class="mb-4">
-                                <el-table-column label="項目" width="80">
-                                    <template #default="{ $index }">
-                                        {{ $index + 1 }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column prop="currentLevel" label="當前等級" width="200">
-                                    <template #default="{ row }">
-                                        <el-input-number v-model="row.currentLevel" :min="0" />
-                                    </template>
-                                </el-table-column>
-                                <el-table-column prop="maxLevel" label="最大等級" width="200">
-                                    <template #default="{ row }">
-                                        <el-input-number v-model="row.maxLevel" :min="0" />
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </el-form>
-                        <div class="text-center font-bold text-lg text-blue-700">
-                            轉移費用總計：{{ evaluateCost.toLocaleString() }}
-                        </div>
-                    </el-card>
+            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
+                <div class="mb-6 border-b border-gray-700 pb-4">
+                    <h2 class="text-2xl font-bold text-yellow-300">填寫資料</h2>
+                    <p class="text-gray-400 text-sm mt-1">設定你想要繼承的屬性與條件。</p>
                 </div>
-            </div>
+
+                <el-form :model="form" label-width="160px" label-position="left">
+                    <el-form-item label="選擇要被繼承的項目" class="text-gray-300">
+                        <el-select v-model="selectedCategory" placeholder="請選擇" class="w-full sm:w-[280px]">
+                            <el-option
+                                v-for="item in options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select>
+                    </el-form-item>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                        <el-form-item label="是否有 SR" class="flex-grow text-gray-300">
+                            <el-switch v-model="form.hasSR" />
+                        </el-form-item>
+                        <el-form-item label="是否有祝福/聖火/聖水" class="flex-grow text-gray-300">
+                            <el-switch v-model="form.hasBlessing" />
+                        </el-form-item>
+                        <el-form-item label="是否有賦予" class="flex-grow text-gray-300">
+                            <el-switch v-model="form.hasEnhancement" />
+                        </el-form-item>
+                        <el-form-item label="是否有細工" class="flex-grow text-gray-300">
+                            <el-switch v-model="form.hasReforge" />
+                        </el-form-item>
+                    </div>
+                </el-form>
+
+                <div v-if="form.hasReforge" class="mt-8">
+                    <h3 class="text-lg font-semibold text-yellow-300 mb-4">細工等級設定</h3>
+                    <el-table
+                        :data="form.reforgeAbilityArray"
+                        border
+                        class="rounded-lg overflow-hidden"
+                        :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
+                        :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
+                    >
+                        <el-table-column label="項目" width="80">
+                            <template #default="{ $index }">
+                                <span class="font-medium text-gray-300">{{ $index + 1 }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="currentLevel" label="當前等級">
+                            <template #default="{ row }">
+                                <el-input-number v-model="row.currentLevel" :min="0" class="w-full" />
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="maxLevel" label="最大等級">
+                            <template #default="{ row }">
+                                <el-input-number v-model="row.maxLevel" :min="0" class="w-full" />
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-700">
+                    <div class="flex flex-col sm:flex-row items-center justify-between">
+                        <span class="text-xl font-bold text-gray-300 mb-2 sm:mb-0">
+                            <svg
+                                class="inline-block w-6 h-6 mr-2 text-yellow-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                            >
+                                <path
+                                    d="M5 2a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zM8 4h4a1 1 0 011 1v1a1 1 0 01-1 1H8a1 1 0 01-1-1V5a1 1 0 011-1zM5 9h10v2H5V9zM5 13h10v2H5v-2z"
+                                />
+                            </svg>
+                            總費用估計：
+                        </span>
+                        <span class="text-3xl sm:text-4xl font-extrabold text-red-400 drop-shadow-md">
+                            {{ evaluateCost.toLocaleString() }}
+                        </span>
+                    </div>
+                </div>
+            </el-card>
         </div>
     </div>
 </template>
+
+<style scoped>
+/* 保持 Element UI 預設樣式覆蓋，並調整輸入框的文字顏色 */
+.el-form-item {
+    margin-bottom: 1rem;
+}
+.el-input-number {
+    width: 100%;
+}
+.el-table .el-input-number {
+    width: 100%;
+}
+.el-table .el-input-number .el-input__inner {
+    text-align: center;
+    /* 調整輸入框內文字顏色以適應深色背景 */
+    color: #e2e8f0;
+    background-color: #4a5568; /* 稍微深一點的背景色 */
+    border-color: #6b7280;
+}
+
+/* 針對 el-select 的調整 */
+.el-select .el-input__inner {
+    color: #e2e8f0;
+    background-color: #4a5568;
+    border-color: #6b7280;
+}
+.el-select-dropdown {
+    background-color: #2d3748; /* 選項下拉選單的背景色 */
+    border-color: #6b7280;
+}
+.el-select-dropdown__item {
+    color: #e2e8f0;
+}
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item.selected {
+    background-color: #4a5568;
+    color: #fbd38d; /* 選中或hover的顏色 */
+}
+
+/* 針對 el-switch 的調整 */
+/* 調整 Switch 的軌道顏色 (關閉時) */
+.el-switch__core {
+    background-color: #4a5568 !important; /* 灰藍色 */
+    border-color: #6b7280 !important;
+}
+/* 調整 Switch 的軌道顏色 (開啟時) */
+.el-switch.is-checked .el-switch__core {
+    background-color: #fbd38d !important; /* 金黃色 */
+    border-color: #fbd38d !important;
+}
+/* 調整 Switch 的滑塊顏色 */
+.el-switch__core:after {
+    background-color: #e2e8f0 !important; /* 淺色滑塊 */
+}
+
+/* 調整表格內部 InputNumber 的顏色 */
+.el-table .el-input-number__increase,
+.el-table .el-input-number__decrease {
+    background-color: #6b7280;
+    color: #e2e8f0;
+    border-color: #6b7280;
+}
+.el-table .el-input-number__increase:hover,
+.el-table .el-input-number__decrease:hover {
+    background-color: #718096;
+}
+</style>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
@@ -197,17 +309,3 @@ const roundTo = (value: number, digits: number = 2): number => {
     return Math.round(value * factor) / factor;
 };
 </script>
-
-<style scoped>
-.el-input-number .el-input__inner {
-    text-align: center;
-}
-
-.el-form-item {
-    margin-bottom: 12px;
-}
-
-.el-table {
-    margin-bottom: 12px;
-}
-</style>
