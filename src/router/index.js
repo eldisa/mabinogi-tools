@@ -5,6 +5,7 @@ import EquipmentCraftSimulator from '../views/EquipmentCraftSimulator.vue';
 import PierecingLevelAnalysis from '../views/PierecingLevelAnalysis.vue';
 import MaterialSimulator from '../views/MaterialSimulator.vue';
 import TransferSimulator from '../views/TransferSimulator.vue';
+import WeaponUpgradeSimulator from '../views/WeaponUpgradeSimulator.vue';
 // import GridDemo from '../views/GridDemo.vue';
 // import Settings from '../views/Settings.vue';
 
@@ -43,6 +44,11 @@ const routes = [
         path: '/transfer-simulator',
         name: '裝備能力轉移費用估算',
         component: TransferSimulator,
+    },
+    {
+        path: '/weapon-upgrade-simulator',
+        name: '裝備改造模擬器',
+        component: WeaponUpgradeSimulator,
     }
 
 ];
