@@ -54,8 +54,29 @@
                             {{ abilitiesMap[row.id] || row.id }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="min" label="最小值" width="100" />
-                    <el-table-column prop="max" label="最大值" width="100" />
+                    <el-table-column label="改造前" width="200">
+                        <template #default="{ row }">
+                            <el-tooltip
+                                class="box-item"
+                                effect="dark"
+                                :content="`浮動範圍: ${row.min} ~ ${row.max}`"
+                                placement="top-end"
+                            >
+                                <el-input-number
+                                    v-model="form.before[row.id]"
+                                    :min="row.min"
+                                    :max="row.max"
+                                    class="w-full"
+                                />
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="改造增加" width="100">
+                        <template #default="{ row }">{{}}</template>
+                    </el-table-column>
+                    <el-table-column label="改造後" width="100">
+                        <template #default="{ row }">{{}}</template>
+                    </el-table-column>
                 </el-table>
 
                 <div class="border-b border-gray-700 pb-4 pt-6">
@@ -122,6 +143,17 @@
 <style>
 /* 這裡的 CSS 樣式與上一個頁面相同，請保留 */
 /* 調整表格內部 InputNumber 的顏色 */
+.el-table .el-input-number {
+    width: 100%;
+}
+.el-table .el-input-number .el-input__inner {
+    text-align: center;
+    /* 調整輸入框內文字顏色以適應深色背景 */
+    color: #e2e8f0;
+    background-color: #4a5568; /* 稍微深一點的背景色 */
+    border-color: #6b7280;
+}
+
 .el-table .el-input-number__increase,
 .el-table .el-input-number__decrease {
     background-color: #6b7280;
@@ -167,6 +199,22 @@ label.el-checkbox {
     margin: 0;
 }
 
+/* 調整表格內部 InputNumber 的顏色 */
+.el-table .el-input-number__increase,
+.el-table .el-input-number__decrease {
+    background-color: #6b7280;
+    color: #e2e8f0;
+    border-color: #6b7280;
+}
+.el-table .el-input-number__increase:hover,
+.el-table .el-input-number__decrease:hover {
+    background-color: #718096;
+}
+
+.el-input__wrapper {
+    padding: 1px 30px !important;
+}
+
 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
     background-color: black !important;
 }
@@ -180,9 +228,13 @@ import { upgradeForG27Weapons } from "../data/upgradeForG27Weapons";
 import { abilitiesMap } from "../data/abilities";
 import { UpgradeAbility, CraftsManUpgradeAbility, Gems } from "../types/Upgrade";
 
+interface UpgradeStatus {
+    [key: string]: number;
+}
+
 const form = ref({
-    brfore: {},
-    after: {},
+    before: {} as UpgradeStatus,
+    after: {} as UpgradeStatus,
     // 儲存選中的改造 ID，每個 index 對應一個改造階段
     selectedUpgradeArray: new Array(6).fill(""),
     totalCost: 0,
@@ -254,4 +306,23 @@ const handleOptionChange = (rowId: string, optionIndex: number, checked: boolean
         form.value.selectedUpgradeArray[optionIndex] = "";
     }
 };
+
+watch(
+    () => selectedWeaponId.value,
+    (newId) => {
+        const newStatus = infoForG27Weapon.find((item) => item.id === newId);
+        if (newStatus) {
+            weaponStatus.value = newStatus;
+
+            // 使用 reduce 方法來創建新物件
+            const newBeforeStatus = newStatus.status.reduce((acc, currentStatus) => {
+                acc[currentStatus.id] = currentStatus.max;
+                return acc;
+            }, {} as { [key: string]: number }); // 這裡明確宣告了物件的型別
+
+            form.value.before = newBeforeStatus;
+        }
+    },
+    { immediate: true }
+);
 </script>
