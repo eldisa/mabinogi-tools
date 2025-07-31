@@ -121,7 +121,7 @@ import { Option } from "../types";
 import { CraftableItem, CraftTreeNode, MaterialSource } from "../types/CraftItem";
 import CardHeader from "../components/CardHeader.vue";
 import { materials } from "../data/materials";
-import { G27Weapons } from "../data/G27Weapon";
+import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTableV2 } from "element-plus";
 import { TableV2SortOrder } from "element-plus";
 import type { SortBy } from "element-plus";
