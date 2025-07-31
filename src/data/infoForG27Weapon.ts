@@ -434,8 +434,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "lance_piercing",
-                min: 0,
-                max: 0,
+                min: 3,
+                max: 3,
             },
         ],
     },
