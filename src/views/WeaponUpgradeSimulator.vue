@@ -37,80 +37,83 @@
                         </el-select>
                     </el-form-item>
                 </el-form>
+                <!--武器數值設定-->
+                <div class="flex flex-wrap gap-4 mt-4">
+                    <!-- 左邊：武器素質設定 -->
+                    <div class="flex-1 min-w-[320px]">
+                        <div class="border-b border-gray-700 pb-4 pt-6">
+                            <h2 class="text-2xl font-bold text-yellow-300">武器素質設定</h2>
+                        </div>
+                        <el-table
+                            :data="weaponStatus?.status"
+                            border
+                            class="rounded-lg overflow-hidden mt-2"
+                            :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
+                            :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
+                        >
+                            <el-table-column label="屬性">
+                                <template #default="{ row }">
+                                    {{ abilitiesMap[row.id] || row.id }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="改造前">
+                                <template #default="{ row }">
+                                    <el-tooltip
+                                        effect="dark"
+                                        :content="`浮動範圍: ${row.min} ~ ${row.max}`"
+                                        placement="top-end"
+                                    >
+                                        <el-input-number
+                                            v-model="form.before[row.id]"
+                                            :min="row.min"
+                                            :max="row.max"
+                                            class="w-full"
+                                        />
+                                    </el-tooltip>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
 
-                <div class="border-b border-gray-700 pb-4 pt-6">
-                    <h2 class="text-2xl font-bold text-yellow-300">武器素質設定</h2>
-                    <p class="text-gray-400 text-sm mt-1">查看武器的基礎屬性範圍。</p>
+                    <!-- 右邊：工匠改 -->
+                    <div
+                        v-if="craftmanUpgrade && form.selectedUpgradeArray.includes(craftmanUpgrade.id)"
+                        class="flex-1 min-w-[320px]"
+                    >
+                        <div class="border-b border-gray-700 pb-4 pt-6">
+                            <h2 class="text-2xl font-bold text-yellow-300">工匠改造</h2>
+                        </div>
+                        <el-table
+                            :data="craftmanUpgrade.abilities"
+                            border
+                            class="rounded-lg overflow-hidden mt-2"
+                            :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
+                            :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
+                        >
+                            <el-table-column label="屬性">
+                                <template #default="{ row }">
+                                    {{ abilitiesMap[row.id] || row.id }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="數值">
+                                <template #default="{ row }">
+                                    <el-tooltip
+                                        effect="dark"
+                                        :content="`浮動範圍: ${row.min} ~ ${row.max}`"
+                                        placement="top-end"
+                                    >
+                                        <el-input-number
+                                            v-model="form.craftmanUpgradeArray[row.id]"
+                                            :min="row.min"
+                                            :max="row.max"
+                                            class="w-full"
+                                        />
+                                    </el-tooltip>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
                 </div>
-                <el-table
-                    :data="weaponStatus?.status"
-                    border
-                    class="rounded-lg overflow-hidden"
-                    :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
-                    :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
-                >
-                    <el-table-column label="屬性" width="150">
-                        <template #default="{ row }">
-                            {{ abilitiesMap[row.id] || row.id }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="改造前" width="200">
-                        <template #default="{ row }">
-                            <el-tooltip
-                                class="box-item"
-                                effect="dark"
-                                :content="`浮動範圍: ${row.min} ~ ${row.max}`"
-                                placement="top-end"
-                            >
-                                <el-input-number
-                                    v-model="form.before[row.id]"
-                                    :min="row.min"
-                                    :max="row.max"
-                                    class="w-full"
-                                />
-                            </el-tooltip>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="改造增加" width="100">
-                        <template #default="{ row }">{{}}</template>
-                    </el-table-column>
-                    <el-table-column label="改造後" width="100">
-                        <template #default="{ row }">{{}}</template>
-                    </el-table-column>
-                </el-table>
-
-                <!--工匠改-->
-                <el-table
-                    v-if="craftmanUpgrade && form.selectedUpgradeArray.includes(craftmanUpgrade.id)"
-                    :data="craftmanUpgrade.abilities"
-                    border
-                    class="rounded-lg overflow-hidden"
-                    :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
-                    :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
-                >
-                    <el-table-column label="屬性" width="150">
-                        <template #default="{ row }">
-                            {{ abilitiesMap[row.id] || row.id }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="數值" width="200">
-                        <template #default="{ row }">
-                            <el-tooltip
-                                class="box-item"
-                                effect="dark"
-                                :content="`浮動範圍: ${row.min} ~ ${row.max}`"
-                                placement="top-end"
-                            >
-                                <el-input-number
-                                    v-model="form.craftmanUpgradeArray[row.id]"
-                                    :min="row.min"
-                                    :max="row.max"
-                                    class="w-full"
-                                />
-                            </el-tooltip>
-                        </template>
-                    </el-table-column>
-                </el-table>
 
                 <div class="border-b border-gray-700 pb-4 pt-6">
                     <h2 class="text-2xl font-bold text-yellow-300">選擇改造</h2>
@@ -270,7 +273,8 @@ const form = ref({
     after: {} as UpgradeStatus,
     craftmanUpgradeArray: {} as UpgradeStatus,
     // 儲存選中的改造 ID，每個 index 對應一個改造階段
-    selectedUpgradeArray: new Array(6).fill(""),
+    //selectedUpgradeArray: new Array(6).fill(""),
+    selectedUpgradeArray: ["1200043-1", "1200043-3", "1200043-5", "1200043-6", "1200043-craftman", "1200043-g-2"],
     totalCost: 0,
     totalEp: 0,
 });
@@ -278,14 +282,6 @@ const form = ref({
 const selectedWeaponId = ref(1200043);
 
 const weaponStatus = ref(infoForG27Weapon.find((item) => item.id === selectedWeaponId.value));
-
-// 使用 watch 監聽 selectedWeaponId 變化，更新 weaponStatus
-watch(selectedWeaponId, (newId) => {
-    const newStatus = infoForG27Weapon.find((item) => item.id === newId);
-    if (newStatus) {
-        weaponStatus.value = newStatus;
-    }
-});
 
 const upgradeList = computed(() => {
     return upgradeForG27Weapons.find((item) => item.weaponId === selectedWeaponId.value)?.methods || [];
@@ -346,6 +342,8 @@ const handleOptionChange = (rowId: string, optionIndex: number, checked: boolean
 watch(
     () => selectedWeaponId.value,
     (newId) => {
+        // debug
+        // form.value.selectedUpgradeArray = ["", "", "", "", "", ""];
         form.value.before = {};
         form.value.after = {};
         const newStatus = infoForG27Weapon.find((item) => item.id === newId);
@@ -372,6 +370,42 @@ watch(
                 form.value.craftmanUpgradeArray = craftmanUpgradeTableData;
             }
         }
+    },
+    { immediate: true }
+);
+
+watch(
+    () => form.value.selectedUpgradeArray,
+    (newSelectedUpgrades) => {
+        // 每次選擇改造後，計算總成本和總熟練度
+        let totalCost = 0;
+        let totalEp = 0;
+        let totalStatus = {};
+        newSelectedUpgrades.forEach((upgradeId) => {
+            const upgrade = upgradeList.value.find((u) => u.id === upgradeId);
+            if (upgrade) {
+                const { abilities, required } = upgrade;
+                const { gold, ep } = required;
+                totalCost += gold || 0;
+                totalEp += ep || 0;
+
+                abilities.forEach((ability) => {
+                    const { id } = ability;
+                    const abilityName = abilitiesMap[id] || id;
+
+                    if ("min" in ability && "max" in ability) {
+                        // CraftsManUpgradeAbility 類型
+                        return `${abilityName}: + ${ability.min}-${ability.max}`;
+                    } else {
+                        // UpgradeAbility 類型
+                        return `${abilityName}: + ${(ability as UpgradeAbility).value}`;
+                    }
+                });
+            }
+        });
+
+        form.value.totalCost = totalCost;
+        form.value.totalEp = totalEp;
     },
     { immediate: true }
 );
