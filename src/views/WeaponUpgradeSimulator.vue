@@ -201,17 +201,6 @@
     background-color: #718096;
 }
 
-/* 新增：移除表格 hover 時的變色效果 */
-.el-table__row:hover {
-    background-color: transparent !important;
-}
-.el-table--striped .el-table__body tr.el-table__row--striped:hover td {
-    background-color: #2d3748 !important;
-}
-.el-table--striped .el-table__body tr:not(.el-table__row--striped):hover td {
-    background-color: #2d3748 !important;
-}
-
 /* 針對 Checkbox 的顏色調整 */
 .el-checkbox__input.is-checked .el-checkbox__inner {
     background-color: #fbd38d;
