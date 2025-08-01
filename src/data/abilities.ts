@@ -9,6 +9,7 @@ export const abilityIdArray: Ability[] = [
     { id: "durability_max ", name: "耐久度" },
     { id: "HP", name: "生命值" },
     { id: "SP", name: "耐力值" },
+    { id: "STR", name: "力量" },
 ];
 
 export const abilitiesMap: Record<string, string> = {
@@ -20,4 +21,5 @@ export const abilitiesMap: Record<string, string> = {
     durability_max: "耐久度",
     HP: "生命值",
     SP: "耐力值",
+    STR: "力量",
 };

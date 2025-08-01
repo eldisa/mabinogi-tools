@@ -79,6 +79,39 @@
                     </el-table-column>
                 </el-table>
 
+                <!--工匠改-->
+                <el-table
+                    v-if="craftmanUpgrade && form.selectedUpgradeArray.includes(craftmanUpgrade.id)"
+                    :data="craftmanUpgrade.abilities"
+                    border
+                    class="rounded-lg overflow-hidden"
+                    :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
+                    :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
+                >
+                    <el-table-column label="屬性" width="150">
+                        <template #default="{ row }">
+                            {{ abilitiesMap[row.id] || row.id }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="數值" width="200">
+                        <template #default="{ row }">
+                            <el-tooltip
+                                class="box-item"
+                                effect="dark"
+                                :content="`浮動範圍: ${row.min} ~ ${row.max}`"
+                                placement="top-end"
+                            >
+                                <el-input-number
+                                    v-model="form.craftmanUpgradeArray[row.id]"
+                                    :min="row.min"
+                                    :max="row.max"
+                                    class="w-full"
+                                />
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
                 <div class="border-b border-gray-700 pb-4 pt-6">
                     <h2 class="text-2xl font-bold text-yellow-300">選擇改造</h2>
                     <p class="text-gray-400 text-sm mt-1">選擇你要進行的改造項目，最多可選擇 6 項。</p>
@@ -235,6 +268,7 @@ interface UpgradeStatus {
 const form = ref({
     before: {} as UpgradeStatus,
     after: {} as UpgradeStatus,
+    craftmanUpgradeArray: {} as UpgradeStatus,
     // 儲存選中的改造 ID，每個 index 對應一個改造階段
     selectedUpgradeArray: new Array(6).fill(""),
     totalCost: 0,
@@ -256,6 +290,8 @@ watch(selectedWeaponId, (newId) => {
 const upgradeList = computed(() => {
     return upgradeForG27Weapons.find((item) => item.weaponId === selectedWeaponId.value)?.methods || [];
 });
+
+const craftmanUpgrade = ref(upgradeList.value.find((item) => item.id.includes("craftman")));
 
 const options: Option[] = [{ label: "靈魂解放者雙手劍", value: 1200043 }];
 
@@ -310,6 +346,8 @@ const handleOptionChange = (rowId: string, optionIndex: number, checked: boolean
 watch(
     () => selectedWeaponId.value,
     (newId) => {
+        form.value.before = {};
+        form.value.after = {};
         const newStatus = infoForG27Weapon.find((item) => item.id === newId);
         if (newStatus) {
             weaponStatus.value = newStatus;
@@ -321,6 +359,18 @@ watch(
             }, {} as { [key: string]: number }); // 這裡明確宣告了物件的型別
 
             form.value.before = newBeforeStatus;
+            form.value.after = newBeforeStatus;
+
+            if (craftmanUpgrade.value) {
+                const craftmanUpgradeTableData = craftmanUpgrade.value.abilities.reduce((acc, currentStatus) => {
+                    if ("min" in currentStatus && "max" in currentStatus) {
+                        acc[currentStatus.id] = currentStatus.max;
+                        return acc;
+                    }
+                    return {};
+                }, {} as { [key: string]: number });
+                form.value.craftmanUpgradeArray = craftmanUpgradeTableData;
+            }
         }
     },
     { immediate: true }

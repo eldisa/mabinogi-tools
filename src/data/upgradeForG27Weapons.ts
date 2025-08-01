@@ -85,7 +85,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [3],
             },
             {
-                id: "1200043-7",
+                id: "1200043-craftman",
                 name: "工匠改造",
                 required: {
                     ep: 100,
@@ -95,7 +95,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                     { id: "attack_max", min: 5, max: 25 },
                     { id: "attack_min", min: 10, max: 30 },
                     { id: "HP", min: 10, max: 30 },
-                    { id: "SP", min: 30, max: 50 },
+                    { id: "STR", min: 30, max: 50 },
                 ],
                 progress: [4],
             },
