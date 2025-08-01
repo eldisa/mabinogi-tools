@@ -50,12 +50,12 @@
                             :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
                             :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
                         >
-                            <el-table-column label="屬性">
+                            <el-table-column label="屬性" align="center">
                                 <template #default="{ row }">
                                     {{ renderAbilitiesWithMinMax(row.id) }}
                                 </template>
                             </el-table-column>
-                            <el-table-column label="改造前">
+                            <el-table-column label="改造前" align="center">
                                 <template #default="{ row }">
                                     <el-input-number
                                         v-if="form.before[row.id] && getMinMax(row.id).min !== getMinMax(row.id).max"
@@ -64,11 +64,13 @@
                                         :max="getMinMax(row.id).max"
                                         class="w-full"
                                     />
-                                    <span v-else-if="form.before[row.id]">{{ form.before[row.id] || 0 }}</span>
+                                    <span v-else-if="form.before[row.id]" class="block w-full text-center">
+                                        {{ form.before[row.id] || 0 }}
+                                    </span>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column label="改造後">
+                            <el-table-column label="改造後" align="center">
                                 <template #default="{ row }">
                                     {{ form.after[row.id] || 0 }}
                                 </template>
@@ -88,12 +90,12 @@
                             :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
                             :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
                         >
-                            <el-table-column label="屬性">
+                            <el-table-column label="屬性" align="center">
                                 <template #default="{ row }">
                                     {{ `${abilitiesMap[row.id] || row.id}: ${row.min} ~ ${row.max}` }}
                                 </template>
                             </el-table-column>
-                            <el-table-column label="數值">
+                            <el-table-column label="數值" align="center">
                                 <template #default="{ row }">
                                     <el-input-number
                                         v-model="form.craftmanUpgradeArray[row.id]"
@@ -118,13 +120,13 @@
                     :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
                     :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
                 >
-                    <el-table-column prop="name" label="名稱" width="200" />
-                    <el-table-column prop="abilities" label="影響" min-width="150">
+                    <el-table-column prop="name" label="名稱" width="200" align="center" />
+                    <el-table-column prop="abilities" label="影響" min-width="150" align="center">
                         <template #default="{ row }">
                             <div v-html="renderAbilities(row.abilities)"></div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="required" label="改造需求" min-width="100">
+                    <el-table-column prop="required" label="改造需求" min-width="100" align="center">
                         <template #default="{ row }">
                             <div class="flex flex-col">
                                 <span v-if="row.required.ep" class="text-yellow-300">
@@ -141,9 +143,8 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="required.ep" label="熟練度" width="80" />
 
-                    <el-table-column label="選擇">
+                    <el-table-column label="選擇" align="center">
                         <template #default="{ row }">
                             <div class="flex items-center space-x-1">
                                 <el-checkbox
