@@ -3,44 +3,43 @@
         class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8"
         style="background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png')"
     >
-        <div class="max-w-5xl mx-auto space-y-8">
+        <div class="max-w-7xl mx-auto space-y-8">
             <header class="text-center relative pt-8">
                 <h1
                     class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400 mb-2 tracking-wide font-serif drop-shadow-lg"
                 >
-                    <span class="inline-block relative">
-                        <svg
-                            class="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 absolute -left-12 top-1/2 -translate-y-1/2"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.5 8a.5.5 0 01.5-.5h8a.5.5 0 01.5.5v3a.5.5 0 01-.5.5h-8a.5.5 0 01-.5-.5V8zM10 5a1 1 0 00-1 1v1a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            />
-                        </svg>
-                        裝備改造模擬
-                    </span>
+                    <span class="inline-block relative text-white">裝備改造模擬</span>
                 </h1>
                 <p class="text-lg text-gray-400 mt-4 font-sans">為你的武器規劃最佳改造路線</p>
             </header>
 
             <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8 space-y-6">
-                <div class="border-b border-gray-700 pb-4">
-                    <h2 class="text-2xl font-bold text-yellow-300">武器選擇</h2>
-                    <p class="text-gray-400 text-sm mt-1">請選擇你想要改造的武器。</p>
-                </div>
-
-                <el-form :model="form" label-width="160px" label-position="left">
-                    <el-form-item label="選擇武器" class="text-gray-300">
-                        <el-select v-model="selectedWeaponId" placeholder="請選擇" class="w-full sm:w-[280px]">
-                            <el-option v-for="item in op" :key="item.value" :label="item.label" :value="item.value" />
-                        </el-select>
-                    </el-form-item>
-                </el-form>
                 <!--武器數值設定-->
-                <div class="flex flex-wrap gap-4 mt-4">
-                    <!-- 左邊：武器素質設定 -->
-                    <div class="flex-1 min-w-[320px]">
+                <div class="flex gap-4 mt-4">
+                    <!-- 左邊：選擇武器 -->
+                    <div class="w-1/6 flex flex-col">
+                        <div class="border-b border-gray-700 pb-4 pt-6">
+                            <h2 class="text-2xl font-bold text-yellow-300">選擇武器</h2>
+                        </div>
+                        <el-form-item class="text-gray-300">
+                            <el-select v-model="selectedWeaponId" placeholder="請選擇" class="w-full sm:w-[280px]">
+                                <el-option
+                                    v-for="item in op"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                />
+                            </el-select>
+                        </el-form-item>
+                        <div class="flex-grow flex justify-center items-center mt-4">
+                            <img
+                                :src="`${baseUrl}itemImage/${selectedWeaponId}.png`"
+                                class="w-1/2 h-1/2 object-contain rounded-lg shadow-lg"
+                            />
+                        </div>
+                    </div>
+                    <!-- 中間：武器素質設定 -->
+                    <div class="w-1/2">
                         <div class="border-b border-gray-700 pb-4 pt-6">
                             <h2 class="text-2xl font-bold text-yellow-300">武器素質設定與改造前後比較</h2>
                         </div>
@@ -78,10 +77,7 @@
                     </div>
 
                     <!-- 右邊：工匠改 -->
-                    <div
-                        v-if="craftmanUpgrade && form.selectedUpgradeArray.includes(craftmanUpgrade.id)"
-                        class="flex-1 min-w-[320px]"
-                    >
+                    <div v-if="craftmanUpgrade && form.selectedUpgradeArray.includes(craftmanUpgrade.id)" class="w-1/3">
                         <div class="border-b border-gray-700 pb-4 pt-6">
                             <h2 class="text-2xl font-bold text-yellow-300">工匠改造素質設定</h2>
                         </div>
@@ -263,7 +259,7 @@ const form = ref({
     totalCost: 0,
     totalEp: 0,
 });
-
+const baseUrl = import.meta.env.BASE_URL;
 const selectedWeaponId = ref(1200043);
 
 const weaponStatus = ref(infoForG27Weapon.find((item) => item.id === selectedWeaponId.value));
