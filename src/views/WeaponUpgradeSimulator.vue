@@ -146,7 +146,7 @@
 
                     <el-table-column label="選擇" align="center">
                         <template #default="{ row }">
-                            <div class="flex items-center space-x-1">
+                            <div class="flex items-center space-x-2 w-full justify-center">
                                 <el-checkbox
                                     v-for="i in 5"
                                     :key="i - 1"
