@@ -81,7 +81,7 @@
                         class="flex-1 min-w-[320px]"
                     >
                         <div class="border-b border-gray-700 pb-4 pt-6">
-                            <h2 class="text-2xl font-bold text-yellow-300">工匠改造</h2>
+                            <h2 class="text-2xl font-bold text-yellow-300">工匠改造素質設定</h2>
                         </div>
                         <el-table
                             :data="craftmanUpgrade.abilities"
