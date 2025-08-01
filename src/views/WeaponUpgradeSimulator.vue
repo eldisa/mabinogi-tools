@@ -387,7 +387,7 @@ watch(
 );
 
 watch(
-    [() => form.value.selectedUpgradeArray, () => form.value.before],
+    [() => form.value.selectedUpgradeArray, () => form.value.before, () => form.value.craftmanUpgradeArray],
     ([newSelectedUpgrades]) => {
         // 每次選擇改造後，計算總成本和總熟練度
         let totalCost = 0;
@@ -410,7 +410,7 @@ watch(
 
                 // 分辨工匠改和一般改造
                 if ("min" in currentStatus && "max" in currentStatus) {
-                    value = currentStatus.max;
+                    value = form.value.craftmanUpgradeArray[id] || 0;
                 } else {
                     value = (currentStatus as UpgradeAbility).value;
                 }
