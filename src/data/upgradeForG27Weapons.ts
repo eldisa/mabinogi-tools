@@ -94,8 +94,8 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 abilities: [
                     { id: "attack_max", min: 5, max: 25 },
                     { id: "attack_min", min: 10, max: 30 },
-                    { id: "HP", min: 10, max: 30 },
                     { id: "STR", min: 30, max: 50 },
+                    { id: "HP", min: 10, max: 30 },
                 ],
                 progress: [4],
             },
