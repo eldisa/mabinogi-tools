@@ -42,10 +42,10 @@
                     <!-- 左邊：武器素質設定 -->
                     <div class="flex-1 min-w-[320px]">
                         <div class="border-b border-gray-700 pb-4 pt-6">
-                            <h2 class="text-2xl font-bold text-yellow-300">武器素質設定</h2>
+                            <h2 class="text-2xl font-bold text-yellow-300">武器素質設定與改造前後比較</h2>
                         </div>
                         <el-table
-                            :data="weaponStatus?.status"
+                            :data="Object.keys(form.after).map((key) => ({ id: key }))"
                             border
                             class="rounded-lg overflow-hidden mt-2"
                             :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
@@ -53,23 +53,25 @@
                         >
                             <el-table-column label="屬性">
                                 <template #default="{ row }">
-                                    {{ abilitiesMap[row.id] || row.id }}
+                                    {{ renderAbilitiesWithMinMax(row.id) }}
                                 </template>
                             </el-table-column>
                             <el-table-column label="改造前">
                                 <template #default="{ row }">
-                                    <el-tooltip
-                                        effect="dark"
-                                        :content="`浮動範圍: ${row.min} ~ ${row.max}`"
-                                        placement="top-end"
-                                    >
-                                        <el-input-number
-                                            v-model="form.before[row.id]"
-                                            :min="row.min"
-                                            :max="row.max"
-                                            class="w-full"
-                                        />
-                                    </el-tooltip>
+                                    <el-input-number
+                                        v-if="form.before[row.id] && getMinMax(row.id).min !== getMinMax(row.id).max"
+                                        v-model="form.before[row.id]"
+                                        :min="getMinMax(row.id).min"
+                                        :max="getMinMax(row.id).max"
+                                        class="w-full"
+                                    />
+                                    <span v-else-if="form.before[row.id]">{{ form.before[row.id] || 0 }}</span>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column label="改造後">
+                                <template #default="{ row }">
+                                    {{ form.after[row.id] || 0 }}
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -92,23 +94,17 @@
                         >
                             <el-table-column label="屬性">
                                 <template #default="{ row }">
-                                    {{ abilitiesMap[row.id] || row.id }}
+                                    {{ `${abilitiesMap[row.id] || row.id}: ${row.min} ~ ${row.max}` }}
                                 </template>
                             </el-table-column>
                             <el-table-column label="數值">
                                 <template #default="{ row }">
-                                    <el-tooltip
-                                        effect="dark"
-                                        :content="`浮動範圍: ${row.min} ~ ${row.max}`"
-                                        placement="top-end"
-                                    >
-                                        <el-input-number
-                                            v-model="form.craftmanUpgradeArray[row.id]"
-                                            :min="row.min"
-                                            :max="row.max"
-                                            class="w-full"
-                                        />
-                                    </el-tooltip>
+                                    <el-input-number
+                                        v-model="form.craftmanUpgradeArray[row.id]"
+                                        :min="row.min"
+                                        :max="row.max"
+                                        class="w-full"
+                                    />
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -171,29 +167,6 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div class="flex-1 min-w-[320px]">
-                    <div class="border-b border-gray-700 pb-4 pt-6">
-                        <h2 class="text-2xl font-bold text-yellow-300">武器改造結果</h2>
-                    </div>
-                    <el-table
-                        :data="Object.keys(form.after).map((key) => ({ id: key }))"
-                        border
-                        class="rounded-lg overflow-hidden mt-2"
-                        :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
-                        :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
-                    >
-                        <el-table-column label="屬性">
-                            <template #default="{ row }">
-                                {{ abilitiesMap[row.id] || row.id }}
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="改造後">
-                            <template #default="{ row }">
-                                {{ form.after[row.id] || 0 }}
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </div>
             </el-card>
         </div>
     </div>
@@ -312,6 +285,21 @@ const op: Option[] = infoForG27Weapon.map((item) => ({
 const roundTo = (value: number, digits: number = 2): number => {
     const factor = Math.pow(10, digits);
     return Math.round(value * factor) / factor;
+};
+
+const getMinMax = (id: string) => {
+    return (
+        weaponStatus.value?.status.find((status) => status.id === id) || {
+            min: -1,
+            max: -1,
+        }
+    );
+};
+
+const renderAbilitiesWithMinMax = (id: string): string => {
+    const { min, max } = getMinMax(id);
+    const suffix = min === max ? `` : `:${min} - ${max}`;
+    return `${abilitiesMap[id] || id} ${suffix}`;
 };
 
 const renderGems = (gems: Gems[]): string => {
