@@ -171,6 +171,29 @@
                         </template>
                     </el-table-column>
                 </el-table>
+                <div class="flex-1 min-w-[320px]">
+                    <div class="border-b border-gray-700 pb-4 pt-6">
+                        <h2 class="text-2xl font-bold text-yellow-300">武器改造結果</h2>
+                    </div>
+                    <el-table
+                        :data="Object.keys(form.after).map((key) => ({ id: key }))"
+                        border
+                        class="rounded-lg overflow-hidden mt-2"
+                        :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
+                        :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
+                    >
+                        <el-table-column label="屬性">
+                            <template #default="{ row }">
+                                {{ abilitiesMap[row.id] || row.id }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="改造後">
+                            <template #default="{ row }">
+                                {{ form.after[row.id] || 0 }}
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
             </el-card>
         </div>
     </div>
@@ -364,38 +387,46 @@ watch(
 );
 
 watch(
-    () => form.value.selectedUpgradeArray,
-    (newSelectedUpgrades) => {
+    [() => form.value.selectedUpgradeArray, () => form.value.before],
+    ([newSelectedUpgrades]) => {
         // 每次選擇改造後，計算總成本和總熟練度
         let totalCost = 0;
         let totalEp = 0;
-        let totalStatus = {};
-        newSelectedUpgrades.forEach((upgradeId) => {
-            const upgrade = upgradeList.value.find((u) => u.id === upgradeId);
-            if (upgrade) {
-                const { abilities, required } = upgrade;
-                const { gold, ep } = required;
-                totalCost += gold || 0;
-                totalEp += ep || 0;
+        let totalStatus = { ...form.value.before };
+        const selectedUpgradeMethodArray = upgradeList.value.filter((upgrade) =>
+            newSelectedUpgrades.includes(upgrade.id)
+        );
 
-                abilities.forEach((ability) => {
-                    const { id } = ability;
-                    const abilityName = abilitiesMap[id] || id;
+        selectedUpgradeMethodArray.forEach((upgrade) => {
+            const { abilities, required } = upgrade;
+            const { gold, ep } = required;
+            totalCost += gold || 0;
+            totalEp += ep || 0;
 
-                    if ("min" in ability && "max" in ability) {
-                        // CraftsManUpgradeAbility 類型
-                        return `${abilityName}: + ${ability.min}-${ability.max}`;
-                    } else {
-                        // UpgradeAbility 類型
-                        return `${abilityName}: + ${(ability as UpgradeAbility).value}`;
-                    }
-                });
-            }
+            // 累加能力值
+            abilities.forEach((currentStatus) => {
+                const { id } = currentStatus;
+                let value = 0;
+
+                // 分辨工匠改和一般改造
+                if ("min" in currentStatus && "max" in currentStatus) {
+                    value = currentStatus.max;
+                } else {
+                    value = (currentStatus as UpgradeAbility).value;
+                }
+
+                if (totalStatus[id]) {
+                    totalStatus[id] += value;
+                } else {
+                    totalStatus[id] = value;
+                }
+            });
         });
 
         form.value.totalCost = totalCost;
         form.value.totalEp = totalEp;
+        form.value.after = { ...totalStatus };
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 );
 </script>
