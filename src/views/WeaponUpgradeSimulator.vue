@@ -271,8 +271,6 @@ const upgradeList = computed(() => {
 
 const craftmanUpgrade = ref(upgradeList.value.find((item) => item.id.includes("craftman")));
 
-const options: Option[] = [{ label: "靈魂解放者雙手劍", value: 1200043 }];
-
 // 使用 map 創建 options，確保下拉選單能動態顯示
 const op: Option[] = infoForG27Weapon.map((item) => ({
     label: item.name.tw || item.name.en,
@@ -340,7 +338,7 @@ watch(
     () => selectedWeaponId.value,
     (newId) => {
         // debug
-        // form.value.selectedUpgradeArray = ["", "", "", "", "", ""];
+        form.value.selectedUpgradeArray = ["", "", "", "", "", ""];
         form.value.before = {};
         form.value.after = {};
         const newStatus = infoForG27Weapon.find((item) => item.id === newId);
