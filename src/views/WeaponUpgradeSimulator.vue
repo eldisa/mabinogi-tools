@@ -262,6 +262,7 @@ const form = ref({
 });
 const baseUrl = import.meta.env.BASE_URL;
 const selectedWeaponId = ref(1200043);
+const upgradeableWeapons: number[] = upgradeForG27Weapons.map((item) => item.weaponId);
 
 const weaponStatus = ref(infoForG27Weapon.find((item) => item.id === selectedWeaponId.value));
 
@@ -272,10 +273,12 @@ const upgradeList = computed(() => {
 const craftmanUpgrade = ref(upgradeList.value.find((item) => item.id.includes("craftman")));
 
 // 使用 map 創建 options，確保下拉選單能動態顯示
-const op: Option[] = infoForG27Weapon.map((item) => ({
-    label: item.name.tw || item.name.en,
-    value: item.id,
-}));
+const op: Option[] = infoForG27Weapon
+    .filter((weapon) => upgradeableWeapons.includes(weapon.id))
+    .map((item) => ({
+        label: item.name.tw || item.name.en,
+        value: item.id,
+    }));
 
 const roundTo = (value: number, digits: number = 2): number => {
     const factor = Math.pow(10, digits);
