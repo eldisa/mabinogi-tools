@@ -243,7 +243,7 @@ import { ref, computed, watch } from "vue";
 import { Option } from "../types";
 import { infoForG27Weapon } from "../data/infoForG27Weapon";
 import { upgradeForG27Weapons } from "../data/upgradeForG27Weapons";
-import { abilitiesMap } from "../data/abilities";
+import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 import { UpgradeAbility, CraftsManUpgradeAbility, Gems } from "../types/Upgrade";
 
 interface UpgradeStatus {
@@ -296,8 +296,9 @@ const getMinMax = (id: string) => {
 
 const renderAbilitiesWithMinMax = (id: string): string => {
     const { min, max } = getMinMax(id);
-    const suffix = min === max ? `` : `:${min} - ${max}`;
-    return `${abilitiesMap[id] || id} ${suffix}`;
+    const randomValue = min === max ? `` : `:${min} - ${max}`;
+    const suffix = abilitiesValueWithPercentArray.includes(id) ? "(%)" : "";
+    return `${abilitiesMap[id] || id} ${randomValue} ${suffix}`;
 };
 
 const renderGems = (gems: Gems[]): string => {
@@ -314,13 +315,13 @@ const renderAbilities = (abilityIdArray: UpgradeAbility[] | CraftsManUpgradeAbil
         .map((ability) => {
             const { id } = ability;
             const abilityName = abilitiesMap[id] || id;
-
+            const suffix = abilitiesValueWithPercentArray.includes(id) ? "%" : "";
             if ("min" in ability && "max" in ability) {
                 // CraftsManUpgradeAbility 類型
-                return `${abilityName}: + ${ability.min}-${ability.max}`;
+                return `${abilityName}: + ${ability.min}-${ability.max} ${suffix}`;
             } else {
                 // UpgradeAbility 類型
-                return `${abilityName}: + ${(ability as UpgradeAbility).value}`;
+                return `${abilityName}: + ${(ability as UpgradeAbility).value} ${suffix}`;
             }
         })
         .join("<br>");
