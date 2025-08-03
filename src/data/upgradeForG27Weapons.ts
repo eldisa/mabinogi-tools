@@ -6781,7 +6781,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 },
                 abilities: [
                     {
-                        id: "protect",
+                        id: "protection",
                         value: 1,
                     },
                     {
@@ -6883,7 +6883,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 },
                 abilities: [
                     {
-                        id: "protect",
+                        id: "protection",
                         value: 5,
                     },
                 ],
@@ -7103,7 +7103,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 },
                 abilities: [
                     {
-                        id: "protect",
+                        id: "protection",
                         value: 1,
                     },
                     {
@@ -7176,7 +7176,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 },
                 abilities: [
                     {
-                        id: "protect",
+                        id: "protection",
                         value: 5,
                     },
                 ],
@@ -7361,7 +7361,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                         value: 2,
                     },
                     {
-                        id: "magic_protect",
+                        id: "magic_protection",
                         value: 1,
                     },
                 ],
@@ -7381,7 +7381,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                         value: 3,
                     },
                     {
-                        id: "magic_protect",
+                        id: "magic_protection",
                         value: 2,
                     },
                 ],
@@ -7409,7 +7409,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             //             value: 10,
             //         },
             //         {
-            //             id: "protect",
+            //             id: "protection",
             //             value: 5,
             //         },
             //         {
@@ -7417,7 +7417,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             //             value: 8,
             //         },
             //         {
-            //             id: "magic_protect",
+            //             id: "magic_protection",
             //             value: 3,
             //         },
             //     ],
