@@ -249,16 +249,6 @@ export const infoForG27Weapon = [
             },
             {
                 id: "magic_damage",
-                min: 60,
-                max: 70,
-            },
-            {
-                id: "healing_skill",
-                min: 10,
-                max: 10,
-            },
-            {
-                id: "party_healing_skill",
                 min: 70,
                 max: 80,
             },
@@ -601,16 +591,6 @@ export const infoForG27Weapon = [
                 id: "magic_damage",
                 min: 75,
                 max: 85,
-            },
-            {
-                id: "healing_skill",
-                min: 10,
-                max: 10,
-            },
-            {
-                id: "party_healing_skill",
-                min: 10,
-                max: 10,
             },
         ],
     },
