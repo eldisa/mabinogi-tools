@@ -1804,22 +1804,6 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0, 1, 2, 3, 4],
             },
             {
-                id: "1040055-1",
-                name: "強化弓柄1",
-                required: {
-                    ep: 10,
-                    gold: 600,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "balance",
-                        value: 1,
-                    },
-                ],
-                progress: [0, 1, 2, 3, 4],
-            },
-            {
                 id: "1040055-2",
                 name: "強化弓柄2",
                 required: {
@@ -1836,38 +1820,6 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0, 1, 2, 3],
             },
             {
-                id: "1040055-3",
-                name: "強化弓柄2",
-                required: {
-                    ep: 12,
-                    gold: 1200,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "balance",
-                        value: 2,
-                    },
-                ],
-                progress: [0, 1, 2, 3],
-            },
-            {
-                id: "1040055-4",
-                name: "強化弓柄3",
-                required: {
-                    ep: 14,
-                    gold: 1800,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "balance",
-                        value: 3,
-                    },
-                ],
-                progress: [0, 1, 2],
-            },
-            {
                 id: "1040055-5",
                 name: "強化弓柄3",
                 required: {
@@ -1882,22 +1834,6 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                     },
                 ],
                 progress: [0, 1, 2],
-            },
-            {
-                id: "1040055-6",
-                name: "強化弓柄4",
-                required: {
-                    ep: 17,
-                    gold: 2400,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "balance",
-                        value: 4,
-                    },
-                ],
-                progress: [0, 1],
             },
             {
                 id: "1040055-7",
@@ -1917,30 +1853,6 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040055-8",
-                name: "弓弦強化1",
-                required: {
-                    ep: 15,
-                    gold: 1000,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_min",
-                        value: 1,
-                    },
-                    {
-                        id: "attack_max",
-                        value: 1,
-                    },
-                    {
-                        id: "balance",
-                        value: -2,
-                    },
-                ],
-                progress: [0, 1, 2, 3, 4],
-            },
-            {
-                id: "1040055-9",
                 name: "弓弦強化1",
                 required: {
                     ep: 15,
@@ -1988,55 +1900,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [1, 2, 3, 4],
             },
             {
-                id: "1040055-11",
-                name: "弓弦強化2",
-                required: {
-                    ep: 16,
-                    gold: 2000,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_min",
-                        value: 2,
-                    },
-                    {
-                        id: "attack_max",
-                        value: 1,
-                    },
-                    {
-                        id: "balance",
-                        value: -4,
-                    },
-                ],
-                progress: [1, 2, 3, 4],
-            },
-            {
                 id: "1040055-12",
-                name: "弓弦強化3",
-                required: {
-                    ep: 17,
-                    gold: 3000,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_min",
-                        value: 3,
-                    },
-                    {
-                        id: "attack_max",
-                        value: 1,
-                    },
-                    {
-                        id: "balance",
-                        value: -6,
-                    },
-                ],
-                progress: [2, 3, 4],
-            },
-            {
-                id: "1040055-13",
                 name: "弓弦強化3",
                 required: {
                     ep: 17,
@@ -2084,55 +1948,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [3, 4],
             },
             {
-                id: "1040055-15",
-                name: "弓弦強化4",
-                required: {
-                    ep: 18,
-                    gold: 4000,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_min",
-                        value: 4,
-                    },
-                    {
-                        id: "attack_max",
-                        value: 1,
-                    },
-                    {
-                        id: "balance",
-                        value: -8,
-                    },
-                ],
-                progress: [3, 4],
-            },
-            {
                 id: "1040055-16",
-                name: "弓弦強化5",
-                required: {
-                    ep: 20,
-                    gold: 5000,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_min",
-                        value: 5,
-                    },
-                    {
-                        id: "attack_max",
-                        value: 1,
-                    },
-                    {
-                        id: "balance",
-                        value: -10,
-                    },
-                ],
-                progress: [4],
-            },
-            {
-                id: "1040055-17",
                 name: "弓弦強化5",
                 required: {
                     ep: 20,
@@ -2172,39 +1988,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0, 1, 2, 3],
             },
             {
-                id: "1040055-19",
-                name: "更換扣板機",
-                required: {
-                    ep: 15,
-                    gold: 500,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_min",
-                        value: 2,
-                    },
-                ],
-                progress: [0, 1, 2, 3],
-            },
-            {
                 id: "1040055-20",
-                name: "更換接頭",
-                required: {
-                    ep: 15,
-                    gold: 500,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "critical",
-                        value: 4,
-                    },
-                ],
-                progress: [1, 2],
-            },
-            {
-                id: "1040055-21",
                 name: "更換接頭",
                 required: {
                     ep: 15,
@@ -2240,58 +2024,6 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0],
             },
             {
-                id: "1040055-23",
-                name: "強化弓身",
-                required: {
-                    ep: 30,
-                    gold: 8000,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_min",
-                        value: 6,
-                    },
-                    {
-                        id: "attack_max",
-                        value: -6,
-                    },
-                ],
-                progress: [0],
-            },
-            {
-                id: "1040055-24",
-                name: "強化奈麗絲式弩",
-                required: {
-                    ep: 70,
-                    gold: 14000,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "wound_max",
-                        value: -10,
-                    },
-                    {
-                        id: "attack_min",
-                        value: 5,
-                    },
-                    {
-                        id: "attack_max",
-                        value: 5,
-                    },
-                    {
-                        id: "balance",
-                        value: 5,
-                    },
-                    {
-                        id: "critical",
-                        value: -5,
-                    },
-                ],
-                progress: [0],
-            },
-            {
                 id: "1040055-25",
                 name: "強化奈麗絲式弩",
                 required: {
@@ -2322,34 +2054,6 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                     },
                 ],
                 progress: [0],
-            },
-            {
-                id: "1040055-26",
-                name: "改造阿蘭雯式弩",
-                required: {
-                    ep: 50,
-                    gold: 12100,
-                    gems: [],
-                },
-                abilities: [
-                    {
-                        id: "attack_range",
-                        value: -300,
-                    },
-                    {
-                        id: "attack_max",
-                        value: 5,
-                    },
-                    {
-                        id: "critical",
-                        value: 5,
-                    },
-                    {
-                        id: "balance",
-                        value: -10,
-                    },
-                ],
-                progress: [3, 4],
             },
             {
                 id: "1040055-27",
