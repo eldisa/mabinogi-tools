@@ -22,7 +22,12 @@
                             <h2 class="text-2xl font-bold text-yellow-300">選擇武器</h2>
                         </div>
                         <el-form-item class="text-gray-300">
-                            <el-select v-model="selectedWeaponId" placeholder="請選擇" class="w-full sm:w-[280px]">
+                            <el-select
+                                v-model="selectedWeaponId"
+                                placeholder="請選擇"
+                                class="w-full sm:w-[280px]"
+                                filterable
+                            >
                                 <el-option
                                     v-for="item in op"
                                     :key="item.value"
