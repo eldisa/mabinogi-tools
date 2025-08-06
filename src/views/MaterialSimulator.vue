@@ -32,13 +32,13 @@
                                     {{ selectedWeapons.length > 0 ? `已選擇 ${selectedWeapons.length} 樣` : "" }}
                                 </template>
                             </el-select>
-                            <el-button type="danger" class="ml-4" @click="selectedWeapons = []">clear</el-button>
+                            <el-button type="danger" class="ml-4" @click="selectedWeapons = []">X</el-button>
                             <el-button
                                 type="primary"
                                 class="ml-4"
                                 @click="selectedWeapons = craftWeaponOptions.map((ele) => ele.value)"
                             >
-                                all
+                                全選
                             </el-button>
                         </div>
                         <div v-if="displayData.length > 0" class="mt-4">
@@ -64,7 +64,9 @@
                         <el-tabs type="border-card" class="demo-tabs">
                             <el-tab-pane label="Preview">
                                 <template v-if="displayData.length > 0">
-                                    <h2 class="text-lg font-semibold">所需材料</h2>
+                                    <h2 class="text-lg font-semibold">
+                                        {{ displayData[selectedDisplayDataIndex].name }}
+                                    </h2>
                                     <div class="mt-4">
                                         <el-table
                                             v-if="dataInPreviewTable?.children?.length"
