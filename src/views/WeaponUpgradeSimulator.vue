@@ -380,15 +380,15 @@ watch(
         let totalCost = 0;
         let totalEp = 0;
         let totalStatus = { ...form.value.before };
-        const selectedUpgradeMethodArray = upgradeList.value.filter((upgrade) =>
-            newSelectedUpgrades.includes(upgrade.id)
-        );
 
-        selectedUpgradeMethodArray.forEach((upgrade) => {
+        newSelectedUpgrades.forEach((id) => {
+            const upgrade = upgradeList.value.find((u) => u.id === id);
+            if (!upgrade) return;
+
             const { abilities, required } = upgrade;
             const { gold, ep } = required;
-            totalCost += gold || 0;
-            totalEp += ep || 0;
+            totalCost += gold ?? 0;
+            totalEp += ep ?? 0;
 
             // 累加能力值
             abilities.forEach((currentStatus) => {
@@ -402,11 +402,7 @@ watch(
                     value = (currentStatus as UpgradeAbility).value;
                 }
 
-                if (totalStatus[id]) {
-                    totalStatus[id] += value;
-                } else {
-                    totalStatus[id] = value;
-                }
+                totalStatus[id] = (totalStatus[id] ?? 0) + value;
             });
         });
 
