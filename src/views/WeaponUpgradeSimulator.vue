@@ -311,17 +311,20 @@ const renderGems = (gems: Gems[]): string => {
 };
 
 const renderAbilities = (abilityIdArray: UpgradeAbility[] | CraftsManUpgradeAbility[]): string => {
+    const format = (num: number) => (num >= 0 ? `+${num}` : `${num}`);
+
     return abilityIdArray
         .map((ability) => {
             const { id } = ability;
             const abilityName = abilitiesMap[id] || id;
             const suffix = abilitiesValueWithPercentArray.includes(id) ? "%" : "";
+
             if ("min" in ability && "max" in ability) {
                 // CraftsManUpgradeAbility 類型
-                return `${abilityName}: + ${ability.min}-${ability.max} ${suffix}`;
+                return `${abilityName}: ${format(ability.min)} ~ ${format(ability.max)} ${suffix}`;
             } else {
                 // UpgradeAbility 類型
-                return `${abilityName}: + ${(ability as UpgradeAbility).value} ${suffix}`;
+                return `${abilityName}: ${format((ability as UpgradeAbility).value)} ${suffix}`;
             }
         })
         .join("<br>");
