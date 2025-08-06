@@ -270,7 +270,7 @@ const upgradeList = computed(() => {
     return upgradeForG27Weapons.find((item) => item.weaponId === selectedWeaponId.value)?.methods || [];
 });
 
-const craftmanUpgrade = ref(upgradeList.value.find((item) => item.id.includes("craftman")));
+const craftmanUpgrade = computed(() => upgradeList.value.find((item) => item.id.includes("craftman")));
 
 // 使用 map 創建 options，確保下拉選單能動態顯示
 const op: Option[] = infoForG27Weapon
