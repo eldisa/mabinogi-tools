@@ -2173,7 +2173,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [5],
             },
             {
-                id: "1040055-31",
+                id: "1040055-craftman",
                 name: "工匠改造",
                 required: {
                     ep: 100,
@@ -2588,7 +2588,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0, 1, 2, 3, 4],
             },
             {
-                id: "1050017-19",
+                id: "1050017-craftman",
                 name: "工匠改造",
                 required: {
                     ep: 100,
@@ -5103,7 +5103,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [3, 4],
             },
             {
-                id: "1270029-10",
+                id: "1270029-craftman",
                 name: "工匠改造",
                 required: {
                     ep: 100,
@@ -5895,7 +5895,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [4],
             },
             {
-                id: "1290021-8",
+                id: "1290021-craftman",
                 name: "工匠改造",
                 required: {
                     ep: 100,
@@ -6011,7 +6011,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0],
             },
             {
-                id: "1290021-12",
+                id: "1290021-craftman-2",
                 name: "靈魂解放者鎖鏈鐮刃專用工匠改造",
                 required: {
                     ep: 100,
@@ -7321,7 +7321,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0],
             },
             {
-                id: "1440006-24",
+                id: "1440006-craftman",
                 name: "靈魂解放者盾牌鋼瓶專用工匠改造",
                 required: {
                     ep: 100,
@@ -7759,7 +7759,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0],
             },
             {
-                id: "1060011-29",
+                id: "1060011-29-craftman",
                 name: "靈魂解放者鋼瓶專用工匠改造",
                 required: {
                     ep: 100,
@@ -7974,7 +7974,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [4],
             },
             {
-                id: "1080048-7",
+                id: "1080048-7-craftman",
                 name: "工匠改造",
                 required: {
                     ep: 100,
