@@ -703,6 +703,16 @@ export const infoForG27Weapon = [
                 max: 30,
             },
             {
+                id: "max_bullet",
+                min: 64,
+                max: 64,
+            },
+            {
+                id: "effect_range",
+                min: 800,
+                max: 800,
+            },
+            {
                 id: "durability_max",
                 min: 21,
                 max: 31,

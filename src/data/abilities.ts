@@ -57,6 +57,10 @@ export const abilitiesMap: Record<string, string> = {
     marionette_attack_min: "人偶操縱術最小傷害",
     marionette_critical: "人偶操縱術暴擊率",
     effect_range: "射程",
+    attack_range: "射程",
+    wound_max: "最大負傷率",
+    max_bullet: "最大彈藥數量",
+    splash_radius: "攻擊範圍",
 };
 
 export const abilitiesValueWithPercentArray: string[] = [
@@ -73,4 +77,5 @@ export const abilitiesValueWithPercentArray: string[] = [
     "immune_ranged",
     "immune_magic",
     "damage_reduction_rate",
+    "wound_max",
 ];
