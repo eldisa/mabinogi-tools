@@ -158,7 +158,7 @@ export const infoForG27Weapon = [
                 max: 3,
             },
             {
-                id: "effect_range",
+                id: "",
                 min: 2000,
                 max: 2000,
             },
@@ -203,7 +203,7 @@ export const infoForG27Weapon = [
                 max: 3,
             },
             {
-                id: "effect_range",
+                id: "attack_range",
                 min: 1900,
                 max: 1900,
             },
@@ -708,7 +708,7 @@ export const infoForG27Weapon = [
                 max: 64,
             },
             {
-                id: "effect_range",
+                id: "attack_range",
                 min: 800,
                 max: 800,
             },
