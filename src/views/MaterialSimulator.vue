@@ -278,10 +278,11 @@ const summaryColumns = [
         key: "name",
         title: "名稱",
         dataKey: "name",
-        width: 220,
+        width: 300,
         cellRenderer: ({ rowData }: any) => {
             return h("span", rowData.name);
         },
+        sortable: true,
     },
     // {
     //     key: "owned",
