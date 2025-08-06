@@ -311,7 +311,11 @@ const renderGems = (gems: Gems[]): string => {
 };
 
 const renderAbilities = (abilityIdArray: UpgradeAbility[] | CraftsManUpgradeAbility[]): string => {
-    const format = (num: number) => (num >= 0 ? `+${num}` : `${num}`);
+    const format = (num: number): string => {
+        const color = num < 0 ? "red" : "#60a5fa"; // tailwind 的 blue-400
+        const sign = num >= 0 ? "+" : "";
+        return `<span style="color:${color}">${sign}${num}</span>`;
+    };
 
     return abilityIdArray
         .map((ability) => {
@@ -320,11 +324,10 @@ const renderAbilities = (abilityIdArray: UpgradeAbility[] | CraftsManUpgradeAbil
             const suffix = abilitiesValueWithPercentArray.includes(id) ? "%" : "";
 
             if ("min" in ability && "max" in ability) {
-                // CraftsManUpgradeAbility 類型
                 return `${abilityName}: ${format(ability.min)} ~ ${format(ability.max)} ${suffix}`;
             } else {
-                // UpgradeAbility 類型
-                return `${abilityName}: ${format((ability as UpgradeAbility).value)} ${suffix}`;
+                const value = (ability as UpgradeAbility).value;
+                return `${abilityName}: ${format(value)} ${suffix}`;
             }
         })
         .join("<br>");
