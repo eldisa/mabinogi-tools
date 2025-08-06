@@ -120,7 +120,11 @@
                     :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
                     :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
                 >
-                    <el-table-column prop="name" label="名稱" width="200" align="center" />
+                    <el-table-column prop="name" label="名稱" width="300" align="center">
+                        <template #default="{ row }">
+                            <span class="block text-center w-full">{{ row.name }}</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="abilities" label="影響" min-width="150" align="center">
                         <template #default="{ row }">
                             <div v-html="renderAbilities(row.abilities)"></div>
