@@ -239,7 +239,9 @@ export const materials: CraftableItem[] = [
             tw: "淚滴寶石",
         },
         source: {
-            type: "",
+            type: "shop",
+            price: 35000,
+            currency: "ducat",
         },
     },
     {
@@ -657,7 +659,9 @@ export const materials: CraftableItem[] = [
             tw: "",
         },
         source: {
-            type: "",
+            type: "shop",
+            price: 500000,
+            currency: "gold",
         },
     },
     {
