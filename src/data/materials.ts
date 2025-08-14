@@ -656,7 +656,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Catalyst",
             kr: "마력이 깃든 융합제",
-            tw: "",
+            tw: "聚集魔力的融合劑",
         },
         source: {
             type: "shop",
@@ -669,6 +669,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Brilliant Memory Crystal",
             kr: "찬란한 기억의 결정",
+            tw: "燦爛的記憶結晶",
         },
         source: {
             type: "craft",
@@ -697,7 +698,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Intense Memory Crystal",
             kr: "강렬한 기억의 결정",
-            tw: "",
+            tw: "強烈的記憶結晶",
         },
         source: {
             type: "craft",
@@ -726,7 +727,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Sturdy Memory Crystal",
             kr: "견고한 기억의 결정",
-            tw: "",
+            tw: "堅固的記憶結晶",
         },
         source: {
             type: "craft",
@@ -755,6 +756,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Charged Spin Gear",
             kr: "마력이 충만한 스핀 기어",
+            tw: "充滿魔力的旋轉齒輪",
         },
         source: {
             type: "craft",
@@ -783,6 +785,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Charged Magical Crystal",
             kr: "마력이 충만한 마력석",
+            tw: "充滿魔力的魔力石",
         },
         source: {
             type: "craft",
@@ -811,7 +814,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Charged Loop",
             kr: "마력이 충만한 고리",
-            tw: "",
+            tw: "充滿魔力的指環",
         },
         source: {
             type: "craft",
@@ -844,6 +847,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "High Purity Fusion Heulwen Alloy",
             kr: "순도 높은 융합의 힐웬 합금",
+            tw: "高純度融合稀原合金",
         },
         source: {
             type: "craft",
@@ -872,6 +876,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "High Purity Fusion Sulien",
             kr: "순도 높은 융합의 실리엔",
+            tw: "高純度融合希里原",
         },
         source: {
             type: "craft",
@@ -900,7 +905,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "High Purity Fusion Wood Plate",
             kr: "순도 높은 융합의 나무판",
-            tw: "",
+            tw: "高純度融合木板",
         },
         source: {
             type: "craft",
@@ -929,7 +934,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "High Purity Force Crystal",
             kr: "순도 높은 힘의 결정",
-            tw: "",
+            tw: "高純度力量結晶",
         },
         source: {
             type: "craft",
@@ -962,6 +967,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Sharp Blade",
             kr: "예리한 칼날",
+            tw: "異常鋒利的刀刃",
         },
         source: {
             type: "craft",
@@ -990,7 +996,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Sturdy Metal",
             kr: "단단한 금속",
-            tw: "",
+            tw: "堅硬的金屬",
         },
         source: {
             type: "craft",
@@ -1019,6 +1025,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Exquisite String",
             kr: "정교한 스트링",
+            tw: "精巧的弦線",
         },
         source: {
             type: "craft",
@@ -1047,7 +1054,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Filled Magical Crystal",
             kr: "마력이 담긴 마력석",
-            tw: "",
+            tw: "聚集魔力的魔力石",
         },
         source: {
             type: "craft",
@@ -1076,7 +1083,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Pure Gemstone",
             kr: "퓨어 젬스톤",
-            tw: "",
+            tw: "純淨寶石",
         },
         source: {
             type: "craft",
@@ -1105,6 +1112,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Blade Shard",
             kr: "마력이 깃든 칼날",
+            tw: "聚集魔力的刀刃",
         },
         source: {
             type: "craft",
@@ -1133,7 +1141,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Metal Shard",
             kr: "마력이 깃든 금속",
-            tw: "",
+            tw: "聚集魔力的金屬",
         },
         source: {
             type: "craft",
@@ -1162,7 +1170,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Ore Fragment",
             kr: "마력이 깃든 광석 조각",
-            tw: "",
+            tw: "聚集魔力的礦石碎片",
         },
         source: {
             type: "craft",
@@ -1191,7 +1199,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Wood Plate",
             kr: "마력이 깃든 나무판",
-            tw: "",
+            tw: "聚集魔力的木板",
         },
         source: {
             type: "craft",
@@ -1224,7 +1232,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Heulwen Ore",
             kr: "마력이 깃든 힐웬 광석 조각",
-            tw: "",
+            tw: "聚集魔力的稀原礦石碎片",
         },
         source: {
             type: "craft",
@@ -1253,7 +1261,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Leather Piece",
             kr: "마력이 깃든 가죽 조각",
-            tw: "",
+            tw: "聚集魔力的皮革碎片",
         },
         source: {
             type: "craft",
@@ -1282,6 +1290,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Feather",
             kr: "마력이 깃든 깃털",
+            tw: "聚集魔力的羽毛",
         },
         source: {
             type: "craft",
@@ -1310,7 +1319,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Alchemy Crystal",
             kr: "마력이 깃든 연금술 결정",
-            tw: "",
+            tw: "聚集魔力的鍊金術結晶",
         },
         source: {
             type: "craft",
@@ -1339,7 +1348,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Mage Jewel",
             kr: "마력이 깃든 마법사의 보석",
-            tw: "",
+            tw: "聚集魔力的法師的寶石",
         },
         source: {
             type: "craft",
@@ -1368,7 +1377,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magic Infused Wolf Fang",
             kr: "마력이 깃든 늑대의 이빨",
-            tw: "",
+            tw: "聚集魔力的狼牙",
         },
         source: {
             type: "craft",
@@ -1397,7 +1406,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Strengthen Spin Gear",
             kr: "강화된 스핀 기어",
-            tw: "",
+            tw: "強化旋轉齒輪",
         },
         source: {
             type: "craft",
@@ -1422,7 +1431,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Strengthen Sulien",
             kr: "강화된 실리엔",
-            tw: "",
+            tw: "強化希里原",
         },
         source: {
             type: "craft",
@@ -1447,7 +1456,7 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Strengthen Plate",
             kr: "강화된 금속판",
-            tw: "",
+            tw: "強化金屬板",
         },
         source: {
             type: "craft",
@@ -1484,10 +1493,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Bri Leith's Core",
             kr: "브리 레흐의 코어",
-            tw: "布里萊赫的核心",
+            tw: "布里萊赫核心",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1495,10 +1505,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Bri Leith's Essence",
             kr: "브리 레흐의 정수",
-            tw: "布里萊赫的精髓",
+            tw: "布里萊赫精髓",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1506,10 +1517,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Orange Ligt Memory Fragment",
             kr: "주황빛 기억의 조각",
-            tw: "",
+            tw: "橘黃光記憶碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1517,10 +1529,23 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Green Ligt Memory Fragment",
             kr: "초록빛 기억의 조각",
-            tw: "",
+            tw: "綠光記憶碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
+        },
+    },
+    {
+        id: 5100307,
+        name: {
+            en: "Gold Ligt Memory Fragment",
+            kr: "금빛 기억의 조각",
+            tw: "黃光記憶碎片",
+        },
+        source: {
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1528,10 +1553,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Emblem Infused with the Aura of Bri Leith",
             kr: "브리 레흐의 기운이 깃든 문장",
-            tw: "",
+            tw: "蘊含布里萊赫氣息的徽章",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1539,10 +1565,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Blunt Blade Fragments",
             kr: "무딘 칼날 조각",
-            tw: "",
+            tw: "鈍刃碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1550,10 +1577,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Soft Metal Piece",
             kr: "무른 금속 파편",
-            tw: "",
+            tw: "柔軟的金屬碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1561,10 +1589,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Faded Filoselle",
             kr: "빛바랜 자수실",
-            tw: "",
+            tw: "褪色的刺繡線",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1572,10 +1601,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Empty Magic Stone",
             kr: "텅 빈 마력석",
-            tw: "",
+            tw: "空的魔力石",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1583,10 +1613,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Aragonite",
             kr: "아라고나이트",
-            tw: "",
+            tw: "霰石",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1594,10 +1625,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Variscite",
             kr: "바리사이트",
-            tw: "",
+            tw: "雲母",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1605,22 +1637,23 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Orpiment",
             kr: "오피먼트",
-            tw: "",
+            tw: "鵝卵石",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
-
     {
         id: 5100316,
         name: {
             en: "Exquisite Metal Piece",
             kr: "오묘한 금속 조각",
-            tw: "",
+            tw: "奧妙的金屬碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1628,10 +1661,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Exquisite Magic Stone",
             kr: "오묘한 마력석",
-            tw: "",
+            tw: "奧妙的魔力石",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1639,10 +1673,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Exquisite Leather Piece",
             kr: "오묘한 가죽 조각",
-            tw: "",
+            tw: "奧妙的皮革碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1650,10 +1685,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "High Purity Magical Crystal",
             kr: "순도 높은 마력의 결정",
-            tw: "",
+            tw: "高純度魔力結晶",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1661,10 +1697,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Verdant Tinged Blade Shard",
             kr: "녹음이 감도는 칼날 조각",
-            tw: "",
+            tw: "綠意盎然的刀刃碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1672,10 +1709,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Verdant Tinged Metal Shard",
             kr: "녹음이 감도는 금속 조각",
-            tw: "",
+            tw: "綠意盎然的金屬碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1683,10 +1721,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Verdant Tinged Ore",
             kr: "녹음이 감도는 광석 조각",
-            tw: "",
+            tw: "綠意盎然的礦石碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1694,10 +1733,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Verdant Tinged Firewood",
             kr: "녹음이 감도는 나무 장작",
-            tw: "",
+            tw: "綠意盎然的木柴",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1705,10 +1745,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Sturdy Heulwn Ore",
             kr: "단단한 힐웬 광석 조각",
-            tw: "",
+            tw: "堅硬的稀原礦石碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1716,10 +1757,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Pure White Leather Fragment",
             kr: "순백의 가죽 조각",
-            tw: "",
+            tw: "純白皮革碎片",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1727,10 +1769,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Pure White Feather",
             kr: "순백의 깃털",
-            tw: "",
+            tw: "純白羽毛",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1738,10 +1781,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Transparent Alchemy Crystal",
             kr: "투명한 연금술 결정",
-            tw: "",
+            tw: "透明的鍊金術結晶",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1749,10 +1793,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Verdant Infused Mage Jewel",
             kr: "녹음이 깃든 마법사의 보석",
-            tw: "",
+            tw: "綠意盎然的法師的寶石",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1760,10 +1805,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Sturdy Wolf Fang",
             kr: "단단한 늑대의 이빨",
-            tw: "",
+            tw: "堅硬的野狼牙齒",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
     {
@@ -1771,10 +1817,11 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Magical Crystal",
             kr: "마력석",
-            tw: "",
+            tw: "魔力石",
         },
         source: {
-            type: "",
+            type: "reward",
+            dungeon: "G27",
         },
     },
 ];
