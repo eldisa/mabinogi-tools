@@ -330,7 +330,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "shop",
-            price: 500000,
+            price: 50000,
             currency: "gold",
         },
     },
