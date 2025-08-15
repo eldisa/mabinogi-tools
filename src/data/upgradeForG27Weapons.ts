@@ -8120,7 +8120,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0],
             },
             {
-                id: "1080048-12",
+                id: "1080048-craftman-2",
                 name: "靈魂解放者里拉專用工匠改造",
                 required: {
                     ep: 100,
