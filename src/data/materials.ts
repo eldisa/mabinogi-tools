@@ -329,7 +329,9 @@ export const materials: CraftableItem[] = [
             tw: "擁有覺醒能量的粉末",
         },
         source: {
-            type: "",
+            type: "shop",
+            price: 500000,
+            currency: "gold",
         },
     },
     {
