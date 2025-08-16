@@ -6,7 +6,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
         methods: [
             {
                 id: "1200043-1",
-                name: "靈魂解放者之刃專用改造1",
+                name: "靈魂解放者雙手劍專用改造1",
                 required: {
                     ep: 100,
                     gold: 330000,
@@ -20,7 +20,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1200043-2",
-                name: "靈魂解放者之刃專用改造2",
+                name: "靈魂解放者雙手劍專用改造2",
                 required: {
                     ep: 100,
                     gold: 330000,

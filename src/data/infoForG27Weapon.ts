@@ -124,7 +124,7 @@ export const infoForG27Weapon = [
         name: {
             en: "Soul Liberat Bow",
             kr: "소울 리버레이트 보우",
-            tw: "靈魂解放者之弓",
+            tw: "靈魂解放者弓",
         },
         status: [
             {

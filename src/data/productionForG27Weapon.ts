@@ -174,7 +174,7 @@ export const G27Weapons: CraftableItem[] = [
         name: {
             en: "Soul Liberat Bow",
             kr: "소울 리버레이트 보우",
-            tw: "靈魂解放者之弓",
+            tw: "靈魂解放者弓",
         },
         source: {
             type: "craft",
@@ -1209,7 +1209,7 @@ export const G27Weapons: CraftableItem[] = [
         name: {
             en: "Soul Liberat Pierrot Miniature",
             kr: "소울 리버레이트 피에로 미니어처",
-            tw: "靈魂解放者小丑人偶",
+            tw: "靈魂解放者小丑模型",
         },
         source: {
             type: "craft",
@@ -1254,7 +1254,7 @@ export const G27Weapons: CraftableItem[] = [
         name: {
             en: "Soul Liberat Colosus Miniature",
             kr: "소울 리버레이트 콜로서스 미니어처",
-            tw: "靈魂解放者巨像人偶",
+            tw: "靈魂解放者巨像模型",
         },
         source: {
             type: "craft",
