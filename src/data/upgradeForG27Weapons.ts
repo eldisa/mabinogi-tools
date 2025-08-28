@@ -417,6 +417,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                     { id: "STR", min: 1, max: 35 },
                     { id: "WIL", min: 7, max: 20 },
                     { id: "HP", min: 3, max: 20 },
+                    { id: "STR2", min: 1, max: 14 },
                 ],
                 progress: [4],
             },

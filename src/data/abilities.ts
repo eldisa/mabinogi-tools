@@ -24,6 +24,7 @@ export const abilitiesMap: Record<string, string> = {
     SP: "耐力值",
     MP: "魔力值",
     STR: "力量",
+    STR2: "力量",
     DEX: "敏捷",
     WIL: "意志",
     LUK: "幸運",
