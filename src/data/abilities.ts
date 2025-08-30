@@ -1,4 +1,4 @@
-import { Ability } from "../types/Upgrade";
+import type { Ability } from "../types/Ability";
 
 export const abilityIdArray: Ability[] = [
     { id: "attack_min", name: "最小傷害" },
