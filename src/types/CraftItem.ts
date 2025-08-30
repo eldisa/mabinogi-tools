@@ -38,6 +38,7 @@ export type MaterialSource =
     | { type: "shop"; price: number; currency?: CurrencyInGame } // 商店購買，有分金幣和杜卡特
     | { type: "craft"; materials: { id: number; amount: number }[] } // 製作所需材料
     | { type: "dissolution"; materials: string } // 分解
+    | { type: "desc"; description: string } // 其他描述
     | { type: "" };
 
 export interface MaterialCount {

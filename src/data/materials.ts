@@ -239,9 +239,11 @@ export const materials: CraftableItem[] = [
             tw: "淚滴寶石",
         },
         source: {
-            type: "shop",
-            price: 35000,
-            currency: "ducat",
+            // type: "shop",
+            // price: 35000,
+            // currency: "ducat",
+            type: "desc",
+            description: "貿易所商店購買 (35000 杜卡特)",
         },
     },
     {
@@ -329,9 +331,8 @@ export const materials: CraftableItem[] = [
             tw: "擁有覺醒能量的粉末",
         },
         source: {
-            type: "shop",
-            price: 50000,
-            currency: "gold",
+            type: "desc",
+            description: "史蒂華秘密商店購買(50000)",
         },
     },
     {
@@ -649,8 +650,10 @@ export const materials: CraftableItem[] = [
             tw: "寶石粉末",
         },
         source: {
-            type: "dissolution",
-            materials: "新寶石",
+            // type: "dissolution",
+            // materials: "新寶石",
+            type: "desc",
+            description: "分解新寶石 (1~2)",
         },
     },
     {
@@ -661,9 +664,12 @@ export const materials: CraftableItem[] = [
             tw: "聚集魔力的融合劑",
         },
         source: {
-            type: "shop",
-            price: 500000,
-            currency: "gold",
+            // type: "shop",
+            // price: 500000,
+            // currency: "gold",
+
+            type: "desc",
+            description: "雷楠商店購買 (50萬)",
         },
     },
     {
@@ -1498,8 +1504,10 @@ export const materials: CraftableItem[] = [
             tw: "布里萊赫核心",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            // type: "reward",
+            // dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:100)",
         },
     },
     {
@@ -1510,8 +1518,8 @@ export const materials: CraftableItem[] = [
             tw: "布里萊赫精髓",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:100)",
         },
     },
     {
@@ -1522,8 +1530,8 @@ export const materials: CraftableItem[] = [
             tw: "橘黃光記憶碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:25)",
         },
     },
     {
@@ -1534,8 +1542,8 @@ export const materials: CraftableItem[] = [
             tw: "綠光記憶碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:25)",
         },
     },
     {
@@ -1546,8 +1554,8 @@ export const materials: CraftableItem[] = [
             tw: "黃光記憶碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:25)",
         },
     },
     {
@@ -1558,8 +1566,8 @@ export const materials: CraftableItem[] = [
             tw: "蘊含布里萊赫氣息的徽章",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1570,8 +1578,8 @@ export const materials: CraftableItem[] = [
             tw: "鈍刃碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1582,8 +1590,8 @@ export const materials: CraftableItem[] = [
             tw: "柔軟的金屬碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1594,8 +1602,8 @@ export const materials: CraftableItem[] = [
             tw: "褪色的刺繡線",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1606,8 +1614,8 @@ export const materials: CraftableItem[] = [
             tw: "空的魔力石",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1618,8 +1626,8 @@ export const materials: CraftableItem[] = [
             tw: "霰石",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1630,8 +1638,8 @@ export const materials: CraftableItem[] = [
             tw: "雲母",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1642,8 +1650,8 @@ export const materials: CraftableItem[] = [
             tw: "鵝卵石",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1654,8 +1662,8 @@ export const materials: CraftableItem[] = [
             tw: "奧妙的金屬碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1666,8 +1674,8 @@ export const materials: CraftableItem[] = [
             tw: "奧妙的魔力石",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1678,8 +1686,8 @@ export const materials: CraftableItem[] = [
             tw: "奧妙的皮革碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1690,8 +1698,8 @@ export const materials: CraftableItem[] = [
             tw: "高純度魔力結晶",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
         },
     },
     {
@@ -1702,8 +1710,8 @@ export const materials: CraftableItem[] = [
             tw: "綠意盎然的刀刃碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1714,8 +1722,8 @@ export const materials: CraftableItem[] = [
             tw: "綠意盎然的金屬碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1726,8 +1734,8 @@ export const materials: CraftableItem[] = [
             tw: "綠意盎然的礦石碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1738,8 +1746,8 @@ export const materials: CraftableItem[] = [
             tw: "綠意盎然的木柴",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1750,8 +1758,8 @@ export const materials: CraftableItem[] = [
             tw: "堅硬的稀原礦石碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1762,8 +1770,8 @@ export const materials: CraftableItem[] = [
             tw: "純白皮革碎片",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1774,8 +1782,8 @@ export const materials: CraftableItem[] = [
             tw: "純白羽毛",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1786,8 +1794,8 @@ export const materials: CraftableItem[] = [
             tw: "透明的鍊金術結晶",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1798,8 +1806,8 @@ export const materials: CraftableItem[] = [
             tw: "綠意盎然的法師的寶石",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1810,8 +1818,8 @@ export const materials: CraftableItem[] = [
             tw: "堅硬的野狼牙齒",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
     {
@@ -1822,8 +1830,8 @@ export const materials: CraftableItem[] = [
             tw: "魔力石",
         },
         source: {
-            type: "reward",
-            dungeon: "G27",
+            type: "desc",
+            description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
         },
     },
 ];

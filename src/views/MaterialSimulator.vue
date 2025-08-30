@@ -138,6 +138,7 @@ interface MaterialSummary {
 
 const baseUrl = import.meta.env.BASE_URL;
 const selectedWeapons = ref<number[]>([]);
+const itemById = new Map(materials.map((m) => [m.id, m]));
 
 const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
     const { id, name } = weapon;
@@ -155,7 +156,7 @@ const materialMap = ref<{ id: number; total: number }[]>([]);
 const materialSummaryTable = computed(() => {
     return materials
         .map((item) => {
-            const { id, name } = item;
+            const { id, name, source } = item;
             const total = materialMap.value.find((ele) => ele.id === id)?.total || 0;
 
             return {
@@ -164,6 +165,7 @@ const materialSummaryTable = computed(() => {
                 total,
                 owned: inventory.value[id] || 0,
                 shortage: Math.max(0, total - (inventory.value[id] || 0)),
+                source,
             };
         })
         .filter((ele) => ele.total > 0);
@@ -306,6 +308,46 @@ const summaryColumns = [
     //     width: 120,
     //     align: "right" as any,
     // },
+    // 下面這個是新增的
+    {
+        key: "source",
+        title: "如何取得",
+        dataKey: "source",
+        width: 400,
+        align: "center" as "right" | "left" | "center",
+        cellRenderer: ({ cellData, rowData }: any) => {
+            const src = cellData ?? itemById.get(rowData?.id)?.source ?? null;
+            const type = src?.type ?? "-";
+
+            switch (type) {
+                case "craft":
+                    return h("span", "製作");
+                    break;
+                case "desc":
+                    return h("span", src?.description ?? "");
+                    break;
+                default:
+                    break;
+            }
+            if (type === "craft") return h("span", "製作");
+            // if (type === "reward") {
+            //     let price = src?.price ?? 0;
+            //     const priceText = Number(price).toLocaleString();
+            //     // return h("span", src?.price ?? "自己查");
+            //     return h("span", `${priceText}`);
+            // }
+            // if (type === "dissolution") return h("span", `分解自 ${src?.materials ?? ""}`);
+            // if (type === "drop") return h("span", `掉落：${src?.monster ?? ""}`);
+            // if (type === "shop") {
+            //     const price = (src as any)?.price;
+            //     const currency = (src as any)?.currency;
+            //     const currencyText = "ducat" === currency ? "杜卡特" : "金幣";
+            //     return h("span", `商店${price != null ? `（${Number(price).toLocaleString()}${currencyText}）` : ""}`);
+            // }
+            return h("span", "—");
+        },
+        sortable: true,
+    },
 ];
 
 const hasAddEvent = ref(false);
