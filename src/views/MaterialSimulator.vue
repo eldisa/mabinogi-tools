@@ -91,6 +91,13 @@
                                                 </template>
                                             </el-table-column>
                                             <el-table-column prop="amount" label="需求數量" align="right" />
+                                            <el-table-column label="如何獲得">
+                                                <template #default="{ row }">
+                                                    <div v-if="row.source.type === 'craft'">生產製作</div>
+                                                    <div v-else-if="row.source.type === ''">-</div>
+                                                    <div v-else>{{ row.source.description || "" }}</div>
+                                                </template>
+                                            </el-table-column>
                                         </el-table>
                                     </div>
                                 </template>
