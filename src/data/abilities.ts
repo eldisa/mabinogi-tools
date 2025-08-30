@@ -33,9 +33,11 @@ export const abilitiesMap: Record<string, string> = {
     party_healing_skill: "隊伍治癒效果",
     healing_injury_healing: "治療負傷效果",
     magic_damage: "魔法傷害",
+    magic_attack: "魔法攻擊力",
     chain_casting: "連鎖",
     casting_speed: "施法速度",
     manause_revised: "魔力消耗減少",
+    manause_revised_set: "魔力消耗減輕套裝效果",
     mana_regen: "魔力恢復",
     stamania_revised: "耐力消耗減少",
     defense: "防禦",
@@ -57,11 +59,14 @@ export const abilitiesMap: Record<string, string> = {
     marionette_attack_max: "人偶操縱術最大傷害",
     marionette_attack_min: "人偶操縱術最小傷害",
     marionette_critical: "人偶操縱術暴擊率",
+    marionette_defense: "人偶防禦",
+    marionette_protect: "人偶保護",
     effect_range: "射程",
     attack_range: "射程",
     wound_max: "最大負傷率",
     max_bullet: "最大彈藥數量",
     splash_radius: "攻擊範圍",
+    attack_speed_set: "攻擊速度套裝效果",
 };
 
 export const abilitiesValueWithPercentArray: string[] = [
