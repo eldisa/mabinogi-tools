@@ -242,7 +242,7 @@ export const materials: CraftableItem[] = [
             // type: "shop",
             // price: 35000,
             // currency: "ducat",
-            type: "desc",
+            type: "shop",
             description: "貿易所商店購買 (35000 杜卡特)",
         },
     },
@@ -331,7 +331,7 @@ export const materials: CraftableItem[] = [
             tw: "擁有覺醒能量的粉末",
         },
         source: {
-            type: "desc",
+            type: "shop",
             description: "史蒂華秘密商店購買(50000)",
         },
     },
@@ -652,7 +652,7 @@ export const materials: CraftableItem[] = [
         source: {
             // type: "dissolution",
             // materials: "新寶石",
-            type: "desc",
+            type: "dissolution",
             description: "分解新寶石 (1~2)",
         },
     },
@@ -668,7 +668,7 @@ export const materials: CraftableItem[] = [
             // price: 500000,
             // currency: "gold",
 
-            type: "desc",
+            type: "shop",
             description: "雷楠商店購買 (50萬)",
         },
     },

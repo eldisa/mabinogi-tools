@@ -246,14 +246,49 @@ const onSort = (sortBy: SortBy) => {
     sortState.value = sortBy;
 };
 
+const getTypeOrder = (type: string) => {
+    switch (type) {
+        case "craft":
+            return 1;
+        case "shop":
+            return 2;
+        case "drop":
+            return 3;
+        case "dissolution":
+            return 4;
+        case "desc":
+            return 5;
+        default:
+            return -1;
+    }
+};
+
 const sortedData = computed(() => {
     const { order } = sortState.value;
-    const key = sortState.value!.key as keyof MaterialSummary;
+    const key = sortState.value.key as keyof MaterialSummary | "source";
+
     if (!key || !order) return materialSummaryTable.value;
 
+    // 複製一份數據，避免直接修改原始數據
     return [...materialSummaryTable.value].sort((a, b) => {
-        const aVal = a[key];
-        const bVal = b[key];
+        // 如果排序欄位是 'source'，使用自定義邏輯
+        if (key === "source") {
+            const aType = a.source?.type ?? "-";
+            const bType = b.source?.type ?? "-";
+            const aOrder = getTypeOrder(aType);
+            const bOrder = getTypeOrder(bType);
+
+            // 根據排序方向返回結果
+            if (order === TableV2SortOrder.ASC) {
+                return aOrder - bOrder;
+            } else {
+                return bOrder - aOrder;
+            }
+        }
+
+        // 處理其他欄位的預設排序（數值排序）
+        const aVal = a[key as keyof MaterialSummary];
+        const bVal = b[key as keyof MaterialSummary];
         return order === TableV2SortOrder.ASC ? Number(aVal) - Number(bVal) : Number(bVal) - Number(aVal);
     });
 });
@@ -324,6 +359,10 @@ const summaryColumns = [
                     return h("span", "製作");
                     break;
                 case "desc":
+                case "drop":
+                case "reward":
+                case "dissolution":
+                case "shop":
                     return h("span", src?.description ?? "");
                     break;
                 default:
