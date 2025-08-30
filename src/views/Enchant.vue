@@ -23,6 +23,32 @@
                 </h1>
             </header>
 
+            <!-- <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
+                <div class="mb-6 border-b border-gray-700 pb-4">
+                    <h2 class="text-2xl font-bold text-yellow-300">填寫資料</h2>
+                    <p class="text-gray-400 text-sm mt-1">設定你想要繼承的屬性與條件。</p>
+                </div>
+
+                <el-form :model="form" label-width="160px" label-position="left">
+                    <el-form-item label="選擇出處" class="text-gray-300">
+                        <el-select v-model="selectedCategory" placeholder="請選擇" class="w-full sm:w-[280px]">
+                            <el-option
+                                v-for="item in options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="簡易選擇" class="flex-grow text-gray-300">
+                        <el-radio-group v-model="form.selectTalent">
+                            <el-radio value="1" size="large">近戰</el-radio>
+                            <el-radio value="2" size="large">短/長杖</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+            </el-card> -->
             <el-table
                 :data="rowData"
                 border
@@ -33,7 +59,9 @@
                 <el-table-column prop="name" label="名稱" width="300" align="center">
                     <template #default="{ row }">
                         <span class="block text-center w-full">
-                            [{{ row.type === "prefix" ? "接頭" : "接尾" }}] {{ row.name.tw || row.name.en }}
+                            <el-tag v-if="row.type === 'prefix'" type="danger">接頭</el-tag>
+                            <el-tag v-else type="primary">接尾</el-tag>
+                            {{ row.name.tw || row.name.en }}
                         </span>
                     </template>
                 </el-table-column>
@@ -128,13 +156,42 @@
 </style>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { Option } from "../types";
 import { Enchant, EnchantAbility } from "../types/Enchant";
 import { enchants } from "../data/enchants";
 
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
+const form = ref({
+    selectTalent: "", // 天賦選擇
+    input: "", // 其他輸入
+});
+
 const rowData = ref<Enchant[]>(enchants);
+
+const selectedCategory = ref(1); // 預設選擇貓武
+
+const options: Option[] = [
+    { label: "G27/布里萊赫", value: 1 },
+    { label: "雪VH/格倫貝爾納-太古之冬", value: 2 },
+];
+
+const roundTo = (value: number, digits: number = 2): number => {
+    const factor = Math.pow(10, digits);
+    return Math.round(value * factor) / factor;
+};
+
+const renderType = (type: string): string => {
+    switch (type) {
+        case "prefix":
+            return "接頭";
+        case "suffix":
+            return "接尾";
+        default:
+            return type;
+    }
+};
 
 const renderAbilities = (abilityIdArray: EnchantAbility[]): string => {
     const format = (num: number): string => {
