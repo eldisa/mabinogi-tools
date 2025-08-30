@@ -12,6 +12,7 @@ const menuItems = [
     { name: "裝備改造模擬器", path: "/weapon-upgrade-simulator", icon: "🎰" },
     { name: "材料計算機", path: "/material-simulator", icon: "🎰" },
     { name: "裝備能力轉移費用估算", path: "/transfer-simulator", icon: "🎰" },
+    { name: "賦予查詢", path: "enchant", icon: "🎰" },
     { name: "About", path: "/about", icon: "ℹ️" },
     // { name: "Settings", path: "/settings", icon: "⚙️" },
 ];

@@ -6,6 +6,7 @@ import PierecingLevelAnalysis from '../views/PierecingLevelAnalysis.vue';
 import MaterialSimulator from '../views/MaterialSimulator.vue';
 import TransferSimulator from '../views/TransferSimulator.vue';
 import WeaponUpgradeSimulator from '../views/WeaponUpgradeSimulator.vue';
+import Enchant from '../views/Enchant.vue';
 // import GridDemo from '../views/GridDemo.vue';
 // import Settings from '../views/Settings.vue';
 
@@ -49,6 +50,11 @@ const routes = [
         path: '/weapon-upgrade-simulator',
         name: '裝備改造模擬器',
         component: WeaponUpgradeSimulator,
+    },
+    {
+        path: '/enchant',
+        name: '賦予查詢',
+        component: Enchant,
     }
 
 ];

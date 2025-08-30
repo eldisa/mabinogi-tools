@@ -1,4 +1,4 @@
-interface Ability {
+export interface EnchantAbility {
     id: string; // 能力ID
     min: number; // 最小值
     max: number; // 最大值
@@ -12,5 +12,5 @@ export interface Enchant {
     };
     position: string;
     type: "prefix" | "suffix";
-    effect: Ability[];
+    effect: EnchantAbility[];
 }
