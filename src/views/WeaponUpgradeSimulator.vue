@@ -53,7 +53,7 @@
                             border
                             class="rounded-lg overflow-hidden mt-2"
                             :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
-                            :row-style="{ background: '#2d3748', color: '#e2e8f0', height: '40px' }"
+                            :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
                         >
                             <el-table-column label="屬性" align="center">
                                 <template #default="{ row }">
@@ -181,7 +181,27 @@
 <style>
 /* 這裡的 CSS 樣式與上一個頁面相同，請保留 */
 /* 調整表格內部 InputNumber 的顏色 */
-/*  */
+.el-table .el-input-number {
+    width: 100%;
+}
+.el-table .el-input-number .el-input__inner {
+    text-align: center;
+    /* 調整輸入框內文字顏色以適應深色背景 */
+    color: #e2e8f0;
+    background-color: #4a5568; /* 稍微深一點的背景色 */
+    border-color: #6b7280;
+}
+
+.el-table .el-input-number__increase,
+.el-table .el-input-number__decrease {
+    background-color: #6b7280;
+    color: #e2e8f0;
+    border-color: #6b7280;
+}
+.el-table .el-input-number__increase:hover,
+.el-table .el-input-number__decrease:hover {
+    background-color: #718096;
+}
 
 /* 針對 Checkbox 的顏色調整 */
 .el-checkbox__input.is-checked .el-checkbox__inner {
@@ -204,6 +224,18 @@
 
 label.el-checkbox {
     margin: 0;
+}
+
+/* 調整表格內部 InputNumber 的顏色 */
+.el-table .el-input-number__increase,
+.el-table .el-input-number__decrease {
+    background-color: #6b7280;
+    color: #e2e8f0;
+    border-color: #6b7280;
+}
+.el-table .el-input-number__increase:hover,
+.el-table .el-input-number__decrease:hover {
+    background-color: #718096;
 }
 
 .el-input__wrapper {
