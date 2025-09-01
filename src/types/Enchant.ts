@@ -13,4 +13,5 @@ export interface Enchant {
     position: string;
     type: "prefix" | "suffix";
     effect: EnchantAbility[];
+    source?: string; // 來源
 }
