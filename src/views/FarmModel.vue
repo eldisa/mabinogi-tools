@@ -190,7 +190,7 @@ button {
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { farmModel } from "../data/farmModel";
-import { abilitiesMap } from "../data/abilities";
+import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
 const selectedCondition = ref<string>("search");
 
@@ -235,7 +235,12 @@ const displayData = computed(() => {
 
 const parseAbilities = (abilities: { id: string; value: number }[]) => {
     const str = abilities
-        .map((abilitiy) => `${abilitiesMap[abilitiy.id] || abilitiy.id}: +${abilitiy.value}`)
+        .map(
+            (abilitiy) =>
+                `${abilitiesMap[abilitiy.id] || abilitiy.id}: +${abilitiy.value} ${
+                    abilitiesValueWithPercentArray.includes(abilitiy.id) ? "%" : ""
+                }`
+        )
         .join(", ");
     return str;
 };
