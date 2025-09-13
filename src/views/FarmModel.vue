@@ -82,7 +82,7 @@
                         </el-table-column>
                         <el-table-column prop="name" label="名稱">
                             <template #default="{ row }">
-                                <div class="flex items>-center space-x-4">
+                                <div class="flex items-center space-x-4">
                                     <img
                                         :src="`https://mabires.pril.cc/privatefarmfacilityimage/tw/${row.id}/${row.id}.png`"
                                         :alt="row.name.tw"
