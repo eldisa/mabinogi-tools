@@ -13,6 +13,7 @@ const menuItems = [
     { name: "材料計算機", path: "/material-simulator", icon: "📦" },
     { name: "裝備能力轉移費用估算", path: "/transfer-simulator", icon: "💰" },
     { name: "賦予查詢", path: "enchant", icon: "🪄" },
+    { name: "農場模型查詢", path: "/farmModel", icon: "🏠" },
     { name: "About", path: "/about", icon: "ℹ️" },
     // { name: "Settings", path: "/settings", icon: "⚙️" },
 ];

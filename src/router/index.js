@@ -7,6 +7,7 @@ import MaterialSimulator from '../views/MaterialSimulator.vue';
 import TransferSimulator from '../views/TransferSimulator.vue';
 import WeaponUpgradeSimulator from '../views/WeaponUpgradeSimulator.vue';
 import Enchant from '../views/Enchant.vue';
+import FarmModel from '../views/FarmModel.vue';
 // import GridDemo from '../views/GridDemo.vue';
 // import Settings from '../views/Settings.vue';
 
@@ -55,6 +56,11 @@ const routes = [
         path: '/enchant',
         name: '賦予查詢',
         component: Enchant,
+    },
+    {
+        path: '/farmModel',
+        name: '農場模型查詢',
+        component: FarmModel,
     }
 
 ];
