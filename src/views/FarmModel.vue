@@ -66,6 +66,13 @@
                             </button>
                         </div>
                     </el-form-item>
+                    <el-form-item label="選擇分類">
+                        <el-radio-group v-model="selectedCategory">
+                            <el-radio label="全部" value="all" />
+                            <el-radio label="一般" value="normal" />
+                            <el-radio label="額外" value="extra" />
+                        </el-radio-group>
+                    </el-form-item>
                 </el-form>
             </el-card>
             <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
@@ -199,6 +206,7 @@ import { FarmModel } from "../types/FarmModel";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
 const selectedCondition = ref<string>("search");
+const selectedCategory = ref<string>("all");
 
 const orderBy = ref<string>("");
 
@@ -276,7 +284,14 @@ const displayData = computed(() => {
     }
 
     // 如果沒有排序，返回過濾後的結果
-    return result;
+    return result.filter((item) => {
+        if (selectedCategory.value === "normal") {
+            return item.category === "normal";
+        } else if (selectedCategory.value === "extra") {
+            return item.category === "extra";
+        }
+        return true; // "all" 類別，返回所有項目
+    });
 });
 
 const parseAbilities = (abilities: { id: string; value: number }[]) => {
