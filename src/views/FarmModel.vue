@@ -216,7 +216,6 @@ button {
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { farmModel } from "../data/farmModel";
-import { FarmModel } from "../types/FarmModel";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
 const selectedCondition = ref<string>("search");
@@ -269,25 +268,32 @@ const displayData = computed(() => {
     const input = inputText.value;
     const selectedAbilities = selectedAbility.value;
     const sortKey = orderBy.value;
+    const category = selectedCategory.value; // 新增：追蹤分類
 
-    let result = [];
+    let filteredResult = [];
 
-    // 1. 過濾邏輯
+    // 1. 執行所有過濾邏輯 (Filter Logic)
+    // 優先執行名稱或能力篩選
     if (condition === "search" && input !== "") {
-        result = farmModel.filter((item) => item.name.tw.includes(input));
+        filteredResult = farmModel.filter((item) => item.name.tw.includes(input));
     } else if (condition === "condition" && selectedAbilities.length > 0) {
-        result = farmModel.filter((item) => {
+        filteredResult = farmModel.filter((item) => {
             const itemAbilities = item.abilities.map((ability) => ability.id);
             return selectedAbilities.every((ability) => itemAbilities.includes(ability));
         });
     } else {
-        result = farmModel;
+        filteredResult = farmModel;
     }
 
-    // 2. 排序邏輯
+    // 在完成名稱/能力篩選後，再執行分類過濾
+    if (category !== "all") {
+        // 只在不是「all」類別時進行過濾
+        filteredResult = filteredResult.filter((item) => item.category === category);
+    }
+
+    // 2. 執行排序邏輯 (Sorting Logic)
     if (sortKey) {
-        // 複製一份陣列再排序，避免改變原始數據
-        const sortedResult = [...result].sort((a, b) => {
+        const sortedResult = [...filteredResult].sort((a, b) => {
             const aAbility = a.abilities.find((ability) => ability.id === sortKey);
             const bAbility = b.abilities.find((ability) => ability.id === sortKey);
             const aValue = aAbility ? aAbility.value : 0;
@@ -297,15 +303,8 @@ const displayData = computed(() => {
         return sortedResult;
     }
 
-    // 如果沒有排序，返回過濾後的結果
-    return result.filter((item) => {
-        if (selectedCategory.value === "normal") {
-            return item.category === "normal";
-        } else if (selectedCategory.value === "extra") {
-            return item.category === "extra";
-        }
-        return true; // "all" 類別，返回所有項目
-    });
+    // 如果沒有排序，返回最終過濾後的結果
+    return filteredResult;
 });
 
 const parseAbilities = (abilities: { id: string; value: number }[]) => {
