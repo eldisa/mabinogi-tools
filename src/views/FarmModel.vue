@@ -66,7 +66,7 @@
                             </button>
                         </div>
                     </el-form-item>
-                    <el-form-item label="選擇分類">
+                    <el-form-item label="選擇種類">
                         <el-radio-group v-model="selectedCategory">
                             <el-radio label="全部" value="all" />
                             <el-radio label="一般" value="normal" />
@@ -87,7 +87,7 @@
                         :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
                         :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
                     >
-                        <el-table-column prop="category" label="分類" width="70">
+                        <el-table-column prop="category" label="種類" width="70">
                             <template #default="{ row }">
                                 <span>{{ row.category === "extra" ? "額外" : "一般" }}</span>
                             </template>
