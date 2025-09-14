@@ -2,6 +2,24 @@ import type { FarmModel } from "../types/FarmModel";
 
 export const farmModel: FarmModel[] = [
     {
+        id: "156",
+        name: {
+            tw: "特拉克模型",
+            en: "Tarlach Miniature",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "INT",
+                value: 6,
+            },
+            {
+                id: "WIL",
+                value: 2,
+            },
+        ],
+    },
+    {
         id: "157",
         name: {
             tw: "瑪麗模型",
@@ -866,24 +884,6 @@ export const farmModel: FarmModel[] = [
             {
                 id: "WIL",
                 value: 6,
-            },
-        ],
-    },
-    {
-        id: "156",
-        name: {
-            tw: "特拉克模型",
-            en: "Tarlach Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "INT",
-                value: 6,
-            },
-            {
-                id: "WIL",
-                value: 2,
             },
         ],
     },
@@ -3048,6 +3048,28 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
+        id: "1202-EX",
+        name: {
+            tw: "浪漫農場拿著勿忘草的布蘿妮模型 (強化5階)",
+            en: "Blony With Flowers Miniature (Enhance +5)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "HP",
+                value: 30,
+            },
+            {
+                id: "STR",
+                value: 8,
+            },
+            {
+                id: "attack_max",
+                value: 8,
+            },
+        ],
+    },
+    {
         id: "1203",
         name: {
             tw: "浪漫農場拿著鳶尾花的娜歐模型",
@@ -3058,6 +3080,32 @@ export const farmModel: FarmModel[] = [
             {
                 id: "MP",
                 value: 27,
+            },
+        ],
+    },
+    {
+        id: "1203-EX",
+        name: {
+            tw: "浪漫農場拿著鳶尾花的娜歐模型 (強化5階)",
+            en: "Nao With Flowers Miniature (Enhance +5)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "MP",
+                value: 30,
+            },
+            {
+                id: "INT",
+                value: 8,
+            },
+            {
+                id: "critical_damage",
+                value: 2,
+            },
+            {
+                id: "magic_attack",
+                value: 5,
             },
         ],
     },
@@ -3076,6 +3124,28 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
+        id: "1204-EX",
+        name: {
+            tw: "浪漫農場拿著月見草的布麗爾模型 (強化5階)",
+            en: "Briallen With Flowers Miniature (Enhance +5)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "SP",
+                value: 30,
+            },
+            {
+                id: "DEX",
+                value: 8,
+            },
+            {
+                id: "critical_damage",
+                value: 3,
+            },
+        ],
+    },
+    {
         id: "1205",
         name: {
             tw: "浪漫農場拿著向日葵的亞特模型",
@@ -3086,6 +3156,28 @@ export const farmModel: FarmModel[] = [
             {
                 id: "LUK",
                 value: 8,
+            },
+        ],
+    },
+    {
+        id: "1205-EX",
+        name: {
+            tw: "浪漫農場拿著向日葵的亞特模型 (強化5階)",
+            en: "Alltur With Flowers Miniature (Enhance +5)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "LUK",
+                value: 10,
+            },
+            {
+                id: "WIL",
+                value: 8,
+            },
+            {
+                id: "bonus_damage",
+                value: 2,
             },
         ],
     },
@@ -3212,7 +3304,7 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
-        id: "1263",
+        id: "1263", // id 可能有錯誤，待確認
         name: {
             tw: "浪漫農場特殊場景傑作 Vol.3",
             en: "Scene Masterpiece",
@@ -3234,7 +3326,7 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
-        id: "1264",
+        id: "1264", // id 可能有錯誤，待確認
         name: {
             tw: "浪漫農場特殊場景傑作 Vol.4",
             en: "Scene Masterpiece",
@@ -3790,6 +3882,66 @@ export const farmModel: FarmModel[] = [
             {
                 id: "LUK",
                 value: 2,
+            },
+        ],
+    },
+    {
+        id: "goddessStatue",
+        name: {
+            tw: "浪漫農場女神像",
+            en: "Statue of a Goddess",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "defense",
+                value: 1,
+            },
+            {
+                id: "protection",
+                value: 1,
+            },
+            {
+                id: "magic_defense",
+                value: 1,
+            },
+            {
+                id: "magic_protection",
+                value: 1,
+            },
+            {
+                id: "exp",
+                value: 1,
+            },
+        ],
+    },
+    {
+        id: "goddessStatueWithBlessOfGoddess",
+        name: {
+            tw: "浪漫農場女神像(使用女神守護)",
+            en: "Statue of a Goddess (with Bless of Goddess)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "defense",
+                value: 5,
+            },
+            {
+                id: "protection",
+                value: 2,
+            },
+            {
+                id: "magic_defense",
+                value: 5,
+            },
+            {
+                id: "magic_protection",
+                value: 2,
+            },
+            {
+                id: "exp",
+                value: 10,
             },
         ],
     },
