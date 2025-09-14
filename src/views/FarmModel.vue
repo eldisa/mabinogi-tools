@@ -30,16 +30,27 @@
                 </div>
 
                 <el-form label-width="160px" label-position="left">
-                    <el-form-item label="依名稱搜尋" class="text-gray-300">
-                        <el-input
-                            v-model="inputText"
-                            style="width: 240px"
-                            placeholder="請輸入關鍵字"
-                            :disabled="selectedCondition !== 'search'"
-                        />
+                    <el-form-item label="選擇搜尋模式">
+                        <el-radio-group v-model="selectedCondition">
+                            <el-radio label="依名稱搜尋" value="search" />
+                            <el-radio label="依條件搜尋" value="condition" />
+                        </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="依條件搜尋" class="text-gray-300">
-                        <div class="grid grid-cols-5 gap-4" v-if="selectedCondition === 'condition'">
+                    <el-form-item label="選擇排序條件">
+                        <el-select v-model="orderBy" filterable placeholder="請選擇排序條件" style="width: 240px">
+                            <el-option
+                                v-for="item in abilityOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="依名稱搜尋" class="text-gray-300" v-if="selectedCondition === 'search'">
+                        <el-input v-model="inputText" style="width: 240px" placeholder="請輸入關鍵字" />
+                    </el-form-item>
+                    <el-form-item label="依條件搜尋" class="text-gray-300" v-if="selectedCondition === 'condition'">
+                        <div class="grid grid-cols-5 gap-4">
                             <button
                                 v-for="ability of selectableAbility"
                                 :key="ability"
@@ -54,12 +65,6 @@
                                 {{ abilitiesMap[ability] || ability }}
                             </button>
                         </div>
-                    </el-form-item>
-                    <el-form-item label="選擇搜尋模式">
-                        <el-radio-group v-model="selectedCondition">
-                            <el-radio label="依名稱搜尋" value="search" />
-                            <el-radio label="依條件搜尋" value="condition" />
-                        </el-radio-group>
                     </el-form-item>
                 </el-form>
             </el-card>
@@ -190,9 +195,12 @@ button {
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { farmModel } from "../data/farmModel";
+import { FarmModel } from "../types/FarmModel";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
 const selectedCondition = ref<string>("search");
+
+const orderBy = ref<string>("");
 
 const inputText = ref("");
 
@@ -220,17 +228,55 @@ const selectableAbility = [
     "critical_cap_increase",
 ];
 
+const abilityOptions = computed(() => {
+    if (selectedAbility.value.length > 0) {
+        return selectedAbility.value.map((ability) => ({
+            label: abilitiesMap[ability] || ability,
+            value: ability,
+        }));
+    }
+    return selectableAbility.map((ability) => ({
+        label: abilitiesMap[ability] || ability,
+        value: ability,
+    }));
+});
+
 const displayData = computed(() => {
-    if ("search" === selectedCondition.value && inputText.value !== "") {
-        return farmModel.filter((item) => item.name.tw.includes(inputText.value)) || [];
-    } else if ("condition" === selectedCondition.value && selectedAbility.value.length > 0) {
-        return farmModel.filter((item) => {
-            const itemAbilities = item.abilities.map((abilitiy) => abilitiy.id);
-            return selectedAbility.value.every((ability) => itemAbilities.includes(ability));
+    // 將所有依賴變數放在函式開頭，確保 Vue 追蹤
+    const condition = selectedCondition.value;
+    const input = inputText.value;
+    const selectedAbilities = selectedAbility.value;
+    const sortKey = orderBy.value;
+
+    let result = [];
+
+    // 1. 過濾邏輯
+    if (condition === "search" && input !== "") {
+        result = farmModel.filter((item) => item.name.tw.includes(input));
+    } else if (condition === "condition" && selectedAbilities.length > 0) {
+        result = farmModel.filter((item) => {
+            const itemAbilities = item.abilities.map((ability) => ability.id);
+            return selectedAbilities.every((ability) => itemAbilities.includes(ability));
         });
     } else {
-        return farmModel;
+        result = farmModel;
     }
+
+    // 2. 排序邏輯
+    if (sortKey) {
+        // 複製一份陣列再排序，避免改變原始數據
+        const sortedResult = [...result].sort((a, b) => {
+            const aAbility = a.abilities.find((ability) => ability.id === sortKey);
+            const bAbility = b.abilities.find((ability) => ability.id === sortKey);
+            const aValue = aAbility ? aAbility.value : 0;
+            const bValue = bAbility ? bAbility.value : 0;
+            return bValue - aValue; // 降序排列
+        });
+        return sortedResult;
+    }
+
+    // 如果沒有排序，返回過濾後的結果
+    return result;
 });
 
 const parseAbilities = (abilities: { id: string; value: number }[]) => {
