@@ -37,7 +37,21 @@
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="選擇排序條件">
-                        <el-select v-model="orderBy" filterable placeholder="請選擇排序條件" style="width: 240px">
+                        <template #label>
+                            <div class="flex items-center space-x-1">
+                                <span>選擇排序條件</span>
+                                <el-tooltip effect="dark" content="點擊右側的X按鈕即可清除排序。" placement="top">
+                                    <el-icon><info-filled /></el-icon>
+                                </el-tooltip>
+                            </div>
+                        </template>
+                        <el-select
+                            v-model="orderBy"
+                            filterable
+                            clearable
+                            placeholder="請選擇排序條件"
+                            style="width: 240px"
+                        >
                             <el-option
                                 v-for="item in abilityOptions"
                                 :key="item.value"
