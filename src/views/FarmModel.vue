@@ -89,7 +89,7 @@
                     >
                         <el-table-column prop="category" label="分類" width="70">
                             <template #default="{ row }">
-                                <span>{{ row.category === "extra" ? "特殊" : "一般" }}</span>
+                                <span>{{ row.category === "extra" ? "額外" : "一般" }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="name" label="名稱">
