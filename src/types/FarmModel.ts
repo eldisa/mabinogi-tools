@@ -7,6 +7,7 @@ type FarmModel = {
     };
     category: "normal" | "extra";
     abilities: { id: string; value: number }[];
+    desc?: string;
 };
 
 export type { FarmModel };

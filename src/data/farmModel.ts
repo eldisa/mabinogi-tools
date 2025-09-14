@@ -3945,4 +3945,188 @@ export const farmModel: FarmModel[] = [
             },
         ],
     },
+    {
+        id: "catSet-1-pc",
+        name: {
+            tw: "浪漫農場貓咪村莊組合 (1件)",
+            en: "cat Set (1pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "HP",
+                value: 25,
+            },
+        ],
+        desc: "浪漫農場貓咪村莊旋轉木馬\n浪漫農場貓咪村莊貓滾輪\n浪漫農場貓咪村莊貓咪溜滑梯",
+    },
+    {
+        id: "catSet-2-pc",
+        name: {
+            tw: "浪漫農場貓咪村莊組合 (2件)",
+            en: "cat Set (2pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "HP",
+                value: 50,
+            },
+            {
+                id: "MP",
+                value: 25,
+            },
+        ],
+        desc: "浪漫農場貓咪村莊旋轉木馬\n浪漫農場貓咪村莊貓滾輪\n浪漫農場貓咪村莊貓咪溜滑梯",
+    },
+    {
+        id: "catSet-3-pc",
+        name: {
+            tw: "浪漫農場貓咪村莊組合 (3件)",
+            en: "cat Set (3pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "HP",
+                value: 75,
+            },
+            {
+                id: "MP",
+                value: 50,
+            },
+            {
+                id: "SP",
+                value: 75,
+            },
+        ],
+        desc: "浪漫農場貓咪村莊旋轉木馬\n浪漫農場貓咪村莊貓滾輪\n浪漫農場貓咪村莊貓咪溜滑梯",
+    },
+    {
+        id: "loveFlowerSet-1-pc",
+        name: {
+            tw: "浪漫農場心花朵朵開組合 (1件)",
+            en: "Love Flower Set (1pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "attack_max",
+                value: 3,
+            },
+            {
+                id: "magic_attack",
+                value: 3,
+            },
+        ],
+        desc: "浪漫農場心花朵朵開椅子\n浪漫農場心花朵朵開馬車",
+    },
+    {
+        id: "loveFlowerSet-2-pc",
+        name: {
+            tw: "浪漫農場心花朵朵開組合 (2件)",
+            en: "Love Flower Set (2pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "attack_max",
+                value: 6,
+            },
+            {
+                id: "magic_attack",
+                value: 6,
+            },
+        ],
+        desc: "浪漫農場心花朵朵開椅子\n浪漫農場心花朵朵開馬車",
+    },
+    {
+        id: "summerSet-1-pc",
+        name: {
+            tw: "暑假組合 (1件)",
+            en: "summer Set (1pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "DEX",
+                value: 2,
+            },
+            {
+                id: "INT",
+                value: 1,
+            },
+            {
+                id: "MP",
+                value: 5,
+            },
+            {
+                id: "SP",
+                value: 5,
+            },
+        ],
+        desc: "浪漫農場昆蟲採集區\n浪漫農場釣魚池\n浪漫農場夏季休憩空間",
+    },
+    {
+        id: "summerSet-2-pc",
+        name: {
+            tw: "暑假組合 (2件)",
+            en: "summer Set (2pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "DEX",
+                value: 5,
+            },
+            {
+                id: "INT",
+                value: 5,
+            },
+            {
+                id: "MP",
+                value: 15,
+            },
+            {
+                id: "SP",
+                value: 15,
+            },
+        ],
+        desc: "浪漫農場昆蟲採集區\n浪漫農場釣魚池\n浪漫農場夏季休憩空間",
+    },
+    {
+        id: "summerSet-3-pc",
+        name: {
+            tw: "暑假組合 (3件)",
+            en: "summer Set (3pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "DEX",
+                value: 9,
+            },
+            {
+                id: "INT",
+                value: 10,
+            },
+            {
+                id: "LUK",
+                value: 10,
+            },
+            {
+                id: "MP",
+                value: 35,
+            },
+            {
+                id: "SP",
+                value: 35,
+            },
+            {
+                id: "musicbuff_bonus",
+                value: 1,
+            },
+        ],
+        desc: "浪漫農場昆蟲採集區\n浪漫農場釣魚池\n浪漫農場夏季休憩空間",
+    },
 ];

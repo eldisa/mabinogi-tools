@@ -110,11 +110,22 @@
                             <template #default="{ row }">
                                 <div class="flex items-center space-x-4">
                                     <img
-                                        :src="`https://mabires.pril.cc/privatefarmfacilityimage/tw/${row.id}/${row.id}.png`"
+                                        v-if="!row.id.includes('Set')"
+                                        :src="`${baseUrl}/farmModel/${row.id}.png`"
                                         :alt="row.name.tw"
                                         class="w-12 h-12 object-contain"
                                     />
                                     <span>{{ row.name.tw }}</span>
+
+                                    <el-tooltip v-if="row.id.includes('Set')" effect="dark" placement="right">
+                                        <template #content>
+                                            <div
+                                                v-html="row.desc.replace(/\n/g, '<br>')"
+                                                class="font-bold text-sm text-yellow-300"
+                                            ></div>
+                                        </template>
+                                        <el-icon><info-filled /></el-icon>
+                                    </el-tooltip>
                                 </div>
                             </template>
                         </el-table-column>
@@ -218,13 +229,11 @@ import { ref, computed } from "vue";
 import { farmModel } from "../data/farmModel";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
+const baseUrl = import.meta.env.BASE_URL;
 const selectedCondition = ref<string>("search");
 const selectedCategory = ref<string>("all");
-
 const orderBy = ref<string>("");
-
 const inputText = ref("");
-
 const selectedAbility = ref<string[]>([]); // 預設沒有選擇任何能力
 
 const selectableAbility = [
