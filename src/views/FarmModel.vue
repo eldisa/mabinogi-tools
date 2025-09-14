@@ -215,25 +215,25 @@ const inputText = ref("");
 const selectedAbility = ref<string[]>([]); // 預設沒有選擇任何能力
 
 const selectableAbility = [
-    "DEX",
-    "LUK",
+    "attack_max",
+    "critical_damage",
+    "magic_attack",
+    "musicbuff_bonus",
+    "bonus_damage",
+    "move_speed",
+    "critical_cap_increase",
     "STR",
+    "INT",
+    "DEX",
     "WIL",
+    "LUK",
     "HP",
     "MP",
     "SP",
-    "INT",
-    "attack_max",
-    "critical_damage",
-    "musicbuff_bonus",
-    "magic_attack",
-    "bonus_damage",
-    "move_speed",
     "defense",
     "protection",
     "magic_protection",
     "magic_defense",
-    "critical_cap_increase",
 ];
 
 const abilityOptions = computed(() => {
