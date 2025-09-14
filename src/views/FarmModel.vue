@@ -117,7 +117,11 @@
                                     />
                                     <span>{{ row.name.tw }}</span>
 
-                                    <el-tooltip v-if="row.id.includes('Set')" effect="dark" placement="right">
+                                    <el-tooltip
+                                        v-if="row.id.includes('Set') || row.id.includes('MAX')"
+                                        effect="dark"
+                                        placement="right"
+                                    >
                                         <template #content>
                                             <div
                                                 v-html="row.desc.replace(/\n/g, '<br>')"

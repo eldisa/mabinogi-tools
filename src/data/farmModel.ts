@@ -2572,6 +2572,41 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
+        id: "1055-MAX",
+        name: {
+            tw: "浪漫農場星星特別模型 (強化到頂)",
+            en: "Stellar Miniature",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "HP",
+                value: 11,
+            },
+            {
+                id: "STR",
+                value: 9,
+            },
+            {
+                id: "LUK",
+                value: 5,
+            },
+            {
+                id: "attack_max",
+                value: 6,
+            },
+            {
+                id: "critical_damage",
+                value: 4,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+        desc: "最大傷害+0~6\n暴擊傷害+0~4%\n移動速度+0~2%",
+    },
+    {
         id: "1056",
         name: {
             tw: "浪漫農場嫩芽特別模型",
@@ -2584,6 +2619,41 @@ export const farmModel: FarmModel[] = [
                 value: 10,
             },
         ],
+    },
+    {
+        id: "1056-MAX",
+        name: {
+            tw: "浪漫農場嫩芽特別模型 (強化到頂)",
+            en: "Seed Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "HP",
+                value: 10,
+            },
+            {
+                id: "MP",
+                value: 11,
+            },
+            {
+                id: "WIL",
+                value: 9,
+            },
+            {
+                id: "LUK",
+                value: 9,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+            {
+                id: "bonus_damage",
+                value: 2,
+            },
+        ],
+        desc: "幸運+0~9\n暴擊傷害+0~4%\n移動速度+0~2%",
     },
     {
         id: "1057",
@@ -2600,6 +2670,41 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
+        id: "1057-MAX",
+        name: {
+            tw: "浪漫農場月亮特別模型 (強化到頂)",
+            en: "Luna Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "MP",
+                value: 10,
+            },
+            {
+                id: "SP",
+                value: 11,
+            },
+            {
+                id: "INT",
+                value: 9,
+            },
+            {
+                id: "magic_attack",
+                value: 6,
+            },
+            {
+                id: "critical_damage",
+                value: 4,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+        desc: "智力+0~9\n魔法攻擊+0~6\n移動速度+0~2%",
+    },
+    {
         id: "1058",
         name: {
             tw: "浪漫農場雛菊特別模型",
@@ -2612,6 +2717,41 @@ export const farmModel: FarmModel[] = [
                 value: 10,
             },
         ],
+    },
+    {
+        id: "1058-MAX",
+        name: {
+            tw: "浪漫農場雛菊特別模型 (強化到頂)",
+            en: "Daisy Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "HP",
+                value: 11,
+            },
+            {
+                id: "SP",
+                value: 10,
+            },
+            {
+                id: "DEX",
+                value: 9,
+            },
+            {
+                id: "attack_max",
+                value: 6,
+            },
+            {
+                id: "musicbuff_bonus",
+                value: 4,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+        desc: "最大傷害+0~6\n音樂技能效果+0~4\n移動速度+0~2%",
     },
     {
         id: "1061",
@@ -3006,6 +3146,41 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
+        id: "1184-MAX",
+        name: {
+            tw: "浪漫農場設置四葉幸運草特別模型 (強化到頂)",
+            en: "Wavering Fourleaf Clover Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "SP",
+                value: 12,
+            },
+            {
+                id: "DEX",
+                value: 10,
+            },
+            {
+                id: "LUK",
+                value: 9,
+            },
+            {
+                id: "critical_damage",
+                value: 4,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+            {
+                id: "bonus_damage",
+                value: 2,
+            },
+        ],
+        desc: "敏捷+0~10\n幸運+0~9\n暴擊傷害+0~4%\n移動速度+0~2%\n額外傷害+0~2%",
+    },
+    {
         id: "1185",
         name: {
             tw: "浪漫農場驚喜禮物盒特別模型",
@@ -3020,6 +3195,37 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
+        id: "1185-MAX",
+        name: {
+            tw: "浪漫農場驚喜禮物盒特別模型 (強化到頂)",
+            en: "Star Surprise Gift Box Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "MP",
+                value: 23,
+            },
+            {
+                id: "STR",
+                value: 10,
+            },
+            {
+                id: "magic_attack",
+                value: 6,
+            },
+            {
+                id: "musicbuff_bonus",
+                value: 4,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+        desc: "魔力+0~10\n力量+0~9\n魔法攻擊+0~4%\n移動速度+0~2%\n音樂技能效果+0~4",
+    },
+    {
         id: "1186",
         name: {
             tw: "浪漫農場閃耀魚網特別模型",
@@ -3032,6 +3238,37 @@ export const farmModel: FarmModel[] = [
                 value: 12,
             },
         ],
+    },
+    {
+        id: "1186-MAX",
+        name: {
+            tw: "浪漫農場閃耀魚網特別模型 (強化到頂)",
+            en: "Shining Fish Trap Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "HP",
+                value: 23,
+            },
+            {
+                id: "WIL",
+                value: 10,
+            },
+            {
+                id: "attack_max",
+                value: 6,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+            {
+                id: "musicbuff_bonus",
+                value: 2,
+            },
+        ],
+        desc: "生命+0~10\n意志+0~9\n最大傷害+0~4%\n移動速度+0~2%\n額外傷害+0~4",
     },
     {
         id: "1202",
