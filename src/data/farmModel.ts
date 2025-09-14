@@ -1243,42 +1243,43 @@ export const farmModel: FarmModel[] = [
             },
         ],
     },
-    {
-        id: "487",
-        name: {
-            tw: "皮魯安模型",
-            en: "Pirran Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "LUK",
-                value: 9,
-            },
-            {
-                id: "attack_max",
-                value: 5,
-            },
-        ],
-    },
-    {
-        id: "488",
-        name: {
-            tw: "克赫蓮模型",
-            en: "Cethlenn Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "INT",
-                value: 10,
-            },
-            {
-                id: "magic_attack",
-                value: 5,
-            },
-        ],
-    },
+    // seems not released yet
+    // {
+    //     id: "487",
+    //     name: {
+    //         tw: "皮魯安模型",
+    //         en: "Pirran Miniature",
+    //     },
+    //     category: "normal",
+    //     abilities: [
+    //         {
+    //             id: "LUK",
+    //             value: 9,
+    //         },
+    //         {
+    //             id: "attack_max",
+    //             value: 5,
+    //         },
+    //     ],
+    // },
+    // {
+    //     id: "488",
+    //     name: {
+    //         tw: "克赫蓮模型",
+    //         en: "Cethlenn Miniature",
+    //     },
+    //     category: "normal",
+    //     abilities: [
+    //         {
+    //             id: "INT",
+    //             value: 10,
+    //         },
+    //         {
+    //             id: "magic_attack",
+    //             value: 5,
+    //         },
+    //     ],
+    // },
     {
         id: "489",
         name: {
@@ -3849,148 +3850,6 @@ export const farmModel: FarmModel[] = [
             {
                 id: "magic_protection",
                 value: 1,
-            },
-        ],
-    },
-    {
-        id: "1290",
-        name: {
-            tw: "特別的芙莉蓮模型",
-            en: "Special Frieren Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "magic_attack",
-                value: 6,
-            },
-        ],
-    },
-    {
-        id: "1291",
-        name: {
-            tw: "特別的費倫模型",
-            en: "Special Fern Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "musicbuff_bonus",
-                value: 3,
-            },
-        ],
-    },
-    {
-        id: "1292",
-        name: {
-            tw: "特別的修塔爾克模型",
-            en: "Special Stark Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "attack_max",
-                value: 7,
-            },
-        ],
-    },
-    {
-        id: "1293",
-        name: {
-            tw: "特別的欣梅爾模型",
-            en: "Special Himmel Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "critical_damage",
-                value: 5,
-            },
-        ],
-    },
-    {
-        id: "1294",
-        name: {
-            tw: "特別的阿烏拉模型",
-            en: "Special Aura Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "INT",
-                value: 8,
-            },
-            {
-                id: "LUK",
-                value: 8,
-            },
-        ],
-    },
-    {
-        id: "1295",
-        name: {
-            tw: "特別的琉古納模型",
-            en: "Special Lugner Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "MP",
-                value: 10,
-            },
-            {
-                id: "DEX",
-                value: 8,
-            },
-        ],
-    },
-    {
-        id: "1296",
-        name: {
-            tw: "特別的莉妮耶模型",
-            en: "Special Linie Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "HP",
-                value: 10,
-            },
-            {
-                id: "WIL",
-                value: 8,
-            },
-        ],
-    },
-    {
-        id: "1297",
-        name: {
-            tw: "特別的尤蓓爾模型",
-            en: "Special Ubel Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "bonus_damage",
-                value: 2,
-            },
-        ],
-    },
-    {
-        id: "1298",
-        name: {
-            tw: "特別的賽莉耶模型",
-            en: "Special Serie Miniature",
-        },
-        category: "normal",
-        abilities: [
-            {
-                id: "STR",
-                value: 8,
-            },
-            {
-                id: "SP",
-                value: 10,
             },
         ],
     },
