@@ -222,7 +222,7 @@ const selectableAbility = [
 
 const displayData = computed(() => {
     if ("search" === selectedCondition.value && inputText.value !== "") {
-        farmModel.filter((item) => item.name.tw.includes(inputText.value)) || [];
+        return farmModel.filter((item) => item.name.tw.includes(inputText.value)) || [];
     } else if ("condition" === selectedCondition.value && selectedAbility.value.length > 0) {
         return farmModel.filter((item) => {
             const itemAbilities = item.abilities.map((abilitiy) => abilitiy.id);
