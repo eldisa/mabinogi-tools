@@ -1336,7 +1336,7 @@ export const farmModel: FarmModel[] = [
     {
         id: "493",
         name: {
-            tw: "冬季溫泉",
+            tw: "冬季特殊溫泉",
             en: "Winter Hot Spring",
         },
         category: "normal",
@@ -3065,7 +3065,7 @@ export const farmModel: FarmModel[] = [
             },
             {
                 id: "attack_max",
-                value: 8,
+                value: 6,
             },
         ],
     },
