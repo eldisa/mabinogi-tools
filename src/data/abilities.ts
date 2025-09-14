@@ -80,6 +80,7 @@ export const abilitiesMap: Record<string, string> = {
     critical_cap_increase: "暴擊上限增加",
     critical_damage: "暴擊傷害",
     move_speed: "移動速度上升",
+    exp: "經驗值",
 };
 
 export const reverseAbilitiesMap: Record<string, string> = {
@@ -189,6 +190,7 @@ export const reverseAbilitiesMap: Record<string, string> = {
     破碎踏擊抵抗: "stomp_defence_set",
     移動速度: "move_speed",
     移動速度上升: "move_speed",
+    經驗值: "exp",
 };
 
 export const abilitiesValueWithPercentArray: string[] = [
@@ -210,4 +212,5 @@ export const abilitiesValueWithPercentArray: string[] = [
     "critical_cap_increase",
     "critical_damage",
     "move_speed",
+    "exp",
 ];
