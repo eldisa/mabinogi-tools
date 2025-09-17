@@ -131,7 +131,8 @@ import { CraftableItem, CraftTreeNode, MaterialSource } from "../types/CraftItem
 import CardHeader from "../components/CardHeader.vue";
 import { materials } from "../data/materials";
 import { G27Weapons } from "../data/productionForG27Weapon";
-import { ElTableV2 } from "element-plus";
+import { ElTableV2, ElTooltip, ElIcon } from "element-plus";
+import { InfoFilled } from "@element-plus/icons-vue";
 import { TableV2SortOrder } from "element-plus";
 import type { SortBy } from "element-plus";
 
@@ -169,6 +170,7 @@ const materialSummaryTable = computed(() => {
             return {
                 id,
                 name: name.tw || name.en,
+                otherName: name.tw2 || "",
                 total,
                 owned: inventory.value[id] || 0,
                 shortage: Math.max(0, total - (inventory.value[id] || 0)),
@@ -324,7 +326,32 @@ const summaryColumns = [
         dataKey: "name",
         width: 300,
         cellRenderer: ({ rowData }: any) => {
-            return h("span", rowData.name);
+            const hasOtherName = rowData.otherName && rowData.otherName !== "";
+
+            // 使用 h 函式創建一個 Flex 容器來容納名稱和 icon
+            return h("div", { class: "flex items-center space-x-2" }, [
+                // 顯示主要名稱
+                h("span", rowData.name),
+
+                // 條件渲染 tooltip
+                hasOtherName
+                    ? h(
+                          ElTooltip,
+                          {
+                              effect: "dark",
+                              placement: "right",
+                              content: rowData.otherName, // 直接使用 otherName 作為 content
+                          },
+                          {
+                              // tooltip 的觸發內容
+                              default: () =>
+                                  h(ElIcon, null, {
+                                      default: () => h(InfoFilled),
+                                  }),
+                          }
+                      )
+                    : null, // 如果沒有 otherName，則不顯示
+            ]);
         },
         sortable: true,
     },

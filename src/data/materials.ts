@@ -1414,7 +1414,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Strengthen Spin Gear",
             kr: "강화된 스핀 기어",
-            tw: "強化旋轉齒輪",
+            tw: "強化的旋轉齒輪",
+            tw2: "強化旋轉齒輪",
         },
         source: {
             type: "craft",
@@ -1439,7 +1440,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Strengthen Sulien",
             kr: "강화된 실리엔",
-            tw: "強化希里原",
+            tw: "強化的希里原",
+            tw2: "強化希里原",
         },
         source: {
             type: "craft",
@@ -1464,7 +1466,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Strengthen Plate",
             kr: "강화된 금속판",
-            tw: "強化金屬板",
+            tw: "強化的金屬板",
+            tw2: "強化金屬板",
         },
         source: {
             type: "craft",
@@ -1527,7 +1530,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Orange Ligt Memory Fragment",
             kr: "주황빛 기억의 조각",
-            tw: "橘黃光記憶碎片",
+            tw: "橘光記憶碎片",
+            tw2: "橘黃光記憶碎片",
         },
         source: {
             type: "desc",
@@ -1635,7 +1639,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Variscite",
             kr: "바리사이트",
-            tw: "雲母",
+            tw: "透輝石",
+            tw2: "雲母",
         },
         source: {
             type: "desc",
@@ -1767,7 +1772,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Pure White Leather Fragment",
             kr: "순백의 가죽 조각",
-            tw: "純白皮革碎片",
+            tw: "純白的皮革碎片",
+            tw2: "純白皮革碎片",
         },
         source: {
             type: "desc",
@@ -1779,7 +1785,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Pure White Feather",
             kr: "순백의 깃털",
-            tw: "純白羽毛",
+            tw: "純白的羽毛",
+            tw2: "純白羽毛",
         },
         source: {
             type: "desc",
@@ -1815,7 +1822,8 @@ export const materials: CraftableItem[] = [
         name: {
             en: "Sturdy Wolf Fang",
             kr: "단단한 늑대의 이빨",
-            tw: "堅硬的野狼牙齒",
+            tw: "堅硬的狼牙",
+            tw2: "堅硬的野狼牙齒",
         },
         source: {
             type: "desc",
