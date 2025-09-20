@@ -58,3 +58,9 @@ export interface CraftTreeNode {
     uniqueKey: string; // 用於唯一識別此節點的鍵
     children?: CraftTreeNode[];
 }
+
+export interface MaterialUsage {
+    id: number;
+    usedIn: string;
+    name: string;
+}

@@ -116,6 +116,25 @@
                                     />
                                 </div>
                             </el-tab-pane>
+                            <el-tab-pane label="材料用途">
+                                <h2 class="text-lg font-semibold">這個材料可以做什麼東西</h2>
+                                <div class="mt-4">
+                                    <el-table :data="materialUsageData" style="width: 100%" border lazy>
+                                        <el-table-column label="名稱">
+                                            <template #default="{ row }">
+                                                <div class="flex items-center gap-3 h-full">
+                                                    <img
+                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                        class="w-10 h-10 object-contain"
+                                                    />
+                                                    <span>{{ row.name }}</span>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="usedIn" label="那些裝備需要" align="right" />
+                                    </el-table>
+                                </div>
+                            </el-tab-pane>
                         </el-tabs>
                     </el-card>
                 </div>
@@ -127,9 +146,9 @@
 <script setup lang="ts">
 import { ref, watch, computed, h } from "vue";
 import { Option } from "../types";
-import { CraftableItem, CraftTreeNode, MaterialSource } from "../types/CraftItem";
+import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage } from "../types/CraftItem";
 import CardHeader from "../components/CardHeader.vue";
-import { materials } from "../data/materials";
+import { materials, G27bossDropsUsage } from "../data/materials";
 import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTableV2, ElTooltip, ElIcon } from "element-plus";
 import { InfoFilled } from "@element-plus/icons-vue";
@@ -156,6 +175,7 @@ const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
 const scrollRow = ref<HTMLElement | null>(null);
 const inventory = ref<Record<string, number>>({});
 const displayData = ref<CraftTreeNode[]>([]);
+const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
 const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataIndex.value]);
 
