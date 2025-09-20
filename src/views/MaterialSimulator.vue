@@ -116,8 +116,8 @@
                                     />
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="材料用途">
-                                <h2 class="text-lg font-semibold">這個材料可以做什麼東西</h2>
+                            <el-tab-pane label="Usage">
+                                <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
                                 <div class="mt-4">
                                     <el-table :data="materialUsageData" style="width: 100%" border lazy>
                                         <el-table-column label="名稱">
