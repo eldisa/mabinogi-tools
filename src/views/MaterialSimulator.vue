@@ -131,7 +131,7 @@
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="usedIn" label="那些裝備需要" align="right" />
+                                        <el-table-column prop="usedIn" label="那些裝備需要" />
                                     </el-table>
                                 </div>
                             </el-tab-pane>
