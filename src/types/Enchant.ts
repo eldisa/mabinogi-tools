@@ -5,13 +5,24 @@ export interface EnchantAbility {
 }
 
 export interface Enchant {
+    id: number;
+    type: "prefix" | "suffix";
+    level: number;
+    list: string;
+    desc: string;
     name: {
         tw: string;
-        kr: string;
+        tw2?: string;
+        kr?: string;
         en: string;
     };
-    position: string;
-    type: "prefix" | "suffix";
+    limit: string[];
     effect: EnchantAbility[];
+    personalize: boolean;
     source?: string; // 來源
+}
+
+export interface EnchantSource {
+    raidName: string;
+    list: number[];
 }
