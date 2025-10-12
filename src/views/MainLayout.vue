@@ -15,11 +15,13 @@ const closeSidebar = () => {
 </script>
 
 <template>
-    <div class="flex h-screen bg-gray-900 text-gray-100 overflow-hidden">
-        <div class="flex flex-col flex-1 w-full lg:ml-64">
-            <Header @toggle-sidebar="toggleSidebar" />
+    <div class="flex flex-col h-screen bg-gray-900 text-gray-100 overflow-y-auto">
+        <Header @toggle-sidebar="toggleSidebar" />
+
+        <div class="flex flex-1 overflow-y-auto">
             <Sidebar :is-open="isSidebarOpen" @close="closeSidebar" />
-            <main class="flex-1 overflow-hidden">
+
+            <main class="flex-1 overflow-y-auto lg:ml-64">
                 <router-view />
             </main>
         </div>
