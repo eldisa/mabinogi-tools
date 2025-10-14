@@ -197,10 +197,9 @@ const materialSummaryTable = computed(() => {
             tokenTotal += ele.source.token * ele.total;
         }
     });
-    console.log(result);
     let tokenData = materials.find((ele) => ele.id === 5300217);
 
-    if (tokenData) {
+    if (materialMap.value.length > 0 && tokenData) {
         const tokenName = tokenData.name.tw || tokenData.name.en;
         const index = result.findIndex((ele) => ele.id === 5300217);
         if (index === -1) {
