@@ -650,8 +650,6 @@ export const materials: CraftableItem[] = [
             tw: "寶石粉末",
         },
         source: {
-            // type: "dissolution",
-            // materials: "新寶石",
             type: "dissolution",
             description: "分解新寶石 (1~2)",
         },
@@ -1507,10 +1505,9 @@ export const materials: CraftableItem[] = [
             tw: "布里萊赫核心",
         },
         source: {
-            // type: "reward",
-            // dungeon: "G27",
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:100)",
+            token: 100,
         },
     },
     {
@@ -1523,6 +1520,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:100)",
+            token: 100,
         },
     },
     {
@@ -1536,6 +1534,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:25)",
+            token: 25,
         },
     },
     {
@@ -1548,6 +1547,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:25)",
+            token: 25,
         },
     },
     {
@@ -1560,6 +1560,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:25)",
+            token: 25,
         },
     },
     {
@@ -1572,6 +1573,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1584,6 +1586,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1596,6 +1599,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1608,6 +1612,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1620,6 +1625,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1632,6 +1638,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1645,6 +1652,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1657,6 +1665,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1669,6 +1678,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1681,6 +1691,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1693,6 +1704,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1705,6 +1717,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:3)",
+            token: 3,
         },
     },
     {
@@ -1717,6 +1730,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1729,6 +1743,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1741,6 +1756,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1753,6 +1769,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1765,6 +1782,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1778,6 +1796,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1791,6 +1810,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1803,6 +1823,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1815,6 +1836,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1828,6 +1850,7 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
         },
     },
     {
@@ -1840,6 +1863,19 @@ export const materials: CraftableItem[] = [
         source: {
             type: "desc",
             description: "G27副本獎勵/商店購買 (布里萊赫珠子:1)",
+            token: 1,
+        },
+    },
+    {
+        id: 5300217,
+        name: {
+            en: "Coin",
+            kr: "브리 레흐 구슬",
+            tw: "布里萊赫的珠子",
+        },
+        source: {
+            type: "reward",
+            description: "G27副本獎勵 (這邊是統計材料全用換的需要多少珠子)",
         },
     },
 ];

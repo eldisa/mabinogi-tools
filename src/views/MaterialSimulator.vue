@@ -36,7 +36,7 @@
                             <el-button
                                 type="primary"
                                 class="ml-4"
-                                @click="selectedWeapons = craftWeaponOptions.map((ele) => ele.value)"
+                                @click="selectedWeapons = craftWeaponOptions.map((ele) => Number(ele.value))"
                             >
                                 全選
                             </el-button>
@@ -182,7 +182,8 @@ const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataI
 const materialMap = ref<{ id: number; total: number }[]>([]);
 
 const materialSummaryTable = computed(() => {
-    return materials
+    let tokenTotal = 0;
+    let result = materials
         .map((item) => {
             const { id, name, source } = item;
             const total = materialMap.value.find((ele) => ele.id === id)?.total || 0;
@@ -198,6 +199,30 @@ const materialSummaryTable = computed(() => {
             };
         })
         .filter((ele) => ele.total > 0);
+    result.forEach((ele) => {
+        if (ele.source.type === "desc" && ele.source.token) {
+            tokenTotal += ele.source.token * ele.total;
+        }
+    });
+    console.log(result);
+    let tokenData = materials.find((ele) => ele.id === 5300217);
+
+    if (tokenData) {
+        const tokenName = tokenData.name.tw || tokenData.name.en;
+        const index = result.findIndex((ele) => ele.id === 5300217);
+        if (index === -1) {
+            result.push({
+                id: 5300217,
+                name: tokenName,
+                otherName: "",
+                total: tokenTotal,
+                owned: inventory.value[5300217] || 0,
+                shortage: Math.max(0, 0 - (inventory.value[5300217] || 0)),
+                source: tokenData.source,
+            });
+        }
+    }
+    return result;
 });
 
 const buildCraftTree = (

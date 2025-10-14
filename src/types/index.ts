@@ -75,6 +75,6 @@ export interface MonsterEntry {
 
 // 標準 select option 類型
 export interface Option {
-    value: number; // 值
+    value: number | string; // 值
     label: string; // 顯示名稱
 }
