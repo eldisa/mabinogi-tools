@@ -54,8 +54,22 @@
                             </div>
                         </div> -->
                     </el-card>
-                    <el-card class="mb-8 p-4 rounded-xl shadow border border-gray-200 bg-white">
-                        <el-tabs type="border-card" class="demo-tabs">
+                    <el-card class="mb-8 rounded-xl shadow border border-gray-200 bg-white">
+                        <el-tabs type="border-card">
+                            <el-tab-pane label="Total">
+                                <h2 class="text-lg font-semibold">庫存與所需材料</h2>
+                                <div class="mt-4">
+                                    <el-table-v2
+                                        :columns="summaryColumns"
+                                        :data="sortedData"
+                                        :sort-by="sortState"
+                                        :width="900"
+                                        :height="2000"
+                                        :row-key="'id'"
+                                        @column-sort="onSort"
+                                    />
+                                </div>
+                            </el-tab-pane>
                             <el-tab-pane label="Preview">
                                 <template v-if="displayData.length > 0">
                                     <h2 class="text-lg font-semibold">
@@ -95,20 +109,6 @@
                                         </el-table>
                                     </div>
                                 </template>
-                            </el-tab-pane>
-                            <el-tab-pane label="Stock">
-                                <h2 class="text-lg font-semibold">庫存與所需材料</h2>
-                                <div class="mt-4">
-                                    <el-table-v2
-                                        :columns="summaryColumns"
-                                        :data="sortedData"
-                                        :sort-by="sortState"
-                                        :width="900"
-                                        :height="2000"
-                                        :row-key="'id'"
-                                        @column-sort="onSort"
-                                    />
-                                </div>
                             </el-tab-pane>
                             <el-tab-pane label="Usage">
                                 <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
