@@ -3,22 +3,16 @@
         <div class="max-w-7xl mx-auto">
             <header class="mb-6 text-center">
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">素材計算模擬器</h1>
-                <p class="text-gray-600 mt-2">輕鬆計算還需要多少材料</p>
             </header>
 
             <div>
                 <!-- 資料輸入區 -->
-
                 <div class="mb-4">
                     <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
-                        <CardHeader title="製作項目資料" subtitle="設定你想要模擬的目標與條件" />
-                        <!-- select craft target-->
-                        <!--  todo: optimized-->
                         <div class="flex justify-center">
                             <el-select
                                 v-model="selectedWeapons"
                                 filterable
-                                multiple
                                 placeholder="選擇製作項目"
                                 class="w-full max-w-xl mb-4"
                             >
@@ -28,25 +22,25 @@
                                     :label="item.label"
                                     :value="item.value"
                                 />
-                                <template #tag>
+                                <!-- <template #tag>
                                     {{ selectedWeapons.length > 0 ? `已選擇 ${selectedWeapons.length} 樣` : "" }}
-                                </template>
+                                </template> -->
                             </el-select>
-                            <el-button type="danger" class="ml-4" @click="selectedWeapons = []">X</el-button>
+                            <!-- <el-button type="danger" class="ml-4" @click="selectedWeapons = []">X</el-button>
                             <el-button
                                 type="primary"
                                 class="ml-4"
                                 @click="selectedWeapons = craftWeaponOptions.map((ele) => Number(ele.value))"
                             >
                                 全選
-                            </el-button>
+                            </el-button> -->
                         </div>
-                        <div v-if="displayData.length > 0" class="mt-4">
+                        <!-- todo: 圖片右上新增 delete button -->
+                        <!-- <div v-if="displayData.length > 0" class="mt-4">
                             <div
                                 class="flex gap-8 px-8 justify-center scroll-row overflow-x-auto overflow-y-hidden"
                                 ref="scrollRow"
                             >
-                                <!-- todo: 圖片右上新增 delete button -->
                                 <img
                                     v-for="(obj, index) in displayData"
                                     :src="`${baseUrl}itemImage/${obj.id}.png`"
@@ -58,7 +52,7 @@
                                     @click="handleSelectDisplayData(index)"
                                 />
                             </div>
-                        </div>
+                        </div> -->
                     </el-card>
                     <el-card class="mb-8 p-4 rounded-xl shadow border border-gray-200 bg-white">
                         <el-tabs type="border-card" class="demo-tabs">
@@ -147,7 +141,6 @@
 import { ref, watch, computed, h } from "vue";
 import { Option } from "../types";
 import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage } from "../types/CraftItem";
-import CardHeader from "../components/CardHeader.vue";
 import { materials, G27bossDropsUsage } from "../data/materials";
 import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTableV2, ElTooltip, ElIcon } from "element-plus";
@@ -347,10 +340,10 @@ const sortedData = computed(() => {
     });
 });
 
-const handleSelectDisplayData = (index: number) => {
-    const selectIndex = index > displayData.value.length - 1 ? 0 : index;
-    selectedDisplayDataIndex.value = selectIndex;
-};
+// const handleSelectDisplayData = (index: number) => {
+//     const selectIndex = index > displayData.value.length - 1 ? 0 : index;
+//     selectedDisplayDataIndex.value = selectIndex;
+// };
 
 const summaryColumns = [
     {
