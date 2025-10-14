@@ -30,11 +30,12 @@ const menuItems = ref([
 <template>
     <aside
         :class="[
-            'fixed top-[67px] left-0 h-[calc(100vh-67px)] w-4/5 lg:w-64 bg-gray-800 border-r border-gray-700 z-40',
+            'fixed left-0 w-4/5 lg:w-64 bg-gray-800 border-r border-gray-700 z-40',
             'transform transition-transform duration-300 ease-in-out',
             'lg:translate-x-0',
             isOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
+        style="top: var(--header-height, 57px); height: calc(100vh - var(--header-height, 57px))"
     >
         <div class="flex flex-col h-full">
             <div class="flex-1 overflow-y-auto p-3 space-y-1">
@@ -68,5 +69,33 @@ const menuItems = ref([
     font-size: 1.2rem;
     min-width: 24px;
     text-align: center;
+}
+/* 假設 Sidebar 元件的容器是 <aside> 或 <div> */
+
+/* 桌面版 Sidebar 的樣式 */
+@media (min-width: 1024px) {
+    /* lg: 斷點或你定義的桌面斷點 */
+    .sidebar-container {
+        position: fixed;
+        top: var(--header-height, 0); /* 從 Header 下方開始 */
+        left: 0;
+        /* 高度計算：全螢幕高 - Header 高度 */
+        height: calc(100vh - var(--header-height, 0px));
+        z-index: 20; /* 確保它位於主內容之上 */
+    }
+}
+
+/* 手機版 Sidebar 的樣式 */
+@media (max-width: 1023px) {
+    .sidebar-container {
+        /* 手機上使用 inset-0 搭配 top: var(--header-height) */
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        /* 或者如果想讓 Header 擋住它： */
+        /* top: var(--header-height, 0); */
+        /* height: calc(100vh - var(--header-height, 0px)); */
+        z-index: 40;
+    }
 }
 </style>

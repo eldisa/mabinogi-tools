@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import Header from "../components/Header.vue";
 import Sidebar from "../components/Sidebar.vue";
 
 const isSidebarOpen = ref(false);
+const headerRef = ref<HTMLElement | null>(null);
 
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
@@ -12,13 +13,29 @@ const toggleSidebar = () => {
 const closeSidebar = () => {
     isSidebarOpen.value = false;
 };
+
+const updateHeaderHeight = () => {
+    if (headerRef.value) {
+        const height = headerRef.value.offsetHeight;
+        document.documentElement.style.setProperty("--header-height", `${height}px`);
+    }
+};
+
+onMounted(() => {
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+});
+
+onUnmounted(() => {
+    window.removeEventListener("resize", updateHeaderHeight);
+});
 </script>
 
 <template>
-    <div class="flex flex-col h-screen bg-gray-900 text-gray-100 overflow-y-auto">
-        <Header @toggle-sidebar="toggleSidebar" />
+    <div class="flex flex-col h-screen bg-gray-900 text-gray-100 overflow-hidden">
+        <Header ref="headerRef" @toggle-sidebar="toggleSidebar" />
 
-        <div class="flex flex-1 overflow-y-auto">
+        <div class="flex flex-1 overflow-hidden">
             <Sidebar :is-open="isSidebarOpen" @close="closeSidebar" />
 
             <main class="flex-1 overflow-y-auto lg:ml-64">
