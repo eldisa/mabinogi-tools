@@ -33,30 +33,30 @@ const menuItems = ref([
             'fixed left-0 w-4/5 lg:w-64 bg-gray-800 border-r border-gray-700 z-40',
             'transform transition-transform duration-300 ease-in-out',
             'lg:translate-x-0',
+            'flex flex-col h-full', // 🌟 確保 aside 也是一個 Flex 容器
             isOpen ? 'translate-x-0' : '-translate-x-full',
         ]"
-        style="top: var(--header-height, 57px); height: calc(100vh - var(--header-height, 57px))"
+        style="top: var(--header-height, 57px)"
+        @click.stop
     >
-        <div class="flex flex-col h-full">
-            <div class="flex-1 overflow-y-auto p-3 space-y-1">
+        <div class="flex-1 overflow-y-auto p-3 space-y-1">
+            <div
+                v-for="item in menuItems"
+                :key="item.name"
+                class="px-3 py-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors group"
+            >
                 <div
-                    v-for="item in menuItems"
-                    :key="item.name"
-                    class="px-3 py-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors group"
+                    class="flex items-start justify-between"
+                    @click="
+                        router.push(item.path);
+                        emit('close');
+                    "
                 >
-                    <div
-                        class="flex items-start justify-between"
-                        @click="
-                            router.push(item.path);
-                            emit('close');
-                        "
-                    >
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-200 truncate">
-                                <span class="icon">{{ item.icon }}</span>
-                                {{ item.name }}
-                            </p>
-                        </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-200 truncate">
+                            <span class="icon">{{ item.icon }}</span>
+                            {{ item.name }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -79,8 +79,6 @@ const menuItems = ref([
         position: fixed;
         top: var(--header-height, 0); /* 從 Header 下方開始 */
         left: 0;
-        /* 高度計算：全螢幕高 - Header 高度 */
-        height: calc(100vh - var(--header-height, 0px));
         z-index: 20; /* 確保它位於主內容之上 */
     }
 }
@@ -88,13 +86,9 @@ const menuItems = ref([
 /* 手機版 Sidebar 的樣式 */
 @media (max-width: 1023px) {
     .sidebar-container {
-        /* 手機上使用 inset-0 搭配 top: var(--header-height) */
         position: fixed;
         top: 0;
         bottom: 0;
-        /* 或者如果想讓 Header 擋住它： */
-        /* top: var(--header-height, 0); */
-        /* height: calc(100vh - var(--header-height, 0px)); */
         z-index: 40;
     }
 }
