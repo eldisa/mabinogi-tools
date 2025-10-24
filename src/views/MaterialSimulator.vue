@@ -5,28 +5,28 @@
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">素材計算模擬器</h1>
             </header>
 
-            <div>
-                <!-- 資料輸入區 -->
-                <div class="mb-4">
-                    <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
-                        <div class="flex justify-center">
-                            <el-select
-                                v-model="selectedWeapons"
-                                filterable
-                                placeholder="選擇製作項目"
-                                class="w-full max-w-xl mb-4"
-                            >
-                                <el-option
-                                    v-for="item in craftWeaponOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
-                                />
-                                <!-- <template #tag>
+            <!-- 資料輸入區 -->
+            <div class="mb-4">
+                <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
+                    <div class="flex justify-center">
+                        <el-select
+                            v-model="selectedWeapons"
+                            filterable
+                            multiple
+                            placeholder="選擇製作項目"
+                            class="w-full max-w-xl mb-4"
+                        >
+                            <el-option
+                                v-for="item in craftWeaponOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                            <!-- <template #tag>
                                     {{ selectedWeapons.length > 0 ? `已選擇 ${selectedWeapons.length} 樣` : "" }}
                                 </template> -->
-                            </el-select>
-                            <!-- <el-button type="danger" class="ml-4" @click="selectedWeapons = []">X</el-button>
+                        </el-select>
+                        <!-- <el-button type="danger" class="ml-4" @click="selectedWeapons = []">X</el-button>
                             <el-button
                                 type="primary"
                                 class="ml-4"
@@ -34,9 +34,9 @@
                             >
                                 全選
                             </el-button> -->
-                        </div>
-                        <!-- todo: 圖片右上新增 delete button -->
-                        <!-- <div v-if="displayData.length > 0" class="mt-4">
+                    </div>
+                    <!-- todo: 圖片右上新增 delete button -->
+                    <!-- <div v-if="displayData.length > 0" class="mt-4">
                             <div
                                 class="flex gap-8 px-8 justify-center scroll-row overflow-x-auto overflow-y-hidden"
                                 ref="scrollRow"
@@ -53,68 +53,112 @@
                                 />
                             </div>
                         </div> -->
-                    </el-card>
-                    <el-card class="mb-8 rounded-xl shadow border border-gray-200 bg-white">
-                        <el-tabs type="border-card">
-                            <el-tab-pane label="Total">
-                                <h2 class="text-lg font-semibold">庫存與所需材料</h2>
-                                <div class="mt-4">
-                                    <el-table-v2
-                                        :columns="summaryColumns"
-                                        :data="sortedData"
-                                        :sort-by="sortState"
-                                        :width="900"
-                                        :height="2000"
-                                        :row-key="'id'"
-                                        @column-sort="onSort"
-                                    />
-                                </div>
-                            </el-tab-pane>
-                            <el-tab-pane label="Preview">
-                                <template v-if="displayData.length > 0">
-                                    <h2 class="text-lg font-semibold">
-                                        {{ displayData[selectedDisplayDataIndex].name }}
-                                    </h2>
-                                    <div class="mt-4">
+                </el-card>
+                <el-card class="rounded-xl shadow border border-gray-200 bg-white">
+                    <el-tabs type="border-card">
+                        <el-tab-pane label="Total">
+                            <h2 class="text-lg font-semibold">庫存與所需材料</h2>
+                            <div class="mt-4 overflow-x-auto overflow-y-auto">
+                                <!-- 手機版 -->
+                                <div v-if="layoutStore.isMobile">
+                                    <div class="md:hidden space-y-3 p-4">
                                         <el-table
-                                            v-if="dataInPreviewTable?.children?.length"
-                                            :data="dataInPreviewTable.children"
-                                            style="width: 100%"
-                                            :row-key="(row:CraftTreeNode) => row.uniqueKey"
+                                            :data="sortedData"
+                                            :row-key="'id'"
                                             border
-                                            lazy
-                                            :tree-props="{
-                                                children: 'children',
-                                            }"
+                                            class="material-table"
+                                            :preserve-expanded-content="preserveExpanded"
                                         >
-                                            <el-table-column label="名稱">
+                                            <el-table-column type="expand">
                                                 <template #default="{ row }">
-                                                    <div class="flex items-center gap-3 h-full">
-                                                        <img
-                                                            :src="`${baseUrl}itemImage/${row.id}.png`"
-                                                            class="w-10 h-10 object-contain"
-                                                        />
-                                                        <span>{{ row.name }}</span>
-                                                    </div>
+                                                    <div>{{ row.name }}</div>
+                                                    <span class="text-sm">{{ row.source.description || "—" }}</span>
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column prop="amount" label="需求數量" align="right" />
-                                            <el-table-column label="如何獲得">
+                                            <el-table-column prop="id" label="素材" align="center">
                                                 <template #default="{ row }">
-                                                    <div v-if="row.source.type === 'craft'">生產製作</div>
-                                                    <div v-else-if="row.source.type === ''">-</div>
-                                                    <div v-else>{{ row.source.description || "" }}</div>
+                                                    <img
+                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                        class="w-8 h-8 object-contain mx-auto"
+                                                    />
                                                 </template>
                                             </el-table-column>
+                                            <el-table-column prop="total" label="數量" align="center" sortable />
                                         </el-table>
                                     </div>
-                                </template>
-                            </el-tab-pane>
-                            <el-tab-pane label="Usage">
-                                <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
+                                </div>
+
+                                <!-- 平板版 -->
+                                <!-- 桌面版 -->
+                                <!-- <div v-else-if="layoutStore.isTablet">平板版佈局</div> -->
+                                <div v-else>
+                                    <el-table :data="sortedData" :row-key="'id'" border class="material-table">
+                                        <el-table-column prop="id" label="圖片" width="80" fixed="left">
+                                            <template #default="{ row }">
+                                                <img
+                                                    :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                    class="w-8 h-8 object-contain mx-auto"
+                                                />
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column prop="name" label="名稱" width="250" fixed="left" sortable>
+                                            <template #default="{ row }">
+                                                <div class="flex items-center space-x-2">
+                                                    <span>{{ row.name }}</span>
+                                                    <el-tooltip
+                                                        v-if="row.otherName"
+                                                        effect="dark"
+                                                        :content="row.otherName"
+                                                        placement="right"
+                                                    >
+                                                        <el-icon><InfoFilled /></el-icon>
+                                                    </el-tooltip>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column
+                                            prop="total"
+                                            label="所需數量"
+                                            width="120"
+                                            align="center"
+                                            sortable
+                                        />
+
+                                        <el-table-column
+                                            prop="source"
+                                            label="如何取得"
+                                            min-width="300"
+                                            align="left"
+                                            sortable
+                                        >
+                                            <template #default="{ row }">
+                                                <span class="text-sm">{{ row.source.description || "—" }}</span>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="Preview">
+                            <template v-if="displayData.length > 0">
+                                <h2 class="text-lg font-semibold">
+                                    {{ displayData[selectedDisplayDataIndex].name }}
+                                </h2>
                                 <div class="mt-4">
-                                    <el-table :data="materialUsageData" style="width: 100%" border lazy>
-                                        <el-table-column label="名稱">
+                                    <el-table
+                                        v-if="dataInPreviewTable?.children?.length"
+                                        :data="dataInPreviewTable.children"
+                                        style="width: 100%"
+                                        :row-key="(row:CraftTreeNode) => row.uniqueKey"
+                                        border
+                                        lazy
+                                        :tree-props="{
+                                            children: 'children',
+                                        }"
+                                    >
+                                        <el-table-column label="名稱" min-width="250">
                                             <template #default="{ row }">
                                                 <div class="flex items-center gap-3 h-full">
                                                     <img
@@ -122,31 +166,69 @@
                                                         class="w-10 h-10 object-contain"
                                                     />
                                                     <span>{{ row.name }}</span>
+                                                    <el-tooltip placement="top">
+                                                        <template #content>
+                                                            <div v-if="row.source.type === 'craft'">生產製作</div>
+                                                            <div v-else-if="row.source.type === ''">-</div>
+                                                            <div v-else>{{ row.source.description || "" }}</div>
+                                                        </template>
+                                                        <ElIcon class="ml-1">
+                                                            <InfoFilled />
+                                                        </ElIcon>
+                                                    </el-tooltip>
                                                 </div>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="usedIn" label="那些裝備需要" />
+                                        <el-table-column prop="amount" label="數量" align="right" />
+                                        <!-- <el-table-column label="如何獲得">
+                                            <template #default="{ row }">
+                                                <div v-if="row.source.type === 'craft'">生產製作</div>
+                                                <div v-else-if="row.source.type === ''">-</div>
+                                                <div v-else>{{ row.source.description || "" }}</div>
+                                            </template>
+                                        </el-table-column> -->
                                     </el-table>
                                 </div>
-                            </el-tab-pane>
-                        </el-tabs>
-                    </el-card>
-                </div>
+                            </template>
+                        </el-tab-pane>
+                        <el-tab-pane label="Usage">
+                            <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
+                            <div class="mt-4">
+                                <el-table :data="materialUsageData" style="width: 100%" border lazy>
+                                    <el-table-column label="名稱">
+                                        <template #default="{ row }">
+                                            <div class="flex items-center gap-3 h-full">
+                                                <img
+                                                    :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                    class="w-10 h-10 object-contain"
+                                                />
+                                                <span>{{ row.name }}</span>
+                                            </div>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="usedIn" label="那些裝備需要" />
+                                </el-table>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </el-card>
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, h } from "vue";
+import { ref, watch, computed } from "vue";
 import { Option } from "../types";
 import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage } from "../types/CraftItem";
 import { materials, G27bossDropsUsage } from "../data/materials";
 import { G27Weapons } from "../data/productionForG27Weapon";
-import { ElTableV2, ElTooltip, ElIcon } from "element-plus";
+import { ElTooltip, ElIcon, TableV2SortOrder } from "element-plus";
 import { InfoFilled } from "@element-plus/icons-vue";
-import { TableV2SortOrder } from "element-plus";
 import type { SortBy } from "element-plus";
+import { useLayoutStore } from "../stores/layout";
+
+const layoutStore = useLayoutStore();
 
 interface MaterialSummary {
     id: number;
@@ -160,6 +242,7 @@ const baseUrl = import.meta.env.BASE_URL;
 const selectedWeapons = ref<number[]>([]);
 const itemById = new Map(materials.map((m) => [m.id, m]));
 
+const preserveExpanded = ref(false);
 const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
     const { id, name } = weapon;
     return { label: name.tw || name.en, value: id };
@@ -288,9 +371,6 @@ const sortState = ref<SortBy>({
     key: "total",
     order: TableV2SortOrder.ASC,
 });
-const onSort = (sortBy: SortBy) => {
-    sortState.value = sortBy;
-};
 
 const getTypeOrder = (type: string) => {
     switch (type) {
@@ -344,122 +424,6 @@ const sortedData = computed(() => {
 //     selectedDisplayDataIndex.value = selectIndex;
 // };
 
-const summaryColumns = [
-    {
-        key: "id",
-        title: "圖片",
-        dataKey: "id",
-        width: 80,
-        cellRenderer: ({ rowData }: any) => {
-            return h("img", {
-                src: `${baseUrl}itemImage/${rowData.id}.png`,
-                class: "w-8 h-8 object-contain mx-auto",
-            });
-        },
-    },
-    {
-        key: "name",
-        title: "名稱",
-        dataKey: "name",
-        width: 300,
-        cellRenderer: ({ rowData }: any) => {
-            const hasOtherName = rowData.otherName && rowData.otherName !== "";
-
-            // 使用 h 函式創建一個 Flex 容器來容納名稱和 icon
-            return h("div", { class: "flex items-center space-x-2" }, [
-                // 顯示主要名稱
-                h("span", rowData.name),
-
-                // 條件渲染 tooltip
-                hasOtherName
-                    ? h(
-                          ElTooltip,
-                          {
-                              effect: "dark",
-                              placement: "right",
-                              content: rowData.otherName, // 直接使用 otherName 作為 content
-                          },
-                          {
-                              // tooltip 的觸發內容
-                              default: () =>
-                                  h(ElIcon, null, {
-                                      default: () => h(InfoFilled),
-                                  }),
-                          }
-                      )
-                    : null, // 如果沒有 otherName，則不顯示
-            ]);
-        },
-        sortable: true,
-    },
-    // {
-    //     key: "owned",
-    //     title: "持有數量",
-    //     dataKey: "owned",
-    //     width: 120,
-    //     align: "right" as any,
-    // },
-    {
-        key: "total",
-        title: "所需數量",
-        dataKey: "total",
-        width: 120,
-        align: "right" as any,
-        sortable: true,
-    },
-    // {
-    //     key: "shortage",
-    //     title: "差額",
-    //     dataKey: "shortage",
-    //     width: 120,
-    //     align: "right" as any,
-    // },
-    // 下面這個是新增的
-    {
-        key: "source",
-        title: "如何取得",
-        dataKey: "source",
-        width: 400,
-        align: "center" as "right" | "left" | "center",
-        cellRenderer: ({ cellData, rowData }: any) => {
-            const src = cellData ?? itemById.get(rowData?.id)?.source ?? null;
-            const type = src?.type ?? "-";
-
-            switch (type) {
-                case "craft":
-                    return h("span", "製作");
-                    break;
-                case "desc":
-                case "drop":
-                case "reward":
-                case "dissolution":
-                case "shop":
-                    return h("span", src?.description ?? "");
-                    break;
-                default:
-                    break;
-            }
-            if (type === "craft") return h("span", "製作");
-            // if (type === "reward") {
-            //     let price = src?.price ?? 0;
-            //     const priceText = Number(price).toLocaleString();
-            //     // return h("span", src?.price ?? "自己查");
-            //     return h("span", `${priceText}`);
-            // }
-            // if (type === "dissolution") return h("span", `分解自 ${src?.materials ?? ""}`);
-            // if (type === "drop") return h("span", `掉落：${src?.monster ?? ""}`);
-            // if (type === "shop") {
-            //     const price = (src as any)?.price;
-            //     const currency = (src as any)?.currency;
-            //     const currencyText = "ducat" === currency ? "杜卡特" : "金幣";
-            //     return h("span", `商店${price != null ? `（${Number(price).toLocaleString()}${currencyText}）` : ""}`);
-            // }
-            return h("span", "—");
-        },
-        sortable: true,
-    },
-];
-
 const hasAddEvent = ref(false);
 
 watch(
@@ -485,6 +449,7 @@ watch(
 </script>
 
 <style>
+/* 不能用 scoped, or talbe tree 中的 > 會跑版*/
 tr td:first-child .cell {
     display: flex;
     align-items: center;
@@ -531,6 +496,11 @@ tr td:first-child .cell {
     width: 32px;
     height: 32px;
     object-fit: contain;
+}
+
+.material-table {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 @keyframes pulse {

@@ -63,4 +63,5 @@ export interface MaterialUsage {
     id: number;
     usedIn: string;
     name: string;
+    token?: number;
 }
