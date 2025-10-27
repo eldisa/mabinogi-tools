@@ -78,7 +78,7 @@
                     <el-form-item
                         label="依名稱搜尋"
                         class="text-gray-300"
-                        v-if="selectedCondition === 'search'"
+                        v-else-if="selectedCondition === 'search'"
                         id="search-by-name"
                     >
                         <el-input v-model="inputText" style="width: 240px" placeholder="請輸入關鍵字" />
