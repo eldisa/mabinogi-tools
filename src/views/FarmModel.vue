@@ -36,6 +36,29 @@
                             <el-radio label="依條件搜尋" value="condition" />
                         </el-radio-group>
                     </el-form-item>
+                    <el-form-item
+                        label="依條件搜尋"
+                        class="text-gray-300"
+                        v-if="selectedCondition === 'condition'"
+                        id="search-by-ability"
+                    >
+                        <el-select v-model="orderBy" style="width: 240px" filterable clearable placeholder="請選擇能力">
+                            <el-option
+                                v-for="ability in selectableAbility"
+                                :key="`selectable-${ability}`"
+                                :label="abilitiesMap[ability] || ability"
+                                :value="ability"
+                            />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item
+                        label="依名稱搜尋"
+                        class="text-gray-300"
+                        v-else-if="selectedCondition === 'search'"
+                        id="search-by-name"
+                    >
+                        <el-input v-model="inputText" style="width: 240px" placeholder="請輸入關鍵字" />
+                    </el-form-item>
                     <el-form-item label="選擇排序條件">
                         <template #label>
                             <div class="flex items-center space-x-1">
@@ -59,29 +82,6 @@
                                 :value="item.value"
                             />
                         </el-select>
-                    </el-form-item>
-                    <el-form-item
-                        label="依條件搜尋"
-                        class="text-gray-300"
-                        v-if="selectedCondition === 'condition'"
-                        id="search-by-ability"
-                    >
-                        <el-select v-model="orderBy" style="width: 240px" filterable clearable placeholder="請選擇能力">
-                            <el-option
-                                v-for="ability in selectableAbility"
-                                :key="`selectable-${ability}`"
-                                :label="abilitiesMap[ability] || ability"
-                                :value="ability"
-                            />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item
-                        label="依名稱搜尋"
-                        class="text-gray-300"
-                        v-else-if="selectedCondition === 'search'"
-                        id="search-by-name"
-                    >
-                        <el-input v-model="inputText" style="width: 240px" placeholder="請輸入關鍵字" />
                     </el-form-item>
                     <el-form-item label="選擇種類">
                         <el-radio-group v-model="selectedCategory">
