@@ -22,37 +22,37 @@
                                 :label="item.label"
                                 :value="item.value"
                             />
-                            <!-- <template #tag>
-                                    {{ selectedWeapons.length > 0 ? `已選擇 ${selectedWeapons.length} 樣` : "" }}
-                                </template> -->
+                            <template #tag>
+                                {{ selectedWeapons.length > 0 ? `已選擇 ${selectedWeapons.length} 樣` : "" }}
+                            </template>
                         </el-select>
-                        <!-- <el-button type="danger" class="ml-4" @click="selectedWeapons = []">X</el-button>
-                            <el-button
-                                type="primary"
-                                class="ml-4"
-                                @click="selectedWeapons = craftWeaponOptions.map((ele) => Number(ele.value))"
-                            >
-                                全選
-                            </el-button> -->
+                        <el-button type="danger" class="ml-4" @click="selectedWeapons = []">X</el-button>
+                        <el-button
+                            type="primary"
+                            class="ml-4"
+                            @click="selectedWeapons = craftWeaponOptions.map((ele) => Number(ele.value))"
+                        >
+                            All
+                        </el-button>
                     </div>
                     <!-- todo: 圖片右上新增 delete button -->
-                    <!-- <div v-if="displayData.length > 0" class="mt-4">
-                            <div
-                                class="flex gap-8 px-8 justify-center scroll-row overflow-x-auto overflow-y-hidden"
-                                ref="scrollRow"
-                            >
-                                <img
-                                    v-for="(obj, index) in displayData"
-                                    :src="`${baseUrl}itemImage/${obj.id}.png`"
-                                    :class="`tab-icon p-2 ${
-                                        obj.id === selectedWeapons[selectedDisplayDataIndex]
-                                            ? 'ring-4 ring-blue-400 ring-offset-2 ring-offset-blue-100 animate-pulse scale-110 bg-white rounded-xl shadow-xl'
-                                            : 'hover:scale-105 hover:ring-2 hover:ring-gray-300 rounded-md'
-                                    }`"
-                                    @click="handleSelectDisplayData(index)"
-                                />
-                            </div>
-                        </div> -->
+                    <div v-if="displayData.length > 0" class="mt-4">
+                        <div
+                            class="flex gap-8 px-8 justify-center scroll-row overflow-x-auto overflow-y-hidden"
+                            ref="scrollRow"
+                        >
+                            <img
+                                v-for="(obj, index) in displayData"
+                                :src="`${baseUrl}itemImage/${obj.id}.png`"
+                                :class="`tab-icon p-2 ${
+                                    obj.id === selectedWeapons[selectedDisplayDataIndex]
+                                        ? 'ring-4 ring-blue-400 ring-offset-2 ring-offset-blue-100 animate-pulse scale-110 bg-white rounded-xl shadow-xl'
+                                        : 'hover:scale-105 hover:ring-2 hover:ring-gray-300 rounded-md'
+                                }`"
+                                @click="handleSelectDisplayData(index)"
+                            />
+                        </div>
+                    </div>
                 </el-card>
                 <el-card class="rounded-xl shadow border border-gray-200 bg-white">
                     <el-tabs type="border-card">
@@ -240,7 +240,6 @@ interface MaterialSummary {
 
 const baseUrl = import.meta.env.BASE_URL;
 const selectedWeapons = ref<number[]>([]);
-const itemById = new Map(materials.map((m) => [m.id, m]));
 
 const preserveExpanded = ref(false);
 const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
@@ -419,10 +418,10 @@ const sortedData = computed(() => {
     });
 });
 
-// const handleSelectDisplayData = (index: number) => {
-//     const selectIndex = index > displayData.value.length - 1 ? 0 : index;
-//     selectedDisplayDataIndex.value = selectIndex;
-// };
+const handleSelectDisplayData = (index: number) => {
+    const selectIndex = index > displayData.value.length - 1 ? 0 : index;
+    selectedDisplayDataIndex.value = selectIndex;
+};
 
 const hasAddEvent = ref(false);
 
