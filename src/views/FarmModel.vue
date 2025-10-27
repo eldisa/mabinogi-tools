@@ -60,7 +60,12 @@
                             />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="依條件搜尋" class="text-gray-300" v-if="selectedCondition === 'condition'">
+                    <el-form-item
+                        label="依條件搜尋"
+                        class="text-gray-300"
+                        v-if="selectedCondition === 'condition'"
+                        id="search-by-ability"
+                    >
                         <el-select v-model="orderBy" style="width: 240px" filterable clearable placeholder="請選擇能力">
                             <el-option
                                 v-for="ability in selectableAbility"
@@ -74,7 +79,7 @@
                         label="依名稱搜尋"
                         class="text-gray-300"
                         v-if="selectedCondition === 'search'"
-                        id="name-search"
+                        id="search-by-name"
                     >
                         <el-input v-model="inputText" style="width: 240px" placeholder="請輸入關鍵字" />
                     </el-form-item>
@@ -228,7 +233,7 @@ button {
     padding: 1px 30px !important;
 }
 
-#name-search .el-input__wrapper {
+#search-by-name .el-input__wrapper {
     padding: 4px 12px !important;
 }
 
