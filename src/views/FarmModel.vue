@@ -1,6 +1,6 @@
 <template>
     <div
-        class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8"
+        class="bg-gray-900 text-gray-100 p-4 sm:p-8"
         style="background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png')"
     >
         <div class="max-w-5xl mx-auto space-y-8">
@@ -24,12 +24,12 @@
                 <p class="text-lg text-gray-400 mt-4 font-sans">設置以增加能力。坑錢的東西</p>
             </header>
 
-            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
-                <div class="mb-6 border-b border-gray-700 pb-4">
+            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl px-6">
+                <div class="border-b border-gray-700 pb-4">
                     <h2 class="text-2xl font-bold text-yellow-300">查詢條件</h2>
                 </div>
 
-                <el-form label-width="160px" label-position="left">
+                <el-form label-width="160px" label-position="top">
                     <el-form-item label="選擇搜尋模式">
                         <el-radio-group v-model="selectedCondition">
                             <el-radio label="依名稱搜尋" value="search" />
@@ -60,25 +60,23 @@
                             />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="依名稱搜尋" class="text-gray-300" v-if="selectedCondition === 'search'">
-                        <el-input v-model="inputText" style="width: 240px" placeholder="請輸入關鍵字" />
-                    </el-form-item>
                     <el-form-item label="依條件搜尋" class="text-gray-300" v-if="selectedCondition === 'condition'">
-                        <div class="grid grid-cols-5 gap-4">
-                            <button
-                                v-for="ability of selectableAbility"
-                                :key="ability"
-                                class="w-[120px] h-8 rounded text-sm transition-colors"
-                                :class="{
-                                    'bg-yellow-500 text-gray-800': selectedAbility.includes(ability),
-                                    'bg-gray-700 hover:bg-yellow-500/80': !selectedAbility.includes(ability),
-                                }"
-                                @click="clickAbility(ability)"
-                                type="button"
-                            >
-                                {{ abilitiesMap[ability] || ability }}
-                            </button>
-                        </div>
+                        <el-select v-model="orderBy" style="width: 240px" filterable clearable placeholder="請選擇能力">
+                            <el-option
+                                v-for="ability in selectableAbility"
+                                :key="`selectable-${ability}`"
+                                :label="abilitiesMap[ability] || ability"
+                                :value="ability"
+                            />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item
+                        label="依名稱搜尋"
+                        class="text-gray-300"
+                        v-if="selectedCondition === 'search'"
+                        id="name-search"
+                    >
+                        <el-input v-model="inputText" style="width: 240px" placeholder="請輸入關鍵字" />
                     </el-form-item>
                     <el-form-item label="選擇種類">
                         <el-radio-group v-model="selectedCategory">
@@ -98,17 +96,24 @@
                         :data="displayData"
                         border
                         class="rounded-lg overflow-hidden"
-                        :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
+                        :header-cell-style="{ background: '#4a5568', color: '#cbd5e0', textAlign: 'center' }"
                         :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
+                        :cell-style="{ textAlign: 'center' }"
                     >
-                        <el-table-column prop="category" label="種類" width="70">
+                        <el-table-column prop="category" label="種類" width="60">
                             <template #default="{ row }">
                                 <span>{{ row.category === "extra" ? "額外" : "一般" }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="name" label="名稱">
                             <template #default="{ row }">
-                                <div class="flex items-center space-x-4">
+                                <div
+                                    :class="
+                                        layoutStore.isMobile
+                                            ? 'flex flex-col items-center space-y-2'
+                                            : 'flex items-center space-x-4'
+                                    "
+                                >
                                     <img
                                         v-if="!row.id.includes('Set')"
                                         :src="`${baseUrl}/farmModel/${row.id}.png`"
@@ -135,8 +140,8 @@
                         </el-table-column>
                         <el-table-column prop="abilities" label="能力">
                             <template #default="{ row }">
-                                <div class="space-y-2">
-                                    {{ parseAbilities(row.abilities) }}
+                                <div class="space-y-2" v-for="ability in parseAbilities(row.abilities)" :key="ability">
+                                    <span>{{ ability }}</span>
                                 </div>
                             </template>
                         </el-table-column>
@@ -223,6 +228,10 @@ button {
     padding: 1px 30px !important;
 }
 
+#name-search .el-input__wrapper {
+    padding: 4px 12px !important;
+}
+
 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
     background-color: black !important;
 }
@@ -232,7 +241,9 @@ button {
 import { ref, computed } from "vue";
 import { farmModel } from "../data/farmModel";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
+import { useLayoutStore } from "../stores/layout";
 
+const layoutStore = useLayoutStore();
 const baseUrl = import.meta.env.BASE_URL;
 const selectedCondition = ref<string>("search");
 const selectedCategory = ref<string>("all");
@@ -321,22 +332,12 @@ const displayData = computed(() => {
 });
 
 const parseAbilities = (abilities: { id: string; value: number }[]) => {
-    const str = abilities
-        .map(
-            (abilitiy) =>
-                `${abilitiesMap[abilitiy.id] || abilitiy.id}: +${abilitiy.value} ${
-                    abilitiesValueWithPercentArray.includes(abilitiy.id) ? "%" : ""
-                }`
-        )
-        .join(", ");
+    const str = abilities.map(
+        (abilitiy) =>
+            `${abilitiesMap[abilitiy.id] || abilitiy.id}: +${abilitiy.value} ${
+                abilitiesValueWithPercentArray.includes(abilitiy.id) ? "%" : ""
+            }`
+    );
     return str;
-};
-
-const clickAbility = (ability: string) => {
-    if (selectedAbility.value.includes(ability)) {
-        selectedAbility.value = selectedAbility.value.filter((a) => a !== ability);
-    } else {
-        selectedAbility.value.push(ability);
-    }
 };
 </script>
