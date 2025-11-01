@@ -8,7 +8,6 @@ import MaterialSimulator from '../views/MaterialSimulator.vue';
 import TransferSimulator from '../views/TransferSimulator.vue';
 import WeaponUpgradeSimulator from '../views/WeaponUpgradeSimulator.vue';
 import Enchant from '../views/Enchant.vue';
-import G27Raid1 from '../views/G27Raid1.vue';
 import FarmModel from '../views/FarmModel.vue';
 // import GridDemo from '../views/GridDemo.vue';
 // import Settings from '../views/Settings.vue';
@@ -62,11 +61,6 @@ const routes = [
             path: '/farmModel',
             name: '農場模型查詢',
             component: FarmModel,
-        },
-        {
-            path: '/G27Raid1',
-            name: 'G27-1王pizza',
-            component: G27Raid1,
         },]
     },
 
