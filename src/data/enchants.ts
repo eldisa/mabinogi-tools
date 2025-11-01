@@ -1511,7 +1511,8 @@ export const enchants: Enchant[] = [
     {
         id: 31744,
         name: {
-            tw: "凍傷",
+            tw: "銅像",
+            tw2: "凍傷",
             en: "bronze statue",
             kr: "동상",
         },
