@@ -56,8 +56,9 @@
                 </el-card>
                 <el-card class="rounded-xl shadow border border-gray-200 bg-white">
                     <el-tabs type="border-card">
-                        <el-tab-pane label="Total">
+                        <el-tab-pane label="Total 材料總計">
                             <h2 class="text-lg font-semibold">庫存與所需材料</h2>
+                            <!--todo: 庫存與所需材料-->
                             <div class="mt-4 overflow-x-auto overflow-y-auto">
                                 <!-- 手機版 -->
                                 <div v-if="layoutStore.isMobile">
@@ -141,7 +142,7 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="Preview">
+                        <el-tab-pane label="Roadmap 製作路線">
                             <template v-if="displayData.length > 0">
                                 <h2 class="text-lg font-semibold">
                                     {{ displayData[selectedDisplayDataIndex].name }}
@@ -191,7 +192,7 @@
                                 </div>
                             </template>
                         </el-tab-pane>
-                        <el-tab-pane label="Usage">
+                        <el-tab-pane label="Usage 材料用途">
                             <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
                             <div class="mt-4">
                                 <el-table :data="materialUsageData" style="width: 100%" border lazy>
@@ -206,7 +207,7 @@
                                             </div>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column align="left" label="詳細">
+                                    <el-table-column align="left" label="需求數量">
                                         <template #default="{ row }">
                                             <div v-html="renderDetailUsage(row.usedInDetail)"></div>
                                         </template>
