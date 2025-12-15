@@ -397,17 +397,25 @@ const sortedData = computed(() => {
     // 複製一份數據，避免直接修改原始數據
     return [...materialSummaryTable.value].sort((a, b) => {
         // 如果排序欄位是 'source'，使用自定義邏輯
-        if (key === "source") {
+        if (key === "total") {
             const aType = a.source?.type ?? "-";
             const bType = b.source?.type ?? "-";
             const aOrder = getTypeOrder(aType);
             const bOrder = getTypeOrder(bType);
+            const aNum =
+                aOrder === bOrder && a.source.type === "desc" && a.source.description.includes("珠子")
+                    ? (a.source.token || 0) * 10
+                    : aOrder;
+            const bNum =
+                aOrder === bOrder && b.source.type === "desc" && b.source.description.includes("珠子")
+                    ? (b.source.token || 0) * 10
+                    : bOrder;
 
             // 根據排序方向返回結果
             if (order === TableV2SortOrder.ASC) {
-                return aOrder - bOrder;
+                return bNum - aNum;
             } else {
-                return bOrder - aOrder;
+                return aNum - bNum;
             }
         }
 
