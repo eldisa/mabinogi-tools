@@ -241,10 +241,6 @@ label.el-checkbox {
 .el-input__wrapper {
     padding: 1px 30px !important;
 }
-
-.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
-    background-color: black !important;
-}
 </style>
 
 <script setup lang="ts">

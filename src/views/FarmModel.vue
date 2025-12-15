@@ -237,7 +237,7 @@ button {
     padding: 4px 12px !important;
 }
 
-.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+.bg-gray-800 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
     background-color: black !important;
 }
 </style>
