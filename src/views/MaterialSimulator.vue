@@ -195,7 +195,7 @@
                             <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
                             <div class="mt-4">
                                 <el-table :data="materialUsageData" style="width: 100%" border lazy>
-                                    <el-table-column label="名稱">
+                                    <el-table-column label="名稱" width="300">
                                         <template #default="{ row }">
                                             <div class="flex items-center gap-3 h-full">
                                                 <img
@@ -206,7 +206,11 @@
                                             </div>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="usedIn" label="那些裝備需要" />
+                                    <el-table-column align="left" label="詳細">
+                                        <template #default="{ row }">
+                                            <div v-html="renderDetailUsage(row.usedInDetail)"></div>
+                                        </template>
+                                    </el-table-column>
                                 </el-table>
                             </div>
                         </el-tab-pane>
@@ -220,7 +224,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import { Option } from "../types";
-import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage } from "../types/CraftItem";
+import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage, AmountByID } from "../types/CraftItem";
 import { materials, G27bossDropsUsage } from "../data/materials";
 import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTooltip, ElIcon, TableV2SortOrder } from "element-plus";
@@ -431,8 +435,28 @@ const handleSelectDisplayData = (index: number) => {
     selectedDisplayDataIndex.value = selectIndex;
 };
 
-const hasAddEvent = ref(false);
+const renderDetailUsage = (usedInDetail: AmountByID[]): string => {
+    const groups = usedInDetail.reduce((acc, { id, total }) => {
+        if (total <= 0) return acc;
 
+        const name =
+            craftWeaponOptions.find((weapon) => Number(weapon.value) === id)?.label.replace("靈魂解放者", "") ||
+            `未知裝備 #${id}`;
+
+        if (!acc[total]) acc[total] = [];
+        acc[total].push(name);
+        return acc;
+    }, {} as Record<number, string[]>);
+
+    const result = Object.entries(groups)
+        .sort(([a], [b]) => Number(b) - Number(a))
+        .map(([total, names]) => `${total}：${names.join("、")}`)
+        .join("<br/>");
+
+    return result || "—";
+};
+
+const hasAddEvent = ref(false);
 watch(
     () => selectedWeapons.value,
     (newData) => {
