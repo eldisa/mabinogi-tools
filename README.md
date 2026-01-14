@@ -1,5 +1,103 @@
-# Vue 3 + TypeScript + Vite
+# 瑪奇小工具 Mabinogi Tools
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Vue 3 + TypeScript + Vite + Element Plus 打造的瑪奇遊戲工具集合
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## 🎨 設計系統
+
+本專案採用統一的**深色魔幻風格**主題設計：
+
+- 🌑 **深色背景**: 減少眼睛疲勞，適合長時間使用
+- ✨ **金黃強調**: 符合瑪奇魔幻奇幻的遊戲風格
+- 📐 **設計令牌**: 完整的設計變數系統，確保一致性
+- 🎯 **Element Plus 深色主題**: 所有組件統一深色樣式
+
+詳細使用說明請參考 [主題使用指南 (THEME_GUIDE.md)](./THEME_GUIDE.md)
+
+## 🚀 功能模組
+
+- ⚙️ **裝備改造模擬器** - 規劃最佳改造路線
+- 📦 **材料計算機** - 精確計算製作所需材料
+- 💰 **裝備能力轉移費用估算** - 估算轉移成本
+- 🪄 **賦予查詢** - 查詢賦予卷軸資訊
+- 🏠 **農場模型查詢** - 農場模型資料查詢
+
+## 🛠️ 技術棧
+
+- **框架**: Vue 3 + TypeScript + Vite
+- **UI 框架**: Element Plus + Tailwind CSS
+- **狀態管理**: Pinia
+- **路由**: Vue Router
+- **圖表**: ECharts
+- **表格**: AG Grid
+
+## 📦 安裝與運行
+
+```bash
+# 安裝依賴
+npm install
+
+# 開發模式
+npm run dev
+
+# 建構生產版本
+npm run build
+
+# 部署到 GitHub Pages
+npm run deploy
+```
+
+## 📚 文檔
+
+- [主題使用指南](./THEME_GUIDE.md) - 設計系統完整說明
+- [Git 提交規範](./GIT_COMMITS.md) - Conventional Commits 格式
+- [整合指南](./INTEGRATION_GUIDE.md) - 新功能整合說明
+
+## 🎨 設計資源
+
+### 配色方案
+```css
+主背景: #111827 (gray-900)
+卡片背景: #1f2937 (gray-800)
+強調色: #fbbf24 (gold-400)
+文字色: #f9fafb (gray-50)
+```
+
+### 設計檔案
+- `src/styles/design-tokens.css` - 設計令牌
+- `src/styles/element-dark-theme.css` - Element Plus 深色主題
+- `tailwind.config.js` - Tailwind 自定義配置
+
+## 🤝 貢獻指南
+
+1. Fork 本專案
+2. 創建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改（遵循 [Conventional Commits](./GIT_COMMITS.md)）
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 開啟 Pull Request
+
+### Commit 格式
+```bash
+<type>(<scope>): <subject>
+
+# 範例
+feat(components): add PageHeader component
+style(material): convert to dark theme
+docs: update theme usage guide
+```
+
+## 📄 授權
+
+本專案使用 MIT 授權條款
+
+## 🔗 相關連結
+
+- [瑪奇官方網站](https://mabinogi.nexon.com/)
+- [Element Plus 文檔](https://element-plus.org/)
+- [Vue 3 文檔](https://vuejs.org/)
+- [Tailwind CSS 文檔](https://tailwindcss.com/)
+
+---
+
+**Version**: 0.0.0  
+**Last Updated**: 2025-01-12  
+**Maintained by**: Bowei
