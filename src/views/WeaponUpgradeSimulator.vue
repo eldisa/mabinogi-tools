@@ -1,25 +1,20 @@
 <template>
-    <div
-        class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8"
-        style="background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png')"
-    >
+    <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
         <div class="max-w-7xl mx-auto space-y-8">
-            <header class="text-center relative pt-8">
-                <h1
-                    class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400 mb-2 tracking-wide font-serif drop-shadow-lg"
-                >
-                    <span class="inline-block relative text-white">裝備改造模擬</span>
+            <header class="text-center pt-8 pb-4">
+                <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
+                    裝備改造模擬
                 </h1>
                 <p class="text-lg text-gray-400 mt-4 font-sans">為你的武器規劃最佳改造路線</p>
             </header>
 
-            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8 space-y-6">
+            <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8 space-y-6">
                 <!--武器數值設定-->
                 <div class="flex gap-4 mt-4">
                     <!-- 左邊：選擇武器 -->
                     <div class="w-1/6 flex flex-col">
                         <div class="border-b border-gray-700 pb-4 pt-6">
-                            <h2 class="text-2xl font-bold text-yellow-300">選擇武器</h2>
+                            <h2 class="text-2xl font-bold text-accent">選擇武器</h2>
                         </div>
                         <el-form-item class="text-gray-300">
                             <el-select
@@ -46,7 +41,7 @@
                     <!-- 中間：武器素質設定 -->
                     <div class="w-1/2">
                         <div class="border-b border-gray-700 pb-4 pt-6">
-                            <h2 class="text-2xl font-bold text-yellow-300">武器素質設定與改造前後比較</h2>
+                            <h2 class="text-2xl font-bold text-accent">武器素質設定與改造前後比較</h2>
                         </div>
                         <el-table
                             :data="Object.keys(form.after).map((key) => ({ id: key }))"
@@ -86,7 +81,7 @@
                     <!-- 右邊：工匠改 -->
                     <div v-if="craftmanUpgrade && form.selectedUpgradeArray.includes(craftmanUpgrade.id)" class="w-1/3">
                         <div class="border-b border-gray-700 pb-4 pt-6">
-                            <h2 class="text-2xl font-bold text-yellow-300">工匠改造素質設定</h2>
+                            <h2 class="text-2xl font-bold text-accent">工匠改造素質設定</h2>
                         </div>
                         <el-table
                             :data="craftmanUpgrade.abilities"
@@ -115,7 +110,7 @@
                 </div>
 
                 <div class="border-b border-gray-700 pb-4 pt-6">
-                    <h2 class="text-2xl font-bold text-yellow-300">選擇改造</h2>
+                    <h2 class="text-2xl font-bold text-accent">選擇改造</h2>
                     <p class="text-gray-400 text-sm mt-1">選擇你要進行的改造項目，最多可選擇 6 項。</p>
                 </div>
                 <el-table
@@ -138,22 +133,20 @@
                     <el-table-column prop="required" label="改造需求" min-width="100" align="center">
                         <template #default="{ row }">
                             <div class="flex flex-col">
-                                <span v-if="row.required.ep" class="text-yellow-300">
-                                    熟練度: {{ row.required.ep }}
-                                </span>
-                                <span v-if="row.required.gold" class="text-yellow-300">
+                                <span v-if="row.required.ep" class="text-accent">熟練度: {{ row.required.ep }}</span>
+                                <span v-if="row.required.gold" class="text-accent">
                                     金幣: {{ row.required.gold.toLocaleString() }}
                                 </span>
                                 <span
                                     v-if="row.required.gems"
-                                    class="text-yellow-300"
+                                    class="text-accent"
                                     v-html="renderGems(row.required.gems)"
                                 ></span>
                             </div>
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="選擇" align="center">
+                    <!-- <el-table-column label="選擇" align="center">
                         <template #default="{ row }">
                             <div class="flex items-center space-x-2 w-full justify-center">
                                 <el-checkbox
@@ -168,6 +161,19 @@
                                     :model-value="form.selectedUpgradeArray[5] === row.id"
                                     @change="handleOptionChange(row.id, 5, $event)"
                                     :disabled="!row.progress || !row.progress.includes(5)"
+                                />
+                            </div>
+                        </template>
+                    </el-table-column> -->
+                    <el-table-column label="選擇階段" align="center" width="200">
+                        <template #default="{ row }">
+                            <div class="flex items-center space-x-1 w-full justify-center">
+                                <el-checkbox
+                                    v-for="i in 6"
+                                    :key="i - 1"
+                                    :model-value="form.selectedUpgradeArray[i - 1] === row.id"
+                                    @change="handleOptionChange(row.id, i - 1, $event)"
+                                    :disabled="!row.progress || !row.progress.includes(i - 1)"
                                 />
                             </div>
                         </template>

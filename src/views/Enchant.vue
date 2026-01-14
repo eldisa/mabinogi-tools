@@ -1,16 +1,11 @@
 <template>
-    <div
-        class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8"
-        style="background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png')"
-    >
+    <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
         <div class="max-w-5xl mx-auto space-y-8">
-            <header class="text-center relative pt-8">
-                <h1
-                    class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400 mb-2 tracking-wide font-serif drop-shadow-lg"
-                >
-                    <span class="inline-block relative text-white">
+            <header class="text-center pt-8 pb-4">
+                <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
+                    <span class="inline-block relative">
                         <svg
-                            class="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 absolute -left-12 top-1/2 -translate-y-1/2"
+                            class="w-8 h-8 sm:w-10 sm:h-10 text-accent absolute -left-12 top-1/2 -translate-y-1/2"
                             fill="currentColor"
                             viewBox="0 0 20 20"
                         >
@@ -23,9 +18,9 @@
                 </h1>
                 <p class="text-lg text-gray-400 mt-4 font-sans">賦予裝備能力。數值要抽，上爛要抽，你的$$還夠嗎</p>
             </header>
-            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
+            <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8">
                 <div class="mb-6 border-b border-gray-700 pb-4">
-                    <h2 class="text-2xl font-bold text-yellow-300">查詢條件</h2>
+                    <h2 class="text-2xl font-bold text-accent">查詢條件</h2>
                 </div>
 
                 <el-form label-width="160px" label-position="left">
@@ -56,8 +51,8 @@
                                 :key="ability"
                                 class="w-[150px] h-8 rounded text-sm transition-colors"
                                 :class="{
-                                    'bg-yellow-500 text-gray-800': selectedAbility.includes(ability),
-                                    'bg-gray-700 hover:bg-yellow-500/80': !selectedAbility.includes(ability),
+                                    'bg-accent text-gray-900': selectedAbility.includes(ability),
+                                    'bg-gray-700 hover:bg-accent/80 hover:text-gray-900': !selectedAbility.includes(ability),
                                 }"
                                 @click="clickAbility(ability)"
                                 type="button"
@@ -75,9 +70,9 @@
                     </el-form-item>
                 </el-form>
             </el-card>
-            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
+            <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8">
                 <div class="mb-6 border-b border-gray-700 pb-4">
-                    <h2 class="text-2xl font-bold text-yellow-300">搜尋結果</h2>
+                    <h2 class="text-2xl font-bold text-accent">搜尋結果</h2>
                 </div>
                 <div>
                     <el-table
