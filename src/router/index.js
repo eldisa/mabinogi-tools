@@ -3,15 +3,11 @@ import MainLayout from '../views/MainLayout.vue'
 import About from '../views/About.vue';
 import EquipmentCraftSimulator from '../views/EquipmentCraftSimulator.vue';
 
-import PierecingLevelAnalysis from '../views/PierecingLevelAnalysis.vue';
 import MaterialSimulator from '../views/MaterialSimulator.vue';
 import TransferSimulator from '../views/TransferSimulator.vue';
 import WeaponUpgradeSimulator from '../views/WeaponUpgradeSimulator.vue';
 import Enchant from '../views/Enchant.vue';
-import G27Raid1 from '../views/G27Raid1.vue';
 import FarmModel from '../views/FarmModel.vue';
-// import GridDemo from '../views/GridDemo.vue';
-// import Settings from '../views/Settings.vue';
 
 const routes = [
     {
@@ -27,16 +23,6 @@ const routes = [
             path: '/equipment-craft-simulator',
             name: '裝備製作模擬器',
             component: EquipmentCraftSimulator
-        },
-        // {
-        //     path: '/settings',
-        //     name: 'Settings',
-        //     component: Settings
-        // },
-        {
-            path: '/pierecing-analysis',
-            name: 'PierecingLevelAnalysis',
-            component: PierecingLevelAnalysis
         },
         {
             path: '/material-simulator',
@@ -62,11 +48,6 @@ const routes = [
             path: '/farmModel',
             name: '農場模型查詢',
             component: FarmModel,
-        },
-        {
-            path: '/G27Raid1',
-            name: 'G27-1王pizza',
-            component: G27Raid1,
         },]
     },
 
