@@ -398,8 +398,13 @@ const displayData = computed(() => {
         const list = foundReward ? foundReward.list : [];
         filteredResult = enchants.filter(item => list.includes(item.id));
     } else {
-        // 沒有主要搜尋條件，顯示全部
-        filteredResult = enchants;
+        // 沒有主要搜尋條件
+        // 名稱和能力搜尋模式需要輸入條件才顯示結果
+        if (condition === "search" || condition === "ability") {
+            filteredResult = [];
+        } else {
+            filteredResult = enchants;
+        }
     }
 
     // 2. 套用進階篩選條件
