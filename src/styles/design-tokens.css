@@ -101,7 +101,7 @@
   
   /* ===== 特殊效果 ===== */
   --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  --gradient-gold-text: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+  --gradient-gold-text: linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #fbbf24 100%);
   --backdrop-blur: blur(8px);
   --texture-pattern: url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
 }

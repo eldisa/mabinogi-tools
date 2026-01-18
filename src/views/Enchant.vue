@@ -34,7 +34,7 @@
                     </el-form-item>
 
                     <!-- 依名稱搜尋 -->
-                    <el-form-item label="賦予名稱" v-if="selectedCondition === 'search'">
+                    <el-form-item label="賦予名稱" v-show="selectedCondition === 'search'">
                         <el-input
                             v-model="searchName"
                             placeholder="請輸入賦予名稱關鍵字"
@@ -44,43 +44,41 @@
                     </el-form-item>
 
                     <!-- 依能力搜尋 -->
-                    <template v-if="selectedCondition === 'ability'">
-                        <el-form-item label="選擇能力">
-                            <el-select
-                                v-model="searchAbility"
-                                placeholder="請選擇能力"
-                                clearable
-                                filterable
-                                style="width: 240px"
-                            >
-                                <el-option
-                                    v-for="ability in selectableAbility"
-                                    :key="ability"
-                                    :label="abilitiesMap[ability] || ability"
-                                    :value="ability"
-                                />
-                            </el-select>
-                        </el-form-item>
+                    <el-form-item label="選擇能力" v-show="selectedCondition === 'ability'">
+                        <el-select
+                            v-model="searchAbility"
+                            placeholder="請選擇能力"
+                            clearable
+                            filterable
+                            style="width: 240px"
+                        >
+                            <el-option
+                                v-for="ability in selectableAbility"
+                                :key="ability"
+                                :label="abilitiesMap[ability] || ability"
+                                :value="ability"
+                            />
+                        </el-select>
+                    </el-form-item>
 
-                        <el-form-item label="數值條件" v-if="searchAbility">
-                            <div class="flex gap-2 items-center">
-                                <el-select v-model="searchValueOperator" style="width: 120px">
-                                    <el-option label="大於等於" value="gte" />
-                                    <el-option label="小於等於" value="lte" />
-                                    <el-option label="等於" value="eq" />
-                                </el-select>
-                                <el-input-number
-                                    v-model="searchValue"
-                                    :min="-999"
-                                    :max="999"
-                                    style="width: 150px"
-                                />
-                            </div>
-                        </el-form-item>
-                    </template>
+                    <el-form-item label="數值條件" v-show="selectedCondition === 'ability' && searchAbility">
+                        <div class="flex gap-2 items-center">
+                            <el-select v-model="searchValueOperator" style="width: 120px">
+                                <el-option label="大於等於" value="gte" />
+                                <el-option label="小於等於" value="lte" />
+                                <el-option label="等於" value="eq" />
+                            </el-select>
+                            <el-input-number
+                                v-model="searchValue"
+                                :min="-999"
+                                :max="999"
+                                style="width: 150px"
+                            />
+                        </div>
+                    </el-form-item>
 
                     <!-- 依副本搜尋 -->
-                    <el-form-item label="選擇副本" v-if="selectedCondition === 'raid'">
+                    <el-form-item label="選擇副本" v-show="selectedCondition === 'raid'">
                         <el-select v-model="selectedRaid" placeholder="請選擇副本" style="width: 300px">
                             <el-option
                                 v-for="item in raidOptions"
@@ -184,7 +182,7 @@
                                         <el-tag v-else type="primary" size="small">接尾</el-tag>
                                     </div>
                                     <span class="font-medium">{{ row.name.tw || row.name.en }}</span>
-                                    <span class="text-xs text-gray-400">Rank {{ row.level }}</span>
+                                    <span class="text-xs text-gray-400">Rank {{ formatRank(row.level) }}</span>
                                 </div>
                             </template>
                         </el-table-column>
@@ -455,6 +453,21 @@ const handleReset = () => {
     searchRankOperator.value = "";
     searchLimit.value = "";
     selectedCondition.value = "search";
+};
+
+// 格式化賦予等級顯示 (1-6 => F-A, 7-15 => 9-1)
+const formatRank = (level: number): string => {
+    if (level >= 1 && level <= 6) {
+        // 1=>F, 2=>E, 3=>D, 4=>C, 5=>B, 6=>A
+        const ranks = ['F', 'E', 'D', 'C', 'B', 'A'];
+        return ranks[level - 1];
+    } else if (level >= 7 && level <= 15) {
+        // 7=>9, 8=>8, ..., 15=>1
+        return String(16 - level);
+    } else {
+        // 超出範圍，直接顯示數字
+        return String(level);
+    }
 };
 
 // 渲染能力效果
