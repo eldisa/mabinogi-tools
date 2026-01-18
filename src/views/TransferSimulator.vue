@@ -2,8 +2,8 @@
     <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
         <div class="max-w-5xl mx-auto space-y-8">
             <header class="text-center pt-8 pb-4">
-                <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
-                    <span class="inline-block relative">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-2 tracking-wide font-serif drop-shadow-lg">
+                    <span class="inline-block relative text-gradient">
                         <svg
                             class="w-8 h-8 sm:w-10 sm:h-10 text-accent absolute -left-12 top-1/2 -translate-y-1/2"
                             fill="currentColor"
@@ -83,11 +83,7 @@
                 <div class="mt-8 pt-6 border-t border-gray-700">
                     <div class="flex flex-col sm:flex-row items-center justify-between">
                         <span class="text-xl font-bold text-gray-300 mb-2 sm:mb-0">
-                            <svg
-                                class="inline-block w-6 h-6 mr-2 text-accent"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
+                            <svg class="inline-block w-6 h-6 mr-2 text-accent" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M5 2a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zM8 4h4a1 1 0 011 1v1a1 1 0 01-1 1H8a1 1 0 01-1-1V5a1 1 0 011-1zM5 9h10v2H5V9zM5 13h10v2H5v-2z"
                                 />
