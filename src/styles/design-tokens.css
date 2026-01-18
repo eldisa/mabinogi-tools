@@ -146,10 +146,11 @@ body {
 
 /* ===== 工具類別 (Utility Classes) ===== */
 .text-gradient {
-  background: var(--gradient-gold-text);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: var(--gradient-gold-text) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: transparent !important;
 }
 
 .bg-texture {
