@@ -2,8 +2,8 @@
     <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
         <div class="max-w-6xl mx-auto space-y-8">
             <header class="text-center pt-8 pb-4">
-                <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
-                    <span class="inline-block relative">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-2 tracking-wide font-serif drop-shadow-lg">
+                    <span class="inline-block relative text-gradient">
                         <svg
                             class="w-8 h-8 sm:w-10 sm:h-10 text-accent absolute -left-12 top-1/2 -translate-y-1/2"
                             fill="currentColor"
