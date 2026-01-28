@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { markRaw } from "vue";
 import { useRouter } from "vue-router";
 import {
     Setting,
@@ -20,14 +20,14 @@ const emit = defineEmits<{
 
 const router = useRouter();
 
-const menuItems = ref([
-    { name: "裝備改造模擬器", path: "/weapon-upgrade-simulator", icon: Setting },
-    { name: "材料計算機", path: "/material-simulator", icon: Box },
-    { name: "裝備能力轉移費用估算", path: "/transfer-simulator", icon: Money },
-    { name: "賦予查詢", path: "enchant", icon: MagicStick },
-    { name: "農場模型查詢", path: "/farmModel", icon: HomeFilled },
-    { name: "About", path: "/about", icon: InfoFilled },
-]);
+const menuItems = [
+    { name: "裝備改造模擬器", path: "/weapon-upgrade-simulator", icon: markRaw(Setting) },
+    { name: "材料計算機", path: "/material-simulator", icon: markRaw(Box) },
+    { name: "裝備能力轉移費用估算", path: "/transfer-simulator", icon: markRaw(Money) },
+    { name: "賦予查詢", path: "enchant", icon: markRaw(MagicStick) },
+    { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
+    { name: "About", path: "/about", icon: markRaw(InfoFilled) },
+];
 </script>
 
 <template>
