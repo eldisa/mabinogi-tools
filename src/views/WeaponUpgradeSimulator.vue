@@ -116,6 +116,73 @@
                         </div>
                     </div>
 
+                    <!-- 快速配置區塊 -->
+                    <div v-if="availablePresets.length > 0" class="mt-6">
+                        <div
+                            class="bg-gradient-to-r from-accent/20 to-accent/10 rounded-lg p-4 border border-accent/30"
+                        >
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-bold text-accent mb-2 flex items-center gap-2">
+                                        <span>⚡</span>
+                                        <span>快速配置</span>
+                                    </h4>
+                                    <p class="text-sm text-gray-400">
+                                        根據武器類型選擇推薦的改造配置，系統將自動勾選最佳改造選項
+                                    </p>
+                                </div>
+                                <div class="ml-4">
+                                    <el-select
+                                        v-model="selectedPreset"
+                                        placeholder="選擇配置方案"
+                                        class="w-[280px]"
+                                        size="default"
+                                        @change="applyPreset"
+                                    >
+                                        <!-- 通用配置 -->
+                                        <el-option-group label="🎯 通用配置">
+                                            <el-option
+                                                v-for="preset in availablePresets.filter(
+                                                    (p) => p.category === 'universal',
+                                                )"
+                                                :key="preset.id"
+                                                :label="preset.name"
+                                                :value="preset.id"
+                                            >
+                                                <div class="flex flex-col py-1">
+                                                    <span class="font-medium text-gray-200">{{ preset.name }}</span>
+                                                    <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                </div>
+                                            </el-option>
+                                        </el-option-group>
+                                        <!-- 武器專用配置 -->
+                                        <el-option-group
+                                            label="⭐ 專用配置"
+                                            v-if="
+                                                availablePresets.filter((p) => p.category === 'weapon_specific')
+                                                    .length > 0
+                                            "
+                                        >
+                                            <el-option
+                                                v-for="preset in availablePresets.filter(
+                                                    (p) => p.category === 'weapon_specific',
+                                                )"
+                                                :key="preset.id"
+                                                :label="preset.name"
+                                                :value="preset.id"
+                                            >
+                                                <div class="flex flex-col py-1">
+                                                    <span class="font-medium text-gray-200">{{ preset.name }}</span>
+                                                    <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                </div>
+                                            </el-option>
+                                        </el-option-group>
+                                    </el-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="border-b border-gray-700 pb-4 pt-6">
                         <h2 class="text-2xl font-bold text-accent">選擇改造</h2>
                         <p class="text-gray-400 text-sm mt-1">選擇你要進行的改造項目，最多可選擇 6 項。</p>
@@ -278,57 +345,59 @@
                                 <!-- 快速配置 -->
                                 <div class="bg-gradient-to-r from-accent/20 to-accent/10 rounded-lg p-4 mb-4">
                                     <h4 class="text-sm font-bold text-accent mb-3">⚡ 快速配置</h4>
-                                    <div v-if="availablePresets.length > 0" class="flex gap-2">
+                                    <div v-if="availablePresets.length > 0">
                                         <el-select
                                             v-model="selectedPreset"
                                             placeholder="選擇配置"
-                                            class="flex-1"
+                                            class="w-full"
                                             size="small"
+                                            @change="applyPreset"
                                         >
                                             <!-- 通用配置 -->
                                             <el-option-group label="通用配置">
                                                 <el-option
-                                                    v-for="preset in availablePresets.filter((p) => p.category === 'universal')"
+                                                    v-for="preset in availablePresets.filter(
+                                                        (p) => p.category === 'universal',
+                                                    )"
                                                     :key="preset.id"
                                                     :label="preset.name"
                                                     :value="preset.id"
                                                 >
                                                     <div class="flex flex-col">
                                                         <span class="font-medium">{{ preset.name }}</span>
-                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                        <span class="text-xs text-gray-400">
+                                                            {{ preset.description }}
+                                                        </span>
                                                     </div>
                                                 </el-option>
                                             </el-option-group>
                                             <!-- 武器專用配置 -->
                                             <el-option-group
                                                 label="專用配置"
-                                                v-if="availablePresets.filter((p) => p.category === 'weapon_specific').length > 0"
+                                                v-if="
+                                                    availablePresets.filter((p) => p.category === 'weapon_specific')
+                                                        .length > 0
+                                                "
                                             >
                                                 <el-option
-                                                    v-for="preset in availablePresets.filter((p) => p.category === 'weapon_specific')"
+                                                    v-for="preset in availablePresets.filter(
+                                                        (p) => p.category === 'weapon_specific',
+                                                    )"
                                                     :key="preset.id"
                                                     :label="preset.name"
                                                     :value="preset.id"
                                                 >
                                                     <div class="flex flex-col">
                                                         <span class="font-medium">{{ preset.name }}</span>
-                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                        <span class="text-xs text-gray-400">
+                                                            {{ preset.description }}
+                                                        </span>
                                                     </div>
                                                 </el-option>
                                             </el-option-group>
                                         </el-select>
-                                        <el-button
-                                            type="primary"
-                                            size="small"
-                                            @click="applyPreset"
-                                            :disabled="!selectedPreset"
-                                        >
-                                            套用
-                                        </el-button>
                                     </div>
-                                    <div v-else class="text-sm text-gray-400">
-                                        此武器尚未設定快速配置
-                                    </div>
+                                    <div v-else class="text-sm text-gray-400">此武器尚未設定快速配置</div>
                                 </div>
 
                                 <div class="bg-gray-700 rounded-lg p-3 mb-4">
@@ -415,7 +484,7 @@
                                 <p class="text-gray-400 text-sm mb-4">設定工匠改造的數值</p>
 
                                 <div
-                                    v-for="ability in (craftmanUpgrade.abilities as CraftsManUpgradeAbility[])"
+                                    v-for="ability in craftmanUpgrade.abilities as CraftsManUpgradeAbility[]"
                                     :key="ability.id"
                                     class="bg-gray-700 rounded-lg p-3"
                                 >
@@ -453,19 +522,29 @@
                                     class="bg-gradient-to-r from-accent/20 to-accent/10 rounded-lg p-4"
                                 >
                                     <h4 class="text-sm font-bold text-accent mb-3">⚡ 快速配置</h4>
-                                    <div class="flex gap-2">
-                                        <el-select v-model="selectedPreset" placeholder="選擇配置" class="flex-1" size="small">
+                                    <div>
+                                        <el-select
+                                            v-model="selectedPreset"
+                                            placeholder="選擇配置"
+                                            class="w-full"
+                                            size="small"
+                                            @change="applyPreset"
+                                        >
                                             <!-- 通用配置 -->
                                             <el-option-group label="通用配置">
                                                 <el-option
-                                                    v-for="preset in availablePresets.filter((p) => p.category === 'universal')"
+                                                    v-for="preset in availablePresets.filter(
+                                                        (p) => p.category === 'universal',
+                                                    )"
                                                     :key="preset.id"
                                                     :label="preset.name"
                                                     :value="preset.id"
                                                 >
                                                     <div class="flex flex-col">
                                                         <span class="font-medium">{{ preset.name }}</span>
-                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                        <span class="text-xs text-gray-400">
+                                                            {{ preset.description }}
+                                                        </span>
                                                     </div>
                                                 </el-option>
                                             </el-option-group>
@@ -473,7 +552,8 @@
                                             <el-option-group
                                                 label="專用配置"
                                                 v-if="
-                                                    availablePresets.filter((p) => p.category === 'weapon_specific').length > 0
+                                                    availablePresets.filter((p) => p.category === 'weapon_specific')
+                                                        .length > 0
                                                 "
                                             >
                                                 <el-option
@@ -486,19 +566,13 @@
                                                 >
                                                     <div class="flex flex-col">
                                                         <span class="font-medium">{{ preset.name }}</span>
-                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                        <span class="text-xs text-gray-400">
+                                                            {{ preset.description }}
+                                                        </span>
                                                     </div>
                                                 </el-option>
                                             </el-option-group>
                                         </el-select>
-                                        <el-button
-                                            type="primary"
-                                            size="small"
-                                            @click="applyPreset"
-                                            :disabled="!selectedPreset"
-                                        >
-                                            套用
-                                        </el-button>
                                     </div>
                                 </div>
 
@@ -684,7 +758,7 @@ label.el-checkbox {
 </style>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { Option } from "../types";
 import { infoForG27Weapon } from "../data/infoForG27Weapon";
 import { upgradeForG27Weapons } from "../data/upgradeForG27Weapons";
@@ -744,7 +818,6 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             attack_max: 1,
             attack_min: 0.5,
-            lance_piercing: 70,
         },
     },
     // 物理遠程 - 大傷優先
@@ -757,8 +830,7 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             attack_max: 1,
             attack_min: 0.5,
-            attack_range: 0.1,
-            lance_piercing: 70,
+            attack_range: 0.01,
         },
     },
     // 魔法系 - 銳利優先
@@ -782,7 +854,6 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["magic_staff", "magic_wand"],
         abilityWeights: {
             magic_damage: 1,
-            lance_piercing: 70,
         },
     },
     // 鍊金系 - 銳利優先
@@ -806,7 +877,6 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             all_alchemy_damage: 4,
-            lance_piercing: 70,
         },
     },
 
@@ -821,7 +891,6 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             casting_speed: 1,
             magic_damage: 0.8,
-            lance_piercing: 70,
         },
     },
     // 鋼瓶 - 火元素
@@ -833,7 +902,6 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             fire_alchemy_damage: 1,
-            lance_piercing: 70,
         },
     },
     // 鋼瓶 - 水元素
@@ -845,7 +913,6 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             water_alchemy_damage: 1,
-            lance_piercing: 70,
         },
     },
     // 鋼瓶 - 風元素
@@ -857,7 +924,6 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             wind_alchemy_damage: 1,
-            lance_piercing: 70,
         },
     },
     // 鋼瓶 - 土元素
@@ -869,7 +935,6 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             earth_alchemy_damage: 1,
-            lance_piercing: 70,
         },
     },
     // 盾牌鋼瓶 - 加入 PD
@@ -882,7 +947,6 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             fire_alchemy_damage: 1,
             immune_melee: 1,
-            lance_piercing: 70,
         },
     },
     {
@@ -894,7 +958,6 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             water_alchemy_damage: 1,
             immune_melee: 1,
-            lance_piercing: 70,
         },
     },
     {
@@ -906,7 +969,6 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             wind_alchemy_damage: 1,
             immune_melee: 1,
-            lance_piercing: 70,
         },
     },
     {
@@ -918,7 +980,6 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             earth_alchemy_damage: 1,
             immune_melee: 1,
-            lance_piercing: 70,
         },
     },
     // 治癒杖
@@ -982,21 +1043,28 @@ const availablePresets = computed(() => {
     });
 });
 
-// 當可用配置改變時，自動選擇第一個
-watch(availablePresets, (presets) => {
-    if (presets.length > 0) {
-        // 預設選擇第一個配置
-        selectedPreset.value = presets[0].id;
+// 當武器改變時，自動選擇並套用第一個配置
+watch(
+    selectedWeaponId,
+    () => {
+        const presets = availablePresets.value;
 
-        // 如果只有一個選項，直接套用
-        if (presets.length === 1) {
-            applyPreset();
+        if (presets.length > 0) {
+            // 預設選擇第一個配置
+            selectedPreset.value = presets[0].id;
+
+            // 自動套用第一個配置（換武器時自動套用推薦配置）
+            // 使用 nextTick 確保 selectedPreset 已更新
+            nextTick(() => {
+                applyPreset();
+            });
+        } else {
+            // 沒有可用配置，清空選擇
+            selectedPreset.value = "";
         }
-    } else {
-        // 沒有可用配置，清空選擇
-        selectedPreset.value = "";
-    }
-});
+    },
+    { immediate: true },
+); // immediate: true 讓頁面載入時也執行一次
 
 const craftmanUpgrade = computed(() => upgradeList.value.find((item) => item.id.includes("craftman")));
 
