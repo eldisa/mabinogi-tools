@@ -1,16 +1,11 @@
 <template>
-    <div
-        class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8"
-        style="background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png')"
-    >
+    <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
         <div class="max-w-5xl mx-auto space-y-8">
-            <header class="text-center relative pt-8">
-                <h1
-                    class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400 mb-2 tracking-wide font-serif drop-shadow-lg"
-                >
-                    <span class="inline-block relative text-white">
+            <header class="text-center pt-8 pb-4">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-2 tracking-wide font-serif drop-shadow-lg">
+                    <span class="inline-block relative text-gradient">
                         <svg
-                            class="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 absolute -left-12 top-1/2 -translate-y-1/2"
+                            class="w-8 h-8 sm:w-10 sm:h-10 text-accent absolute -left-12 top-1/2 -translate-y-1/2"
                             fill="currentColor"
                             viewBox="0 0 20 20"
                         >
@@ -24,9 +19,9 @@
                 <p class="text-lg text-gray-400 mt-4 font-sans">模擬轉移費用，為你的冒險旅程做足準備。</p>
             </header>
 
-            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
+            <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8">
                 <div class="mb-6 border-b border-gray-700 pb-4">
-                    <h2 class="text-2xl font-bold text-yellow-300">填寫資料</h2>
+                    <h2 class="text-2xl font-bold text-accent">填寫資料</h2>
                     <p class="text-gray-400 text-sm mt-1">設定你想要繼承的屬性與條件。</p>
                 </div>
 
@@ -59,7 +54,7 @@
                 </el-form>
 
                 <div v-if="form.hasReforge" class="mt-8">
-                    <h3 class="text-lg font-semibold text-yellow-300 mb-4">細工等級設定</h3>
+                    <h3 class="text-lg font-semibold text-accent mb-4">細工等級設定</h3>
                     <el-table
                         :data="form.reforgeAbilityArray"
                         border
@@ -88,11 +83,7 @@
                 <div class="mt-8 pt-6 border-t border-gray-700">
                     <div class="flex flex-col sm:flex-row items-center justify-between">
                         <span class="text-xl font-bold text-gray-300 mb-2 sm:mb-0">
-                            <svg
-                                class="inline-block w-6 h-6 mr-2 text-yellow-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
+                            <svg class="inline-block w-6 h-6 mr-2 text-accent" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M5 2a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zM8 4h4a1 1 0 011 1v1a1 1 0 01-1 1H8a1 1 0 01-1-1V5a1 1 0 011-1zM5 9h10v2H5V9zM5 13h10v2H5v-2z"
                                 />

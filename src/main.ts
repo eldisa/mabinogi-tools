@@ -8,6 +8,8 @@ import App from "./App.vue";
 // @ts-ignore
 import router from "./router";
 import "./index.css";
+import "./styles/design-tokens.css";
+import "./styles/element-dark-theme.css";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 
 const app = createApp(App);

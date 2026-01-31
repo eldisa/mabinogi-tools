@@ -133,6 +133,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [5],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1000059,
@@ -422,6 +423,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [4],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1010070,
@@ -953,6 +955,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [2],
             },
         ],
+        weaponCategory: "melee_physical",
     },
 
     {
@@ -1501,6 +1504,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [2],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1040054,
@@ -1784,6 +1788,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [5],
             },
         ],
+        weaponCategory: "ranged_physical",
     },
     {
         weaponId: 1040055,
@@ -2329,6 +2334,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [4],
             },
         ],
+        weaponCategory: "ranged_physical",
     },
     {
         weaponId: 1050017,
@@ -2787,6 +2793,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [4],
             },
         ],
+        weaponCategory: "magic_wand",
     },
     {
         weaponId: 1070014,
@@ -3147,6 +3154,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [5],
             },
         ],
+        weaponCategory: "melee_physical", // todo: update category
     },
     {
         weaponId: 1090010,
@@ -3371,6 +3379,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [2],
             },
         ],
+        weaponCategory: "magic_staff",
     },
     {
         weaponId: 1210067,
@@ -3882,6 +3891,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [1],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1220018,
@@ -4165,6 +4175,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [1],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1230039,
@@ -4417,6 +4428,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [4],
             },
         ],
+        weaponCategory: "magic_staff",
     },
     {
         weaponId: 1250026,
@@ -4716,6 +4728,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [5],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1260020,
@@ -4911,6 +4924,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [2],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1270029,
@@ -5289,6 +5303,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0],
             },
         ],
+        weaponCategory: "ranged_physical",
     },
     {
         weaponId: 1280018,
@@ -5743,6 +5758,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [1],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1290021,
@@ -6075,6 +6091,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [1],
             },
         ],
+        weaponCategory: "melee_physical",
     },
     {
         weaponId: 1650001,
@@ -6257,6 +6274,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [0],
             },
         ],
+        weaponCategory: "healing_wand",
     },
     {
         weaponId: 1400011,
@@ -6595,6 +6613,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [3],
             },
         ],
+        weaponCategory: "shield",
     },
     {
         weaponId: 1400012,
@@ -6888,6 +6907,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [3],
             },
         ],
+        weaponCategory: "shield",
     },
     {
         weaponId: 1440006,
@@ -7367,6 +7387,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [3],
             },
         ],
+        weaponCategory: "shield_cylinder",
     },
     {
         weaponId: 1060011,
@@ -7780,6 +7801,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [4],
             },
         ],
+        weaponCategory: "cylinder",
     },
     {
         weaponId: 1080048,
@@ -8197,5 +8219,6 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 progress: [1],
             },
         ],
+        weaponCategory: "instrument",
     },
 ];

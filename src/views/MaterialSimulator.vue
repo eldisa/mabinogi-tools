@@ -1,13 +1,16 @@
 <template>
-    <div class="craft-calculator min-h-screen bg-gray-100 py-6 px-4 sm:px-6">
+    <div class="min-h-screen bg-gray-900 text-gray-100 py-6 px-4 sm:px-6 bg-texture-dark">
         <div class="max-w-7xl mx-auto">
-            <header class="mb-6 text-center">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">素材計算模擬器</h1>
+            <header class="mb-6 text-center pt-8 pb-4">
+                <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
+                    素材計算模擬器
+                </h1>
+                <p class="text-lg text-gray-400 mt-4">精確計算製作所需的所有材料</p>
             </header>
 
             <!-- 資料輸入區 -->
             <div class="mb-4">
-                <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
+                <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
                     <div class="flex justify-center">
                         <el-select
                             v-model="selectedWeapons"
@@ -54,10 +57,10 @@
                         </div>
                     </div>
                 </el-card>
-                <el-card class="rounded-xl shadow border border-gray-200 bg-white">
+                <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
                         <el-tab-pane label="Total 材料總計">
-                            <h2 class="text-lg font-semibold">庫存與所需材料</h2>
+                            <h2 class="text-lg font-semibold text-accent mb-4">庫存與所需材料</h2>
                             <!--todo: 庫存與所需材料-->
                             <div class="mt-4 overflow-x-auto overflow-y-auto">
                                 <!-- 手機版 -->
