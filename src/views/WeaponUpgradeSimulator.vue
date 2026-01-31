@@ -278,24 +278,44 @@
                                 <!-- 快速配置 -->
                                 <div class="bg-gradient-to-r from-accent/20 to-accent/10 rounded-lg p-4 mb-4">
                                     <h4 class="text-sm font-bold text-accent mb-3">⚡ 快速配置</h4>
-                                    <div class="flex gap-2">
+                                    <div v-if="availablePresets.length > 0" class="flex gap-2">
                                         <el-select
                                             v-model="selectedPreset"
                                             placeholder="選擇配置"
                                             class="flex-1"
                                             size="small"
                                         >
-                                            <el-option
-                                                v-for="preset in quickPresets"
-                                                :key="preset.id"
-                                                :label="preset.name"
-                                                :value="preset.id"
+                                            <!-- 通用配置 -->
+                                            <el-option-group label="通用配置">
+                                                <el-option
+                                                    v-for="preset in availablePresets.filter((p) => p.category === 'universal')"
+                                                    :key="preset.id"
+                                                    :label="preset.name"
+                                                    :value="preset.id"
+                                                >
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ preset.name }}</span>
+                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                    </div>
+                                                </el-option>
+                                            </el-option-group>
+                                            <!-- 武器專用配置 -->
+                                            <el-option-group
+                                                label="專用配置"
+                                                v-if="availablePresets.filter((p) => p.category === 'weapon_specific').length > 0"
                                             >
-                                                <div class="flex flex-col">
-                                                    <span class="font-medium">{{ preset.name }}</span>
-                                                    <span class="text-xs text-gray-400">{{ preset.description }}</span>
-                                                </div>
-                                            </el-option>
+                                                <el-option
+                                                    v-for="preset in availablePresets.filter((p) => p.category === 'weapon_specific')"
+                                                    :key="preset.id"
+                                                    :label="preset.name"
+                                                    :value="preset.id"
+                                                >
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ preset.name }}</span>
+                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                    </div>
+                                                </el-option>
+                                            </el-option-group>
                                         </el-select>
                                         <el-button
                                             type="primary"
@@ -305,6 +325,9 @@
                                         >
                                             套用
                                         </el-button>
+                                    </div>
+                                    <div v-else class="text-sm text-gray-400">
+                                        此武器尚未設定快速配置
                                     </div>
                                 </div>
 
@@ -392,7 +415,7 @@
                                 <p class="text-gray-400 text-sm mb-4">設定工匠改造的數值</p>
 
                                 <div
-                                    v-for="ability in craftmanUpgrade.abilities"
+                                    v-for="ability in (craftmanUpgrade.abilities as CraftsManUpgradeAbility[])"
                                     :key="ability.id"
                                     class="bg-gray-700 rounded-lg p-3"
                                 >
@@ -424,6 +447,61 @@
                         <!-- Tab 5: 結果顯示 -->
                         <el-tab-pane label="結果" name="result">
                             <div class="space-y-4">
+                                <!-- 快速配置 -->
+                                <div
+                                    v-if="availablePresets.length > 0"
+                                    class="bg-gradient-to-r from-accent/20 to-accent/10 rounded-lg p-4"
+                                >
+                                    <h4 class="text-sm font-bold text-accent mb-3">⚡ 快速配置</h4>
+                                    <div class="flex gap-2">
+                                        <el-select v-model="selectedPreset" placeholder="選擇配置" class="flex-1" size="small">
+                                            <!-- 通用配置 -->
+                                            <el-option-group label="通用配置">
+                                                <el-option
+                                                    v-for="preset in availablePresets.filter((p) => p.category === 'universal')"
+                                                    :key="preset.id"
+                                                    :label="preset.name"
+                                                    :value="preset.id"
+                                                >
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ preset.name }}</span>
+                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                    </div>
+                                                </el-option>
+                                            </el-option-group>
+                                            <!-- 武器專用配置 -->
+                                            <el-option-group
+                                                label="專用配置"
+                                                v-if="
+                                                    availablePresets.filter((p) => p.category === 'weapon_specific').length > 0
+                                                "
+                                            >
+                                                <el-option
+                                                    v-for="preset in availablePresets.filter(
+                                                        (p) => p.category === 'weapon_specific',
+                                                    )"
+                                                    :key="preset.id"
+                                                    :label="preset.name"
+                                                    :value="preset.id"
+                                                >
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ preset.name }}</span>
+                                                        <span class="text-xs text-gray-400">{{ preset.description }}</span>
+                                                    </div>
+                                                </el-option>
+                                            </el-option-group>
+                                        </el-select>
+                                        <el-button
+                                            type="primary"
+                                            size="small"
+                                            @click="applyPreset"
+                                            :disabled="!selectedPreset"
+                                        >
+                                            套用
+                                        </el-button>
+                                    </div>
+                                </div>
+
                                 <div class="bg-gray-700 rounded-lg p-4">
                                     <h3 class="text-lg font-bold text-accent mb-3">改造前後對比</h3>
                                     <div class="space-y-2">
@@ -637,29 +715,245 @@ interface QuickPreset {
     id: string;
     name: string;
     description: string;
+    category: "universal" | "weapon_specific"; // 通用配置 or 武器專用配置
+    weaponCategories?: string[]; // 適用的武器類型（通用配置可省略）
     abilityWeights: { [key: string]: number }; // 能力權重（正數=優先，負數=避免，0=忽略）
 }
 
 const quickPresets: QuickPreset[] = [
+    // ===== 通用配置 =====
+    // 物理系 - 銳利優先
     {
-        id: "crit-focus",
+        id: "crit-physical",
         name: "銳利優先",
-        description: "最大化銳利",
+        description: "物理武器銳利最大化",
+        category: "universal",
+        weaponCategories: ["melee_physical", "ranged_physical"],
         abilityWeights: {
-            attack_max: 1, // 次要
-            attack_min: 0,
-            attack_range: 0.1, // 射程（弩/弓專用
-            lance_piercing: 70, // 穿透 最高優先
+            lance_piercing: 70,
+            attack_max: 1,
+        },
+    },
+    // 物理近戰 - 大傷優先
+    {
+        id: "damage-melee",
+        name: "大傷優先",
+        description: "近戰物理武器攻擊最大化",
+        category: "universal",
+        weaponCategories: ["melee_physical"],
+        abilityWeights: {
+            attack_max: 1,
+            attack_min: 0.5,
+            lance_piercing: 70,
+        },
+    },
+    // 物理遠程 - 大傷優先
+    {
+        id: "damage-ranged",
+        name: "大傷優先",
+        description: "遠程物理武器攻擊最大化",
+        category: "universal",
+        weaponCategories: ["ranged_physical"],
+        abilityWeights: {
+            attack_max: 1,
+            attack_min: 0.5,
+            attack_range: 0.1,
+            lance_piercing: 70,
+        },
+    },
+    // 魔法系 - 銳利優先
+    {
+        id: "crit-magic",
+        name: "銳利優先",
+        description: "魔法武器銳利最大化",
+        category: "universal",
+        weaponCategories: ["magic_staff", "magic_wand"],
+        abilityWeights: {
+            lance_piercing: 70,
+            magic_damage: 1,
+        },
+    },
+    // 魔法系 - 大傷優先
+    {
+        id: "damage-magic",
+        name: "魔傷優先",
+        description: "魔法武器傷害最大化",
+        category: "universal",
+        weaponCategories: ["magic_staff", "magic_wand"],
+        abilityWeights: {
+            magic_damage: 1,
+            lance_piercing: 70,
+        },
+    },
+    // 鍊金系 - 銳利優先
+    {
+        id: "crit-alchemy",
+        name: "銳利優先",
+        description: "鍊金武器銳利最大化",
+        category: "universal",
+        weaponCategories: ["cylinder", "shield_cylinder"],
+        abilityWeights: {
+            lance_piercing: 70,
+            all_alchemy_damage: 4,
+        },
+    },
+    // 鍊金系 - 大傷優先
+    {
+        id: "damage-alchemy",
+        name: "煉傷優先",
+        description: "鍊金武器傷害最大化",
+        category: "universal",
+        weaponCategories: ["cylinder", "shield_cylinder"],
+        abilityWeights: {
+            all_alchemy_damage: 4,
+            lance_piercing: 70,
+        },
+    },
+
+    // ===== 武器專用配置 =====
+    // 短杖 - 施法速度
+    {
+        id: "wand-casting",
+        name: "施法速度優先",
+        description: "短杖專用：施法速度最大化",
+        category: "weapon_specific",
+        weaponCategories: ["magic_wand"],
+        abilityWeights: {
+            casting_speed: 1,
+            magic_damage: 0.8,
+            lance_piercing: 70,
+        },
+    },
+    // 鋼瓶 - 火元素
+    {
+        id: "cylinder-fire",
+        name: "火元素路線",
+        description: "鋼瓶專用：火元素傷害最大化",
+        category: "weapon_specific",
+        weaponCategories: ["cylinder", "shield_cylinder"],
+        abilityWeights: {
+            fire_alchemy_damage: 1,
+            lance_piercing: 70,
+        },
+    },
+    // 鋼瓶 - 水元素
+    {
+        id: "cylinder-water",
+        name: "水元素路線",
+        description: "鋼瓶專用：水元素傷害最大化",
+        category: "weapon_specific",
+        weaponCategories: ["cylinder", "shield_cylinder"],
+        abilityWeights: {
+            water_alchemy_damage: 1,
+            lance_piercing: 70,
+        },
+    },
+    // 鋼瓶 - 風元素
+    {
+        id: "cylinder-wind",
+        name: "風元素路線",
+        description: "鋼瓶專用：風元素傷害最大化",
+        category: "weapon_specific",
+        weaponCategories: ["cylinder", "shield_cylinder"],
+        abilityWeights: {
+            wind_alchemy_damage: 1,
+            lance_piercing: 70,
+        },
+    },
+    // 鋼瓶 - 土元素
+    {
+        id: "cylinder-earth",
+        name: "土元素路線",
+        description: "鋼瓶專用：土元素傷害最大化",
+        category: "weapon_specific",
+        weaponCategories: ["cylinder", "shield_cylinder"],
+        abilityWeights: {
+            earth_alchemy_damage: 1,
+            lance_piercing: 70,
+        },
+    },
+    // 盾牌鋼瓶 - 加入 PD
+    {
+        id: "shield-cylinder-fire",
+        name: "火元素+PD",
+        description: "盾牌鋼瓶專用：火元素+被動防禦",
+        category: "weapon_specific",
+        weaponCategories: ["shield_cylinder"],
+        abilityWeights: {
+            fire_alchemy_damage: 1,
+            immune_melee: 1,
+            lance_piercing: 70,
         },
     },
     {
-        id: "damage-focus",
-        name: "大傷優先",
-        description: "最大化攻擊力",
+        id: "shield-cylinder-water",
+        name: "水元素+PD",
+        description: "盾牌鋼瓶專用：水元素+被動防禦",
+        category: "weapon_specific",
+        weaponCategories: ["shield_cylinder"],
         abilityWeights: {
-            attack_range: 0.1, // 射程最優先（弩/弓專用）
-            attack_max: 1, // 最高優先
-            attack_min: 0,
+            water_alchemy_damage: 1,
+            immune_melee: 1,
+            lance_piercing: 70,
+        },
+    },
+    {
+        id: "shield-cylinder-wind",
+        name: "風元素+PD",
+        description: "盾牌鋼瓶專用：風元素+被動防禦",
+        category: "weapon_specific",
+        weaponCategories: ["shield_cylinder"],
+        abilityWeights: {
+            wind_alchemy_damage: 1,
+            immune_melee: 1,
+            lance_piercing: 70,
+        },
+    },
+    {
+        id: "shield-cylinder-earth",
+        name: "土元素+PD",
+        description: "盾牌鋼瓶專用：土元素+被動防禦",
+        category: "weapon_specific",
+        weaponCategories: ["shield_cylinder"],
+        abilityWeights: {
+            earth_alchemy_damage: 1,
+            immune_melee: 1,
+            lance_piercing: 70,
+        },
+    },
+    // 治癒杖
+    {
+        id: "healing-focus",
+        name: "治癒優先",
+        description: "治癒杖專用：治癒效果最大化",
+        category: "weapon_specific",
+        weaponCategories: ["healing_wand"],
+        abilityWeights: {
+            healing: 1,
+            party_healing: 1,
+        },
+    },
+    // 盾牌系
+    {
+        id: "shield-protection",
+        name: "保護優先",
+        description: "盾牌專用：保護+被動防禦最大化",
+        category: "weapon_specific",
+        weaponCategories: ["shield", "combat_shield"],
+        abilityWeights: {
+            protection: 1,
+            immune_melee: 1,
+        },
+    },
+    // 樂器
+    {
+        id: "instrument-buff",
+        name: "音樂Buff優先",
+        description: "樂器專用：音樂Buff效果最大化",
+        category: "weapon_specific",
+        weaponCategories: ["instrument"],
+        abilityWeights: {
+            musicbuff_bonus: 1,
         },
     },
 ];
@@ -669,6 +963,39 @@ const weaponStatus = ref(infoForG27Weapon.find((item) => item.id === selectedWea
 
 const upgradeList = computed(() => {
     return upgradeForG27Weapons.find((item) => item.weaponId === selectedWeaponId.value)?.methods || [];
+});
+
+// 取得當前武器的分類
+const currentWeaponCategory = computed(() => {
+    return upgradeForG27Weapons.find((item) => item.weaponId === selectedWeaponId.value)?.weaponCategory;
+});
+
+// 根據武器分類篩選可用的快速配置
+const availablePresets = computed(() => {
+    const category = currentWeaponCategory.value;
+    if (!category) {
+        return []; // 如果沒有分類，不顯示任何配置
+    }
+
+    return quickPresets.filter((preset) => {
+        return preset.weaponCategories?.includes(category);
+    });
+});
+
+// 當可用配置改變時，自動選擇第一個
+watch(availablePresets, (presets) => {
+    if (presets.length > 0) {
+        // 預設選擇第一個配置
+        selectedPreset.value = presets[0].id;
+
+        // 如果只有一個選項，直接套用
+        if (presets.length === 1) {
+            applyPreset();
+        }
+    } else {
+        // 沒有可用配置，清空選擇
+        selectedPreset.value = "";
+    }
 });
 
 const craftmanUpgrade = computed(() => upgradeList.value.find((item) => item.id.includes("craftman")));
@@ -749,7 +1076,7 @@ const handleOptionChange = (rowId: string, optionIndex: number, checked: boolean
 const applyPreset = () => {
     if (!selectedPreset.value) return;
 
-    const preset = quickPresets.find((p) => p.id === selectedPreset.value);
+    const preset = availablePresets.value.find((p) => p.id === selectedPreset.value);
     if (!preset) return;
 
     // 清空現有選擇
@@ -776,7 +1103,14 @@ const applyPreset = () => {
                 if (weight === undefined || weight === 0) return;
 
                 // 取得能力的數值
-                const abilityValue = "value" in ability ? ability.value : "max" in ability ? ability.max : 0;
+                let abilityValue = 0;
+                if ("value" in ability) {
+                    // UpgradeAbility
+                    abilityValue = ability.value;
+                } else if ("max" in ability) {
+                    // CraftsManUpgradeAbility
+                    abilityValue = ability.max;
+                }
 
                 // 計算得分 = 權重 × 數值
                 const score = weight * abilityValue;
