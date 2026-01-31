@@ -1,16 +1,11 @@
 <template>
-    <div
-        class="bg-gray-900 text-gray-100 p-4 sm:p-8"
-        style="background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png')"
-    >
+    <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
         <div class="max-w-5xl mx-auto space-y-8">
-            <header class="text-center relative pt-8">
-                <h1
-                    class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400 mb-2 tracking-wide font-serif drop-shadow-lg"
-                >
-                    <span class="inline-block relative text-white">
+            <header class="text-center pt-8 pb-4">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-2 tracking-wide font-serif drop-shadow-lg">
+                    <span class="inline-block relative text-gradient">
                         <svg
-                            class="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 absolute -left-12 top-1/2 -translate-y-1/2"
+                            class="w-8 h-8 sm:w-10 sm:h-10 text-accent absolute -left-12 top-1/2 -translate-y-1/2"
                             fill="currentColor"
                             viewBox="0 0 20 20"
                         >
@@ -24,9 +19,9 @@
                 <p class="text-lg text-gray-400 mt-4 font-sans">設置以增加能力。坑錢的東西</p>
             </header>
 
-            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl px-6">
+            <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl px-6">
                 <div class="border-b border-gray-700 pb-4">
-                    <h2 class="text-2xl font-bold text-yellow-300">查詢條件</h2>
+                    <h2 class="text-2xl font-bold text-accent">查詢條件</h2>
                 </div>
 
                 <el-form label-width="160px" label-position="top">
@@ -92,9 +87,9 @@
                     </el-form-item>
                 </el-form>
             </el-card>
-            <el-card class="bg-gray-800 border-2 border-yellow-500/50 shadow-inner rounded-xl p-6 sm:p-8">
+            <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8">
                 <div class="mb-6 border-b border-gray-700 pb-4">
-                    <h2 class="text-2xl font-bold text-yellow-300">搜尋結果</h2>
+                    <h2 class="text-2xl font-bold text-accent">搜尋結果</h2>
                 </div>
                 <div>
                     <el-table
@@ -237,7 +232,7 @@ button {
     padding: 4px 12px !important;
 }
 
-.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+.bg-gray-800 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
     background-color: black !important;
 }
 </style>
@@ -341,7 +336,7 @@ const parseAbilities = (abilities: { id: string; value: number }[]) => {
         (abilitiy) =>
             `${abilitiesMap[abilitiy.id] || abilitiy.id}: +${abilitiy.value} ${
                 abilitiesValueWithPercentArray.includes(abilitiy.id) ? "%" : ""
-            }`
+            }`,
     );
     return str;
 };

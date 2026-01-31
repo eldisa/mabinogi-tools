@@ -58,10 +58,14 @@ export interface CraftTreeNode {
     uniqueKey: string; // 用於唯一識別此節點的鍵
     children?: CraftTreeNode[];
 }
-
+export interface AmountByID {
+    id: number;
+    total: number;
+}
 export interface MaterialUsage {
     id: number;
     usedIn: string;
+    usedInDetail: AmountByID[];
     name: string;
     token?: number;
 }

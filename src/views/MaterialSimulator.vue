@@ -1,13 +1,16 @@
 <template>
-    <div class="craft-calculator min-h-screen bg-gray-100 py-6 px-4 sm:px-6">
+    <div class="min-h-screen bg-gray-900 text-gray-100 py-6 px-4 sm:px-6 bg-texture-dark">
         <div class="max-w-7xl mx-auto">
-            <header class="mb-6 text-center">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">素材計算模擬器</h1>
+            <header class="mb-6 text-center pt-8 pb-4">
+                <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
+                    素材計算模擬器
+                </h1>
+                <p class="text-lg text-gray-400 mt-4">精確計算製作所需的所有材料</p>
             </header>
 
             <!-- 資料輸入區 -->
             <div class="mb-4">
-                <el-card class="mb-4 bg-gradient-to-r from-blue-100 to-white shadow-sm rounded-md">
+                <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
                     <div class="flex justify-center">
                         <el-select
                             v-model="selectedWeapons"
@@ -54,10 +57,11 @@
                         </div>
                     </div>
                 </el-card>
-                <el-card class="rounded-xl shadow border border-gray-200 bg-white">
+                <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
-                        <el-tab-pane label="Total">
-                            <h2 class="text-lg font-semibold">庫存與所需材料</h2>
+                        <el-tab-pane label="Total 材料總計">
+                            <h2 class="text-lg font-semibold text-accent mb-4">庫存與所需材料</h2>
+                            <!--todo: 庫存與所需材料-->
                             <div class="mt-4 overflow-x-auto overflow-y-auto">
                                 <!-- 手機版 -->
                                 <div v-if="layoutStore.isMobile">
@@ -141,7 +145,7 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="Preview">
+                        <el-tab-pane label="Roadmap 製作路線">
                             <template v-if="displayData.length > 0">
                                 <h2 class="text-lg font-semibold">
                                     {{ displayData[selectedDisplayDataIndex].name }}
@@ -191,11 +195,11 @@
                                 </div>
                             </template>
                         </el-tab-pane>
-                        <el-tab-pane label="Usage">
+                        <el-tab-pane label="Usage 材料用途">
                             <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
                             <div class="mt-4">
                                 <el-table :data="materialUsageData" style="width: 100%" border lazy>
-                                    <el-table-column label="名稱">
+                                    <el-table-column label="名稱" width="300">
                                         <template #default="{ row }">
                                             <div class="flex items-center gap-3 h-full">
                                                 <img
@@ -206,7 +210,11 @@
                                             </div>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="usedIn" label="那些裝備需要" />
+                                    <el-table-column align="left" label="需求數量">
+                                        <template #default="{ row }">
+                                            <div v-html="renderDetailUsage(row.usedInDetail)"></div>
+                                        </template>
+                                    </el-table-column>
                                 </el-table>
                             </div>
                         </el-tab-pane>
@@ -220,7 +228,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import { Option } from "../types";
-import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage } from "../types/CraftItem";
+import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage, AmountByID } from "../types/CraftItem";
 import { materials, G27bossDropsUsage } from "../data/materials";
 import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTooltip, ElIcon, TableV2SortOrder } from "element-plus";
@@ -397,17 +405,25 @@ const sortedData = computed(() => {
     // 複製一份數據，避免直接修改原始數據
     return [...materialSummaryTable.value].sort((a, b) => {
         // 如果排序欄位是 'source'，使用自定義邏輯
-        if (key === "source") {
+        if (key === "total") {
             const aType = a.source?.type ?? "-";
             const bType = b.source?.type ?? "-";
             const aOrder = getTypeOrder(aType);
             const bOrder = getTypeOrder(bType);
+            const aNum =
+                aOrder === bOrder && a.source.type === "desc" && a.source.description.includes("珠子")
+                    ? (a.source.token || 0) * 10
+                    : aOrder;
+            const bNum =
+                aOrder === bOrder && b.source.type === "desc" && b.source.description.includes("珠子")
+                    ? (b.source.token || 0) * 10
+                    : bOrder;
 
             // 根據排序方向返回結果
             if (order === TableV2SortOrder.ASC) {
-                return aOrder - bOrder;
+                return bNum - aNum;
             } else {
-                return bOrder - aOrder;
+                return aNum - bNum;
             }
         }
 
@@ -423,8 +439,28 @@ const handleSelectDisplayData = (index: number) => {
     selectedDisplayDataIndex.value = selectIndex;
 };
 
-const hasAddEvent = ref(false);
+const renderDetailUsage = (usedInDetail: AmountByID[]): string => {
+    const groups = usedInDetail.reduce((acc, { id, total }) => {
+        if (total <= 0) return acc;
 
+        const name =
+            craftWeaponOptions.find((weapon) => Number(weapon.value) === id)?.label.replace("靈魂解放者", "") ||
+            `未知裝備 #${id}`;
+
+        if (!acc[total]) acc[total] = [];
+        acc[total].push(name);
+        return acc;
+    }, {} as Record<number, string[]>);
+
+    const result = Object.entries(groups)
+        .sort(([a], [b]) => Number(b) - Number(a))
+        .map(([total, names]) => `${total}：${names.join("、")}`)
+        .join("<br/>");
+
+    return result || "—";
+};
+
+const hasAddEvent = ref(false);
 watch(
     () => selectedWeapons.value,
     (newData) => {
