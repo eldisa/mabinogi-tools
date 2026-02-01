@@ -43,7 +43,7 @@
                         v-model="searchInput"
                         :fetch-suggestions="handleSuggestions"
                         :trigger-on-focus="false"
-                        placeholder="搜尋稱號或能力（例如：最大傷害、暴擊、夜影）"
+                        placeholder="搜尋稱號或能力（例如：最大傷害、暴擊）"
                         clearable
                         size="large"
                         class="w-full"
