@@ -8,6 +8,7 @@ import TransferSimulator from '../views/TransferSimulator.vue';
 import WeaponUpgradeSimulator from '../views/WeaponUpgradeSimulator.vue';
 import Enchant from '../views/Enchant.vue';
 import FarmModel from '../views/FarmModel.vue';
+import Title from '../views/Title.vue';
 
 const routes = [
     {
@@ -48,6 +49,11 @@ const routes = [
             path: '/farmModel',
             name: '農場模型查詢',
             component: FarmModel,
+        },
+        {
+            path: '/title',
+            name: '稱號查詢',
+            component: Title,
         },]
     },
 
