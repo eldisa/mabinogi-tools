@@ -10,13 +10,8 @@
 
             <!-- 搜尋區域 -->
             <div class="mt-6 space-y-4">
-                <!-- 搜尋模式 + 篩選設定 -->
+                <!-- 篩選設定按鈕 -->
                 <div class="flex items-center gap-4">
-                    <el-radio-group v-model="searchMode" size="large">
-                        <el-radio value="name">關鍵字搜尋</el-radio>
-                        <el-radio value="ability">依能力搜尋</el-radio>
-                    </el-radio-group>
-
                     <el-popover placement="bottom" :width="320" trigger="click">
                         <template #reference>
                             <el-button :icon="Setting" circle />
@@ -34,39 +29,38 @@
                     </el-popover>
                 </div>
 
-                <!-- 搜尋輸入 -->
-                <div class="flex gap-4">
-                    <!-- 關鍵字搜尋 -->
-                    <el-input
-                        v-if="searchMode === 'name'"
-                        v-model="searchText"
-                        placeholder="搜尋稱號名稱、描述、獲得方式、效果..."
+                <!-- 整合式搜尋輸入 + 能力 Chip -->
+                <div class="space-y-2">
+                    <!-- 能力 Chip -->
+                    <div v-if="activeAbilityKey" class="flex items-center gap-2">
+                        <el-tag closable type="success" size="large" @close="clearAbility">
+                            能力：{{ abilitiesMap[activeAbilityKey] }}
+                        </el-tag>
+                    </div>
+
+                    <!-- Autocomplete 搜尋框 -->
+                    <el-autocomplete
+                        v-model="searchInput"
+                        :fetch-suggestions="handleSuggestions"
+                        :trigger-on-focus="false"
+                        placeholder="搜尋稱號或能力（例如：最大傷害、暴擊、夜影）"
                         clearable
                         size="large"
-                        class="flex-1"
+                        class="w-full"
+                        @select="handleAbilitySelect"
+                        @keydown.enter="handleEnter"
+                        @input="handleInput"
                     >
                         <template #prefix>
                             <el-icon><Search /></el-icon>
                         </template>
-                    </el-input>
-
-                    <!-- 能力搜尋 -->
-                    <el-select
-                        v-if="searchMode === 'ability'"
-                        v-model="selectedAbility"
-                        placeholder="選擇能力類型"
-                        clearable
-                        filterable
-                        size="large"
-                        class="flex-1"
-                    >
-                        <el-option
-                            v-for="ability in abilityOptions"
-                            :key="ability.id"
-                            :label="ability.name"
-                            :value="ability.id"
-                        />
-                    </el-select>
+                        <template #default="{ item }">
+                            <div class="flex items-center justify-between">
+                                <span>{{ item.value }}</span>
+                                <el-tag size="small" type="info">能力</el-tag>
+                            </div>
+                        </template>
+                    </el-autocomplete>
                 </div>
 
                 <!-- 排序 + 分類 -->
@@ -189,9 +183,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { Setting, Search } from "@element-plus/icons-vue";
 import titleData from "../data/title.json";
+import { abilitiesMap, reverseAbilitiesMap } from "../data/abilities";
 
 // 能力資料類型
 interface TitleAbility {
@@ -212,23 +207,15 @@ interface Title {
     Desc: string;
     Hint: string;
     EffectDescription: string;
-    abilities: TitleAbility[]; // 能力陣列
+    abilities: TitleAbility[];
     __locale: "!korea" | "korea";
 }
 
-// 能力搜尋選項（顯示在下拉選單）
-const abilityOptions = [
-    { id: "AttMax", name: "最大傷害" },
-    { id: "MagicAttack", name: "魔法攻擊力" },
-    { id: "musicbuff_bonus", name: "音樂增益效果" },
-    { id: "bonusdamage", name: "額外傷害" },
-    { id: "criticaldamage", name: "暴擊傷害" },
-    { id: "fire_alchemy_damage", name: "火屬性煉金術傷害" },
-    { id: "water_alchemy_damage", name: "水屬性煉金術傷害" },
-    { id: "earth_alchemy_damage", name: "土屬性煉金術傷害" },
-    { id: "wind_alchemy_damage", name: "風屬性煉金術傷害" },
-    { id: "Prot", name: "保護" },
-];
+// 建議項目類型
+interface SuggestionItem {
+    value: string; // 顯示名稱
+    key: string;   // canonical key
+}
 
 // 完整能力列表（用於自訂權重設定）
 const allAbilities = [
@@ -253,30 +240,27 @@ const allAbilities = [
     { id: "musicbuff_duration", name: "音樂持續時間" },
 ];
 
-// 狀態
-const searchMode = ref<"name" | "ability">("name");
-const searchText = ref("");
-const selectedAbility = ref("");
+// === 整合式搜尋狀態 ===
+const searchInput = ref("");
+const activeAbilityKey = ref<string | undefined>(undefined);
+
+// === 其他狀態 ===
 const sortMode = ref<"ability" | "custom">("ability");
-const typeFilter = ref(0); // 0=全部, 1=1稱號, 2=2稱號
+const typeFilter = ref(0);
 const currentPage = ref(1);
 const pageSize = 30;
 
 // 篩選設定
 const filters = ref({
-    excludeObsolete: false, // 絕版稱號
-    excludeRanking: false, // 排名/賽季稱號
-    excludeHardcore: false, // 副本獎勵稱號（已移除的副本獎勵）
-    excludeTimed: true, // 期限稱號（包含 Duration > 0 和特定 ID）
-    excludeExclusive: true, // 封印碾碎相關稱號（每個伺服器只有一位）
+    excludeObsolete: false,
+    excludeRanking: false,
+    excludeHardcore: false,
+    excludeTimed: true,
+    excludeExclusive: true,
 });
 
-// 自訂權重（使用 title.json 中的能力 ID 格式）
+// 自訂權重
 const customWeights = ref<Record<string, number>>({
-    // LifeMax: 0,
-    // ManaMax: 0,
-    // StaminaMax: 0,
-    // AttMin: 0,
     AttMax: 1,
     MagicAttack: 0,
     bonusdamage: 10,
@@ -295,63 +279,157 @@ const customWeights = ref<Record<string, number>>({
     Dex: 0,
     Will: 0,
     Luck: 0,
-    // todo 技能權重  算法可能很複雜...
 });
 
-// 排除列表分類
-
-// 絕版稱號（已無法獲得）
+// 排除列表
 const obsoleteTitleIds = [
-    "18153", // G27競速排名1
-    "18154", // G27競速排名2
-    "18155", // G27競速排名3
-    "18158", // G27競速排名4
-    "16028", // 變異體全服第一首通稱號
+    "18153", "18154", "18155", "18158", "16028",
 ];
 
-// 排名/賽季獎勵稱號（每月或賽季更新）
 const rankingTitleIds = [
-    // 法默思挑戰排名稱號
-    "5011", // 1
-    "5012", // 2
-    "5013", // 3
-    "5014", // 4
-    "5015", // 5
-    "5016", // 6
-    "5017", // 7
-    "5018", // 8
-    "5019", // 9
-    "5020", // 10
-    "5021", // 11~50
-    "5022", // 51~100
-    // 小吉 VH 排名稱號
-    "11015", // 1
-    "11016", // 2
-    "11017", // 3
-    // 法默思第1
-    "16032",
-    // 貿易前100
-    "16033",
+    "5011", "5012", "5013", "5014", "5015", "5016", "5017", "5018", "5019", "5020",
+    "5021", "5022", "11015", "11016", "11017", "16032", "16033",
 ];
 
-// 副本獎勵稱號（已移除的副本，但老手玩家有很多兌換券）
-const hardcoreTitleIds = [
-    "5004", // 副本獎勵(已移除)
-    "5005", // 副本獎勵(已移除)
-    "5006", // 副本獎勵(已移除)
-    // 這些稱號有限時但老手玩家有很多兌換券，接近常駐
-];
+const hardcoreTitleIds = ["5004", "5005", "5006"];
 
-// 期限稱號（沒設定 Duration 但實際有期限的）
 const timedTitleIds = [
-    "9053", "9054", "9055", "9056", "9057", "9058", // 原有的期限稱號
-    "9088", "9089", "9090", // VIP 等級稱號（銅/銀/金等 VIP）
-    "9150", "9151", "9152", // 冒險家等級稱號（B/A/S級冒險家）
+    "9053", "9054", "9055", "9056", "9057", "9058",
+    "9088", "9089", "9090",
+    "9150", "9151", "9152",
 ];
 
-// 稱號資料
+// === 能力匹配邏輯 ===
+interface MatchResult {
+    level: 1 | 2 | 3 | null;
+    key?: string;
+    candidates: Array<{ key: string; name: string; isUnique: boolean }>;
+}
+
+// 能力匹配函數
+const matchAbility = (input: string): MatchResult => {
+    const trimmedInput = input.trim();
+    if (!trimmedInput) {
+        return { level: null, candidates: [] };
+    }
+
+    const candidates: Array<{ key: string; name: string }> = [];
+
+    // 檢查所有 reverseAbilitiesMap 的 key (alias)
+    for (const alias of Object.keys(reverseAbilitiesMap)) {
+        // Level 1: 完全匹配
+        if (alias === trimmedInput) {
+            const canonicalKey = reverseAbilitiesMap[alias];
+            return {
+                level: 1,
+                key: canonicalKey,
+                candidates: [{ key: canonicalKey, name: alias, isUnique: true }],
+            };
+        }
+
+        // Level 2 & 3: 部分匹配
+        if (alias.includes(trimmedInput)) {
+            candidates.push({
+                key: reverseAbilitiesMap[alias],
+                name: alias,
+            });
+        }
+    }
+
+    // 去重（同一個 canonical key 可能有多個 alias）
+    const uniqueCandidates = Array.from(
+        new Map(candidates.map(c => [c.key, c])).values()
+    );
+
+    if (uniqueCandidates.length === 0) {
+        return { level: null, candidates: [] };
+    }
+
+    if (uniqueCandidates.length === 1) {
+        // Level 2: 唯一候選
+        return {
+            level: 2,
+            candidates: uniqueCandidates.map(c => ({ ...c, isUnique: true })),
+        };
+    }
+
+    // Level 3: 多候選
+    return {
+        level: 3,
+        candidates: uniqueCandidates.map(c => ({ ...c, isUnique: false })),
+    };
+};
+
+// Debounce timer
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+// 處理建議（autocomplete fetch-suggestions）
+const handleSuggestions = (queryString: string, cb: (suggestions: SuggestionItem[]) => void) => {
+    if (debounceTimer) {
+        clearTimeout(debounceTimer);
+    }
+
+    debounceTimer = setTimeout(() => {
+        const trimmedInput = queryString.trim();
+        if (!trimmedInput) {
+            cb([]);
+            return;
+        }
+
+        const matchResult = matchAbility(trimmedInput);
+
+        if (matchResult.level === 1) {
+            // Level 1: 完全匹配 - 自動確認
+            activeAbilityKey.value = matchResult.key;
+            searchInput.value = "";
+            cb([]);
+        } else if (matchResult.candidates.length > 0) {
+            // Level 2 or 3: 顯示建議
+            const suggestions = matchResult.candidates.slice(0, 10).map(c => ({
+                value: c.name,
+                key: c.key,
+            }));
+            cb(suggestions);
+        } else {
+            // 無匹配 - 關鍵字搜尋
+            cb([]);
+        }
+    }, 250); // 250ms debounce
+};
+
+// 處理輸入
+const handleInput = (value: string) => {
+    // 輸入時不做任何自動確認，等 debounce 或 Enter
+};
+
+// 處理選擇建議
+const handleAbilitySelect = (item: SuggestionItem) => {
+    activeAbilityKey.value = item.key;
+    searchInput.value = "";
+};
+
+// 處理 Enter
+const handleEnter = () => {
+    // 這個會由 autocomplete 的 select 事件處理
+    // 如果沒有建議項目，就維持關鍵字搜尋
+};
+
+// 清除能力 chip
+const clearAbility = () => {
+    activeAbilityKey.value = undefined;
+    // 不清除 searchInput
+};
+
+// 監聽 activeAbilityKey 變化，立即觸發搜尋
+watch(activeAbilityKey, () => {
+    currentPage.value = 1; // 重置頁碼
+});
+
+// === 稱號資料 ===
 const titles = computed<Title[]>(() => {
-    return (titleData.data as Title[]).filter((title) => title.DefaultName !== "none" && title["__locale"] !== "korea");
+    return (titleData.data as Title[]).filter(
+        (title) => title.DefaultName !== "none" && title["__locale"] !== "korea"
+    );
 });
 
 // 解析效果描述
@@ -363,18 +441,15 @@ const parseEffectDescription = (description: string): string[] => {
 // 計算稱號總分（自訂權重）
 const calculateTitleScore = (title: Title): number => {
     let totalScore = 0;
-
     if (!title.abilities || title.abilities.length === 0) return 0;
 
     for (const [abilityId, weight] of Object.entries(customWeights.value)) {
         if (weight === 0) continue;
-
         const ability = title.abilities.find((a) => a.id === abilityId);
         if (ability) {
             totalScore += ability.value * weight;
         }
     }
-
     return totalScore;
 };
 
@@ -383,7 +458,7 @@ const getTypeName = (type: string): string => {
     const typeNames: Record<string, string> = {
         "1": "一般稱號",
         "2": "打工稱號",
-        "3": "一般稱號", // 一般2稱號 - 與Type 1同類別
+        "3": "一般稱號",
         "4": "變身稱號",
         "5": "寵物稱號",
         "6": "假稱號",
@@ -395,13 +470,13 @@ const getTypeName = (type: string): string => {
 // 取得類型標籤顏色
 const getTypeColor = (type: string): string => {
     const typeColors: Record<string, string> = {
-        "1": "success", // 一般 - green
-        "2": "warning", // 打工 - orange
-        "3": "success", // 一般2 - green (與Type 1同色)
-        "4": "danger", // 變身 - red
-        "5": "", // 寵物 - default
-        "6": "info", // 假 - blue
-        "7": "success", // 二次 - green
+        "1": "success",
+        "2": "warning",
+        "3": "success",
+        "4": "danger",
+        "5": "",
+        "6": "info",
+        "7": "success",
     };
     return typeColors[type] || "";
 };
@@ -410,20 +485,13 @@ const getTypeColor = (type: string): string => {
 const filteredTitles = computed(() => {
     let result = titles.value;
 
-    // 排除不應顯示的稱號
+    // 自動排除
     result = result.filter((title) => {
-        // 1. 排除怪物專用稱號
-        if (title.Hint === "專用怪物稱號" || title.Desc === "專用怪物稱號") {
-            return false;
-        }
+        if (title.Hint === "專用怪物稱號" || title.Desc === "專用怪物稱號") return false;
 
-        // 1.1 排除特定怪物稱號（ID 白名單）
-        const monsterTitleIds = ["11007"]; // 巨大（食人魔專用）
-        if (monsterTitleIds.includes(title.ID)) {
-            return false;
-        }
+        const monsterTitleIds = ["11007"];
+        if (monsterTitleIds.includes(title.ID)) return false;
 
-        // 2. 排除內容包含 _LT 的遺失稱號
         if (
             title.DefaultName.includes("_LT") ||
             title.Desc.includes("_LT") ||
@@ -433,12 +501,10 @@ const filteredTitles = computed(() => {
             return false;
         }
 
-        // 3. 排除測試用稱號 (GM, devCat)
         if (title.DefaultName.includes("GM") || title.DefaultName.includes("dev") || title.DefaultName === "") {
             return false;
         }
 
-        // 4. 排除韓文稱號 (檢查是否包含韓文字元)
         const koreanRegex = /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]/;
         if (
             koreanRegex.test(title.DefaultName) ||
@@ -451,7 +517,7 @@ const filteredTitles = computed(() => {
         return true;
     });
 
-    // 類型篩選 (Type 1 和 Type 3 視為同類)
+    // 類型篩選
     if (typeFilter.value !== 0) {
         if (typeFilter.value === 1) {
             result = result.filter((title) => title.Type === "1" || title.Type === "3");
@@ -460,44 +526,40 @@ const filteredTitles = computed(() => {
         }
     }
 
-    // 篩選器篩選
-
-    // 排除絕版稱號
+    // 篩選器
     if (filters.value.excludeObsolete) {
         result = result.filter((title) => !obsoleteTitleIds.includes(title.ID));
     }
-
-    // 排除排名/賽季稱號
     if (filters.value.excludeRanking) {
         result = result.filter((title) => !rankingTitleIds.includes(title.ID));
     }
-
-    // 排除高難度稱號
     if (filters.value.excludeHardcore) {
         result = result.filter((title) => !hardcoreTitleIds.includes(title.ID));
     }
-
-    // 排除期限稱號 (Duration > 0 或特定 ID)
     if (filters.value.excludeTimed) {
         result = result.filter((title) => {
-            // 排除有設定 Duration 的稱號
             if (title.Duration !== "0") return false;
-            // 排除沒設定 Duration 但實際有期限的稱號
             if (timedTitleIds.includes(title.ID)) return false;
             return true;
         });
     }
-
-    // 排除專屬稱號 (Exclusive = "1")
     if (filters.value.excludeExclusive) {
         result = result.filter((title) => title.Exclusive !== "1");
     }
 
-    // 搜尋篩選
-    if (searchMode.value === "name" && searchText.value) {
-        const keyword = searchText.value.toLowerCase();
+    // Step 1: 能力篩選
+    if (activeAbilityKey.value) {
         result = result.filter((title) => {
-            // 搜尋所有文本欄位
+            if (!title.abilities || title.abilities.length === 0) return false;
+            return title.abilities.some((ability) => ability.id === activeAbilityKey.value);
+        });
+    }
+
+    // Step 2: 關鍵字篩選
+    const trimmedInput = searchInput.value.trim();
+    if (trimmedInput) {
+        const keyword = trimmedInput.toLowerCase();
+        result = result.filter((title) => {
             return (
                 title.DefaultName.toLowerCase().includes(keyword) ||
                 title.MaleName.toLowerCase().includes(keyword) ||
@@ -508,22 +570,16 @@ const filteredTitles = computed(() => {
                 title.EffectDescription.toLowerCase().includes(keyword)
             );
         });
-    } else if (searchMode.value === "ability" && selectedAbility.value) {
-        result = result.filter((title) => {
-            // 使用 abilities 陣列搜尋
-            if (!title.abilities || title.abilities.length === 0) return false;
-            return title.abilities.some((ability) => ability.id === selectedAbility.value);
-        });
     }
 
-    // 排序
+    // Step 3: 排序
     if (sortMode.value === "custom") {
         result = [...result].sort((a, b) => calculateTitleScore(b) - calculateTitleScore(a));
-    } else if (searchMode.value === "ability" && selectedAbility.value) {
-        // 依照選擇的能力數值排序
+    } else if (activeAbilityKey.value) {
+        // 依該能力數值排序
         result = [...result].sort((a, b) => {
-            const abilityA = a.abilities?.find((ability) => ability.id === selectedAbility.value);
-            const abilityB = b.abilities?.find((ability) => ability.id === selectedAbility.value);
+            const abilityA = a.abilities?.find((ability) => ability.id === activeAbilityKey.value);
+            const abilityB = b.abilities?.find((ability) => ability.id === activeAbilityKey.value);
             const valueA = abilityA ? abilityA.value : 0;
             const valueB = abilityB ? abilityB.value : 0;
             return Math.abs(valueB) - Math.abs(valueA);
@@ -547,10 +603,5 @@ const paginatedTitles = computed(() => {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
-
-.bg-texture-dark {
-    background-image: radial-gradient(rgba(251, 191, 36, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
 }
 </style>
