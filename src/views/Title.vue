@@ -343,7 +343,11 @@ const hardcoreTitleIds = [
 ];
 
 // 期限稱號（沒設定 Duration 但實際有期限的）
-const timedTitleIds = ["9053", "9054", "9055", "9056", "9057", "9058"];
+const timedTitleIds = [
+    "9053", "9054", "9055", "9056", "9057", "9058", // 原有的期限稱號
+    "9088", "9089", "9090", // VIP 等級稱號（銅/銀/金等 VIP）
+    "9150", "9151", "9152", // 冒險家等級稱號（B/A/S級冒險家）
+];
 
 // 稱號資料
 const titles = computed<Title[]>(() => {
@@ -410,6 +414,12 @@ const filteredTitles = computed(() => {
     result = result.filter((title) => {
         // 1. 排除怪物專用稱號
         if (title.Hint === "專用怪物稱號" || title.Desc === "專用怪物稱號") {
+            return false;
+        }
+
+        // 1.1 排除特定怪物稱號（ID 白名單）
+        const monsterTitleIds = ["11007"]; // 巨大（食人魔專用）
+        if (monsterTitleIds.includes(title.ID)) {
             return false;
         }
 
