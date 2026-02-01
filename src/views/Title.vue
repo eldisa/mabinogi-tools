@@ -214,30 +214,30 @@ interface Title {
 // 建議項目類型
 interface SuggestionItem {
     value: string; // 顯示名稱
-    key: string;   // canonical key
+    key: string; // canonical key
 }
 
 // 完整能力列表（用於自訂權重設定）
 const allAbilities = [
-    { id: "Str", name: "力量" },
-    { id: "Int", name: "智力" },
-    { id: "Dex", name: "敏捷" },
-    { id: "Will", name: "意志" },
-    { id: "Luck", name: "幸運" },
-    { id: "LifeMax", name: "最大生命值" },
-    { id: "ManaMax", name: "最大魔力" },
-    { id: "StaminaMax", name: "最大耐力" },
-    { id: "AttMin", name: "最小傷害" },
-    { id: "AttMax", name: "最大傷害" },
-    { id: "MagicAttack", name: "魔法攻擊力" },
-    { id: "bonusdamage", name: "額外傷害" },
-    { id: "criticaldamage", name: "暴擊傷害" },
-    { id: "Crit", name: "暴擊率" },
-    { id: "Def", name: "防禦" },
-    { id: "Prot", name: "保護" },
-    { id: "Hurry", name: "移動速度" },
+    { id: "attack_max", name: "最大傷害" },
+    { id: "magic_attack", name: "魔法攻擊力" },
     { id: "musicbuff_bonus", name: "音樂增益效果" },
-    { id: "musicbuff_duration", name: "音樂持續時間" },
+    { id: "bonus_damage", name: "額外傷害" },
+    { id: "critical_damage", name: "暴擊傷害" },
+    { id: "fire_alchemy_damage", name: "火屬性煉金術傷害" },
+    { id: "water_alchemy_damage", name: "水屬性煉金術傷害" },
+    { id: "earth_alchemy_damage", name: "土屬性煉金術傷害" },
+    { id: "wind_alchemy_damage", name: "風屬性煉金術傷害" },
+    { id: "move_speed", name: "移動速度" },
+    { id: "protection", name: "保護" },
+    { id: "STR", name: "力量" },
+    { id: "INT", name: "智力" },
+    { id: "DEX", name: "敏捷" },
+    { id: "WIL", name: "意志" },
+    { id: "LUK", name: "幸運" },
+    { id: "HP", name: "最大生命值" },
+    { id: "MP", name: "最大魔力" },
+    { id: "SP", name: "最大耐力" },
 ];
 
 // === 整合式搜尋狀態 ===
@@ -282,22 +282,31 @@ const customWeights = ref<Record<string, number>>({
 });
 
 // 排除列表
-const obsoleteTitleIds = [
-    "18153", "18154", "18155", "18158", "16028",
-];
+const obsoleteTitleIds = ["18153", "18154", "18155", "18158", "16028"];
 
 const rankingTitleIds = [
-    "5011", "5012", "5013", "5014", "5015", "5016", "5017", "5018", "5019", "5020",
-    "5021", "5022", "11015", "11016", "11017", "16032", "16033",
+    "5011",
+    "5012",
+    "5013",
+    "5014",
+    "5015",
+    "5016",
+    "5017",
+    "5018",
+    "5019",
+    "5020",
+    "5021",
+    "5022",
+    "11015",
+    "11016",
+    "11017",
+    "16032",
+    "16033",
 ];
 
 const hardcoreTitleIds = ["5004", "5005", "5006"];
 
-const timedTitleIds = [
-    "9053", "9054", "9055", "9056", "9057", "9058",
-    "9088", "9089", "9090",
-    "9150", "9151", "9152",
-];
+const timedTitleIds = ["9053", "9054", "9055", "9056", "9057", "9058", "9088", "9089", "9090", "9150", "9151", "9152"];
 
 // === 能力匹配邏輯 ===
 interface MatchResult {
@@ -337,9 +346,7 @@ const matchAbility = (input: string): MatchResult => {
     }
 
     // 去重（同一個 canonical key 可能有多個 alias）
-    const uniqueCandidates = Array.from(
-        new Map(candidates.map(c => [c.key, c])).values()
-    );
+    const uniqueCandidates = Array.from(new Map(candidates.map((c) => [c.key, c])).values());
 
     if (uniqueCandidates.length === 0) {
         return { level: null, candidates: [] };
@@ -349,14 +356,14 @@ const matchAbility = (input: string): MatchResult => {
         // Level 2: 唯一候選
         return {
             level: 2,
-            candidates: uniqueCandidates.map(c => ({ ...c, isUnique: true })),
+            candidates: uniqueCandidates.map((c) => ({ ...c, isUnique: true })),
         };
     }
 
     // Level 3: 多候選
     return {
         level: 3,
-        candidates: uniqueCandidates.map(c => ({ ...c, isUnique: false })),
+        candidates: uniqueCandidates.map((c) => ({ ...c, isUnique: false })),
     };
 };
 
@@ -385,7 +392,7 @@ const handleSuggestions = (queryString: string, cb: (suggestions: SuggestionItem
             cb([]);
         } else if (matchResult.candidates.length > 0) {
             // Level 2 or 3: 顯示建議
-            const suggestions = matchResult.candidates.slice(0, 10).map(c => ({
+            const suggestions = matchResult.candidates.slice(0, 10).map((c) => ({
                 value: c.name,
                 key: c.key,
             }));
@@ -427,9 +434,7 @@ watch(activeAbilityKey, () => {
 
 // === 稱號資料 ===
 const titles = computed<Title[]>(() => {
-    return (titleData.data as Title[]).filter(
-        (title) => title.DefaultName !== "none" && title["__locale"] !== "korea"
-    );
+    return (titleData.data as Title[]).filter((title) => title.DefaultName !== "none" && title["__locale"] !== "korea");
 });
 
 // 解析效果描述
