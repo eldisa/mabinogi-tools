@@ -7,7 +7,8 @@ import {
     Money,
     MagicStick,
     HomeFilled,
-    InfoFilled
+    InfoFilled,
+    Medal
 } from '@element-plus/icons-vue';
 
 defineProps<{
@@ -25,6 +26,7 @@ const menuItems = [
     { name: "材料計算機", path: "/material-simulator", icon: markRaw(Box) },
     { name: "裝備能力轉移費用估算", path: "/transfer-simulator", icon: markRaw(Money) },
     { name: "賦予查詢", path: "enchant", icon: markRaw(MagicStick) },
+    { name: "稱號查詢", path: "/title", icon: markRaw(Medal) },
     { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
     { name: "About", path: "/about", icon: markRaw(InfoFilled) },
 ];
