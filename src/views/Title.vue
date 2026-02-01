@@ -214,7 +214,7 @@ interface Title {
 // 建議項目類型
 interface SuggestionItem {
     value: string; // 顯示名稱
-    key: string;   // canonical key
+    key: string; // canonical key
 }
 
 // 完整能力列表（用於自訂權重設定）
@@ -282,22 +282,31 @@ const customWeights = ref<Record<string, number>>({
 });
 
 // 排除列表
-const obsoleteTitleIds = [
-    "18153", "18154", "18155", "18158", "16028",
-];
+const obsoleteTitleIds = ["18153", "18154", "18155", "18158", "16028"];
 
 const rankingTitleIds = [
-    "5011", "5012", "5013", "5014", "5015", "5016", "5017", "5018", "5019", "5020",
-    "5021", "5022", "11015", "11016", "11017", "16032", "16033",
+    "5011",
+    "5012",
+    "5013",
+    "5014",
+    "5015",
+    "5016",
+    "5017",
+    "5018",
+    "5019",
+    "5020",
+    "5021",
+    "5022",
+    "11015",
+    "11016",
+    "11017",
+    "16032",
+    "16033",
 ];
 
 const hardcoreTitleIds = ["5004", "5005", "5006"];
 
-const timedTitleIds = [
-    "9053", "9054", "9055", "9056", "9057", "9058",
-    "9088", "9089", "9090",
-    "9150", "9151", "9152",
-];
+const timedTitleIds = ["9053", "9054", "9055", "9056", "9057", "9058", "9088", "9089", "9090", "9150", "9151", "9152"];
 
 // === 能力匹配邏輯 ===
 interface MatchResult {
@@ -337,9 +346,7 @@ const matchAbility = (input: string): MatchResult => {
     }
 
     // 去重（同一個 canonical key 可能有多個 alias）
-    const uniqueCandidates = Array.from(
-        new Map(candidates.map(c => [c.key, c])).values()
-    );
+    const uniqueCandidates = Array.from(new Map(candidates.map((c) => [c.key, c])).values());
 
     if (uniqueCandidates.length === 0) {
         return { level: null, candidates: [] };
@@ -349,14 +356,14 @@ const matchAbility = (input: string): MatchResult => {
         // Level 2: 唯一候選
         return {
             level: 2,
-            candidates: uniqueCandidates.map(c => ({ ...c, isUnique: true })),
+            candidates: uniqueCandidates.map((c) => ({ ...c, isUnique: true })),
         };
     }
 
     // Level 3: 多候選
     return {
         level: 3,
-        candidates: uniqueCandidates.map(c => ({ ...c, isUnique: false })),
+        candidates: uniqueCandidates.map((c) => ({ ...c, isUnique: false })),
     };
 };
 
@@ -385,7 +392,7 @@ const handleSuggestions = (queryString: string, cb: (suggestions: SuggestionItem
             cb([]);
         } else if (matchResult.candidates.length > 0) {
             // Level 2 or 3: 顯示建議
-            const suggestions = matchResult.candidates.slice(0, 10).map(c => ({
+            const suggestions = matchResult.candidates.slice(0, 10).map((c) => ({
                 value: c.name,
                 key: c.key,
             }));
@@ -427,9 +434,7 @@ watch(activeAbilityKey, () => {
 
 // === 稱號資料 ===
 const titles = computed<Title[]>(() => {
-    return (titleData.data as Title[]).filter(
-        (title) => title.DefaultName !== "none" && title["__locale"] !== "korea"
-    );
+    return (titleData.data as Title[]).filter((title) => title.DefaultName !== "none" && title["__locale"] !== "korea");
 });
 
 // 解析效果描述
