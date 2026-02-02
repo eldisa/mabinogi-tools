@@ -1199,13 +1199,19 @@ const applyPreset = () => {
         // 按分數排序，選擇最高分的
         upgradesWithScore.sort((a, b) => b.score - a.score);
         console.log(upgradesWithScore);
-        if (upgradesWithScore.length > 0 && upgradesWithScore[0].score > 0) {
-            form.value.selectedUpgradeArray[stage] = upgradesWithScore[0].upgrade.id;
-            console.log(
-                `階段 ${stage + 1}:`,
-                upgradesWithScore[0].upgrade.name,
-                `(得分: ${upgradesWithScore[0].score})`,
-            );
+
+        // 如果只有一個選項，無論分數多少都選它（因為沒得選）
+        // 如果有多個選項，只選分數 > 0 的（有符合權重條件的）
+        if (upgradesWithScore.length > 0) {
+            const shouldSelect = upgradesWithScore.length === 1 || upgradesWithScore[0].score > 0;
+            if (shouldSelect) {
+                form.value.selectedUpgradeArray[stage] = upgradesWithScore[0].upgrade.id;
+                console.log(
+                    `階段 ${stage + 1}:`,
+                    upgradesWithScore[0].upgrade.name,
+                    `(得分: ${upgradesWithScore[0].score})`,
+                );
+            }
         }
     }
 
