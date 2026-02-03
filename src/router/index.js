@@ -9,6 +9,7 @@ import WeaponUpgradeSimulator from '../views/WeaponUpgradeSimulator.vue';
 import Enchant from '../views/Enchant.vue';
 import FarmModel from '../views/FarmModel.vue';
 import Title from '../views/Title.vue';
+import StoneGamblingView from '../views/StoneGamblingView.vue';
 
 const routes = [
     {
@@ -54,6 +55,11 @@ const routes = [
             path: '/title',
             name: '稱號查詢',
             component: Title,
+        },
+        {
+            path: '/stone-gambling',
+            name: '賭石小遊戲',
+            component: StoneGamblingView,
         },]
     },
 
