@@ -194,6 +194,15 @@ interface TitleAbility {
     value: number;
 }
 
+// 地區類型
+type Region = "taiwan" | "korea" | "japan" | "china" | "usa";
+
+// Locale 結構
+interface TitleLocale {
+    include: Region[] | null;
+    exclude: Region[];
+}
+
 // 稱號資料類型
 interface Title {
     ID: string;
@@ -208,7 +217,17 @@ interface Title {
     Hint: string;
     EffectDescription: string;
     abilities: TitleAbility[];
-    __locale: "!korea" | "korea";
+    locale: TitleLocale;
+}
+
+// 當前地區設定
+const currentRegion: Region = "taiwan";
+
+// 判斷稱號在指定地區是否可用
+function isAvailable(locale: TitleLocale, region: Region): boolean {
+    if (locale.include && !locale.include.includes(region)) return false;
+    if (locale.exclude.includes(region)) return false;
+    return true;
 }
 
 // 建議項目類型
@@ -442,7 +461,9 @@ watch(activeAbilityKey, () => {
 
 // === 稱號資料 ===
 const titles = computed<Title[]>(() => {
-    return (titleData.data as Title[]).filter((title) => title.DefaultName !== "none" && title["__locale"] !== "korea");
+    return (titleData.data as Title[]).filter(
+        (title) => title.DefaultName !== "none" && isAvailable(title.locale, currentRegion)
+    );
 });
 
 // 解析效果描述
