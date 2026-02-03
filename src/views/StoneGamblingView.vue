@@ -66,12 +66,12 @@
                         >
                             <span class="text-xl font-bold">−</span>
                         </el-button>
-                        <span class="text-2xl font-bold w-16 text-center">{{ buyCount }}</span>
+                        <span class="text-2xl font-bold w-20 text-center">{{ buyCount }}</span>
                         <el-button
                             circle
                             size="large"
-                            :disabled="buyCount >= 100"
-                            @click="buyCount = Math.min(100, buyCount + 1)"
+                            :disabled="buyCount >= 99999"
+                            @click="buyCount = Math.min(99999, buyCount + 1)"
                         >
                             <span class="text-xl font-bold">+</span>
                         </el-button>
@@ -268,15 +268,15 @@
                             <el-input
                                 v-model.number="buyCount"
                                 type="number"
-                                class="w-16 text-center !bg-gray-700 !border-0 !text-lg font-bold"
+                                class="buy-count-input !w-28"
                                 :min="1"
-                                :max="10000"
-                                @blur="buyCount = Math.min(100, Math.max(1, buyCount))"
+                                :max="99999"
+                                @blur="buyCount = Math.min(99999, Math.max(1, buyCount))"
                             />
                             <el-button
                                 circle
-                                :disabled="buyCount >= 100"
-                                @click="buyCount = Math.min(100, buyCount + 1)"
+                                :disabled="buyCount >= 99999"
+                                @click="buyCount = Math.min(99999, buyCount + 1)"
                             >
                                 <span class="text-lg font-bold">+</span>
                             </el-button>
@@ -782,5 +782,25 @@ function confirmRecharge() {
 
 .status-btn-group :deep(.el-button--primary.is-active) {
     box-shadow: 0 0 8px #409eff;
+}
+
+/* 購買數量輸入框 */
+.buy-count-input :deep(.el-input__wrapper) {
+    background-color: #374151 !important;
+    box-shadow: none !important;
+}
+
+.buy-count-input :deep(.el-input__inner) {
+    color: #fff !important;
+    font-size: 1.125rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* 隱藏 number input 的上下箭頭 */
+.buy-count-input :deep(.el-input__inner)::-webkit-outer-spin-button,
+.buy-count-input :deep(.el-input__inner)::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 </style>
