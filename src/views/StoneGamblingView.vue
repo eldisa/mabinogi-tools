@@ -265,7 +265,14 @@
                             <el-button circle :disabled="buyCount <= 1" @click="buyCount = Math.max(1, buyCount - 1)">
                                 <span class="text-lg font-bold">−</span>
                             </el-button>
-                            <span class="text-xl font-bold w-12 text-center">{{ buyCount }}</span>
+                            <el-input
+                                v-model.number="buyCount"
+                                type="number"
+                                class="w-16 text-center !bg-gray-700 !border-0 !text-lg font-bold"
+                                :min="1"
+                                :max="10000"
+                                @blur="buyCount = Math.min(100, Math.max(1, buyCount))"
+                            />
                             <el-button
                                 circle
                                 :disabled="buyCount >= 100"
