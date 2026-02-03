@@ -124,13 +124,19 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-xs text-gray-400">本次花費</p>
-                        <p class="text-lg font-bold text-red-400">{{ formatGold(ECONOMY_CONFIG.STONE_PRICE * buyCount) }}</p>
+                        <p class="text-lg font-bold text-red-400">
+                            {{ formatGold(ECONOMY_CONFIG.STONE_PRICE * buyCount) }}
+                        </p>
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-gray-400">購買後餘額</p>
                         <p
                             class="text-lg font-bold"
-                            :class="store.canAfford(ECONOMY_CONFIG.STONE_PRICE * buyCount) ? 'text-green-400' : 'text-red-400'"
+                            :class="
+                                store.canAfford(ECONOMY_CONFIG.STONE_PRICE * buyCount)
+                                    ? 'text-green-400'
+                                    : 'text-red-400'
+                            "
                         >
                             {{
                                 store.canAfford(ECONOMY_CONFIG.STONE_PRICE * buyCount)
@@ -203,7 +209,10 @@
                             </p>
                         </div>
                         <div class="flex items-center gap-2 ml-2 flex-shrink-0">
-                            <span class="text-xs" :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'">
+                            <span
+                                class="text-xs"
+                                :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
+                            >
                                 {{ record.status === "collected" ? "收藏" : formatGold(record.value) }}
                             </span>
                             <el-button
@@ -216,7 +225,9 @@
                             </el-button>
                         </div>
                     </div>
-                    <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-4 text-sm">暫無紀錄</div>
+                    <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-4 text-sm">
+                        暫無紀錄
+                    </div>
                 </div>
             </el-card>
         </div>
@@ -251,11 +262,7 @@
 
                         <!-- 數量調整 -->
                         <div class="flex items-center gap-3 mb-4">
-                            <el-button
-                                circle
-                                :disabled="buyCount <= 1"
-                                @click="buyCount = Math.max(1, buyCount - 1)"
-                            >
+                            <el-button circle :disabled="buyCount <= 1" @click="buyCount = Math.max(1, buyCount - 1)">
                                 <span class="text-lg font-bold">−</span>
                             </el-button>
                             <span class="text-xl font-bold w-12 text-center">{{ buyCount }}</span>
@@ -341,7 +348,10 @@
                     </el-card>
 
                     <!-- 鑑定紀錄 -->
-                    <el-card v-if="store.history.length > 0" class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
+                    <el-card
+                        v-if="store.history.length > 0"
+                        class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl"
+                    >
                         <el-tabs v-model="activeTab" class="history-tabs">
                             <el-tab-pane label="全部" name="all">
                                 <template #label>
@@ -375,7 +385,10 @@
                                 <div class="flex items-center gap-3 ml-2">
                                     <div class="text-right">
                                         <p class="text-accent font-bold">Lv.{{ record.level }}</p>
-                                        <p class="text-sm" :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'">
+                                        <p
+                                            class="text-sm"
+                                            :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
+                                        >
                                             {{ record.status === "collected" ? "收藏" : formatGold(record.value) }}
                                         </p>
                                     </div>
@@ -389,7 +402,9 @@
                                     </el-button>
                                 </div>
                             </div>
-                            <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-8">暫無紀錄</div>
+                            <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-8">
+                                暫無紀錄
+                            </div>
                         </div>
                     </el-card>
                 </div>
@@ -397,13 +412,21 @@
         </div>
 
         <!-- ==================== 鑑定結果對話框 ==================== -->
-        <el-dialog v-model="appraiseDialogVisible" title="鑑定結果" width="90%" class="max-w-lg" :close-on-click-modal="false">
+        <el-dialog
+            v-model="appraiseDialogVisible"
+            title="鑑定結果"
+            width="90%"
+            class="max-w-lg"
+            :close-on-click-modal="false"
+        >
             <div class="space-y-2 max-h-[50vh] overflow-y-auto">
                 <div
                     v-for="result in pendingResults"
                     :key="result.id"
                     class="flex items-center justify-between p-2 rounded-lg"
-                    :class="result.status === 'collected' ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-700/50'"
+                    :class="
+                        result.status === 'collected' ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-700/50'
+                    "
                 >
                     <div class="flex-1 min-w-0">
                         <p class="text-xs text-gray-400">{{ result.ability.job }}</p>
@@ -438,7 +461,8 @@
                     <span>收藏: {{ pendingCollectCount }} 個</span>
                 </div>
                 <p class="text-center text-gray-400 mt-2">
-                    出售可得: <span class="text-accent font-bold">{{ formatGold(pendingSellValue) }}</span>
+                    出售可得:
+                    <span class="text-accent font-bold">{{ formatGold(pendingSellValue) }}</span>
                 </p>
             </div>
             <template #footer>
@@ -671,7 +695,7 @@ function confirmSellCollected(record: AppraisalRecord) {
             confirmButtonText: "確定出售",
             cancelButtonText: "取消",
             type: "warning",
-        }
+        },
     )
         .then(() => {
             if (store.sellCollectedItem(record.id)) {
