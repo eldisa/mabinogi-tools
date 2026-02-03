@@ -160,7 +160,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Over Drive",
         parameter: 70,
         maxLimit: 700,
-        prices: [1500, 3000, 5000, 10000, 15000, 19000, 31000, 48000, 74000, 74000],
+        prices: [1500, 3000, 5000, 10000, 15000, 19000, 31000, 48000, 74000, 74000 * 1.5],
     },
     {
         id: 59106,
@@ -224,6 +224,6 @@ export const stoneAbilities: AbilityOption[] = [
 
         parameter: 30,
         maxLimit: 300,
-        prices: [1300, 3000, 3900, 10000, 13000, 16800, 28000, 39000, 119000, 119000],
+        prices: [1300, 3000, 3900, 10000, 13000, 16800, 28000, 39000, 119000, 119000 * 1.5],
     },
 ];
