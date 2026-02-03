@@ -606,9 +606,8 @@ function canAppraise(count: number): boolean {
 
 // 購買月餅
 function buyStones() {
-    if (store.buyStones(buyCount.value)) {
-        ElMessage.success(`成功購買 ${buyCount.value} 個月餅！`);
-    }
+    store.buyStones(buyCount.value);
+    // 購買成功不顯示通知，UI 已經有即時回饋（數量變化、餘額變化）
 }
 
 // 計算價格倍率（根據當前石頭價格與基準價格的比例）
@@ -655,12 +654,7 @@ function appraiseStones(count: number) {
     pendingResults.value = results;
     latestResults.value = results.slice(0, 5);
     appraiseDialogVisible.value = true;
-
-    // 檢查是否有稀有結果
-    const rareCount = results.filter((r) => r.level >= 9).length;
-    if (rareCount > 0) {
-        ElMessage.success(`恭喜！鑑定出 ${rareCount} 個 Lv.9+ 的稀有能力！`);
-    }
+    // 移除鑑定時的通知，對話框已經提供完整回饋
 }
 
 // 全部標記為出售
@@ -683,12 +677,12 @@ function confirmPendingResults() {
     store.add(sellValue);
     appraiseDialogVisible.value = false;
 
-    if (sellCount > 0 && collectCount > 0) {
-        ElMessage.success(`出售 ${sellCount} 個獲得 ${formatGold(sellValue)}，收藏 ${collectCount} 個`);
-    } else if (sellCount > 0) {
-        ElMessage.success(`成功出售 ${sellCount} 個，獲得 ${formatGold(sellValue)}！`);
-    } else {
-        ElMessage.info(`已收藏 ${collectCount} 個項目！`);
+    // 簡化通知：只顯示一則摘要
+    const parts: string[] = [];
+    if (sellCount > 0) parts.push(`售 ${sellCount} 個 +${formatGold(sellValue)}`);
+    if (collectCount > 0) parts.push(`藏 ${collectCount} 個`);
+    if (parts.length > 0) {
+        ElMessage({ message: parts.join("，"), type: "success", duration: 2000 });
     }
     pendingResults.value = [];
 }
@@ -696,17 +690,17 @@ function confirmPendingResults() {
 // 確認出售收藏項目
 function confirmSellCollected(record: AppraisalRecord) {
     ElMessageBox.confirm(
-        `確定要出售「${record.ability.skillLocalName} Lv.${record.level}」嗎？將獲得 ${formatGold(record.value)}。此操作不可逆。`,
+        `確定要出售「${record.ability.skillLocalName} Lv.${record.level}」嗎？將獲得 ${formatGold(record.value)}`,
         "確認出售",
         {
-            confirmButtonText: "確定出售",
+            confirmButtonText: "出售",
             cancelButtonText: "取消",
             type: "warning",
         },
     )
         .then(() => {
             if (store.sellCollectedItem(record.id)) {
-                ElMessage.success(`成功出售，獲得 ${formatGold(record.value)}！`);
+                ElMessage({ message: `+${formatGold(record.value)}`, type: "success", duration: 1500 });
             }
         })
         .catch(() => {
@@ -725,7 +719,7 @@ function confirmReset() {
             store.resetBalance();
             latestResults.value = [];
             pendingResults.value = [];
-            ElMessage.success("資料已重置！");
+            ElMessage({ message: "已重置", type: "info", duration: 1500 });
         })
         .catch(() => {
             // 取消操作
@@ -742,7 +736,7 @@ function showRechargeDialog() {
 function confirmRecharge() {
     store.add(rechargeAmount.value);
     rechargeDialogVisible.value = false;
-    ElMessage.success(`成功充值 ${formatGold(rechargeAmount.value)}！`);
+    ElMessage({ message: `+${formatGold(rechargeAmount.value)}`, type: "success", duration: 1500 });
 }
 </script>
 
