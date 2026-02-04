@@ -21,6 +21,128 @@
             </template>
         </el-dialog>
 
+        <!-- 設定對話框 -->
+        <el-dialog v-model="settingsDialogVisible" title="設定" width="95%" class="max-w-2xl">
+            <div class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+                <!-- 月餅價格 -->
+                <div>
+                    <p class="text-gray-400 text-sm mb-2">月餅價格</p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <el-button
+                            v-for="price in stonePricePresets"
+                            :key="price"
+                            :type="tempStonePrice === price ? 'primary' : 'default'"
+                            size="small"
+                            @click="tempStonePrice = price"
+                        >
+                            {{ price / 100_000_000 }} 億
+                        </el-button>
+                    </div>
+                    <el-input
+                        v-model.number="tempStonePriceInYi"
+                        type="number"
+                        placeholder="自訂價格"
+                        class="settings-input"
+                    >
+                        <template #append>億</template>
+                    </el-input>
+                </div>
+
+                <!-- 自動化設定 -->
+                <div class="border-t border-gray-700 pt-4">
+                    <p class="text-gray-300 font-medium mb-3">自動化設定</p>
+
+                    <!-- 自動充值 -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-sm text-gray-300">自動充值</p>
+                            <p class="text-xs text-gray-500">餘額不足時自動充值 100 億</p>
+                        </div>
+                        <el-switch v-model="tempAutoRecharge" />
+                    </div>
+
+                    <!-- 自動停止次數 -->
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm text-gray-300">自動停止次數</p>
+                            <span class="text-accent font-bold">{{ tempAutoStopCount === 0 ? '不限' : tempAutoStopCount }}</span>
+                        </div>
+                        <el-slider v-model="tempAutoStopCount" :min="0" :max="10000" :step="100" :show-tooltip="false" />
+                        <p class="text-xs text-gray-500 mt-1">執行指定次數後自動停止（0 = 不限制）</p>
+                    </div>
+
+                    <!-- 顯示項目設定 -->
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-300 mb-2">歷史紀錄顯示</p>
+                        <el-radio-group v-model="tempDisplayMode" size="small">
+                            <el-radio-button value="all">全部</el-radio-button>
+                            <el-radio-button value="highROI">高回報率</el-radio-button>
+                            <el-radio-button value="none">不顯示</el-radio-button>
+                        </el-radio-group>
+                        <p class="text-xs text-gray-500 mt-1">控制「全部」和「售出」tab 顯示的項目</p>
+                    </div>
+
+                    <!-- 機率模式設定 -->
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-300 mb-2">等級機率模式</p>
+                        <el-select v-model="tempProbabilityMode" class="!w-full" placeholder="選擇機率模式">
+                            <el-option
+                                v-for="(config, mode) in PROBABILITY_CONFIGS"
+                                :key="mode"
+                                :value="mode"
+                                :label="config.name"
+                            />
+                        </el-select>
+                        <div class="mt-2 p-2 bg-gray-700/50 rounded text-xs">
+                            <p class="text-gray-400 mb-1">各等級機率：</p>
+                            <div class="grid grid-cols-5 gap-1">
+                                <div v-for="(weight, idx) in PROBABILITY_CONFIGS[tempProbabilityMode].weights" :key="idx" class="text-center">
+                                    <span class="text-gray-500">Lv{{ idx + 1 }}</span>
+                                    <p class="text-accent font-medium">{{ weight.toFixed(2) }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 保留清單 -->
+                <div class="border-t border-gray-700 pt-4">
+                    <p class="text-gray-300 font-medium mb-3">保留清單</p>
+                    <p class="text-xs text-gray-500 mb-3">設定各技能的最低保留等級，低於該等級將自動出售</p>
+
+                    <div class="space-y-4">
+                        <div v-for="(skills, job) in skillsByJob" :key="job" class="bg-gray-800/50 rounded-lg p-3">
+                            <p class="text-sm font-medium text-accent mb-2">{{ job }}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div
+                                    v-for="skill in skills"
+                                    :key="skill.id"
+                                    class="flex items-center justify-between bg-gray-700/50 rounded px-2 py-1"
+                                >
+                                    <span class="text-xs text-gray-300 truncate flex-1 mr-2">{{
+                                        skill.skillLocalName
+                                    }}</span>
+                                    <el-select
+                                        v-model="tempRetentionMap[skill.id]"
+                                        size="small"
+                                        class="!w-20"
+                                        placeholder="賣"
+                                    >
+                                        <el-option :value="0" label="賣" />
+                                        <el-option v-for="lv in 10" :key="lv" :value="lv" :label="`≥${lv}`" />
+                                    </el-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <template #footer>
+                <el-button @click="settingsDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="confirmSettings">確認</el-button>
+            </template>
+        </el-dialog>
+
         <!-- ==================== Mobile Layout (<768px) ==================== -->
         <div class="md:hidden space-y-3">
             <!-- 1. 資源概覽 Card -->
@@ -66,12 +188,12 @@
                         >
                             <span class="text-xl font-bold">−</span>
                         </el-button>
-                        <span class="text-2xl font-bold w-16 text-center">{{ buyCount }}</span>
+                        <span class="text-2xl font-bold w-20 text-center">{{ buyCount }}</span>
                         <el-button
                             circle
                             size="large"
-                            :disabled="buyCount >= 100"
-                            @click="buyCount = Math.min(100, buyCount + 1)"
+                            :disabled="buyCount >= 99999"
+                            @click="buyCount = Math.min(99999, buyCount + 1)"
                         >
                             <span class="text-xl font-bold">+</span>
                         </el-button>
@@ -82,10 +204,10 @@
                         type="warning"
                         size="large"
                         class="!w-full !h-14 !text-lg !font-bold"
-                        :disabled="!store.canAfford(ECONOMY_CONFIG.STONE_PRICE * buyCount)"
+                        :disabled="!store.canAfford(store.stonePrice * buyCount)"
                         @click="buyStones"
                     >
-                        購買 {{ buyCount }} 個（{{ formatGold(ECONOMY_CONFIG.STONE_PRICE * buyCount) }}）
+                        購買 {{ buyCount }} 個（{{ formatGold(store.stonePrice * buyCount) }}）
                     </el-button>
 
                     <!-- 鑑定按鈕 -->
@@ -124,17 +246,23 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-xs text-gray-400">本次花費</p>
-                        <p class="text-lg font-bold text-red-400">{{ formatGold(ECONOMY_CONFIG.STONE_PRICE * buyCount) }}</p>
+                        <p class="text-lg font-bold text-red-400">
+                            {{ formatGold(store.stonePrice * buyCount) }}
+                        </p>
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-gray-400">購買後餘額</p>
                         <p
                             class="text-lg font-bold"
-                            :class="store.canAfford(ECONOMY_CONFIG.STONE_PRICE * buyCount) ? 'text-green-400' : 'text-red-400'"
+                            :class="
+                                store.canAfford(store.stonePrice * buyCount)
+                                    ? 'text-green-400'
+                                    : 'text-red-400'
+                            "
                         >
                             {{
-                                store.canAfford(ECONOMY_CONFIG.STONE_PRICE * buyCount)
-                                    ? formatGold(store.balance - ECONOMY_CONFIG.STONE_PRICE * buyCount)
+                                store.canAfford(store.stonePrice * buyCount)
+                                    ? formatGold(store.balance - store.stonePrice * buyCount)
                                     : "餘額不足"
                             }}
                         </p>
@@ -146,7 +274,18 @@
             <div class="flex gap-2">
                 <el-button class="!flex-1" @click="showRechargeDialog">充值</el-button>
                 <el-button class="!flex-1" type="danger" plain @click="confirmReset">重置</el-button>
+                <el-button class="!flex-1" @click="showSettingsDialog">設定</el-button>
             </div>
+
+            <!-- Auto 模式按鈕 -->
+            <el-button
+                :type="isAutoRunning ? 'danger' : 'success'"
+                size="large"
+                class="!w-full !font-bold"
+                @click="toggleAutoRun"
+            >
+                {{ isAutoRunning ? "停止自動" : "開始自動" }}
+            </el-button>
 
             <!-- 統計資訊 -->
             <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
@@ -175,7 +314,7 @@
                 <el-tabs v-model="activeTab" class="history-tabs">
                     <el-tab-pane label="全部" name="all">
                         <template #label>
-                            <span class="text-sm">全部 ({{ store.history.length }})</span>
+                            <span class="text-sm">全部 ({{ displayedHistory.length }})</span>
                         </template>
                     </el-tab-pane>
                     <el-tab-pane label="收藏" name="collected">
@@ -185,12 +324,18 @@
                     </el-tab-pane>
                     <el-tab-pane label="售出" name="sold">
                         <template #label>
-                            <span class="text-sm">售出 ({{ store.soldItems.length }})</span>
+                            <span class="text-sm">售出 ({{ displayedSoldItems.length }})</span>
+                        </template>
+                    </el-tab-pane>
+                    <el-tab-pane label="報表" name="report">
+                        <template #label>
+                            <span class="text-sm">📊</span>
                         </template>
                     </el-tab-pane>
                 </el-tabs>
 
-                <div class="space-y-2 max-h-60 overflow-y-auto">
+                <!-- 歷史紀錄列表 -->
+                <div v-if="activeTab !== 'report'" class="space-y-2 max-h-60 overflow-y-auto">
                     <div
                         v-for="record in filteredHistory"
                         :key="record.id"
@@ -203,20 +348,49 @@
                             </p>
                         </div>
                         <div class="flex items-center gap-2 ml-2 flex-shrink-0">
-                            <span class="text-xs" :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'">
+                            <span
+                                class="text-xs"
+                                :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
+                            >
                                 {{ record.status === "collected" ? "收藏" : formatGold(record.value) }}
                             </span>
                             <el-button
                                 v-if="record.status === 'collected'"
                                 type="success"
                                 size="small"
-                                @click="confirmSellCollected(record)"
+                                @click="sellCollected(record)"
                             >
                                 售
                             </el-button>
                         </div>
                     </div>
-                    <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-4 text-sm">暫無紀錄</div>
+                    <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-4 text-sm">
+                        暫無紀錄
+                    </div>
+                </div>
+
+                <!-- 報表內容 (手機版) -->
+                <div v-else class="space-y-3 max-h-60 overflow-y-auto text-sm">
+                    <!-- 運氣評價 -->
+                    <div class="text-center p-3 rounded-lg" :class="luckRating.bgClass">
+                        <p class="text-xl font-bold">{{ luckRating.emoji }} {{ luckRating.title }}</p>
+                        <p class="text-xs opacity-80">{{ luckRating.description }}</p>
+                    </div>
+
+                    <!-- 等級分佈 -->
+                    <div class="grid grid-cols-5 gap-1">
+                        <div
+                            v-for="lv in 10"
+                            :key="lv"
+                            class="text-center p-1 rounded"
+                            :class="lv >= 9 ? 'bg-yellow-500/20' : 'bg-gray-700/50'"
+                        >
+                            <p class="text-xs text-gray-400">{{ lv }}</p>
+                            <p class="font-bold text-sm" :class="lv >= 9 ? 'text-yellow-400' : 'text-white'">
+                                {{ reportData.levelDist[lv] || 0 }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </el-card>
         </div>
@@ -251,18 +425,21 @@
 
                         <!-- 數量調整 -->
                         <div class="flex items-center gap-3 mb-4">
-                            <el-button
-                                circle
-                                :disabled="buyCount <= 1"
-                                @click="buyCount = Math.max(1, buyCount - 1)"
-                            >
+                            <el-button circle :disabled="buyCount <= 1" @click="buyCount = Math.max(1, buyCount - 1)">
                                 <span class="text-lg font-bold">−</span>
                             </el-button>
-                            <span class="text-xl font-bold w-12 text-center">{{ buyCount }}</span>
+                            <el-input
+                                v-model.number="buyCount"
+                                type="number"
+                                class="buy-count-input !w-28"
+                                :min="1"
+                                :max="99999"
+                                @blur="buyCount = Math.min(99999, Math.max(1, buyCount))"
+                            />
                             <el-button
                                 circle
-                                :disabled="buyCount >= 100"
-                                @click="buyCount = Math.min(100, buyCount + 1)"
+                                :disabled="buyCount >= 99999"
+                                @click="buyCount = Math.min(99999, buyCount + 1)"
                             >
                                 <span class="text-lg font-bold">+</span>
                             </el-button>
@@ -273,10 +450,10 @@
                             type="warning"
                             size="large"
                             class="!w-full !font-bold !mb-3"
-                            :disabled="!store.canAfford(ECONOMY_CONFIG.STONE_PRICE * buyCount)"
+                            :disabled="!store.canAfford(store.stonePrice * buyCount)"
                             @click="buyStones"
                         >
-                            購買 {{ buyCount }} 個（{{ formatGold(ECONOMY_CONFIG.STONE_PRICE * buyCount) }}）
+                            購買 {{ buyCount }} 個（{{ formatGold(store.stonePrice * buyCount) }}）
                         </el-button>
 
                         <!-- 鑑定按鈕 -->
@@ -313,7 +490,18 @@
                     <div class="flex gap-2">
                         <el-button class="!flex-1" @click="showRechargeDialog">充值</el-button>
                         <el-button class="!flex-1" type="danger" plain @click="confirmReset">重置</el-button>
+                        <el-button class="!flex-1" @click="showSettingsDialog">設定</el-button>
                     </div>
+
+                    <!-- Auto 模式按鈕 -->
+                    <el-button
+                        :type="isAutoRunning ? 'danger' : 'success'"
+                        size="large"
+                        class="!w-full !font-bold"
+                        @click="toggleAutoRun"
+                    >
+                        {{ isAutoRunning ? "停止自動" : "開始自動" }}
+                    </el-button>
                 </div>
 
                 <!-- Right: 結果區 -->
@@ -341,11 +529,14 @@
                     </el-card>
 
                     <!-- 鑑定紀錄 -->
-                    <el-card v-if="store.history.length > 0" class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
+                    <el-card
+                        v-if="store.history.length > 0"
+                        class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl"
+                    >
                         <el-tabs v-model="activeTab" class="history-tabs">
                             <el-tab-pane label="全部" name="all">
                                 <template #label>
-                                    <span>全部 ({{ store.history.length }})</span>
+                                    <span>全部 ({{ displayedHistory.length }})</span>
                                 </template>
                             </el-tab-pane>
                             <el-tab-pane label="收藏" name="collected">
@@ -355,12 +546,18 @@
                             </el-tab-pane>
                             <el-tab-pane label="售出" name="sold">
                                 <template #label>
-                                    <span>售出 ({{ store.soldItems.length }})</span>
+                                    <span>售出 ({{ displayedSoldItems.length }})</span>
+                                </template>
+                            </el-tab-pane>
+                            <el-tab-pane label="報表" name="report">
+                                <template #label>
+                                    <span>📊 報表</span>
                                 </template>
                             </el-tab-pane>
                         </el-tabs>
 
-                        <div class="space-y-2 max-h-96 overflow-y-auto">
+                        <!-- 歷史紀錄列表 -->
+                        <div v-if="activeTab !== 'report'" class="space-y-2 max-h-96 overflow-y-auto">
                             <div
                                 v-for="record in filteredHistory"
                                 :key="record.id"
@@ -375,7 +572,10 @@
                                 <div class="flex items-center gap-3 ml-2">
                                     <div class="text-right">
                                         <p class="text-accent font-bold">Lv.{{ record.level }}</p>
-                                        <p class="text-sm" :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'">
+                                        <p
+                                            class="text-sm"
+                                            :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
+                                        >
                                             {{ record.status === "collected" ? "收藏" : formatGold(record.value) }}
                                         </p>
                                     </div>
@@ -383,13 +583,64 @@
                                         v-if="record.status === 'collected'"
                                         type="success"
                                         size="small"
-                                        @click="confirmSellCollected(record)"
+                                        @click="sellCollected(record)"
                                     >
                                         出售
                                     </el-button>
                                 </div>
                             </div>
-                            <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-8">暫無紀錄</div>
+                            <div v-if="filteredHistory.length === 0" class="text-center text-gray-400 py-8">
+                                暫無紀錄
+                            </div>
+                        </div>
+
+                        <!-- 報表內容 -->
+                        <div v-else class="space-y-4 max-h-96 overflow-y-auto">
+                            <!-- 運氣評價 -->
+                            <div class="text-center p-4 rounded-lg" :class="luckRating.bgClass">
+                                <p class="text-2xl font-bold mb-1">{{ luckRating.emoji }} {{ luckRating.title }}</p>
+                                <p class="text-sm opacity-80">{{ luckRating.description }}</p>
+                                <p class="text-xs mt-2 opacity-60">
+                                    高等級率: {{ luckRating.highLevelRate.toFixed(1) }}% |
+                                    平均等級: {{ luckRating.avgLevel.toFixed(2) }}
+                                </p>
+                            </div>
+
+                            <!-- 等級分佈 -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-300 mb-2">等級分佈</p>
+                                <div class="grid grid-cols-5 gap-1">
+                                    <div
+                                        v-for="lv in 10"
+                                        :key="lv"
+                                        class="text-center p-2 rounded"
+                                        :class="lv >= 9 ? 'bg-yellow-500/20' : lv >= 6 ? 'bg-blue-500/20' : 'bg-gray-700/50'"
+                                    >
+                                        <p class="text-xs text-gray-400">Lv.{{ lv }}</p>
+                                        <p class="font-bold" :class="lv >= 9 ? 'text-yellow-400' : 'text-white'">
+                                            {{ reportData.levelDist[lv] || 0 }}
+                                        </p>
+                                        <p class="text-xs text-gray-500">
+                                            {{ ((reportData.levelDist[lv] || 0) / Math.max(store.history.length, 1) * 100).toFixed(1) }}%
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 職業分佈 -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-300 mb-2">職業分佈</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div
+                                        v-for="(count, job) in reportData.jobDist"
+                                        :key="job"
+                                        class="flex justify-between items-center p-2 bg-gray-700/50 rounded"
+                                    >
+                                        <span class="text-sm text-gray-300">{{ job }}</span>
+                                        <span class="text-accent font-bold">{{ count }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </el-card>
                 </div>
@@ -397,13 +648,21 @@
         </div>
 
         <!-- ==================== 鑑定結果對話框 ==================== -->
-        <el-dialog v-model="appraiseDialogVisible" title="鑑定結果" width="90%" class="max-w-lg" :close-on-click-modal="false">
+        <el-dialog
+            v-model="appraiseDialogVisible"
+            title="鑑定結果"
+            width="90%"
+            class="max-w-lg"
+            :close-on-click-modal="false"
+        >
             <div class="space-y-2 max-h-[50vh] overflow-y-auto">
                 <div
                     v-for="result in pendingResults"
                     :key="result.id"
                     class="flex items-center justify-between p-2 rounded-lg"
-                    :class="result.status === 'collected' ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-700/50'"
+                    :class="
+                        result.status === 'collected' ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-700/50'
+                    "
                 >
                     <div class="flex-1 min-w-0">
                         <p class="text-xs text-gray-400">{{ result.ability.job }}</p>
@@ -438,7 +697,8 @@
                     <span>收藏: {{ pendingCollectCount }} 個</span>
                 </div>
                 <p class="text-center text-gray-400 mt-2">
-                    出售可得: <span class="text-accent font-bold">{{ formatGold(pendingSellValue) }}</span>
+                    出售可得:
+                    <span class="text-accent font-bold">{{ formatGold(pendingSellValue) }}</span>
                 </p>
             </div>
             <template #footer>
@@ -455,7 +715,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { useGambleStore, ECONOMY_CONFIG, type AppraisalRecord } from "../stores/gamble";
+import { useGambleStore, ECONOMY_CONFIG, PROBABILITY_CONFIGS, type AppraisalRecord, type DisplayMode, type ProbabilityMode } from "../stores/gamble";
 import { stoneAbilities, type AbilityOption } from "../data/stoneData";
 
 const store = useGambleStore();
@@ -466,8 +726,45 @@ const rechargeDialogVisible = ref(false);
 const rechargeAmount = ref(5_000_000_000);
 const rechargePresets = [1_000_000_000, 5_000_000_000, 10_000_000_000, 50_000_000_000]; // 10億, 50億, 100億, 500億
 
+// 設定相關
+const settingsDialogVisible = ref(false);
+const tempStonePrice = ref(store.stonePrice);
+const tempAutoRecharge = ref(store.autoRecharge);
+const tempMinROI = ref(store.minROI);
+const tempAutoStopCount = ref(store.autoStopCount);
+const tempDisplayMode = ref(store.displayMode);
+const tempProbabilityMode = ref<ProbabilityMode>(store.probabilityMode || "equal");
+const tempRetentionMap = ref<Record<number, number>>({});
+const stonePricePresets = [300_000_000, 500_000_000, 700_000_000, 1_000_000_000]; // 3億, 5億, 7億, 10億
+
+// 按職業分組的技能列表
+const skillsByJob = computed(() => {
+    const grouped: Record<string, AbilityOption[]> = {};
+    for (const skill of stoneAbilities) {
+        if (!grouped[skill.job]) {
+            grouped[skill.job] = [];
+        }
+        grouped[skill.job].push(skill);
+    }
+    return grouped;
+});
+
+// 用於輸入框的億單位轉換
+const tempStonePriceInYi = computed({
+    get: () => tempStonePrice.value / 100_000_000,
+    set: (val: number) => {
+        tempStonePrice.value = Math.max(1, val) * 100_000_000;
+    },
+});
+
 // 購買數量
 const buyCount = ref(1);
+
+// 自動執行模式
+const isAutoRunning = ref(false);
+const autoRunInterval = ref<ReturnType<typeof setInterval> | null>(null);
+const autoRunCount = ref(0); // 當前執行次數
+const AUTO_RECHARGE_AMOUNT = 10_000_000_000; // 自動充值 100 億
 
 // 鑑定結果對話框
 const appraiseDialogVisible = ref(false);
@@ -482,15 +779,103 @@ const stoneImage = computed(() => {
     return store.unappraised > 0 ? `${baseUrl}itemImage/3600006.png` : `${baseUrl}itemImage/3600007.png`;
 });
 
+// 根據顯示模式過濾的歷史紀錄
+const displayedHistory = computed(() => {
+    if (store.displayMode === "none") return [];
+    if (store.displayMode === "highROI") {
+        return store.history.filter((r) => calculateROI(r.value) >= store.minROI);
+    }
+    return store.history;
+});
+
+const displayedSoldItems = computed(() => {
+    if (store.displayMode === "none") return [];
+    if (store.displayMode === "highROI") {
+        return store.soldItems.filter((r) => calculateROI(r.value) >= store.minROI);
+    }
+    return store.soldItems;
+});
+
 // 篩選後的歷史紀錄
 const filteredHistory = computed(() => {
     switch (activeTab.value) {
         case "collected":
             return store.collectedItems;
         case "sold":
-            return store.soldItems;
+            return displayedSoldItems.value;
         default:
-            return store.history;
+            return displayedHistory.value;
+    }
+});
+
+// 報表數據
+const reportData = computed(() => {
+    const levelDist: Record<number, number> = {};
+    const jobDist: Record<string, number> = {};
+
+    for (const record of store.history) {
+        // 等級分佈
+        levelDist[record.level] = (levelDist[record.level] || 0) + 1;
+        // 職業分佈
+        jobDist[record.ability.job] = (jobDist[record.ability.job] || 0) + 1;
+    }
+
+    return { levelDist, jobDist };
+});
+
+// 運氣評價
+const luckRating = computed(() => {
+    const total = store.history.length;
+    if (total === 0) {
+        return {
+            emoji: "🎲",
+            title: "尚無數據",
+            description: "開始鑑定來看看你的運氣！",
+            bgClass: "bg-gray-700",
+            highLevelRate: 0,
+            avgLevel: 0,
+        };
+    }
+
+    // 計算高等級 (Lv 8-10) 比率
+    const highLevelCount = store.history.filter((r) => r.level >= 8).length;
+    const highLevelRate = (highLevelCount / total) * 100;
+
+    // 計算平均等級
+    const avgLevel = store.history.reduce((sum, r) => sum + r.level, 0) / total;
+
+    // 理論機率: Lv 8-10 約 23.34% (8.34 + 10 + 5)
+    // 歐洲貴族: > 30% (遠超理論值)
+    // 亞洲平民: 18-30% (接近理論值)
+    // 非洲難民: < 18% (低於理論值)
+
+    if (highLevelRate > 30) {
+        return {
+            emoji: "👑",
+            title: "歐洲貴族",
+            description: "運氣逆天！高等級出貨率驚人！",
+            bgClass: "bg-gradient-to-r from-yellow-600/30 to-amber-500/30",
+            highLevelRate,
+            avgLevel,
+        };
+    } else if (highLevelRate >= 18) {
+        return {
+            emoji: "🙂",
+            title: "亞洲平民",
+            description: "運氣正常，符合統計預期",
+            bgClass: "bg-gradient-to-r from-blue-600/30 to-cyan-500/30",
+            highLevelRate,
+            avgLevel,
+        };
+    } else {
+        return {
+            emoji: "😭",
+            title: "非洲難民",
+            description: "運氣欠佳，高等級出貨率偏低...",
+            bgClass: "bg-gradient-to-r from-gray-600/30 to-slate-500/30",
+            highLevelRate,
+            avgLevel,
+        };
     }
 });
 
@@ -508,29 +893,17 @@ const pendingSellValue = computed(() => {
     return pendingResults.value.filter((r) => r.status === "sold").reduce((sum, r) => sum + r.value, 0);
 });
 
-// 等級權重：Lv 1-5 (60%), Lv 6-8 (25%), Lv 9 (10%), Lv 10 (5%)
-const LEVEL_WEIGHTS = [
-    { level: 1, weight: 12 },
-    { level: 2, weight: 12 },
-    { level: 3, weight: 12 },
-    { level: 4, weight: 12 },
-    { level: 5, weight: 12 },
-    { level: 6, weight: 8.33 },
-    { level: 7, weight: 8.33 },
-    { level: 8, weight: 8.34 },
-    { level: 9, weight: 10 },
-    { level: 10, weight: 5 },
-];
-
 // 根據權重隨機選擇等級
 function rollLevel(): number {
-    const totalWeight = LEVEL_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
+    const mode = store.probabilityMode || "equal"; // 預設使用平均機率
+    const weights = PROBABILITY_CONFIGS[mode].weights;
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
     let random = Math.random() * totalWeight;
 
-    for (const item of LEVEL_WEIGHTS) {
-        random -= item.weight;
+    for (let i = 0; i < weights.length; i++) {
+        random -= weights[i];
         if (random <= 0) {
-            return item.level;
+            return i + 1; // 等級從 1 開始
         }
     }
     return 1;
@@ -575,20 +948,35 @@ function canAppraise(count: number): boolean {
 
 // 購買月餅
 function buyStones() {
-    if (store.buyStones(buyCount.value)) {
-        ElMessage.success(`成功購買 ${buyCount.value} 個月餅！`);
-    }
+    store.buyStones(buyCount.value);
+    // 購買成功不顯示通知，UI 已經有即時回饋（數量變化、餘額變化）
 }
 
 // 計算價格倍率（根據當前石頭價格與基準價格的比例）
 function getPriceMultiplier(): number {
-    return ECONOMY_CONFIG.STONE_PRICE / ECONOMY_CONFIG.BASE_STONE_PRICE;
+    return store.stonePrice / ECONOMY_CONFIG.BASE_STONE_PRICE;
 }
 
 // 計算實際價值
 function calculateValue(ability: AbilityOption, level: number): number {
     const basePrice = ability.prices[level - 1] * 10000; // prices 單位是萬 Gold，轉為 Gold
     return Math.round(basePrice * getPriceMultiplier());
+}
+
+// 計算回報率 (ROI)
+function calculateROI(value: number): number {
+    const cost = store.stonePrice + ECONOMY_CONFIG.APPRAISAL_FEE;
+    return (value / cost) * 100;
+}
+
+// 判斷是否應該保留（只根據保留清單）
+function shouldKeep(result: AppraisalRecord): boolean {
+    // 只檢查保留清單
+    const retentionLevel = store.getRetentionLevel(result.ability.id);
+    if (retentionLevel > 0 && result.level >= retentionLevel) {
+        return true;
+    }
+    return false;
 }
 
 // 鑑定月餅
@@ -611,25 +999,24 @@ function appraiseStones(count: number) {
         const level = rollLevel();
         const value = calculateValue(ability, level);
 
+        // 根據設定判斷預設狀態
+        const tempResult = { ability, level, value } as AppraisalRecord;
+        const defaultStatus = shouldKeep(tempResult) ? "collected" : "sold";
+
         results.push({
             id: `${Date.now()}-${i}-${Math.random().toString(36).slice(2)}`,
             timestamp: Date.now(),
             ability,
             level,
             value,
-            status: "sold", // 預設為售出
+            status: defaultStatus,
         });
     }
 
     pendingResults.value = results;
     latestResults.value = results.slice(0, 5);
     appraiseDialogVisible.value = true;
-
-    // 檢查是否有稀有結果
-    const rareCount = results.filter((r) => r.level >= 9).length;
-    if (rareCount > 0) {
-        ElMessage.success(`恭喜！鑑定出 ${rareCount} 個 Lv.9+ 的稀有能力！`);
-    }
+    // 移除鑑定時的通知，對話框已經提供完整回饋
 }
 
 // 全部標記為出售
@@ -652,35 +1039,21 @@ function confirmPendingResults() {
     store.add(sellValue);
     appraiseDialogVisible.value = false;
 
-    if (sellCount > 0 && collectCount > 0) {
-        ElMessage.success(`出售 ${sellCount} 個獲得 ${formatGold(sellValue)}，收藏 ${collectCount} 個`);
-    } else if (sellCount > 0) {
-        ElMessage.success(`成功出售 ${sellCount} 個，獲得 ${formatGold(sellValue)}！`);
-    } else {
-        ElMessage.info(`已收藏 ${collectCount} 個項目！`);
+    // 簡化通知：只顯示一則摘要
+    const parts: string[] = [];
+    if (sellCount > 0) parts.push(`售 ${sellCount} 個 +${formatGold(sellValue)}`);
+    if (collectCount > 0) parts.push(`藏 ${collectCount} 個`);
+    if (parts.length > 0) {
+        ElMessage({ message: parts.join("，"), type: "success", duration: 2000 });
     }
     pendingResults.value = [];
 }
 
-// 確認出售收藏項目
-function confirmSellCollected(record: AppraisalRecord) {
-    ElMessageBox.confirm(
-        `確定要出售「${record.ability.skillLocalName} Lv.${record.level}」嗎？將獲得 ${formatGold(record.value)}。此操作不可逆。`,
-        "確認出售",
-        {
-            confirmButtonText: "確定出售",
-            cancelButtonText: "取消",
-            type: "warning",
-        }
-    )
-        .then(() => {
-            if (store.sellCollectedItem(record.id)) {
-                ElMessage.success(`成功出售，獲得 ${formatGold(record.value)}！`);
-            }
-        })
-        .catch(() => {
-            // 取消操作
-        });
+// 出售收藏項目（不需確認）
+function sellCollected(record: AppraisalRecord) {
+    if (store.sellCollectedItem(record.id)) {
+        ElMessage({ message: `+${formatGold(record.value)}`, type: "success", duration: 1500 });
+    }
 }
 
 // 重置確認
@@ -694,7 +1067,7 @@ function confirmReset() {
             store.resetBalance();
             latestResults.value = [];
             pendingResults.value = [];
-            ElMessage.success("資料已重置！");
+            ElMessage({ message: "已重置", type: "info", duration: 1500 });
         })
         .catch(() => {
             // 取消操作
@@ -711,7 +1084,139 @@ function showRechargeDialog() {
 function confirmRecharge() {
     store.add(rechargeAmount.value);
     rechargeDialogVisible.value = false;
-    ElMessage.success(`成功充值 ${formatGold(rechargeAmount.value)}！`);
+    ElMessage({ message: `+${formatGold(rechargeAmount.value)}`, type: "success", duration: 1500 });
+}
+
+// 顯示設定對話框
+function showSettingsDialog() {
+    tempStonePrice.value = store.stonePrice;
+    tempAutoRecharge.value = store.autoRecharge;
+    tempMinROI.value = store.minROI;
+    tempAutoStopCount.value = store.autoStopCount;
+    tempDisplayMode.value = store.displayMode;
+    tempProbabilityMode.value = store.probabilityMode || "equal";
+    // 初始化保留清單 map
+    const map: Record<number, number> = {};
+    for (const skill of stoneAbilities) {
+        map[skill.id] = store.getRetentionLevel(skill.id);
+    }
+    tempRetentionMap.value = map;
+    settingsDialogVisible.value = true;
+}
+
+// 確認設定
+function confirmSettings() {
+    store.setStonePrice(tempStonePrice.value);
+    store.setAutoRecharge(tempAutoRecharge.value);
+    store.setMinROI(tempMinROI.value);
+    store.setAutoStopCount(tempAutoStopCount.value);
+    store.setDisplayMode(tempDisplayMode.value);
+    store.setProbabilityMode(tempProbabilityMode.value);
+    // 儲存保留清單
+    for (const [skillId, minLevel] of Object.entries(tempRetentionMap.value)) {
+        store.setRetentionItem(Number(skillId), minLevel);
+    }
+    settingsDialogVisible.value = false;
+    ElMessage({ message: "設定已儲存", type: "success", duration: 1500 });
+}
+
+// ==================== 自動執行模式 ====================
+
+// 自動執行一輪
+function autoRunOnce() {
+    // 0. 檢查停止條件
+    if (store.autoStopCount > 0 && autoRunCount.value >= store.autoStopCount) {
+        stopAutoRun();
+        ElMessage.success(`已執行 ${autoRunCount.value} 次，自動停止`);
+        return;
+    }
+
+    // 1. 檢查是否需要自動充值
+    const minRequired = store.stonePrice + ECONOMY_CONFIG.APPRAISAL_FEE;
+    if (!store.canAfford(minRequired)) {
+        if (store.autoRecharge) {
+            store.add(AUTO_RECHARGE_AMOUNT);
+        } else {
+            // 餘額不足且未開啟自動充值，停止自動模式
+            stopAutoRun();
+            ElMessage.warning("餘額不足，自動模式已停止");
+            return;
+        }
+    }
+
+    // 2. 購買 1 個月餅
+    if (!store.buyStones(1)) {
+        stopAutoRun();
+        ElMessage.warning("購買失敗，自動模式已停止");
+        return;
+    }
+
+    // 3. 鑑定
+    const totalFee = ECONOMY_CONFIG.APPRAISAL_FEE;
+    if (!store.canAfford(totalFee)) {
+        if (store.autoRecharge) {
+            store.add(AUTO_RECHARGE_AMOUNT);
+        } else {
+            stopAutoRun();
+            ElMessage.warning("餘額不足，自動模式已停止");
+            return;
+        }
+    }
+
+    store.appraiseStones(1);
+
+    // 生成鑑定結果
+    const ability = rollAbility();
+    const level = rollLevel();
+    const value = calculateValue(ability, level);
+
+    const result: AppraisalRecord = {
+        id: `${Date.now()}-auto-${Math.random().toString(36).slice(2)}`,
+        timestamp: Date.now(),
+        ability,
+        level,
+        value,
+        status: shouldKeep({ ability, level, value } as AppraisalRecord) ? "collected" : "sold",
+    };
+
+    // 4. 根據設定決定保留或出售
+    store.addRecord(result);
+    if (result.status === "sold") {
+        store.add(value);
+    }
+
+    // 5. 計數器增加
+    autoRunCount.value++;
+}
+
+// 開始自動執行
+function startAutoRun() {
+    if (isAutoRunning.value) return;
+
+    isAutoRunning.value = true;
+    autoRunCount.value = 0; // 重置計數器
+    // 每 100ms 執行一輪
+    autoRunInterval.value = setInterval(() => {
+        autoRunOnce();
+    }, 100);
+}
+
+// 停止自動執行
+function stopAutoRun() {
+    if (autoRunInterval.value) {
+        clearInterval(autoRunInterval.value);
+        autoRunInterval.value = null;
+    }
+    isAutoRunning.value = false;
+}
+
+// 切換自動執行
+function toggleAutoRun() {
+    if (isAutoRunning.value) {
+        stopAutoRun();
+    } else {
+        startAutoRun();
+    }
 }
 </script>
 
@@ -757,5 +1262,42 @@ function confirmRecharge() {
 
 .status-btn-group :deep(.el-button--primary.is-active) {
     box-shadow: 0 0 8px #409eff;
+}
+
+/* 購買數量輸入框 */
+.buy-count-input :deep(.el-input__wrapper) {
+    background-color: #374151 !important;
+    box-shadow: none !important;
+}
+
+.buy-count-input :deep(.el-input__inner) {
+    color: #fff !important;
+    font-size: 1.125rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* 隱藏 number input 的上下箭頭 */
+.buy-count-input :deep(.el-input__inner)::-webkit-outer-spin-button,
+.buy-count-input :deep(.el-input__inner)::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* 設定輸入框 */
+.settings-input :deep(.el-input__wrapper) {
+    background-color: #374151 !important;
+    box-shadow: none !important;
+}
+
+.settings-input :deep(.el-input__inner) {
+    color: #fff !important;
+}
+
+.settings-input :deep(.el-input-group__append) {
+    background-color: #4b5563 !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 </style>
