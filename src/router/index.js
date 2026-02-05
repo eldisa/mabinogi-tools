@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import MainLayout from '../views/MainLayout.vue'
+import Home from '../views/Home.vue';
 import About from '../views/About.vue';
 import EquipmentCraftSimulator from '../views/EquipmentCraftSimulator.vue';
 
@@ -17,6 +18,11 @@ const routes = [
         name: 'GridDemo',
         component: MainLayout,
         children: [{
+            path: '',
+            name: '首頁',
+            component: Home
+        },
+        {
             path: '/about',
             name: '關於',
             component: About
