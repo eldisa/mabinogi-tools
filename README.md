@@ -2,6 +2,8 @@
 
 Vue 3 + TypeScript + Vite + Element Plus 打造的瑪奇遊戲工具集合
 
+**線上版本**: https://eldisa.github.io/mabinogi-tools/
+
 ## 🎨 設計系統
 
 本專案採用統一的**深色魔幻風格**主題設計：
@@ -15,11 +17,14 @@ Vue 3 + TypeScript + Vite + Element Plus 打造的瑪奇遊戲工具集合
 
 ## 🚀 功能模組
 
+- 🛠️ **裝備製作模擬器** - 模擬裝備製作流程
 - ⚙️ **裝備改造模擬器** - 規劃最佳改造路線
 - 📦 **材料計算機** - 精確計算製作所需材料
 - 💰 **裝備能力轉移費用估算** - 估算轉移成本
 - 🪄 **賦予查詢** - 查詢賦予卷軸資訊
 - 🏠 **農場模型查詢** - 農場模型資料查詢
+- 🏷️ **稱號查詢** - 查詢稱號能力與來源
+- 🎰 **賭石小遊戲** - 模擬賭石體驗
 
 ## 🛠️ 技術棧
 
@@ -98,6 +103,6 @@ docs: update theme usage guide
 
 ---
 
-**Version**: 0.0.0  
-**Last Updated**: 2025-01-12  
+**Version**: 0.0.0
+**Last Updated**: 2025-02-05
 **Maintained by**: Bowei

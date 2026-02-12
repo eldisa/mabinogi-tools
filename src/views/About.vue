@@ -15,7 +15,9 @@ onMounted(() => {
 
 <template>
     <div class="about">
-        <h1>關於本工具</h1>
+        <h1 class="page-title">
+            <span class="text-gradient">關於本工具</span>
+        </h1>
 
         <div class="content" v-if="!showFunDisclaimer">
             <section class="section">
@@ -49,19 +51,36 @@ onMounted(() => {
             <section class="section">
                 <h2>歡迎回報錯誤或建議</h2>
                 <p>
-                    如您發現錯誤或有改進建議，歡迎透過留言、Discord
-                    或其他方式回饋。但由於個人時間與能力有限，更新速度不保證，即使讀了也不一定會改 😅
+                    如您發現錯誤或有改進建議，歡迎透過 GitHub Issues 或遊戲內聯繫回饋。但由於個人時間與能力有限，更新速度不保證。
                 </p>
             </section>
 
+            <section class="section">
+                <h2>聯絡方式</h2>
+                <ul class="contact-list">
+                    <li>
+                        <strong>遊戲伺服器：</strong>
+                        娜歐
+                    </li>
+                    <li>
+                        <strong>角色 ID：</strong>
+                        楓羽戀情
+                    </li>
+                    <li>
+                        <strong>GitHub：</strong>
+                        <a href="https://github.com/eldisa" target="_blank" rel="noopener noreferrer">eldisa</a>
+                    </li>
+                </ul>
+            </section>
+
             <div class="thank-you">
-                <p>再次感謝您的使用與支持！</p>
+                <p>感謝您的使用與支持！</p>
             </div>
         </div>
 
         <div class="content fun-content" v-else>
-            <h2>🫪 非正式免責聲明（彩蛋吐槽版）</h2>
-            <p>嗨朋友，感謝你願意花時間來點這個工具，這裡先說在前面：</p>
+            <h2 class="fun-title">非正式免責聲明（彩蛋吐槽版）</h2>
+            <p class="fun-intro">嗨朋友，感謝你願意花時間來點這個工具，這裡先說在前面：</p>
 
             <section class="section">
                 <h3>1. 數據來源不是天啟，是玩家的肝和錢包堆出來的</h3>
@@ -73,7 +92,7 @@ onMounted(() => {
                 <p>
                     準嗎？
                     <br />
-                    我只能說．……
+                    我只能說……
                     <strong>比沒用好一點啦。</strong>
                 </p>
             </section>
@@ -139,21 +158,20 @@ onMounted(() => {
 
             <div class="thank-you fun-thank-you">
                 <p>
-                    如果你能笑著看完，那這工具也沒發廢。
+                    如果你能笑著看完，那這工具也沒白費。
                     <br />
-                    如果你真的覺得這工具有幫助……幫我祈禱裝備好掉一點也行 🙏
+                    如果你真的覺得這工具有幫助……幫我祈禱裝備好掉一點也行
                 </p>
             </div>
             <section class="section">
                 <h2>聯絡方式</h2>
-                <p>如果你真的想找我，可以在以下地方找到：</p>
-                <ul>
+                <ul class="contact-list">
                     <li>
                         <strong>遊戲伺服器：</strong>
                         娜歐
                     </li>
                     <li>
-                        <strong>角色ID：</strong>
+                        <strong>角色 ID：</strong>
                         楓羽戀情
                     </li>
                     <li>
@@ -173,68 +191,137 @@ onMounted(() => {
     padding: 2rem;
 }
 
-h1 {
+.page-title {
     font-size: 2rem;
-    color: #2c3e50;
     margin-bottom: 2rem;
     text-align: center;
 }
 
+.text-gradient {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
 .content {
-    background: white;
+    background: var(--color-surface, #1f2937);
     padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    border: 1px solid var(--color-border, #374151);
 }
 
 .section {
     margin-bottom: 2rem;
 }
 
+.section:last-child {
+    margin-bottom: 0;
+}
+
 h2 {
-    font-size: 1.5rem;
-    color: #2c3e50;
+    font-size: 1.25rem;
+    color: var(--color-gold-400, #fbbf24);
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #eee;
+    border-bottom: 1px solid var(--color-border, #374151);
 }
 
 h3 {
-    font-size: 1.3rem;
-    color: #2c3e50;
+    font-size: 1.1rem;
+    color: var(--color-gold-400, #fbbf24);
     margin-bottom: 1rem;
 }
 
 p {
-    line-height: 1.6;
-    color: #34495e;
+    line-height: 1.8;
+    color: var(--color-text-secondary, #d1d5db);
     margin-bottom: 1rem;
 }
 
+p:last-child {
+    margin-bottom: 0;
+}
+
+.contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-list li {
+    padding: 0.5rem 0;
+    color: var(--color-text-secondary, #d1d5db);
+}
+
+.contact-list strong {
+    color: var(--color-text-primary, #f9fafb);
+}
+
+.contact-list a {
+    color: var(--color-gold-400, #fbbf24);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.contact-list a:hover {
+    color: var(--color-gold-300, #fcd34d);
+    text-decoration: underline;
+}
+
 .thank-you {
-    margin-top: 3rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border, #374151);
     text-align: center;
-    font-weight: bold;
-    color: #2c3e50;
+}
+
+.thank-you p {
+    font-size: 1.1rem;
+    color: var(--color-text-primary, #f9fafb);
+    font-weight: 500;
+}
+
+/* Fun content styles */
+.fun-content .fun-title {
+    font-size: 1.5rem;
+    color: var(--color-gold-400, #fbbf24);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.fun-content .fun-intro {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
 .fun-content blockquote {
-    border-left: 4px solid #e5e7eb;
+    border-left: 3px solid var(--color-gold-400, #fbbf24);
     padding-left: 1rem;
     margin: 1rem 0;
-    color: #6b7280;
+    opacity: 0.8;
+}
+
+.fun-content blockquote p {
+    color: var(--color-text-secondary, #9ca3af);
+    margin: 0;
 }
 
 .fun-content .comment {
-    font-size: 0.9rem;
-    color: #6b7280;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary, #6b7280);
     font-style: italic;
     padding-left: 1rem;
-    border-left: 2px solid #e5e7eb;
+    border-left: 2px solid var(--color-border, #374151);
+    margin-top: 0.5rem;
 }
 
 .fun-thank-you {
     font-style: italic;
+}
+
+.fun-thank-you p {
+    font-weight: normal;
 }
 
 @media (max-width: 768px) {
@@ -243,19 +330,19 @@ p {
     }
 
     .content {
-        padding: 1rem;
+        padding: 1.5rem;
     }
 
-    h1 {
+    .page-title {
         font-size: 1.75rem;
     }
 
     h2 {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 
     h3 {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 }
 </style>
