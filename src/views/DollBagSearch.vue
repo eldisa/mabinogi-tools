@@ -21,9 +21,7 @@ interface DollBag {
     summon_duration: number | null;
     effects: Effect[];
     auto_pick_list: string[];
-    tags: string[];
     description_raw: string;
-    price_buy: number;
 }
 
 const dollBags = dollBagsData as DollBag[];
@@ -310,15 +308,6 @@ const getEffectClass = (effectName: string) => {
                 :class="{ expanded: expandedCardId === bag.id }"
                 @click="toggleCard(bag.id)"
             >
-                <div class="bag-header">
-                    <h3 class="bag-name">{{ bag.name }}</h3>
-                    <div class="bag-tags">
-                        <span v-for="tag in bag.tags.slice(0, 3)" :key="tag" class="tag">
-                            {{ tag }}
-                        </span>
-                    </div>
-                </div>
-
                 <div class="bag-stats">
                     <div class="stat-item">
                         <span class="stat-label">背包大小</span>
@@ -374,20 +363,6 @@ const getEffectClass = (effectName: string) => {
                             <span v-for="category in bag.auto_pick_list" :key="category" class="pick-category">
                                 {{ category }}
                             </span>
-                        </div>
-                    </div>
-
-                    <div class="detail-section">
-                        <h4>其他資訊</h4>
-                        <div class="other-info">
-                            <p>
-                                <strong>ID:</strong>
-                                {{ bag.id }}
-                            </p>
-                            <p v-if="bag.price_buy > 0">
-                                <strong>購買價格:</strong>
-                                {{ bag.price_buy.toLocaleString() }} 金幣
-                            </p>
                         </div>
                     </div>
                 </div>
