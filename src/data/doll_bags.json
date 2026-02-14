@@ -30,46 +30,6 @@
     "price_buy": 37500
   },
   {
-    "id": "5530008",
-    "name": "블로니 인형 가방",
-    "image": "item_bag_bloney",
-    "bag_width": 2,
-    "bag_height": 2,
-    "bag_inner_width": 7,
-    "bag_inner_height": 7,
-    "summon_cost": 0.3,
-    "summon_duration": 120,
-    "effects": [
-      {
-        "key": "luck",
-        "name": "幸運",
-        "value": 3,
-        "isPercent": false
-      },
-      {
-        "key": "int",
-        "name": "智力",
-        "value": 1,
-        "isPercent": false
-      },
-      {
-        "key": "will",
-        "name": "意志",
-        "value": 1,
-        "isPercent": false
-      }
-    ],
-    "auto_pick_list": [
-      "金幣"
-    ],
-    "tags": [
-      "無限容量",
-      "可購買"
-    ],
-    "description_raw": "以布蘿妮為外型製作的娃娃背包.娃娃和寵物可各別召喚,輸入如[/娃娃順序台詞(例:/娃娃1嗨?)]的聊天內容時,可使用娃娃腹語術.\\n\\n<color=3>[娃娃背包資訊]</color>\\n背包空間:7X7\\n召喚時間:120分\\n召喚重量:0.3(只能召喚出召喚重量總和不高於1的娃娃)\\n召喚效果:幸運+3,智力/意志+1\\n娃娃收集類別:金幣",
-    "price_buy": 37500
-  },
-  {
     "id": "5530009",
     "name": "芬奇娃娃背包",
     "image": "item_bag_fynnky01",
