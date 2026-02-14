@@ -52,6 +52,12 @@ const features = [
         description: "模擬賭石體驗，試試你的手氣",
         path: "/stone-gambling",
     },
+    {
+        icon: "DataAnalysis",
+        title: "煉金術傷害計算器",
+        description: "計算煉金術技能傷害，支援水系、火系、大蛇等",
+        path: "/alchemy-calculator",
+    },
 ];
 
 const navigateTo = (path: string) => {

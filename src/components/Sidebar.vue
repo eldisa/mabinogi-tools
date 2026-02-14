@@ -9,8 +9,9 @@ import {
     HomeFilled,
     InfoFilled,
     Medal,
-    Present
-} from '@element-plus/icons-vue';
+    Present,
+    DataAnalysis,
+} from "@element-plus/icons-vue";
 
 defineProps<{
     isOpen: boolean;
@@ -28,6 +29,7 @@ const menuItems = ref([
     { name: "裝備能力轉移費用估算", path: "/transfer-simulator", icon: markRaw(Money) },
     { name: "賦予查詢", path: "enchant", icon: markRaw(MagicStick) },
     { name: "稱號查詢", path: "/title", icon: markRaw(Medal) },
+    { name: "煉金術傷害計算器", path: "/alchemy-calculator", icon: markRaw(DataAnalysis) },
     { name: "賭石小遊戲", path: "/stone-gambling", icon: markRaw(Present) },
     { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
     { name: "About", path: "/about", icon: markRaw(InfoFilled) },
