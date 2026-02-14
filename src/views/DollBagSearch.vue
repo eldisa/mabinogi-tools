@@ -32,9 +32,13 @@ const dollBags = dollBagsData as DollBag[];
 const searchQuery = ref("");
 const selectedEffects = ref<string[]>([]);
 const selectedAutoPickCategories = ref<string[]>([]);
+const selectedBagSize = ref<string>("");
 const summonCostRange = reactive({ min: 0, max: 1 });
 const sortField = ref("name");
 const sortOrder = ref<"asc" | "desc">("asc");
+
+// 背包尺寸選項
+const bagSizeOptions = ["2 X 3", "3 X 2", "3 X 3", "4 X 2", "4 X 3"];
 
 // 展開的卡片
 const expandedCardId = ref<string | null>(null);
@@ -83,6 +87,12 @@ const filteredBags = computed(() => {
         result = result.filter((bag) =>
             selectedAutoPickCategories.value.every((category) => bag.auto_pick_list.includes(category)),
         );
+    }
+
+    // 篩選背包尺寸
+    if (selectedBagSize.value) {
+        const [width, height] = selectedBagSize.value.split(" X ").map(Number);
+        result = result.filter((bag) => bag.bag_width === width && bag.bag_height === height);
     }
 
     // 篩選召喚重量
@@ -155,6 +165,7 @@ const clearFilters = () => {
     searchQuery.value = "";
     selectedEffects.value = [];
     selectedAutoPickCategories.value = [];
+    selectedBagSize.value = "";
     summonCostRange.min = 0;
     summonCostRange.max = 1;
 };
@@ -250,6 +261,14 @@ const getEffectClass = (effectName: string) => {
                             :label="category"
                             :value="category"
                         />
+                    </el-select>
+                </div>
+
+                <!-- 背包尺寸篩選 -->
+                <div class="filter-group">
+                    <label>佔格大小</label>
+                    <el-select v-model="selectedBagSize" placeholder="選擇佔格大小" clearable>
+                        <el-option v-for="size in bagSizeOptions" :key="size" :label="size" :value="size" />
                     </el-select>
                 </div>
 
