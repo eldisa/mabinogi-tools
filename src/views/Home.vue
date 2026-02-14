@@ -58,6 +58,12 @@ const features = [
         description: "計算煉金術技能傷害，支援水系、火系、大蛇等",
         path: "/alchemy-calculator",
     },
+    {
+        icon: "Handbag",
+        title: "娃娃背包查詢",
+        description: "查詢娃娃背包效果、召喚重量與自動拾取分類",
+        path: "/doll-bag",
+    },
 ];
 
 const navigateTo = (path: string) => {
