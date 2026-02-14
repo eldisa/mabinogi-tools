@@ -42,8 +42,8 @@ const expandedCardId = ref<string | null>(null);
 // 取得所有可用的效果類型
 const availableEffects = computed(() => {
     const effectSet = new Set<string>();
-    dollBags.forEach(bag => {
-        bag.effects.forEach(effect => {
+    dollBags.forEach((bag) => {
+        bag.effects.forEach((effect) => {
             effectSet.add(effect.name);
         });
     });
@@ -53,8 +53,8 @@ const availableEffects = computed(() => {
 // 取得所有可用的自動拾取分類
 const availableAutoPickCategories = computed(() => {
     const categorySet = new Set<string>();
-    dollBags.forEach(bag => {
-        bag.auto_pick_list.forEach(category => {
+    dollBags.forEach((bag) => {
+        bag.auto_pick_list.forEach((category) => {
             categorySet.add(category);
         });
     });
@@ -68,32 +68,25 @@ const filteredBags = computed(() => {
     // 搜尋名稱
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
-        result = result.filter(bag =>
-            bag.name.toLowerCase().includes(query) ||
-            bag.id.includes(query)
-        );
+        result = result.filter((bag) => bag.name.toLowerCase().includes(query) || bag.id.includes(query));
     }
 
     // 篩選效果
     if (selectedEffects.value.length > 0) {
-        result = result.filter(bag =>
-            selectedEffects.value.every(effectName =>
-                bag.effects.some(e => e.name === effectName)
-            )
+        result = result.filter((bag) =>
+            selectedEffects.value.every((effectName) => bag.effects.some((e) => e.name === effectName)),
         );
     }
 
     // 篩選自動拾取分類
     if (selectedAutoPickCategories.value.length > 0) {
-        result = result.filter(bag =>
-            selectedAutoPickCategories.value.every(category =>
-                bag.auto_pick_list.includes(category)
-            )
+        result = result.filter((bag) =>
+            selectedAutoPickCategories.value.every((category) => bag.auto_pick_list.includes(category)),
         );
     }
 
     // 篩選召喚重量
-    result = result.filter(bag => {
+    result = result.filter((bag) => {
         if (bag.summon_cost === null) return true;
         return bag.summon_cost >= summonCostRange.min && bag.summon_cost <= summonCostRange.max;
     });
@@ -129,9 +122,7 @@ const filteredBags = computed(() => {
         }
 
         if (typeof aVal === "string") {
-            return sortOrder.value === "asc"
-                ? aVal.localeCompare(bVal)
-                : bVal.localeCompare(aVal);
+            return sortOrder.value === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         }
 
         return sortOrder.value === "asc" ? aVal - bVal : bVal - aVal;
@@ -170,12 +161,12 @@ const clearFilters = () => {
 
 // 效果分類
 const effectCategories = {
-    "基礎屬性": ["力量", "敏捷", "智力", "意志", "幸運"],
-    "生命相關": ["最大生命力", "最大魔力值", "最大耐力"],
-    "傷害相關": ["最小傷害", "最大傷害", "暴擊率", "暴擊傷害", "魔法攻擊力"],
-    "防禦相關": ["防禦", "保護", "魔法防禦", "魔法保護"],
-    "煉金術": ["所有(水/火/風/土)屬性鍊金術傷害", "煉金術傷害"],
-    "其他": ["移動速度", "攻擊速度", "音樂增益技能持續時間"],
+    基礎屬性: ["力量", "敏捷", "智力", "意志", "幸運"],
+    生命相關: ["最大生命力", "最大魔力值", "最大耐力"],
+    傷害相關: ["最小傷害", "最大傷害", "暴擊率", "暴擊傷害", "魔法攻擊力"],
+    防禦相關: ["防禦", "保護", "魔法防禦", "魔法保護"],
+    煉金術: ["所有(水/火/風/土)屬性鍊金術傷害", "煉金術傷害"],
+    其他: ["移動速度", "攻擊速度", "音樂增益技能持續時間"],
 };
 
 // 取得效果的 CSS 類別
@@ -184,7 +175,8 @@ const getEffectClass = (effectName: string) => {
     if (effectCategories["生命相關"].includes(effectName)) return "effect-hp";
     if (effectCategories["傷害相關"].includes(effectName)) return "effect-damage";
     if (effectCategories["防禦相關"].includes(effectName)) return "effect-defense";
-    if (effectCategories["煉金術"].some(e => effectName.includes("煉金") || effectName.includes("鍊金"))) return "effect-alchemy";
+    if (effectCategories["煉金術"].some((e) => effectName.includes("煉金") || effectName.includes("鍊金")))
+        return "effect-alchemy";
     return "effect-other";
 };
 </script>
@@ -200,12 +192,7 @@ const getEffectClass = (effectName: string) => {
             <div class="filter-row">
                 <!-- 搜尋框 -->
                 <div class="search-box">
-                    <el-input
-                        v-model="searchQuery"
-                        placeholder="搜尋娃娃背包名稱或 ID..."
-                        clearable
-                        size="large"
-                    >
+                    <el-input v-model="searchQuery" placeholder="搜尋娃娃背包名稱或 ID..." clearable size="large">
                         <template #prefix>
                             <el-icon><Search /></el-icon>
                         </template>
@@ -242,12 +229,7 @@ const getEffectClass = (effectName: string) => {
                         placeholder="選擇要包含的效果"
                         clearable
                     >
-                        <el-option
-                            v-for="effect in availableEffects"
-                            :key="effect"
-                            :label="effect"
-                            :value="effect"
-                        />
+                        <el-option v-for="effect in availableEffects" :key="effect" :label="effect" :value="effect" />
                     </el-select>
                 </div>
 
@@ -287,15 +269,17 @@ const getEffectClass = (effectName: string) => {
                 </div>
 
                 <!-- 清除篩選 -->
-                <el-button type="info" plain @click="clearFilters">
-                    清除篩選
-                </el-button>
+                <el-button type="info" plain @click="clearFilters">清除篩選</el-button>
             </div>
         </div>
 
         <!-- 結果統計 -->
         <div class="results-info">
-            <span>共找到 <strong>{{ filteredBags.length }}</strong> 個娃娃背包</span>
+            <span>
+                共找到
+                <strong>{{ filteredBags.length }}</strong>
+                個娃娃背包
+            </span>
         </div>
 
         <!-- 娃娃背包列表 -->
@@ -323,11 +307,11 @@ const getEffectClass = (effectName: string) => {
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">召喚重量</span>
-                        <span class="stat-value">{{ bag.summon_cost?.toFixed(1) ?? '-' }}</span>
+                        <span class="stat-value">{{ bag.summon_cost?.toFixed(1) ?? "-" }}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">召喚時間</span>
-                        <span class="stat-value">{{ bag.summon_duration ?? '-' }} 分</span>
+                        <span class="stat-value">{{ bag.summon_duration ?? "-" }} 分</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">佔格</span>
@@ -346,9 +330,7 @@ const getEffectClass = (effectName: string) => {
                         <span class="effect-name">{{ effect.name }}</span>
                         <span class="effect-value">{{ formatEffectShort(effect) }}</span>
                     </div>
-                    <div v-if="bag.effects.length > 6" class="effect-chip more">
-                        +{{ bag.effects.length - 6 }} 更多
-                    </div>
+                    <div v-if="bag.effects.length > 6" class="effect-chip more">+{{ bag.effects.length - 6 }} 更多</div>
                 </div>
 
                 <!-- 展開詳情 -->
@@ -379,8 +361,14 @@ const getEffectClass = (effectName: string) => {
                     <div class="detail-section">
                         <h4>其他資訊</h4>
                         <div class="other-info">
-                            <p><strong>ID:</strong> {{ bag.id }}</p>
-                            <p v-if="bag.price_buy > 0"><strong>購買價格:</strong> {{ bag.price_buy.toLocaleString() }} 金幣</p>
+                            <p>
+                                <strong>ID:</strong>
+                                {{ bag.id }}
+                            </p>
+                            <p v-if="bag.price_buy > 0">
+                                <strong>購買價格:</strong>
+                                {{ bag.price_buy.toLocaleString() }} 金幣
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -609,11 +597,21 @@ const getEffectClass = (effectName: string) => {
 }
 
 /* 效果顏色分類 */
-.effect-chip.effect-stat { background: rgba(59, 130, 246, 0.2); }
-.effect-chip.effect-hp { background: rgba(34, 197, 94, 0.2); }
-.effect-chip.effect-damage { background: rgba(239, 68, 68, 0.2); }
-.effect-chip.effect-defense { background: rgba(168, 85, 247, 0.2); }
-.effect-chip.effect-alchemy { background: rgba(251, 191, 36, 0.2); }
+.effect-chip.effect-stat {
+    background: rgba(59, 130, 246, 0.2);
+}
+.effect-chip.effect-hp {
+    background: rgba(34, 197, 94, 0.2);
+}
+.effect-chip.effect-damage {
+    background: rgba(239, 68, 68, 0.2);
+}
+.effect-chip.effect-defense {
+    background: rgba(168, 85, 247, 0.2);
+}
+.effect-chip.effect-alchemy {
+    background: rgba(251, 191, 36, 0.2);
+}
 
 /* 展開詳情 */
 .bag-details {
@@ -650,11 +648,26 @@ const getEffectClass = (effectName: string) => {
     color: var(--color-text-primary, #f9fafb);
 }
 
-.effect-item.effect-stat { background: rgba(59, 130, 246, 0.2); border-left: 2px solid #3b82f6; }
-.effect-item.effect-hp { background: rgba(34, 197, 94, 0.2); border-left: 2px solid #22c55e; }
-.effect-item.effect-damage { background: rgba(239, 68, 68, 0.2); border-left: 2px solid #ef4444; }
-.effect-item.effect-defense { background: rgba(168, 85, 247, 0.2); border-left: 2px solid #a855f7; }
-.effect-item.effect-alchemy { background: rgba(251, 191, 36, 0.2); border-left: 2px solid #fbbf24; }
+.effect-item.effect-stat {
+    background: rgba(59, 130, 246, 0.2);
+    border-left: 2px solid #3b82f6;
+}
+.effect-item.effect-hp {
+    background: rgba(34, 197, 94, 0.2);
+    border-left: 2px solid #22c55e;
+}
+.effect-item.effect-damage {
+    background: rgba(239, 68, 68, 0.2);
+    border-left: 2px solid #ef4444;
+}
+.effect-item.effect-defense {
+    background: rgba(168, 85, 247, 0.2);
+    border-left: 2px solid #a855f7;
+}
+.effect-item.effect-alchemy {
+    background: rgba(251, 191, 36, 0.2);
+    border-left: 2px solid #fbbf24;
+}
 
 .auto-pick-list {
     display: flex;
