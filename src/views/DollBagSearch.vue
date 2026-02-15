@@ -10,7 +10,7 @@ interface Effect {
 }
 
 interface DollBag {
-    id: string;
+    id: number;
     name: string;
     image: string;
     bag_width: number;
@@ -39,7 +39,7 @@ const sortOrder = ref<"asc" | "desc">("asc");
 const bagSizeOptions = ["2 X 3", "3 X 2", "3 X 3", "4 X 2", "4 X 3"];
 
 // 展開的卡片
-const expandedCardId = ref<string | null>(null);
+const expandedCardId = ref<number | null>(0);
 
 // 取得所有可用的效果類型
 const availableEffects = computed(() => {
@@ -154,7 +154,7 @@ const formatEffectShort = (effect: Effect) => {
 };
 
 // 切換卡片展開狀態
-const toggleCard = (id: string) => {
+const toggleCard = (id: number) => {
     expandedCardId.value = expandedCardId.value === id ? null : id;
 };
 
