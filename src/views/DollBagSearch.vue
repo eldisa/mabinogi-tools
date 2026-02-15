@@ -237,6 +237,7 @@ const getEffectClass = (effectName: string) => {
                         collapse-tags-tooltip
                         placeholder="選擇要包含的效果"
                         clearable
+                        filterable
                     >
                         <el-option v-for="effect in availableEffects" :key="effect" :label="effect" :value="effect" />
                     </el-select>
@@ -252,6 +253,7 @@ const getEffectClass = (effectName: string) => {
                         collapse-tags-tooltip
                         placeholder="選擇收集分類"
                         clearable
+                        filterable
                     >
                         <el-option
                             v-for="category in availableAutoPickCategories"
