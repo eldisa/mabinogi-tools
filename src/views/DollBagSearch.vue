@@ -32,8 +32,8 @@ const selectedEffects = ref<string[]>([]);
 const selectedAutoPickCategories = ref<string[]>([]);
 const selectedBagSize = ref<string>("");
 const summonCostRange = reactive({ min: 0, max: 1 });
-const sortField = ref("name");
-const sortOrder = ref<"asc" | "desc">("asc");
+const sortField = ref("id");
+const sortOrder = ref<"asc" | "desc">("desc");
 
 // 背包尺寸選項
 const bagSizeOptions = ["2 X 3", "3 X 2", "3 X 3", "4 X 2", "4 X 3"];
@@ -103,7 +103,24 @@ const filteredBags = computed(() => {
     result.sort((a, b) => {
         let aVal: any, bVal: any;
 
+        // 如果有選擇效果篩選且排序為「依篩選效果」，按效果數值總和排序（降序）
+        if (sortField.value === "selected_effects" && selectedEffects.value.length > 0) {
+            const sumA = selectedEffects.value.reduce((sum, effectName) => {
+                const effect = a.effects.find((e) => e.name === effectName);
+                return sum + (effect?.value ?? 0);
+            }, 0);
+            const sumB = selectedEffects.value.reduce((sum, effectName) => {
+                const effect = b.effects.find((e) => e.name === effectName);
+                return sum + (effect?.value ?? 0);
+            }, 0);
+            return sortOrder.value === "asc" ? sumA - sumB : sumB - sumA;
+        }
+
         switch (sortField.value) {
+            case "id":
+                aVal = a.id;
+                bVal = b.id;
+                break;
             case "name":
                 aVal = a.name;
                 bVal = b.name;
@@ -211,11 +228,13 @@ const getEffectClass = (effectName: string) => {
                 <!-- 排序 -->
                 <div class="sort-controls">
                     <el-select v-model="sortField" placeholder="排序方式" size="large">
-                        <el-option label="名稱" value="name" />
-                        <el-option label="召喚重量" value="summon_cost" />
-                        <el-option label="召喚時間" value="summon_duration" />
+                        <el-option label="最近實裝" value="id" />
                         <el-option label="背包大小" value="bag_size" />
-                        <el-option label="效果數量" value="effects_count" />
+                        <el-option
+                            label="依篩選效果"
+                            value="selected_effects"
+                            :disabled="selectedEffects.length === 0"
+                        />
                     </el-select>
                     <el-button @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'" size="large">
                         <el-icon>
