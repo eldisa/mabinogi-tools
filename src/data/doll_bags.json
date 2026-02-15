@@ -9529,7 +9529,7 @@
         "isPercent": false
       },
       {
-        "key": "critical_damage害",
+        "key": "critical_damage",
         "name": "暴擊傷害",
         "value": 1,
         "isPercent": true
@@ -9708,7 +9708,7 @@
         "isPercent": false
       },
       {
-        "key": "critical_damage害",
+        "key": "critical_damage",
         "name": "暴擊傷害",
         "value": 1,
         "isPercent": true
