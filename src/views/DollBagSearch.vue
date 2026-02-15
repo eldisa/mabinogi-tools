@@ -517,8 +517,8 @@ const getEffectClass = (effectName: string) => {
 
 .bag-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    gap: 1rem;
+    align-items: center;
     margin-bottom: 0.75rem;
 }
 
