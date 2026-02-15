@@ -120,6 +120,19 @@ const availableEffects = computed(() => {
     return allEffects.filter((e) => effectSet.has(e.name)).map((e) => e.name);
 });
 
+// 重要效果名稱集合（用於判斷是否為重要效果）
+const importantEffectNames = new Set(allEffects.map((e) => e.name));
+
+// 取得背包的重要效果（在 allEffects 中列出的）
+const getImportantEffects = (bag: DollBag) => {
+    return bag.effects.filter((effect) => importantEffectNames.has(effect.name));
+};
+
+// 取得背包的其他效果（不在 allEffects 中的）
+const getOtherEffects = (bag: DollBag) => {
+    return bag.effects.filter((effect) => !importantEffectNames.has(effect.name));
+};
+
 // 取得所有可用的自動拾取分類
 const availableAutoPickCategories = computed(() => {
     const categorySet = new Set<string>();
@@ -476,10 +489,11 @@ const getEffectClass = (effectName: string) => {
                     </div>
                 </div>
 
-                <!-- 效果預覽 -->
+                <!-- 效果顯示 -->
                 <div class="effects-preview">
+                    <!-- 重要效果（allEffects 中列出的） -->
                     <div
-                        v-for="effect in bag.effects.slice(0, 6)"
+                        v-for="effect in getImportantEffects(bag)"
                         :key="effect.key"
                         class="effect-chip"
                         :class="getEffectClass(effect.name)"
@@ -487,26 +501,32 @@ const getEffectClass = (effectName: string) => {
                         <span class="effect-name">{{ effect.name }}</span>
                         <span class="effect-value">{{ formatEffectShort(effect) }}</span>
                     </div>
-                    <div v-if="bag.effects.length > 6" class="effect-chip more">+{{ bag.effects.length - 6 }} 更多</div>
+
+                    <!-- 展開後顯示其他效果 -->
+                    <template v-if="expandedCardId === bag.id">
+                        <div
+                            v-for="effect in getOtherEffects(bag)"
+                            :key="effect.key"
+                            class="effect-chip"
+                            :class="getEffectClass(effect.name)"
+                        >
+                            <span class="effect-name">{{ effect.name }}</span>
+                            <span class="effect-value">{{ formatEffectShort(effect) }}</span>
+                        </div>
+                    </template>
+
+                    <!-- 未展開時顯示「更多」提示 -->
+                    <div
+                        v-if="expandedCardId !== bag.id && getOtherEffects(bag).length > 0"
+                        class="effect-chip more"
+                    >
+                        +{{ getOtherEffects(bag).length }} 更多
+                    </div>
                 </div>
 
-                <!-- 展開詳情 -->
-                <div v-if="expandedCardId === bag.id" class="bag-details" @click.stop>
+                <!-- 展開詳情：自動拾取分類 -->
+                <div v-if="expandedCardId === bag.id && bag.auto_pick_list.length > 0" class="bag-details" @click.stop>
                     <div class="detail-section">
-                        <h4>完整效果</h4>
-                        <div class="effects-full">
-                            <div
-                                v-for="effect in bag.effects"
-                                :key="effect.key"
-                                class="effect-item"
-                                :class="getEffectClass(effect.name)"
-                            >
-                                {{ formatEffect(effect) }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="detail-section" v-if="bag.auto_pick_list.length > 0">
                         <h4>自動拾取分類</h4>
                         <div class="auto-pick-list">
                             <span v-for="category in bag.auto_pick_list" :key="category" class="pick-category">
