@@ -70,7 +70,7 @@ const filteredBags = computed(() => {
     // 搜尋名稱
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
-        result = result.filter((bag) => bag.name.toLowerCase().includes(query) || bag.id.includes(query));
+        result = result.filter((bag) => bag.name.toLowerCase().includes(query));
     }
 
     // 篩選效果
@@ -201,7 +201,7 @@ const getEffectClass = (effectName: string) => {
             <div class="filter-row">
                 <!-- 搜尋框 -->
                 <div class="search-box">
-                    <el-input v-model="searchQuery" placeholder="搜尋娃娃背包名稱或 ID..." clearable size="large">
+                    <el-input v-model="searchQuery" placeholder="搜尋娃娃背包名稱" clearable size="large">
                         <template #prefix>
                             <el-icon><Search /></el-icon>
                         </template>
