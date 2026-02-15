@@ -790,7 +790,7 @@ export const farmModel: FarmModel[] = [
         category: "normal",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 3,
             },
         ],
@@ -1591,7 +1591,7 @@ export const farmModel: FarmModel[] = [
         category: "extra",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 1,
             },
         ],
@@ -1757,7 +1757,7 @@ export const farmModel: FarmModel[] = [
                 value: 7,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 1,
             },
         ],
@@ -1779,7 +1779,7 @@ export const farmModel: FarmModel[] = [
                 value: 5,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 1,
             },
         ],
@@ -1915,7 +1915,7 @@ export const farmModel: FarmModel[] = [
         category: "normal",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 3,
             },
         ],
@@ -1943,7 +1943,7 @@ export const farmModel: FarmModel[] = [
         category: "normal",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 2,
             },
             {
@@ -2089,7 +2089,7 @@ export const farmModel: FarmModel[] = [
         category: "extra",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 2,
             },
         ],
@@ -2147,7 +2147,7 @@ export const farmModel: FarmModel[] = [
                 value: 10,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 3,
             },
         ],
@@ -2201,7 +2201,7 @@ export const farmModel: FarmModel[] = [
         category: "extra",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 2,
             },
             {
@@ -2435,7 +2435,7 @@ export const farmModel: FarmModel[] = [
         category: "extra",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 3,
             },
         ],
@@ -2467,7 +2467,7 @@ export const farmModel: FarmModel[] = [
         category: "normal",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 3,
             },
             {
@@ -2744,7 +2744,7 @@ export const farmModel: FarmModel[] = [
                 value: 6,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 4,
             },
             {
@@ -3053,7 +3053,7 @@ export const farmModel: FarmModel[] = [
                 value: 50,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 4,
             },
         ],
@@ -3216,7 +3216,7 @@ export const farmModel: FarmModel[] = [
                 value: 6,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 4,
             },
             {
@@ -3265,7 +3265,7 @@ export const farmModel: FarmModel[] = [
                 value: 2,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 2,
             },
         ],
@@ -3580,7 +3580,7 @@ export const farmModel: FarmModel[] = [
                 value: 3,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 5,
             },
         ],
@@ -3608,7 +3608,7 @@ export const farmModel: FarmModel[] = [
         category: "normal",
         abilities: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 3,
             },
         ],
@@ -4219,7 +4219,7 @@ export const farmModel: FarmModel[] = [
                 value: 35,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 value: 1,
             },
         ],

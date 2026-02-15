@@ -884,7 +884,7 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 4,
                 max: 7,
             },
@@ -1747,7 +1747,7 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 2,
                 max: 3,
             },
@@ -6784,7 +6784,7 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 1,
                 max: 1,
             },
@@ -8856,7 +8856,7 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 2,
                 max: 2,
             },
@@ -10521,12 +10521,12 @@ export const enchants: Enchant[] = [
         limit: ["電子吉他"],
         effect: [
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 3,
                 max: 3,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 3,
                 max: 3,
             },
@@ -13167,7 +13167,7 @@ export const enchants: Enchant[] = [
         limit: ["飾品"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 1,
                 max: 2,
             },
@@ -13888,7 +13888,7 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 3,
                 max: 3,
             },
@@ -14305,12 +14305,12 @@ export const enchants: Enchant[] = [
                 max: 15,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 3,
                 max: 3,
             },
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 5,
                 max: 10,
             },
@@ -14351,7 +14351,7 @@ export const enchants: Enchant[] = [
                 max: 25,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 2,
                 max: 2,
             },
@@ -14501,7 +14501,7 @@ export const enchants: Enchant[] = [
                 max: 5,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 2,
                 max: 5,
             },
@@ -14527,12 +14527,12 @@ export const enchants: Enchant[] = [
                 max: 18,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 4,
                 max: 6,
             },
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 10,
                 max: 10,
             },
@@ -14986,12 +14986,12 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 5,
                 max: 5,
             },
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 10,
                 max: 10,
             },
@@ -15275,7 +15275,7 @@ export const enchants: Enchant[] = [
         limit: ["衣物"],
         effect: [
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 2,
                 max: 2,
             },
@@ -16074,12 +16074,12 @@ export const enchants: Enchant[] = [
                 max: 20,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 3,
                 max: 8,
             },
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 15,
                 max: 15,
             },
@@ -16115,7 +16115,7 @@ export const enchants: Enchant[] = [
                 max: 5,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 1,
                 max: 4,
             },
@@ -18477,12 +18477,12 @@ export const enchants: Enchant[] = [
                 max: 7,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 5,
                 max: 5,
             },
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 3,
                 max: 3,
             },
@@ -26799,7 +26799,7 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 1,
                 max: 1,
             },
@@ -26923,7 +26923,7 @@ export const enchants: Enchant[] = [
         limit: ["飾品"],
         effect: [
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 1,
                 max: 1,
             },
@@ -27776,7 +27776,7 @@ export const enchants: Enchant[] = [
         limit: ["衣物"],
         effect: [
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 2,
                 max: 2,
             },
@@ -29892,12 +29892,12 @@ export const enchants: Enchant[] = [
                 max: 13,
             },
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 5,
                 max: 10,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 2,
                 max: 3,
             },
@@ -30243,7 +30243,7 @@ export const enchants: Enchant[] = [
         limit: ["樂器"],
         effect: [
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 2,
                 max: 2,
             },
@@ -30966,7 +30966,7 @@ export const enchants: Enchant[] = [
         limit: ["衣物"],
         effect: [
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 3,
                 max: 3,
             },
@@ -31654,7 +31654,7 @@ export const enchants: Enchant[] = [
                 max: 22,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 1,
                 max: 3,
             },
@@ -31690,7 +31690,7 @@ export const enchants: Enchant[] = [
                 max: 3,
             },
             {
-                id: "musicbuff_bonus",
+                id: "music_buff_bonus",
                 min: 1,
                 max: 2,
             },
@@ -31721,7 +31721,7 @@ export const enchants: Enchant[] = [
                 max: 5,
             },
             {
-                id: "musicbuff_duration",
+                id: "music_buff_duration",
                 min: 3,
                 max: 3,
             },
