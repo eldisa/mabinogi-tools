@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, reactive } from "vue";
+import { Setting } from "@element-plus/icons-vue";
 import dollBagsData from "../data/doll_bags.json";
 
 interface Effect {
@@ -38,10 +39,76 @@ const sortOrder = ref<"asc" | "desc">("desc");
 // 背包尺寸選項
 const bagSizeOptions = ["2 X 3", "3 X 2", "3 X 3", "4 X 2", "4 X 3"];
 
+// 自訂權重設定
+const customWeightsDivideByWeight = ref(false);
+const customWeights = ref<Record<string, number>>({});
+
+// 完整效果列表（用於自訂權重設定與效果篩選）
+const allEffects = [
+    // 傷害相關
+    { key: "attack_max", name: "最大傷害" },
+    { key: "attack_min", name: "最小傷害" },
+    { key: "magic_attack", name: "魔法攻擊力" },
+    { key: "critical_damage", name: "暴擊傷害" },
+    // // 基礎屬性
+    // { key: "STR", name: "力量" },
+    // { key: "DEX", name: "敏捷" },
+    // { key: "INT", name: "智力" },
+    // { key: "WIL", name: "意志" },
+    // { key: "LUK", name: "幸運" },
+    // // 生命相關
+    // { key: "HP", name: "最大生命力" },
+    // { key: "MP", name: "最大魔力值" },
+    // { key: "SP", name: "最大耐力" },
+
+    // 煉金術
+    { key: "alchemy_all", name: "4大屬性煉金術傷害" },
+    { key: "fire_alchemy", name: "火屬性鍊金術傷害" },
+    { key: "water_alchemy", name: "水屬性鍊金術傷害" },
+    { key: "earth_alchemy", name: "土屬性鍊金術傷害" },
+    { key: "wind_alchemy", name: "風屬性鍊金術傷害" },
+    // 音樂
+    { key: "music_buff_effect", name: "音樂增益技能效果" },
+    { key: "music_buff_duration", name: "音樂增益技能持續時間" },
+    // 其他
+    { key: "move_speed", name: "移動速度" },
+    // { key: "attack_speed", name: "攻擊速度" },
+    { key: "gather_speed", name: "採集速度" },
+    { key: "exp", name: "經驗值" },
+    { key: "pet_exp", name: "寵物經驗值" },
+    // 防禦相關
+    // { key: "defense", name: "防禦" },
+    { key: "protection", name: "保護" },
+    // { key: "magic_defense", name: "魔法防禦" },
+    { key: "magic_protection", name: "魔法保護" },
+];
+
+// 初始化自訂權重
+const initCustomWeights = () => {
+    allEffects.forEach(({ name }) => {
+        if (!(name in customWeights.value)) {
+            customWeights.value[name] = 0;
+        }
+    });
+};
+
+// 計算背包自訂權重分數
+const calculateCustomScore = (bag: DollBag): number => {
+    let totalScore = 0;
+    bag.effects.forEach((effect) => {
+        const weight = customWeights.value[effect.name] ?? 0;
+        totalScore += effect.value * weight;
+    });
+    if (customWeightsDivideByWeight.value && bag.summon_cost) {
+        return totalScore / bag.summon_cost;
+    }
+    return totalScore;
+};
+
 // 展開的卡片
 const expandedCardId = ref<number | null>(0);
 
-// 取得所有可用的效果類型
+// 取得所有可用的效果類型（依照 allEffects 順序，只保留資料中存在的）
 const availableEffects = computed(() => {
     const effectSet = new Set<string>();
     dollBags.forEach((bag) => {
@@ -49,7 +116,8 @@ const availableEffects = computed(() => {
             effectSet.add(effect.name);
         });
     });
-    return Array.from(effectSet).sort();
+    // 依照 allEffects 的順序排列
+    return allEffects.filter((e) => effectSet.has(e.name)).map((e) => e.name);
 });
 
 // 取得所有可用的自動拾取分類
@@ -129,6 +197,13 @@ const filteredBags = computed(() => {
             const ratioA = a.summon_cost ? sumA / a.summon_cost : 0;
             const ratioB = b.summon_cost ? sumB / b.summon_cost : 0;
             return sortOrder.value === "asc" ? ratioA - ratioB : ratioB - ratioA;
+        }
+
+        // 自訂權重排序
+        if (sortField.value === "custom") {
+            const scoreA = calculateCustomScore(a);
+            const scoreB = calculateCustomScore(b);
+            return sortOrder.value === "asc" ? scoreA - scoreB : scoreB - scoreA;
         }
 
         switch (sortField.value) {
@@ -242,7 +317,7 @@ const getEffectClass = (effectName: string) => {
 
                 <!-- 排序 -->
                 <div class="sort-controls">
-                    <el-select v-model="sortField" placeholder="排序方式" size="large">
+                    <el-select v-model="sortField" placeholder="排序方式" size="large" @change="initCustomWeights">
                         <el-option label="最近實裝" value="id" />
                         <el-option label="背包大小" value="bag_size" />
                         <el-option
@@ -255,7 +330,30 @@ const getEffectClass = (effectName: string) => {
                             value="effect_per_weight"
                             :disabled="selectedEffects.length === 0"
                         />
+                        <el-option label="自訂權重" value="custom" />
                     </el-select>
+                    <el-popover v-if="sortField === 'custom'" placement="bottom" :width="320" trigger="click">
+                        <template #reference>
+                            <el-button :icon="Setting" size="large" />
+                        </template>
+                        <div class="custom-weight-settings">
+                            <h4 class="settings-title">自訂權重設定</h4>
+                            <div class="weight-option">
+                                <el-checkbox v-model="customWeightsDivideByWeight">除以召喚重量</el-checkbox>
+                            </div>
+                            <div class="weight-list">
+                                <div v-for="effect in allEffects" :key="effect.key" class="weight-item">
+                                    <span class="weight-label">{{ effect.name }}</span>
+                                    <el-input-number
+                                        v-model="customWeights[effect.name]"
+                                        :min="0"
+                                        :max="100"
+                                        size="small"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </el-popover>
                     <el-button @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'" size="large">
                         <el-icon>
                             <component :is="sortOrder === 'asc' ? 'SortUp' : 'SortDown'" />
@@ -475,6 +573,52 @@ const getEffectClass = (effectName: string) => {
 
 .sort-controls .el-select {
     width: 140px;
+}
+
+/* 自訂權重設定 */
+.custom-weight-settings {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.settings-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--color-text-primary, #f9fafb);
+    margin-bottom: 0.75rem;
+}
+
+.weight-option {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border, #374151);
+}
+
+.weight-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.weight-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.weight-label {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary, #d1d5db);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.weight-item .el-input-number {
+    width: 100px;
 }
 
 .advanced-filters {
