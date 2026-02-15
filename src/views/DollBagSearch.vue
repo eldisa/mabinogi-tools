@@ -25,7 +25,7 @@ interface DollBag {
 }
 
 const dollBags = dollBagsData as DollBag[];
-
+const baseUrl = import.meta.env.BASE_URL;
 // 搜尋與篩選狀態
 const searchQuery = ref("");
 const selectedEffects = ref<string[]>([]);
@@ -308,6 +308,16 @@ const getEffectClass = (effectName: string) => {
                 :class="{ expanded: expandedCardId === bag.id }"
                 @click="toggleCard(bag.id)"
             >
+                <!-- 卡片頭部：圖片與名稱 -->
+                <div class="bag-header">
+                    <div class="bag-image">
+                        <img :src="`${baseUrl}itemImage/${bag.id}.png`" :alt="bag.name" />
+                    </div>
+                    <div class="bag-info">
+                        <h3 class="bag-name">{{ bag.name }}</h3>
+                    </div>
+                </div>
+
                 <div class="bag-stats">
                     <div class="stat-item">
                         <span class="stat-label">背包大小</span>
@@ -508,6 +518,29 @@ const getEffectClass = (effectName: string) => {
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 0.75rem;
+}
+
+.bag-image {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.bag-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.bag-info {
+    flex: 1;
+    min-width: 0;
 }
 
 .bag-name {
