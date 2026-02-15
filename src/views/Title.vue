@@ -243,8 +243,8 @@ const allAbilities = [
     { id: "magic_attack", name: "魔法攻擊力" },
     { id: "bonus_damage", name: "額外傷害" },
     { id: "critical_damage", name: "暴擊傷害" },
-    { id: "musicbuff_bonus", name: "音樂增益效果" },
-    { id: "musicbuff_duration", name: "音樂持續時間" },
+    { id: "music_buff_bonus", name: "音樂增益效果" },
+    { id: "music_buff_duration", name: "音樂持續時間" },
     { id: "fire_alchemy_damage", name: "火屬性煉金傷害" },
     { id: "water_alchemy_damage", name: "水屬性煉金傷害" },
     { id: "earth_alchemy_damage", name: "地屬性煉金傷害" },
@@ -462,7 +462,7 @@ watch(activeAbilityKey, () => {
 // === 稱號資料 ===
 const titles = computed<Title[]>(() => {
     return (titleData.data as Title[]).filter(
-        (title) => title.DefaultName !== "none" && isAvailable(title.locale, currentRegion)
+        (title) => title.DefaultName !== "none" && isAvailable(title.locale, currentRegion),
     );
 });
 

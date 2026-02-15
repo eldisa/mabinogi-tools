@@ -11,6 +11,8 @@ import Enchant from '../views/Enchant.vue';
 import FarmModel from '../views/FarmModel.vue';
 import Title from '../views/Title.vue';
 import StoneGamblingView from '../views/StoneGamblingView.vue';
+import AlchemyCalculator from '../views/AlchemyCalculator.vue';
+import DollBagSearch from '../views/DollBagSearch.vue';
 
 const routes = [
     {
@@ -66,6 +68,16 @@ const routes = [
             path: '/stone-gambling',
             name: '賭石小遊戲',
             component: StoneGamblingView,
+        },
+        {
+            path: '/alchemy-calculator',
+            name: '煉金術傷害計算器',
+            component: AlchemyCalculator,
+        },
+        {
+            path: '/doll-bag',
+            name: '娃娃背包查詢',
+            component: DollBagSearch,
         },]
     },
 

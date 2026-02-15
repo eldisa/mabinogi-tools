@@ -52,6 +52,18 @@ const features = [
         description: "模擬賭石體驗，試試你的手氣",
         path: "/stone-gambling",
     },
+    {
+        icon: "DataAnalysis",
+        title: "煉金術傷害計算器",
+        description: "計算煉金術技能傷害，支援水系、火系、大蛇等",
+        path: "/alchemy-calculator",
+    },
+    {
+        icon: "Handbag",
+        title: "娃娃背包查詢",
+        description: "查詢娃娃背包效果、召喚重量與自動拾取分類",
+        path: "/doll-bag",
+    },
 ];
 
 const navigateTo = (path: string) => {
