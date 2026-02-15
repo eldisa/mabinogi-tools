@@ -128,7 +128,8 @@ export const abilitiesMap: Record<string, string> = {
     move_speed: "移動速度上升",
     Hurry: "移動速度",
     exp: "經驗值",
-    MoreExp: "經驗值獲得",
+    MoreExp: "經驗值",
+    pet_exp: "寵物經驗值",
     BeltaneEXP: "貝爾塔祭期間經驗值",
     OverlapMoreExp: "重疊經驗值",
     combatPower: "強度",
@@ -153,6 +154,7 @@ export const abilitiesMap: Record<string, string> = {
     shockcancellation_magicdefence: "發動衝擊相消時魔法防禦增加",
     commerce_credibility: "信用度上升率增加",
     commerce_discount: "貿易品購買折扣率增加",
+    gather_speed: "採集速度",
 };
 
 export const reverseAbilitiesMap: Record<string, string> = {
