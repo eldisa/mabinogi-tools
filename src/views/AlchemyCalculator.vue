@@ -817,14 +817,24 @@ const applyPreset = (preset: string) => {
                                     <p class="formula">
                                         (A2 + X) × B2 × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M)) × 減益
                                     </p>
+                                    <p class="formula">X = A1 × B1 × (1+C) × D × (1+E) × (1+F/2)× (1+G)</p>
                                     <div class="breakdown-grid">
                                         <span>A2 = {{ nightmareDamage.A2 }}</span>
                                         <span>X = {{ formatNumber(nightmareDamage.X) }}</span>
                                         <span>B2 = {{ (nightmareDamage.B2 * 100).toFixed(0) }}%</span>
-                                        <span>段數 D = {{ nightmareDamage.D }}</span>
                                         <span>K = {{ (nightmareDamage.K * 100).toFixed(0) }}%</span>
                                         <span>L = {{ (nightmareDamage.L * 100).toFixed(0) }}%</span>
                                         <span>M = {{ (nightmareDamage.M * 100).toFixed(1) }}%</span>
+                                    </div>
+
+                                    <div class="breakdown-grid">
+                                        <span>A1 = {{ nightmareDamage.A1 }}</span>
+                                        <span>B1 = {{ (nightmareDamage.B1 * 100).toFixed(0) }}%</span>
+                                        <span>段數 D = {{ nightmareDamage.D }}</span>
+                                        <span>C = {{ (nightmareDamage.C * 100).toFixed(0) }}%</span>
+                                        <span>E = {{ (nightmareDamage.E * 100).toFixed(0) }}%</span>
+                                        <span>F = {{ (nightmareDamage.F * 100).toFixed(0) }}%</span>
+                                        <span>G = {{ (nightmareDamage.G * 100).toFixed(1) }}%</span>
                                     </div>
                                     <div class="intermediate-values">
                                         <p>基礎傷害: {{ formatNumber(nightmareDamage.baseDamage) }}</p>
