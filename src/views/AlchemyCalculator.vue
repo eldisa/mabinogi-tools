@@ -703,7 +703,7 @@ const applyPreset = (preset: string) => {
                                         <el-input-number
                                             v-model="fireSkillStats.flameburstAppraisalLevel"
                                             :min="0"
-                                            :max="20"
+                                            :max="33"
                                             size="small"
                                         />
                                     </div>
@@ -853,7 +853,7 @@ const applyPreset = (preset: string) => {
                                         <el-input-number
                                             v-model="fireSkillStats.heatBusterAppraisalLevel"
                                             :min="0"
-                                            :max="20"
+                                            :max="33"
                                             size="small"
                                         />
                                     </div>
@@ -983,7 +983,7 @@ const applyPreset = (preset: string) => {
                                         <el-input-number
                                             v-model="waterSkillStats.waterCannonAppraisalLevel"
                                             :min="0"
-                                            :max="20"
+                                            :max="33"
                                             size="small"
                                         />
                                     </div>
@@ -1010,7 +1010,7 @@ const applyPreset = (preset: string) => {
                                         <el-input-number
                                             v-model="waterSkillStats.rainAmplifyAppraisalLevel"
                                             :min="0"
-                                            :max="20"
+                                            :max="25"
                                             size="small"
                                         />
                                     </div>
