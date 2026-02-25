@@ -4,14 +4,14 @@ import { ref, computed, reactive } from "vue";
 // ========== 全域基礎屬性 ==========
 const globalStats = reactive({
     // A1 屬性傷害
-    waterDmg: 500,      // 水屬性煉金傷害
-    fireDmg: 500,       // 火屬性煉金傷害
+    waterDmg: 500, // 水屬性煉金傷害
+    fireDmg: 500, // 火屬性煉金傷害
     // A2 平均傷害
-    avgDmg: 500,        // 四屬性平均煉金傷害
+    avgDmg: 500, // 四屬性平均煉金傷害
     // H 通用額外加成
-    commonExtra: 0,     // 通用額外加成 %（裝等、農場物、圖騰、頭銜、特改、催化協同、犬靈等）
+    commonExtra: 0, // 通用額外加成 %（裝等、農場物、圖騰、頭銜、特改、催化協同、犬靈等）
     // I 暴擊傷害
-    critDmg: 150,       // 暴擊傷害 %（基礎 150%）
+    critDmg: 150, // 暴擊傷害 %（基礎 150%）
     // J 其他獨立加成
     independentMulti: 0, // 其他獨立加成 %（戰鬥 VIP 1%、三眼、致命穿透、威光等）
 });
@@ -19,81 +19,81 @@ const globalStats = reactive({
 // ========== 精通與效率 ==========
 const masteryStats = reactive({
     // 精通效率基礎值
-    waterMasteryEff: 10,    // 水精通效率 %（基礎 10%）
-    fireMasteryEff: 10,     // 火精通效率 %（基礎 10%）
-    earthMasteryEff: 10,    // 土精通效率 %（基礎 10%）
+    waterMasteryEff: 10, // 水精通效率 %（基礎 10%）
+    fireMasteryEff: 10, // 火精通效率 %（基礎 10%）
+    earthMasteryEff: 10, // 土精通效率 %（基礎 10%）
     // 鑑定加成
-    waterMasteryAppraisal: false,   // 水精通 20 級鑑定 +10%
-    fireMasteryAppraisal: false,    // 火精通 20 級鑑定 +10%
-    earthMasteryAppraisal: false,   // 土精通 20 級鑑定 +4%
+    waterMasteryAppraisal: false, // 水精通 20 級鑑定 +10%
+    fireMasteryAppraisal: false, // 火精通 20 級鑑定 +10%
+    earthMasteryAppraisal: false, // 土精通 20 級鑑定 +4%
     // E 鋼瓶加成
-    cylinderBonus: 30,      // 屬性鋼瓶加成 %
+    cylinderBonus: 30, // 屬性鋼瓶加成 %
     // G 才能額外
-    talentBonus: 0,         // 才能額外加成 %（精靈武器、藍月亮等）
+    talentBonus: 0, // 才能額外加成 %（精靈武器、藍月亮等）
 });
 
 // ========== 套裝與組合式 ==========
 const gearStats = reactive({
     // 套裝
-    crewSetBonus: 15,       // 克雷套增幅 %
+    crewSetBonus: 15, // 克雷套增幅 %
     // 組合式設定
-    comboFinalDmgFire: 15,      // 四火：最終傷害 % (化學狂歡用)
-    comboFinalDmgWater: 100,    // 四水：最終傷害 % (螺旋爆裂用)
-    comboFinalDmgEarth: 20,     // 四土：最終傷害 % (召喚夢魘用)
-    comboStatusEffect: 20,      // 四火：異常狀態效果 %
-    comboHerbBlue: 15,          // 藍草+曼德拉 % (水系)
-    comboHerbGreen: 15,         // 綠草+曼德拉 % (土系)
-    comboHerbRed: 15,           // 紅草+曼德拉 % (火系)
+    comboFinalDmgFire: 15, // 四火：最終傷害 % (化學狂歡用)
+    comboFinalDmgWater: 100, // 四水：最終傷害 % (螺旋爆裂用)
+    comboFinalDmgEarth: 20, // 四土：最終傷害 % (召喚夢魘用)
+    comboStatusEffect: 20, // 四火：異常狀態效果 %
+    comboHerbBlue: 15, // 藍草+曼德拉 % (水系)
+    comboHerbGreen: 15, // 綠草+曼德拉 % (土系)
+    comboHerbRed: 15, // 紅草+曼德拉 % (火系)
 });
 
 // ========== 催化協同參數 ==========
 const catalyticStats = reactive({
-    baseValue: 8,           // 基礎值 %（四火+鏈接 = 8%）
-    herbBonus: 15,          // 紅草+曼德拉 %
-    linkAttributeAvg: 0,    // 平均屬性（每 500 +1%）
+    baseValue: 8, // 基礎值 %（四火+鏈接 = 8%）
+    herbBonus: 15, // 紅草+曼德拉 %
+    linkAttributeAvg: 0, // 平均屬性（每 500 +1%）
 });
 
 // ========== 水系技能參數 ==========
 const waterSkillStats = reactive({
     // 水炮
-    waterCannonMultiplier: 60.7,    // 水炮倍率 %（基礎）
-    waterCannonAppraisalLevel: 0,   // 鑑定等級（每級 +0.6%）
-    waterCannonChargeLevel: 5,      // 蓄力段數（1-5）
+    waterCannonMultiplier: 60.7, // 水炮倍率 %（基礎）
+    waterCannonAppraisalLevel: 0, // 鑑定等級（每級 +0.6%）
+    waterCannonChargeLevel: 5, // 蓄力段數（1-5）
     // 雷雨增幅
-    rainAmplify: 20,                // 雷雨增幅 %（基礎 20%）
-    rainAmplifyAppraisalLevel: 0,   // 鑑定等級（每級 +5%）
+    rainAmplify: 20, // 雷雨增幅 %（基礎 20%）
+    rainAmplifyAppraisalLevel: 0, // 鑑定等級（每級 +5%）
     // 螺旋爆裂
-    spiralBurstMultiplier: 1080,    // 地刺倍率 %（基礎）
-    spiralBurstRelicLevel: 0,       // 遺物等級（每級 +20%）
+    spiralBurstMultiplier: 1080, // 地刺倍率 %（基礎）
+    spiralBurstRelicLevel: 0, // 遺物等級（每級 +20%）
 });
 
 // ========== 火系技能參數 ==========
 const fireSkillStats = reactive({
     // 高溫爆發
-    heatBusterMultiplier: 130.5,    // 高溫爆發倍率 %（基礎）
-    heatBusterAppraisalLevel: 0,    // 鑑定等級（每級 +1%）
-    heatBusterPressure: 100,        // 壓力值 %
+    heatBusterMultiplier: 130.5, // 高溫爆發倍率 %（基礎）
+    heatBusterAppraisalLevel: 0, // 鑑定等級（每級 +1%）
+    heatBusterPressure: 100, // 壓力值 %
     // 厄格增幅
-    ergAmplify: 0,                  // 厄格增幅 %（S50 = 300%）
+    ergAmplify: 0, // 厄格增幅 %（S50 = 300%）
     // 元素波動增幅
-    elementWaveAmplify: 25,         // 元素波動增幅 %
+    elementWaveAmplify: 25, // 元素波動增幅 %
     // 化學狂歡
-    chemicalMultiplier: 900,        // 瓶子倍率 %（基礎）
-    chemicalRelicLevel: 0,          // 遺物等級（每級 +30%）
-    chemicalExplosionRate: 50,      // 後續爆炸比例 %（30%+鏈接20%=50%）
+    chemicalMultiplier: 900, // 瓶子倍率 %（基礎）
+    chemicalRelicLevel: 0, // 遺物等級（每級 +30%）
+    chemicalExplosionRate: 50, // 後續爆炸比例 %（30%+鏈接20%=50%）
     // 火焰噴射
-    flameburstMultiplier: 33.5,     // 火焰噴射倍率 %（基礎）
-    flameburstAppraisalLevel: 0,    // 鑑定等級（每級 +0.3%）
-    flameburstChargeLevel: 5,       // 蓄力段數（1-5）
-    flameburstHits: 5,              // 火焰噴射段數（基礎 5）
-    flameburstHitAppraisal: 0,      // 0=基礎5段, 1=15級8段, 2=20級9段
+    flameburstMultiplier: 33.5, // 火焰噴射倍率 %（基礎）
+    flameburstAppraisalLevel: 0, // 鑑定等級（每級 +0.3%）
+    flameburstChargeLevel: 5, // 蓄力段數（1-5）
+    flameburstHits: 5, // 火焰噴射段數（基礎 5）
+    flameburstHitAppraisal: 0, // 0=基礎5段, 1=15級8段, 2=20級9段
     // 召喚夢魘
-    nightmareMultiplier: 600,       // 大蛇倍率 %（4能量時）
-    nightmareEnergyLevel: 4,        // 能量等級（1-4）
+    nightmareMultiplier: 600, // 大蛇倍率 %（4能量時）
+    nightmareEnergyLevel: 4, // 能量等級（1-4）
     // 大蛇減益
-    nightmareDebuffBase: 0.65,      // 減益基礎值 %（如最終傷害增加）
-    nightmareDebuffEnhance: 20,     // 4能量減益效果提升 %
-    nightmareRelicLevel: 0,         // 遺物等級（每級 +30%）
+    nightmareDebuffBase: 0.65, // 減益基礎值 %（如最終傷害增加）
+    nightmareDebuffEnhance: 20, // 4能量減益效果提升 %
+    nightmareRelicLevel: 0, // 遺物等級（每級 +30%）
 });
 
 // 當前選中的 Tab
@@ -150,7 +150,8 @@ const waterCannonDamage = computed(() => {
     const A1 = globalStats.waterDmg;
     // B1: 水炮倍率 = (基礎 + 鑑定加成) × 蓄力段數 × 1.25（五蓄係數 6.25 / 5）
     const baseMultiplier = waterSkillStats.waterCannonMultiplier + waterSkillStats.waterCannonAppraisalLevel * 0.6;
-    const chargeMultiplier = waterSkillStats.waterCannonChargeLevel === 5 ? 6.25 : waterSkillStats.waterCannonChargeLevel;
+    const chargeMultiplier =
+        waterSkillStats.waterCannonChargeLevel === 5 ? 6.25 : waterSkillStats.waterCannonChargeLevel;
     const B1 = (baseMultiplier / 100) * chargeMultiplier;
     // C: 雷雨增幅
     const C = (waterSkillStats.rainAmplify + waterSkillStats.rainAmplifyAppraisalLevel * 5) / 100;
@@ -172,7 +173,16 @@ const waterCannonDamage = computed(() => {
     const damage = A1 * B1 * (1 + C) * (1 + D) * (1 + E) * (1 + F / 2) * (1 + G + H) * (1 + I) * (1 + J);
 
     return {
-        A1, B1, C, D, E, F, G, H, I, J,
+        A1,
+        B1,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
         baseMultiplier,
         chargeMultiplier,
         result: damage,
@@ -222,8 +232,23 @@ const spiralBurstDamage = computed(() => {
     const damage = (X + Y) * (1 + H) * (1 + I) * (1 + J) * (1 + K * (1 + L + M));
 
     return {
-        A1, A2, B1, B2, C, D, E, F, G, H, I, J, K, L, M,
-        X, Y,
+        A1,
+        A2,
+        B1,
+        B2,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        K,
+        L,
+        M,
+        X,
+        Y,
         result: damage,
     };
 });
@@ -256,7 +281,17 @@ const heatBusterDamage = computed(() => {
     const damage = A1 * B1 * (1 + C) * (1 + D) * (1 + E) * (1 + F / 2) * (1 + G + H) * (1 + I) * (1 + J) * pressure;
 
     return {
-        A1, B1, C, D, E, F, G, H, I, J, pressure,
+        A1,
+        B1,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        pressure,
         result: damage,
     };
 });
@@ -305,8 +340,22 @@ const chemicalDamage = computed(() => {
     const explosionDamage = damage * explosionRate;
 
     return {
-        A1, A2, B1, B2, C, E, F, G, H, I, J, K, L, M,
-        X, Y,
+        A1,
+        A2,
+        B1,
+        B2,
+        C,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        K,
+        L,
+        M,
+        X,
+        Y,
         result: damage,
         explosionRate,
         explosionDamage,
@@ -338,7 +387,15 @@ const flameburstDamage = computed(() => {
     const damage = A1 * B1 * (1 + C) * (1 + E) * (1 + F / 2) * (1 + G + H) * (1 + I) * (1 + J);
 
     return {
-        A1, B1, C, E, F, G, H, I, J,
+        A1,
+        B1,
+        C,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
         baseMultiplier,
         result: damage,
     };
@@ -361,7 +418,11 @@ const nightmareDebuff = computed(() => {
     const debuff = A * (1 + B) * (1 + C * (1 + D + E));
 
     return {
-        A, B, C, D, E,
+        A,
+        B,
+        C,
+        D,
+        E,
         result: debuff,
         resultPercent: (debuff * 100).toFixed(2),
     };
@@ -412,7 +473,21 @@ const nightmareDamage = computed(() => {
     const finalDamage = baseDamage * debuffMultiplier;
 
     return {
-        A1, A2, B1, B2, C, D, E, F, G, H, I, J, K, L, M,
+        A1,
+        A2,
+        B1,
+        B2,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        K,
+        L,
+        M,
         X,
         baseDamage,
         debuffMultiplier,
@@ -614,15 +689,32 @@ const applyPreset = (preset: string) => {
                                 <div class="skill-inputs">
                                     <div class="input-row">
                                         <label>基礎倍率 % (每級鑑定 +0.3%)</label>
-                                        <el-input-number v-model="fireSkillStats.flameburstMultiplier" :min="1" :max="100" :step="0.1" :precision="1" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.flameburstMultiplier"
+                                            :min="1"
+                                            :max="100"
+                                            :step="0.1"
+                                            :precision="1"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>鑑定等級</label>
-                                        <el-input-number v-model="fireSkillStats.flameburstAppraisalLevel" :min="0" :max="20" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.flameburstAppraisalLevel"
+                                            :min="0"
+                                            :max="20"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>蓄力段數</label>
-                                        <el-input-number v-model="fireSkillStats.flameburstChargeLevel" :min="1" :max="5" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.flameburstChargeLevel"
+                                            :min="1"
+                                            :max="5"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>噴射段數</label>
@@ -642,7 +734,11 @@ const applyPreset = (preset: string) => {
                                     <p class="formula">A1 × B1 × (1+C) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J)</p>
                                     <div class="breakdown-grid">
                                         <span>A1 = {{ flameburstDamage.A1 }}</span>
-                                        <span>B1 = {{ flameburstDamage.B1.toFixed(4) }} ({{ flameburstDamage.baseMultiplier.toFixed(1) }}% × {{ fireSkillStats.flameburstChargeLevel }})</span>
+                                        <span>
+                                            B1 = {{ flameburstDamage.B1.toFixed(4) }} ({{
+                                                flameburstDamage.baseMultiplier.toFixed(1)
+                                            }}% × {{ fireSkillStats.flameburstChargeLevel }})
+                                        </span>
                                         <span>C = {{ (flameburstDamage.C * 100).toFixed(1) }}%</span>
                                         <span>E = {{ (flameburstDamage.E * 100).toFixed(1) }}%</span>
                                         <span>F = {{ (flameburstDamage.F * 100).toFixed(1) }}%</span>
@@ -660,19 +756,41 @@ const applyPreset = (preset: string) => {
                                 <div class="skill-inputs">
                                     <div class="input-row">
                                         <label>大蛇倍率 % (4 能量)</label>
-                                        <el-input-number v-model="fireSkillStats.nightmareMultiplier" :min="100" :max="2000" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.nightmareMultiplier"
+                                            :min="100"
+                                            :max="2000"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>減益基礎值 %</label>
-                                        <el-input-number v-model="fireSkillStats.nightmareDebuffBase" :min="0" :max="10" :step="0.01" :precision="2" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.nightmareDebuffBase"
+                                            :min="0"
+                                            :max="10"
+                                            :step="0.01"
+                                            :precision="2"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>4 能量減益提升 %</label>
-                                        <el-input-number v-model="fireSkillStats.nightmareDebuffEnhance" :min="0" :max="100" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.nightmareDebuffEnhance"
+                                            :min="0"
+                                            :max="100"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>遺物等級 (每級 +30%)</label>
-                                        <el-input-number v-model="fireSkillStats.nightmareRelicLevel" :min="0" :max="10" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.nightmareRelicLevel"
+                                            :min="0"
+                                            :max="10"
+                                            size="small"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -696,7 +814,9 @@ const applyPreset = (preset: string) => {
                                 <h3>召喚夢魘傷害</h3>
                                 <div class="result-value">{{ formatNumber(nightmareDamage.result) }}</div>
                                 <div class="formula-breakdown">
-                                    <p class="formula">(A2 + X) × B2 × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M)) × 減益</p>
+                                    <p class="formula">
+                                        (A2 + X) × B2 × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M)) × 減益
+                                    </p>
                                     <div class="breakdown-grid">
                                         <span>A2 = {{ nightmareDamage.A2 }}</span>
                                         <span>X = {{ formatNumber(nightmareDamage.X) }}</span>
@@ -719,23 +839,50 @@ const applyPreset = (preset: string) => {
                                 <div class="skill-inputs">
                                     <div class="input-row">
                                         <label>基礎倍率 % (每級鑑定 +1%)</label>
-                                        <el-input-number v-model="fireSkillStats.heatBusterMultiplier" :min="1" :max="300" :step="0.5" :precision="1" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.heatBusterMultiplier"
+                                            :min="1"
+                                            :max="300"
+                                            :step="0.5"
+                                            :precision="1"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>鑑定等級</label>
-                                        <el-input-number v-model="fireSkillStats.heatBusterAppraisalLevel" :min="0" :max="20" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.heatBusterAppraisalLevel"
+                                            :min="0"
+                                            :max="20"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>壓力值 %</label>
-                                        <el-input-number v-model="fireSkillStats.heatBusterPressure" :min="0" :max="500" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.heatBusterPressure"
+                                            :min="0"
+                                            :max="500"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>厄格增幅 % (S50=300%)</label>
-                                        <el-input-number v-model="fireSkillStats.ergAmplify" :min="0" :max="500" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.ergAmplify"
+                                            :min="0"
+                                            :max="500"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>元素波動增幅 %</label>
-                                        <el-input-number v-model="fireSkillStats.elementWaveAmplify" :min="0" :max="100" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.elementWaveAmplify"
+                                            :min="0"
+                                            :max="100"
+                                            size="small"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -744,7 +891,9 @@ const applyPreset = (preset: string) => {
                                 <h3>高溫爆發傷害</h3>
                                 <div class="result-value">{{ formatNumber(heatBusterDamage.result) }}</div>
                                 <div class="formula-breakdown">
-                                    <p class="formula">A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J) × 壓力</p>
+                                    <p class="formula">
+                                        A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J) × 壓力
+                                    </p>
                                     <div class="breakdown-grid">
                                         <span>A1 = {{ heatBusterDamage.A1 }}</span>
                                         <span>B1 = {{ (heatBusterDamage.B1 * 100).toFixed(1) }}%</span>
@@ -761,15 +910,30 @@ const applyPreset = (preset: string) => {
                                 <div class="skill-inputs">
                                     <div class="input-row">
                                         <label>瓶子倍率 % (每級遺物 +30%)</label>
-                                        <el-input-number v-model="fireSkillStats.chemicalMultiplier" :min="100" :max="2000" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.chemicalMultiplier"
+                                            :min="100"
+                                            :max="2000"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>遺物等級</label>
-                                        <el-input-number v-model="fireSkillStats.chemicalRelicLevel" :min="0" :max="10" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.chemicalRelicLevel"
+                                            :min="0"
+                                            :max="10"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>後續爆炸比例 %</label>
-                                        <el-input-number v-model="fireSkillStats.chemicalExplosionRate" :min="0" :max="100" size="small" />
+                                        <el-input-number
+                                            v-model="fireSkillStats.chemicalExplosionRate"
+                                            :min="0"
+                                            :max="100"
+                                            size="small"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -786,7 +950,10 @@ const applyPreset = (preset: string) => {
                                         <span>K = {{ (chemicalDamage.K * 100).toFixed(0) }}%</span>
                                     </div>
                                     <div class="intermediate-values">
-                                        <p>後續爆炸 ({{ chemicalDamage.explosionRate * 100 }}%): {{ formatNumber(chemicalDamage.explosionDamage) }}</p>
+                                        <p>
+                                            後續爆炸 ({{ chemicalDamage.explosionRate * 100 }}%):
+                                            {{ formatNumber(chemicalDamage.explosionDamage) }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -802,23 +969,50 @@ const applyPreset = (preset: string) => {
                                 <div class="skill-inputs">
                                     <div class="input-row">
                                         <label>基礎倍率 % (每級鑑定 +0.6%)</label>
-                                        <el-input-number v-model="waterSkillStats.waterCannonMultiplier" :min="1" :max="200" :step="0.1" :precision="1" size="small" />
+                                        <el-input-number
+                                            v-model="waterSkillStats.waterCannonMultiplier"
+                                            :min="1"
+                                            :max="200"
+                                            :step="0.1"
+                                            :precision="1"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>鑑定等級</label>
-                                        <el-input-number v-model="waterSkillStats.waterCannonAppraisalLevel" :min="0" :max="20" size="small" />
+                                        <el-input-number
+                                            v-model="waterSkillStats.waterCannonAppraisalLevel"
+                                            :min="0"
+                                            :max="20"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>蓄力段數 (5 蓄 = ×6.25)</label>
-                                        <el-input-number v-model="waterSkillStats.waterCannonChargeLevel" :min="1" :max="5" size="small" />
+                                        <el-input-number
+                                            v-model="waterSkillStats.waterCannonChargeLevel"
+                                            :min="1"
+                                            :max="5"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>雷雨增幅 % (每級鑑定 +5%)</label>
-                                        <el-input-number v-model="waterSkillStats.rainAmplify" :min="0" :max="100" size="small" />
+                                        <el-input-number
+                                            v-model="waterSkillStats.rainAmplify"
+                                            :min="0"
+                                            :max="100"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>雷雨鑑定等級</label>
-                                        <el-input-number v-model="waterSkillStats.rainAmplifyAppraisalLevel" :min="0" :max="20" size="small" />
+                                        <el-input-number
+                                            v-model="waterSkillStats.rainAmplifyAppraisalLevel"
+                                            :min="0"
+                                            :max="20"
+                                            size="small"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -827,10 +1021,16 @@ const applyPreset = (preset: string) => {
                                 <h3>水炮傷害</h3>
                                 <div class="result-value">{{ formatNumber(waterCannonDamage.result) }}</div>
                                 <div class="formula-breakdown">
-                                    <p class="formula">A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J)</p>
+                                    <p class="formula">
+                                        A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J)
+                                    </p>
                                     <div class="breakdown-grid">
                                         <span>A1 = {{ waterCannonDamage.A1 }}</span>
-                                        <span>B1 = {{ waterCannonDamage.B1.toFixed(4) }} ({{ waterCannonDamage.baseMultiplier.toFixed(1) }}% × {{ waterCannonDamage.chargeMultiplier }})</span>
+                                        <span>
+                                            B1 = {{ waterCannonDamage.B1.toFixed(4) }} ({{
+                                                waterCannonDamage.baseMultiplier.toFixed(1)
+                                            }}% × {{ waterCannonDamage.chargeMultiplier }})
+                                        </span>
                                         <span>C(雷雨) = {{ (waterCannonDamage.C * 100).toFixed(0) }}%</span>
                                         <span>D(套裝) = {{ (waterCannonDamage.D * 100).toFixed(0) }}%</span>
                                         <span>E = {{ (waterCannonDamage.E * 100).toFixed(0) }}%</span>
@@ -845,11 +1045,21 @@ const applyPreset = (preset: string) => {
                                 <div class="skill-inputs">
                                     <div class="input-row">
                                         <label>地刺倍率 % (每級遺物 +20%)</label>
-                                        <el-input-number v-model="waterSkillStats.spiralBurstMultiplier" :min="100" :max="3000" size="small" />
+                                        <el-input-number
+                                            v-model="waterSkillStats.spiralBurstMultiplier"
+                                            :min="100"
+                                            :max="3000"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>遺物等級</label>
-                                        <el-input-number v-model="waterSkillStats.spiralBurstRelicLevel" :min="0" :max="10" size="small" />
+                                        <el-input-number
+                                            v-model="waterSkillStats.spiralBurstRelicLevel"
+                                            :min="0"
+                                            :max="10"
+                                            size="small"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -880,15 +1090,31 @@ const applyPreset = (preset: string) => {
                                 <div class="skill-inputs">
                                     <div class="input-row">
                                         <label>基礎值 (A) % (四火+鏈接=8%)</label>
-                                        <el-input-number v-model="catalyticStats.baseValue" :min="0" :max="50" size="small" />
+                                        <el-input-number
+                                            v-model="catalyticStats.baseValue"
+                                            :min="0"
+                                            :max="50"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>紅草+曼德拉 (B) %</label>
-                                        <el-input-number v-model="catalyticStats.herbBonus" :min="0" :max="50" size="small" />
+                                        <el-input-number
+                                            v-model="catalyticStats.herbBonus"
+                                            :min="0"
+                                            :max="50"
+                                            size="small"
+                                        />
                                     </div>
                                     <div class="input-row">
                                         <label>平均屬性（每 500 +1%）</label>
-                                        <el-input-number v-model="catalyticStats.linkAttributeAvg" :min="0" :max="5000" :step="100" size="small" />
+                                        <el-input-number
+                                            v-model="catalyticStats.linkAttributeAvg"
+                                            :min="0"
+                                            :max="5000"
+                                            :step="100"
+                                            size="small"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -905,7 +1131,12 @@ const applyPreset = (preset: string) => {
                                         <span>D(屬性) = {{ (catalyticSynergy.D * 100).toFixed(0) }}%</span>
                                     </div>
                                     <div class="intermediate-values">
-                                        <p>計算過程: {{ (catalyticSynergy.A * 100).toFixed(0) }}% × (1 + {{ (catalyticSynergy.B * 100).toFixed(0) }}% + {{ (catalyticSynergy.C * 100).toFixed(1) }}%) + {{ (catalyticSynergy.D * 100).toFixed(0) }}%</p>
+                                        <p>
+                                            計算過程: {{ (catalyticSynergy.A * 100).toFixed(0) }}% × (1 +
+                                            {{ (catalyticSynergy.B * 100).toFixed(0) }}% +
+                                            {{ (catalyticSynergy.C * 100).toFixed(1) }}%) +
+                                            {{ (catalyticSynergy.D * 100).toFixed(0) }}%
+                                        </p>
                                     </div>
                                 </div>
                             </div>
