@@ -255,7 +255,7 @@ const selectableAbility = [
     "attack_max",
     "critical_damage",
     "magic_attack",
-    "musicbuff_bonus",
+    "music_buff_bonus",
     "bonus_damage",
     "move_speed",
     "critical_cap_increase",
