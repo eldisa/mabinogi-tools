@@ -227,7 +227,7 @@
                                 </div>
                             </div>
                             <el-table
-                                :data="materialPriceTableData"
+                                :data="materialPrices"
                                 border
                                 style="width: 100%"
                                 :row-key="'id'"
@@ -241,7 +241,9 @@
                                         />
                                     </template>
                                 </el-table-column>
-                                <el-table-column prop="name" label="名稱" min-width="200" fixed="left" />
+                                <el-table-column label="名稱" min-width="200" fixed="left">
+                                    <template #default="{ row }">{{ getMaterialName(row.id) }}</template>
+                                </el-table-column>
                                 <el-table-column label="庫存數量" width="160" align="center">
                                     <template #default="{ row }">
                                         <el-input-number
@@ -334,16 +336,10 @@ const resetMaterialPrices = () => {
     localStorage.removeItem(STORAGE_KEY);
 };
 
-// 材料價格設定的 table 資料（結合 materials 的名稱）
-const materialPriceTableData = computed(() => {
-    return materialPrices.value.map((entry) => {
-        const material = materials.find((m) => m.id === entry.id);
-        return {
-            ...entry,
-            name: material?.name.tw || material?.name.en || `#${entry.id}`,
-        };
-    });
-});
+const getMaterialName = (id: number): string => {
+    const material = materials.find((m) => m.id === id);
+    return material?.name.tw || material?.name.en || `#${id}`;
+};
 const displayData = ref<CraftTreeNode[]>([]);
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
