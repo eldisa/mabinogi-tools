@@ -155,7 +155,7 @@
                                         v-if="dataInPreviewTable?.children?.length"
                                         :data="dataInPreviewTable.children"
                                         style="width: 100%"
-                                        :row-key="(row:CraftTreeNode) => row.uniqueKey"
+                                        :row-key="(row: CraftTreeNode) => row.uniqueKey"
                                         border
                                         lazy
                                         :tree-props="{
@@ -371,7 +371,7 @@ const filteredMaterialPrices = computed(() => {
         const aToken = aSource && "token" in aSource ? (aSource.token ?? 0) : 0;
         const bToken = bSource && "token" in bSource ? (bSource.token ?? 0) : 0;
         if (bToken !== aToken) return bToken - aToken;
-        return a.id - b.id;
+        return b.id - a.id;
     });
 });
 const displayData = ref<CraftTreeNode[]>([]);
@@ -428,7 +428,7 @@ const buildCraftTree = (
     item: CraftableItem,
     allItems: CraftableItem[],
     multiplier: number = 1,
-    path = ""
+    path = "",
 ): CraftTreeNode => {
     const unitAmount = 1;
     const totalAmount = multiplier * unitAmount;
@@ -557,17 +557,20 @@ const handleSelectDisplayData = (index: number) => {
 };
 
 const renderDetailUsage = (usedInDetail: AmountByID[]): string => {
-    const groups = usedInDetail.reduce((acc, { id, total }) => {
-        if (total <= 0) return acc;
+    const groups = usedInDetail.reduce(
+        (acc, { id, total }) => {
+            if (total <= 0) return acc;
 
-        const name =
-            craftWeaponOptions.find((weapon) => Number(weapon.value) === id)?.label.replace("靈魂解放者", "") ||
-            `未知裝備 #${id}`;
+            const name =
+                craftWeaponOptions.find((weapon) => Number(weapon.value) === id)?.label.replace("靈魂解放者", "") ||
+                `未知裝備 #${id}`;
 
-        if (!acc[total]) acc[total] = [];
-        acc[total].push(name);
-        return acc;
-    }, {} as Record<number, string[]>);
+            if (!acc[total]) acc[total] = [];
+            acc[total].push(name);
+            return acc;
+        },
+        {} as Record<number, string[]>,
+    );
 
     const result = Object.entries(groups)
         .sort(([a], [b]) => Number(b) - Number(a))
@@ -596,7 +599,7 @@ watch(
             hasAddEvent.value = true;
         }
     },
-    { immediate: true }
+    { immediate: true },
 );
 </script>
 
