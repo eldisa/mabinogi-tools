@@ -218,6 +218,54 @@
                                 </el-table>
                             </div>
                         </el-tab-pane>
+                        <el-tab-pane label="材料與庫存價格設定">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold text-accent">材料庫存與價格設定</h2>
+                                <div class="flex gap-2">
+                                    <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
+                                    <el-button type="info" plain @click="resetMaterialPrices">重置</el-button>
+                                </div>
+                            </div>
+                            <el-table
+                                :data="materialPriceTableData"
+                                border
+                                style="width: 100%"
+                                :row-key="'id'"
+                                max-height="600"
+                            >
+                                <el-table-column label="圖片" width="70" align="center" fixed="left">
+                                    <template #default="{ row }">
+                                        <img
+                                            :src="`${baseUrl}itemImage/${row.id}.png`"
+                                            class="w-8 h-8 object-contain mx-auto"
+                                        />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="name" label="名稱" min-width="200" fixed="left" />
+                                <el-table-column label="庫存數量" width="160" align="center">
+                                    <template #default="{ row }">
+                                        <el-input-number
+                                            v-model="row.stock"
+                                            :min="0"
+                                            :controls="false"
+                                            size="small"
+                                            style="width: 120px"
+                                        />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="價格（金幣）" width="180" align="center">
+                                    <template #default="{ row }">
+                                        <el-input-number
+                                            v-model="row.price"
+                                            :min="0"
+                                            :controls="false"
+                                            size="small"
+                                            style="width: 140px"
+                                        />
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-tab-pane>
                     </el-tabs>
                 </el-card>
             </div>
@@ -230,6 +278,7 @@ import { ref, watch, computed } from "vue";
 import { Option } from "../types";
 import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage, AmountByID } from "../types/CraftItem";
 import { materials, G27bossDropsUsage } from "../data/materials";
+import { defaultMaterialPrices, type MaterialPriceEntry } from "../data/materialPrices";
 import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTooltip, ElIcon, TableV2SortOrder } from "element-plus";
 import { InfoFilled } from "@element-plus/icons-vue";
@@ -257,6 +306,44 @@ const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
 
 const scrollRow = ref<HTMLElement | null>(null);
 const inventory = ref<Record<string, number>>({});
+
+// 材料價格與庫存設定
+const STORAGE_KEY = "mabinogi-material-prices";
+
+const loadMaterialPrices = (): MaterialPriceEntry[] => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return defaultMaterialPrices.map((e) => ({ ...e }));
+    try {
+        const parsed: MaterialPriceEntry[] = JSON.parse(saved);
+        // 合併：保留預設中有但 localStorage 沒有的條目
+        const savedMap = new Map(parsed.map((e) => [e.id, e]));
+        return defaultMaterialPrices.map((def) => savedMap.get(def.id) ?? { ...def });
+    } catch {
+        return defaultMaterialPrices.map((e) => ({ ...e }));
+    }
+};
+
+const materialPrices = ref<MaterialPriceEntry[]>(loadMaterialPrices());
+
+const saveMaterialPrices = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(materialPrices.value));
+};
+
+const resetMaterialPrices = () => {
+    materialPrices.value = defaultMaterialPrices.map((e) => ({ ...e }));
+    localStorage.removeItem(STORAGE_KEY);
+};
+
+// 材料價格設定的 table 資料（結合 materials 的名稱）
+const materialPriceTableData = computed(() => {
+    return materialPrices.value.map((entry) => {
+        const material = materials.find((m) => m.id === entry.id);
+        return {
+            ...entry,
+            name: material?.name.tw || material?.name.en || `#${entry.id}`,
+        };
+    });
+});
 const displayData = ref<CraftTreeNode[]>([]);
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
