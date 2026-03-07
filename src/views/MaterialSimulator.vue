@@ -222,12 +222,18 @@
                             <div class="flex justify-between items-center mb-4">
                                 <h2 class="text-lg font-semibold text-accent">材料庫存與價格設定</h2>
                                 <div class="flex gap-2">
+                                    <el-input
+                                        v-model="materialPriceFilter"
+                                        placeholder="搜尋名稱..."
+                                        clearable
+                                        style="width: 180px"
+                                    />
                                     <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
                                     <el-button type="info" plain @click="resetMaterialPrices">重置</el-button>
                                 </div>
                             </div>
                             <el-table
-                                :data="materialPrices"
+                                :data="filteredMaterialPrices"
                                 border
                                 style="width: 100%"
                                 :row-key="'id'"
@@ -340,6 +346,13 @@ const getMaterialName = (id: number): string => {
     const material = materials.find((m) => m.id === id);
     return material?.name.tw || material?.name.en || `#${id}`;
 };
+
+const materialPriceFilter = ref("");
+const filteredMaterialPrices = computed(() => {
+    const q = materialPriceFilter.value.trim();
+    if (!q) return materialPrices.value;
+    return materialPrices.value.filter((entry) => getMaterialName(entry.id).includes(q));
+});
 const displayData = ref<CraftTreeNode[]>([]);
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
