@@ -232,6 +232,9 @@
                                     <el-button type="info" plain @click="resetMaterialPrices">重置</el-button>
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <el-checkbox v-model="showOnlyTokenMaterials">只顯示珠子兌換項目</el-checkbox>
+                            </div>
                             <el-table
                                 :data="filteredMaterialPrices"
                                 border
@@ -348,10 +351,17 @@ const getMaterialName = (id: number): string => {
 };
 
 const materialPriceFilter = ref("");
+const showOnlyTokenMaterials = ref(false);
 const filteredMaterialPrices = computed(() => {
     const q = materialPriceFilter.value.trim();
-    if (!q) return materialPrices.value;
-    return materialPrices.value.filter((entry) => getMaterialName(entry.id).includes(q));
+    return materialPrices.value.filter((entry) => {
+        if (q && !getMaterialName(entry.id).includes(q)) return false;
+        if (showOnlyTokenMaterials.value) {
+            const material = materials.find((m) => m.id === entry.id);
+            if (!material?.source?.token || material.source.token < 1) return false;
+        }
+        return true;
+    });
 });
 const displayData = ref<CraftTreeNode[]>([]);
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
