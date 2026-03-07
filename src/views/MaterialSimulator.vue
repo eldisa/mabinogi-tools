@@ -354,13 +354,24 @@ const materialPriceFilter = ref("");
 const showOnlyTokenMaterials = ref(false);
 const filteredMaterialPrices = computed(() => {
     const q = materialPriceFilter.value.trim();
-    return materialPrices.value.filter((entry) => {
+    const filtered = materialPrices.value.filter((entry) => {
         if (q && !getMaterialName(entry.id).includes(q)) return false;
         if (showOnlyTokenMaterials.value) {
-            const material = materials.find((m) => m.id === entry.id);
-            if (!material?.source?.token || material.source.token < 1) return false;
+            const source = materials.find((m) => m.id === entry.id)?.source;
+            const token = source && "token" in source ? source.token : undefined;
+            if (!token || token < 1) return false;
         }
         return true;
+    });
+    return [...filtered].sort((a, b) => {
+        if (a.id === 5300217) return -1;
+        if (b.id === 5300217) return 1;
+        const aSource = materials.find((m) => m.id === a.id)?.source;
+        const bSource = materials.find((m) => m.id === b.id)?.source;
+        const aToken = aSource && "token" in aSource ? (aSource.token ?? 0) : 0;
+        const bToken = bSource && "token" in bSource ? (bSource.token ?? 0) : 0;
+        if (bToken !== aToken) return bToken - aToken;
+        return a.id - b.id;
     });
 });
 const displayData = ref<CraftTreeNode[]>([]);
