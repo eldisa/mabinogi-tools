@@ -333,12 +333,13 @@
                                 </el-table-column>
                                 <el-table-column label="價格（金幣）" width="180" align="center">
                                     <template #default="{ row }">
-                                        <el-input-number
-                                            v-model="row.price"
-                                            :min="0"
-                                            :controls="false"
+                                        <el-input
+                                            :model-value="formatNumberInput(row.price)"
+                                            @focus="(e: FocusEvent) => (e.target as HTMLInputElement).value = String(row.price || '')"
+                                            @blur="(e: FocusEvent) => { row.price = parseNumberInput((e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value = formatNumberInput(row.price) }"
+                                            :input-style="{ textAlign: 'center' }"
                                             size="small"
-                                            style="width: 140px"
+                                            style="width: 150px"
                                         />
                                     </template>
                                 </el-table-column>
@@ -415,6 +416,9 @@ const resetMaterialPrices = () => {
     materialPrices.value = defaultMaterialPrices.map((e) => ({ ...e }));
     localStorage.removeItem(STORAGE_KEY);
 };
+
+const formatNumberInput = (v: number): string => (v ? v.toLocaleString("zh-TW") : "0");
+const parseNumberInput = (v: string): number => Math.max(0, Number(v.replace(/,/g, "")) || 0);
 
 const getMaterialName = (id: number): string => {
     const material = materials.find((m) => m.id === id);
