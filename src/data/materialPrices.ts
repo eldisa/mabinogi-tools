@@ -124,5 +124,5 @@ export const defaultMaterialPrices: MaterialPriceEntry[] = [
     { id: 5100328, price: 1300000, stock: 0, method: "buy" },
     { id: 5100329, price: 3500000, stock: 0, method: "buy" },
     { id: 5100330, price: 700000, stock: 0, method: "buy" },
-    { id: 5300217, price: 0, stock: 0, method: "buy" },
+    { id: 5300217, price: 3000000, stock: 0, method: "buy" },
 ];
