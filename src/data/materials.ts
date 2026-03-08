@@ -497,7 +497,9 @@ export const materials: CraftableItem[] = [
             tw: "甦醒力量的精華液",
         },
         source: {
-            type: "",
+            type: "desc",
+            description: "地城/影任務/G27副本獎勵/商店購買 (布里萊赫珠子:5)",
+            token: 5,
         },
     },
     {
