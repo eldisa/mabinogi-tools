@@ -60,7 +60,10 @@
                 <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
                         <el-tab-pane label="Total 材料總計">
-                            <h2 class="text-lg font-semibold text-accent mb-4">庫存與所需材料</h2>
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-lg font-semibold text-accent">庫存與所需材料</h2>
+                                <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
+                            </div>
                             <!--todo: 庫存與所需材料-->
                             <div class="mt-4 overflow-x-auto overflow-y-auto">
                                 <!-- 手機版 -->
@@ -118,6 +121,12 @@
                                                     >
                                                         <el-icon><InfoFilled /></el-icon>
                                                     </el-tooltip>
+                                                    <span
+                                                        v-if="showTokenCount && getRowTokenCount(row.id) > 0"
+                                                        class="text-xs text-yellow-400 whitespace-nowrap"
+                                                    >
+                                                        : {{ getRowTokenCount(row.id) }} 珠子
+                                                    </span>
                                                 </div>
                                             </template>
                                         </el-table-column>
@@ -309,7 +318,15 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="名稱" min-width="200" fixed="left">
-                                    <template #default="{ row }">{{ getMaterialName(row.id) }}</template>
+                                    <template #default="{ row }">
+                                        <span>{{ getMaterialName(row.id) }}</span>
+                                        <span
+                                            v-if="showTokenCount && getRowTokenCount(row.id) > 0"
+                                            class="text-xs text-yellow-400 whitespace-nowrap ml-1"
+                                        >
+                                            : {{ getRowTokenCount(row.id) }} 珠子
+                                        </span>
+                                    </template>
                                 </el-table-column>
                                 <el-table-column label="取得方式" width="150" align="center">
                                     <template #default="{ row }">
@@ -461,6 +478,13 @@ const getUnitCost = (entry: MaterialPriceEntry): number => {
         return tokenCount * tokenPrice.value;
     }
     return entry.price;
+};
+
+const showTokenCount = ref(false);
+
+const getRowTokenCount = (id: number): number => {
+    const source = materials.find((m) => m.id === id)?.source;
+    return source && "token" in source ? (source.token ?? 0) : 0;
 };
 
 const materialPriceFilter = ref("");
