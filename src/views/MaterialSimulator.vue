@@ -130,10 +130,53 @@
                                             sortable
                                         />
 
+                                        <el-table-column label="庫存" width="100" align="center">
+                                            <template #default="{ row }">
+                                                {{ materialPrices.find((e) => e.id === row.id)?.stock ?? 0 }}
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column label="缺少" width="100" align="center">
+                                            <template #default="{ row }">
+                                                {{
+                                                    Math.max(
+                                                        0,
+                                                        row.total -
+                                                            (materialPrices.find((e) => e.id === row.id)?.stock ?? 0),
+                                                    )
+                                                }}
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column label="取得方式" width="110" align="center">
+                                            <template #default="{ row }">
+                                                {{
+                                                    materialPrices.find((e) => e.id === row.id)?.method === "token"
+                                                        ? "珠子兌換"
+                                                        : "購買"
+                                                }}
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column label="小計（金幣）" width="150" align="right">
+                                            <template #default="{ row }">
+                                                {{
+                                                    (() => {
+                                                        const entry = materialPrices.find((e) => e.id === row.id);
+                                                        if (!entry) return "—";
+                                                        const shortage = Math.max(0, row.total - entry.stock);
+                                                        if (shortage === 0) return "0";
+                                                        const cost = getUnitCost(entry);
+                                                        return cost > 0 ? (shortage * cost).toLocaleString() : "未設定";
+                                                    })()
+                                                }}
+                                            </template>
+                                        </el-table-column>
+
                                         <el-table-column
                                             prop="source"
                                             label="如何取得"
-                                            min-width="300"
+                                            min-width="200"
                                             align="left"
                                             sortable
                                         >
@@ -143,6 +186,16 @@
                                         </el-table-column>
                                     </el-table>
                                 </div>
+                            </div>
+
+                            <!-- 總成本 summary（overflow 外，確保顯示） -->
+                            <div class="mt-3 text-right text-sm text-gray-300">
+                                總成本估算：
+                                <span class="text-accent font-semibold text-base">
+                                    {{ totalCostSummary.total.toLocaleString() }}
+                                    {{ totalCostSummary.hasUnset ? "+ 部分未設定" : "" }}
+                                    金幣
+                                </span>
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="Roadmap 製作路線">
@@ -253,6 +306,20 @@
                                 <el-table-column label="名稱" min-width="200" fixed="left">
                                     <template #default="{ row }">{{ getMaterialName(row.id) }}</template>
                                 </el-table-column>
+                                <el-table-column label="取得方式" width="150" align="center">
+                                    <template #default="{ row }">
+                                        <el-select
+                                            v-if="isTokenMaterial(row.id)"
+                                            v-model="row.method"
+                                            size="small"
+                                            style="width: 120px"
+                                        >
+                                            <el-option value="buy" label="購買" />
+                                            <el-option value="token" label="珠子兌換" />
+                                        </el-select>
+                                        <span v-else class="text-gray-400 text-sm">購買</span>
+                                    </template>
+                                </el-table-column>
                                 <el-table-column label="庫存數量" width="160" align="center">
                                     <template #default="{ row }">
                                         <el-input-number
@@ -326,9 +393,13 @@ const loadMaterialPrices = (): MaterialPriceEntry[] => {
     if (!saved) return defaultMaterialPrices.map((e) => ({ ...e }));
     try {
         const parsed: MaterialPriceEntry[] = JSON.parse(saved);
-        // 合併：保留預設中有但 localStorage 沒有的條目
         const savedMap = new Map(parsed.map((e) => [e.id, e]));
-        return defaultMaterialPrices.map((def) => savedMap.get(def.id) ?? { ...def });
+        return defaultMaterialPrices.map((def) => {
+            const s = savedMap.get(def.id);
+            if (!s) return { ...def };
+            // 補上新欄位的預設值（舊資料可能沒有 method）
+            return { ...def, ...s, method: s.method ?? "buy" };
+        });
     } catch {
         return defaultMaterialPrices.map((e) => ({ ...e }));
     }
@@ -348,6 +419,24 @@ const resetMaterialPrices = () => {
 const getMaterialName = (id: number): string => {
     const material = materials.find((m) => m.id === id);
     return material?.name.tw || material?.name.en || `#${id}`;
+};
+
+const isTokenMaterial = (id: number): boolean => {
+    const source = materials.find((m) => m.id === id)?.source;
+    return !!(source && "token" in source && source.token && source.token >= 1);
+};
+
+// 珠子（id:5300217）的單價
+const tokenPrice = computed(() => materialPrices.value.find((e) => e.id === 5300217)?.price ?? 0);
+
+// 計算單一材料的單位成本（金幣）
+const getUnitCost = (entry: MaterialPriceEntry): number => {
+    if (entry.method === "token") {
+        const source = materials.find((m) => m.id === entry.id)?.source;
+        const tokenCount = source && "token" in source ? (source.token ?? 0) : 0;
+        return tokenCount * tokenPrice.value;
+    }
+    return entry.price;
 };
 
 const materialPriceFilter = ref("");
@@ -549,6 +638,25 @@ const sortedData = computed(() => {
         const bVal = b[key as keyof MaterialSummary];
         return order === TableV2SortOrder.ASC ? Number(aVal) - Number(bVal) : Number(bVal) - Number(aVal);
     });
+});
+
+const totalCostSummary = computed(() => {
+    let total = 0;
+    let hasUnset = false;
+    for (const row of sortedData.value) {
+        const entry = materialPrices.value.find((e) => e.id === row.id);
+        if (!entry) continue;
+        const shortage = Math.max(0, row.total - entry.stock);
+        if (shortage === 0) continue;
+        const cost = getUnitCost(entry);
+        if (cost === 0) {
+            hasUnset = true;
+            continue;
+        }
+        total += shortage * cost;
+    }
+    console.log("totalCostSummary", { total, hasUnset });
+    return { total, hasUnset };
 });
 
 const handleSelectDisplayData = (index: number) => {
