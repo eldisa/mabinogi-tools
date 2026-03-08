@@ -189,13 +189,18 @@
                             </div>
 
                             <!-- 總成本 summary（overflow 外，確保顯示） -->
-                            <div class="mt-3 text-right text-sm text-gray-300">
+                            <div class="mt-3 flex justify-end items-center gap-1 text-sm text-gray-300">
                                 總成本估算：
                                 <span class="text-accent font-semibold text-base">
-                                    {{ totalCostSummary.total.toLocaleString() }}
-                                    {{ totalCostSummary.hasUnset ? "+ 部分未設定" : "" }}
-                                    金幣
+                                    {{ formatLargeNumber(totalCostSummary.total) }} 金幣
                                 </span>
+                                <el-tooltip
+                                    v-if="totalCostSummary.hasUnset"
+                                    content="部分材料未設定價格，實際成本可能更高"
+                                    placement="top"
+                                >
+                                    <el-icon class="cursor-help text-yellow-400"><QuestionFilled /></el-icon>
+                                </el-tooltip>
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="Roadmap 製作路線">
@@ -360,7 +365,7 @@ import { materials, G27bossDropsUsage } from "../data/materials";
 import { defaultMaterialPrices, type MaterialPriceEntry } from "../data/materialPrices";
 import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTooltip, ElIcon, TableV2SortOrder } from "element-plus";
-import { InfoFilled } from "@element-plus/icons-vue";
+import { InfoFilled, QuestionFilled } from "@element-plus/icons-vue";
 import type { SortBy } from "element-plus";
 import { useLayoutStore } from "../stores/layout";
 
@@ -419,6 +424,12 @@ const resetMaterialPrices = () => {
 
 const formatNumberInput = (v: number): string => (v ? v.toLocaleString("zh-TW") : "0");
 const parseNumberInput = (v: string): number => Math.max(0, Number(v.replace(/,/g, "")) || 0);
+
+const formatLargeNumber = (v: number): string => {
+    if (v >= 1_0000_0000) return (v / 1_0000_0000).toFixed(2) + " 億";
+    if (v >= 1_0000) return (v / 1_0000).toFixed(2) + " 萬";
+    return v.toLocaleString("zh-TW");
+};
 
 const getMaterialName = (id: number): string => {
     const material = materials.find((m) => m.id === id);
