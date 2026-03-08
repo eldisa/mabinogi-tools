@@ -106,7 +106,7 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column prop="name" label="名稱" width="250" fixed="left" sortable>
+                                        <el-table-column prop="name" label="名稱" width="280" fixed="left" sortable>
                                             <template #default="{ row }">
                                                 <div class="flex items-center space-x-2">
                                                     <span>{{ row.name }}</span>
@@ -189,8 +189,8 @@
                             </div>
 
                             <!-- 總成本 summary（overflow 外，確保顯示） -->
-                            <div class="mt-3 flex justify-end items-center gap-1 text-sm text-gray-300">
-                                總成本估算：
+                            <div class="mt-3 flex justify-end items-center gap-2 text-sm text-gray-300 flex-wrap">
+                                <span>總成本估算：</span>
                                 <span class="text-accent font-semibold text-base">
                                     {{ formatLargeNumber(totalCostSummary.total) }} 金幣
                                 </span>
@@ -340,8 +340,16 @@
                                     <template #default="{ row }">
                                         <el-input
                                             :model-value="formatNumberInput(row.price)"
-                                            @focus="(e: FocusEvent) => (e.target as HTMLInputElement).value = String(row.price || '')"
-                                            @blur="(e: FocusEvent) => { row.price = parseNumberInput((e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value = formatNumberInput(row.price) }"
+                                            @focus="
+                                                (e: FocusEvent) =>
+                                                    ((e.target as HTMLInputElement).value = String(row.price || ''))
+                                            "
+                                            @blur="
+                                                (e: FocusEvent) => {
+                                                    row.price = parseNumberInput((e.target as HTMLInputElement).value);
+                                                    (e.target as HTMLInputElement).value = formatNumberInput(row.price);
+                                                }
+                                            "
                                             :input-style="{ textAlign: 'center' }"
                                             size="small"
                                             style="width: 150px"
@@ -380,6 +388,7 @@ interface MaterialSummary {
 }
 
 const baseUrl = import.meta.env.BASE_URL;
+const TOKEN_ID = 5300217;
 const selectedWeapons = ref<number[]>([]);
 
 const preserveExpanded = ref(false);
@@ -442,7 +451,7 @@ const isTokenMaterial = (id: number): boolean => {
 };
 
 // 珠子（id:5300217）的單價
-const tokenPrice = computed(() => materialPrices.value.find((e) => e.id === 5300217)?.price ?? 0);
+const tokenPrice = computed(() => materialPrices.value.find((e) => e.id === TOKEN_ID)?.price ?? 0);
 
 // 計算單一材料的單位成本（金幣）
 const getUnitCost = (entry: MaterialPriceEntry): number => {
@@ -468,8 +477,8 @@ const filteredMaterialPrices = computed(() => {
         return true;
     });
     return [...filtered].sort((a, b) => {
-        if (a.id === 5300217) return -1;
-        if (b.id === 5300217) return 1;
+        if (a.id === TOKEN_ID) return -1;
+        if (b.id === TOKEN_ID) return 1;
         const aSource = materials.find((m) => m.id === a.id)?.source;
         const bSource = materials.find((m) => m.id === b.id)?.source;
         const aToken = aSource && "token" in aSource ? (aSource.token ?? 0) : 0;
@@ -504,23 +513,24 @@ const materialSummaryTable = computed(() => {
         })
         .filter((ele) => ele.total > 0);
     result.forEach((ele) => {
-        if (ele.source.type === "desc" && ele.source.token) {
+        const entry = materialPrices.value.find((e) => e.id === ele.id);
+        if (entry?.method === "token" && ele.source.type === "desc" && ele.source.token) {
             tokenTotal += ele.source.token * ele.total;
         }
     });
-    let tokenData = materials.find((ele) => ele.id === 5300217);
+    let tokenData = materials.find((ele) => ele.id === TOKEN_ID);
 
     if (materialMap.value.length > 0 && tokenData) {
         const tokenName = tokenData.name.tw || tokenData.name.en;
-        const index = result.findIndex((ele) => ele.id === 5300217);
+        const index = result.findIndex((ele) => ele.id === TOKEN_ID);
         if (index === -1) {
             result.push({
-                id: 5300217,
+                id: TOKEN_ID,
                 name: tokenName,
                 otherName: "",
                 total: tokenTotal,
-                owned: inventory.value[5300217] || 0,
-                shortage: Math.max(0, 0 - (inventory.value[5300217] || 0)),
+                owned: inventory.value[TOKEN_ID] || 0,
+                shortage: Math.max(0, 0 - (inventory.value[TOKEN_ID] || 0)),
                 source: tokenData.source,
             });
         }
@@ -658,11 +668,16 @@ const sortedData = computed(() => {
 const totalCostSummary = computed(() => {
     let total = 0;
     let hasUnset = false;
+
     for (const row of sortedData.value) {
+        // 5300217（珠子）本身跳過：token 成本已透過 method="token" 材料的 getUnitCost 計入
+        if (row.id === TOKEN_ID) continue;
+
         const entry = materialPrices.value.find((e) => e.id === row.id);
         if (!entry) continue;
         const shortage = Math.max(0, row.total - entry.stock);
         if (shortage === 0) continue;
+
         const cost = getUnitCost(entry);
         if (cost === 0) {
             hasUnset = true;
@@ -670,7 +685,7 @@ const totalCostSummary = computed(() => {
         }
         total += shortage * cost;
     }
-    console.log("totalCostSummary", { total, hasUnset });
+
     return { total, hasUnset };
 });
 

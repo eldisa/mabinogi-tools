@@ -1877,7 +1877,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "reward",
-            description: "G27副本獎勵 (這邊是統計材料全用換的需要多少珠子)",
+            description: "G27副本獎勵",
         },
     },
 ];
