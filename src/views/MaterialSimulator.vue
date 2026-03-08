@@ -60,7 +60,10 @@
                 <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
                         <el-tab-pane label="Total 材料總計">
-                            <h2 class="text-lg font-semibold text-accent mb-4">庫存與所需材料</h2>
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-lg font-semibold text-accent">庫存與所需材料</h2>
+                                <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
+                            </div>
                             <!--todo: 庫存與所需材料-->
                             <div class="mt-4 overflow-x-auto overflow-y-auto">
                                 <!-- 手機版 -->
@@ -106,7 +109,7 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column prop="name" label="名稱" width="250" fixed="left" sortable>
+                                        <el-table-column prop="name" label="名稱" width="280" fixed="left" sortable>
                                             <template #default="{ row }">
                                                 <div class="flex items-center space-x-2">
                                                     <span>{{ row.name }}</span>
@@ -118,6 +121,12 @@
                                                     >
                                                         <el-icon><InfoFilled /></el-icon>
                                                     </el-tooltip>
+                                                    <span
+                                                        v-if="showTokenCount && getRowTokenCount(row.id) > 0"
+                                                        class="text-xs text-yellow-400 whitespace-nowrap"
+                                                    >
+                                                        : {{ getRowTokenCount(row.id) }} 珠子
+                                                    </span>
                                                 </div>
                                             </template>
                                         </el-table-column>
@@ -130,10 +139,54 @@
                                             sortable
                                         />
 
+                                        <el-table-column label="庫存" width="100" align="center">
+                                            <template #default="{ row }">
+                                                {{ materialPrices.find((e) => e.id === row.id)?.stock ?? 0 }}
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column label="缺少" width="100" align="center">
+                                            <template #default="{ row }">
+                                                {{
+                                                    Math.max(
+                                                        0,
+                                                        row.total -
+                                                            (materialPrices.find((e) => e.id === row.id)?.stock ?? 0),
+                                                    )
+                                                }}
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column label="取得方式" width="110" align="center">
+                                            <template #default="{ row }">
+                                                {{
+                                                    materialPrices.find((e) => e.id === row.id)?.method === "token"
+                                                        ? "珠子兌換"
+                                                        : "購買"
+                                                }}
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column label="小計（金幣）" width="150" align="right">
+                                            <template #default="{ row }">
+                                                {{
+                                                    (() => {
+                                                        const entry = materialPrices.find((e) => e.id === row.id);
+                                                        if (!entry) return "—";
+                                                        const shortage = Math.max(0, row.total - entry.stock);
+                                                        if (shortage === 0) return "0";
+                                                        if (selfProvideTokens && (row.id === TOKEN_ID || entry.method === "token")) return "（自備）";
+                                                        const cost = getUnitCost(entry);
+                                                        return cost > 0 ? (shortage * cost).toLocaleString() : "未設定";
+                                                    })()
+                                                }}
+                                            </template>
+                                        </el-table-column>
+
                                         <el-table-column
                                             prop="source"
                                             label="如何取得"
-                                            min-width="300"
+                                            min-width="200"
                                             align="left"
                                             sortable
                                         >
@@ -142,6 +195,24 @@
                                             </template>
                                         </el-table-column>
                                     </el-table>
+                                </div>
+                            </div>
+
+                            <!-- 總成本 summary（overflow 外，確保顯示） -->
+                            <div class="mt-3 flex justify-between items-center gap-2 text-sm text-gray-300 flex-wrap">
+                                <el-checkbox v-model="selfProvideTokens">珠子自備（不計入成本）</el-checkbox>
+                                <div class="flex items-center gap-2">
+                                    <span>總成本估算：</span>
+                                    <span class="text-accent font-semibold text-base">
+                                        {{ formatLargeNumber(totalCostSummary.total) }} 金幣
+                                    </span>
+                                    <el-tooltip
+                                        v-if="totalCostSummary.hasUnset"
+                                        content="部分材料未設定價格，實際成本可能更高"
+                                        placement="top"
+                                    >
+                                        <el-icon class="cursor-help text-yellow-400"><QuestionFilled /></el-icon>
+                                    </el-tooltip>
                                 </div>
                             </div>
                         </el-tab-pane>
@@ -155,7 +226,7 @@
                                         v-if="dataInPreviewTable?.children?.length"
                                         :data="dataInPreviewTable.children"
                                         style="width: 100%"
-                                        :row-key="(row:CraftTreeNode) => row.uniqueKey"
+                                        :row-key="(row: CraftTreeNode) => row.uniqueKey"
                                         border
                                         lazy
                                         :tree-props="{
@@ -218,6 +289,92 @@
                                 </el-table>
                             </div>
                         </el-tab-pane>
+                        <el-tab-pane label="材料與庫存價格設定">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold text-accent">材料庫存與價格設定</h2>
+                                <div class="flex gap-2">
+                                    <el-input
+                                        v-model="materialPriceFilter"
+                                        placeholder="搜尋名稱..."
+                                        clearable
+                                        style="width: 180px"
+                                    />
+                                    <el-button type="warning" plain @click="autoSetAcquisitionMethod">自動判斷取得方式</el-button>
+                                    <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
+                                    <el-button type="info" plain @click="resetMaterialPrices">重置</el-button>
+                                </div>
+                            </div>
+                            <div class="mb-3 flex items-center gap-4">
+                                <el-checkbox v-model="showOnlyTokenMaterials">只顯示珠子兌換項目</el-checkbox>
+                                <el-divider direction="vertical" />
+                                <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
+                            </div>
+                            <el-table
+                                :data="filteredMaterialPrices"
+                                border
+                                style="width: 100%"
+                                :row-key="'id'"
+                                max-height="600"
+                            >
+                                <el-table-column label="圖片" width="70" align="center" fixed="left">
+                                    <template #default="{ row }">
+                                        <img
+                                            :src="`${baseUrl}itemImage/${row.id}.png`"
+                                            class="w-8 h-8 object-contain mx-auto"
+                                        />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="名稱" min-width="200" fixed="left">
+                                    <template #default="{ row }">
+                                        <span>{{ getMaterialName(row.id) }}</span>
+                                        <span
+                                            v-if="showTokenCount && getRowTokenCount(row.id) > 0"
+                                            class="text-xs text-yellow-400 whitespace-nowrap ml-1"
+                                        >
+                                            : {{ getRowTokenCount(row.id) }} 珠子
+                                        </span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="取得方式" width="150" align="center">
+                                    <template #default="{ row }">
+                                        <el-select
+                                            v-if="isTokenMaterial(row.id)"
+                                            v-model="row.method"
+                                            size="small"
+                                            style="width: 120px"
+                                        >
+                                            <el-option value="buy" label="購買" />
+                                            <el-option value="token" label="珠子兌換" />
+                                        </el-select>
+                                        <span v-else class="text-gray-400 text-sm">購買</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="庫存數量" width="160" align="center">
+                                    <template #default="{ row }">
+                                        <el-input-number
+                                            v-model="row.stock"
+                                            :min="0"
+                                            :controls="false"
+                                            size="small"
+                                            style="width: 120px"
+                                        />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="價格（金幣）" width="180" align="center">
+                                    <template #default="{ row }">
+                                        <el-input
+                                            :model-value="row.id in editingPrices ? editingPrices[row.id] : formatNumberInput(row.price)"
+                                            @focus="editingPrices[row.id] = String(row.price || '')"
+                                            @input="(v: string) => { editingPrices[row.id] = v }"
+                                            @blur="() => { row.price = parseNumberInput(editingPrices[row.id] ?? '0'); delete editingPrices[row.id] }"
+                                            :input-style="{ textAlign: 'center' }"
+                                            size="small"
+                                            style="width: 150px"
+                                        />
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-tab-pane>
                     </el-tabs>
                 </el-card>
             </div>
@@ -230,9 +387,10 @@ import { ref, watch, computed } from "vue";
 import { Option } from "../types";
 import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage, AmountByID } from "../types/CraftItem";
 import { materials, G27bossDropsUsage } from "../data/materials";
+import { defaultMaterialPrices, type MaterialPriceEntry } from "../data/materialPrices";
 import { G27Weapons } from "../data/productionForG27Weapon";
-import { ElTooltip, ElIcon, TableV2SortOrder } from "element-plus";
-import { InfoFilled } from "@element-plus/icons-vue";
+import { ElTooltip, ElIcon, ElMessage, TableV2SortOrder } from "element-plus";
+import { InfoFilled, QuestionFilled } from "@element-plus/icons-vue";
 import type { SortBy } from "element-plus";
 import { useLayoutStore } from "../stores/layout";
 
@@ -247,6 +405,7 @@ interface MaterialSummary {
 }
 
 const baseUrl = import.meta.env.BASE_URL;
+const TOKEN_ID = 5300217;
 const selectedWeapons = ref<number[]>([]);
 
 const preserveExpanded = ref(false);
@@ -257,6 +416,124 @@ const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
 
 const scrollRow = ref<HTMLElement | null>(null);
 const inventory = ref<Record<string, number>>({});
+
+// 材料價格與庫存設定
+const STORAGE_KEY = "mabinogi-material-prices";
+
+const loadMaterialPrices = (): MaterialPriceEntry[] => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return defaultMaterialPrices.map((e) => ({ ...e }));
+    try {
+        const parsed: MaterialPriceEntry[] = JSON.parse(saved);
+        const savedMap = new Map(parsed.map((e) => [e.id, e]));
+        return defaultMaterialPrices.map((def) => {
+            const s = savedMap.get(def.id);
+            if (!s) return { ...def };
+            // 補上新欄位的預設值（舊資料可能沒有 method）
+            return { ...def, ...s, method: s.method ?? "buy" };
+        });
+    } catch {
+        return defaultMaterialPrices.map((e) => ({ ...e }));
+    }
+};
+
+const materialPrices = ref<MaterialPriceEntry[]>(loadMaterialPrices());
+
+const saveMaterialPrices = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(materialPrices.value));
+};
+
+const resetMaterialPrices = () => {
+    materialPrices.value = defaultMaterialPrices.map((e) => ({ ...e }));
+    localStorage.removeItem(STORAGE_KEY);
+};
+
+const formatNumberInput = (v: number): string => (v ? v.toLocaleString("zh-TW") : "0");
+const parseNumberInput = (v: string): number => Math.max(0, Number(v.replace(/,/g, "")) || 0);
+
+const formatLargeNumber = (v: number): string => {
+    if (v >= 1_0000_0000) return (v / 1_0000_0000).toFixed(2) + " 億";
+    if (v >= 1_0000) return (v / 1_0000).toFixed(2) + " 萬";
+    return v.toLocaleString("zh-TW");
+};
+
+const getMaterialName = (id: number): string => {
+    const material = materials.find((m) => m.id === id);
+    return material?.name.tw || material?.name.en || `#${id}`;
+};
+
+const isTokenMaterial = (id: number): boolean => {
+    const source = materials.find((m) => m.id === id)?.source;
+    return !!(source && "token" in source && source.token && source.token >= 1);
+};
+
+// 珠子（id:5300217）的單價
+const tokenPrice = computed(() => materialPrices.value.find((e) => e.id === TOKEN_ID)?.price ?? 0);
+
+// 計算單一材料的單位成本（金幣）
+const selfProvideTokens = ref(false);
+
+const getUnitCost = (entry: MaterialPriceEntry): number => {
+    if (entry.method === "token") {
+        if (selfProvideTokens.value) return 0;
+        const source = materials.find((m) => m.id === entry.id)?.source;
+        const tokenCount = source && "token" in source ? (source.token ?? 0) : 0;
+        return tokenCount * tokenPrice.value;
+    }
+    return entry.price;
+};
+
+const showTokenCount = ref(false);
+
+const getRowTokenCount = (id: number): number => {
+    const source = materials.find((m) => m.id === id)?.source;
+    return source && "token" in source ? (source.token ?? 0) : 0;
+};
+
+const autoSetAcquisitionMethod = () => {
+    if (tokenPrice.value === 0) {
+        ElMessage.warning("請先設定布里萊赫的珠子（id: 5300217）的單價");
+        return;
+    }
+    let changed = 0;
+    for (const entry of materialPrices.value) {
+        const source = materials.find((m) => m.id === entry.id)?.source;
+        if (!source || !("token" in source) || !source.token) continue;
+        if (entry.price === 0) continue; // 市價未設定，跳過
+        // 素材市價 / token數 < 珠子單價 → 購買划算
+        entry.method = entry.price / source.token < tokenPrice.value ? "buy" : "token";
+        changed++;
+    }
+    ElMessage.success(`已自動判斷 ${changed} 項素材的取得方式`);
+};
+
+// 追蹤正在編輯的價格欄位（key: material id, value: 使用者正在輸入的原始字串）
+const editingPrices = ref<Record<number, string>>({});
+
+const materialPriceFilter = ref("");
+const showOnlyTokenMaterials = ref(false);
+const filteredMaterialPrices = computed(() => {
+    const q = materialPriceFilter.value.trim();
+    const filtered = materialPrices.value.filter((entry) => {
+        if (q && !getMaterialName(entry.id).includes(q)) return false;
+        if (showOnlyTokenMaterials.value) {
+            const source = materials.find((m) => m.id === entry.id)?.source;
+            const token = source && "token" in source ? source.token : undefined;
+            if (!token || token < 1) return false;
+        }
+        return true;
+    });
+    return [...filtered].sort((a, b) => {
+        if (a.id === TOKEN_ID) return -1;
+        if (b.id === TOKEN_ID) return 1;
+        const aSource = materials.find((m) => m.id === a.id)?.source;
+        const bSource = materials.find((m) => m.id === b.id)?.source;
+        const aToken = aSource && "token" in aSource ? (aSource.token ?? 0) : 0;
+        const bToken = bSource && "token" in bSource ? (bSource.token ?? 0) : 0;
+        if (bToken !== aToken) return bToken - aToken;
+        return b.id - a.id;
+    });
+});
 const displayData = ref<CraftTreeNode[]>([]);
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
@@ -283,23 +560,24 @@ const materialSummaryTable = computed(() => {
         })
         .filter((ele) => ele.total > 0);
     result.forEach((ele) => {
-        if (ele.source.type === "desc" && ele.source.token) {
+        const entry = materialPrices.value.find((e) => e.id === ele.id);
+        if (entry?.method === "token" && ele.source.type === "desc" && ele.source.token) {
             tokenTotal += ele.source.token * ele.total;
         }
     });
-    let tokenData = materials.find((ele) => ele.id === 5300217);
+    let tokenData = materials.find((ele) => ele.id === TOKEN_ID);
 
     if (materialMap.value.length > 0 && tokenData) {
         const tokenName = tokenData.name.tw || tokenData.name.en;
-        const index = result.findIndex((ele) => ele.id === 5300217);
+        const index = result.findIndex((ele) => ele.id === TOKEN_ID);
         if (index === -1) {
             result.push({
-                id: 5300217,
+                id: TOKEN_ID,
                 name: tokenName,
                 otherName: "",
                 total: tokenTotal,
-                owned: inventory.value[5300217] || 0,
-                shortage: Math.max(0, 0 - (inventory.value[5300217] || 0)),
+                owned: inventory.value[TOKEN_ID] || 0,
+                shortage: Math.max(0, 0 - (inventory.value[TOKEN_ID] || 0)),
                 source: tokenData.source,
             });
         }
@@ -311,7 +589,7 @@ const buildCraftTree = (
     item: CraftableItem,
     allItems: CraftableItem[],
     multiplier: number = 1,
-    path = ""
+    path = "",
 ): CraftTreeNode => {
     const unitAmount = 1;
     const totalAmount = multiplier * unitAmount;
@@ -434,23 +712,50 @@ const sortedData = computed(() => {
     });
 });
 
+const totalCostSummary = computed(() => {
+    let total = 0;
+    let hasUnset = false;
+
+    for (const row of sortedData.value) {
+        // 5300217（珠子）本身跳過：token 成本已透過 method="token" 材料的 getUnitCost 計入
+        if (row.id === TOKEN_ID) continue;
+
+        const entry = materialPrices.value.find((e) => e.id === row.id);
+        if (!entry) continue;
+        const shortage = Math.max(0, row.total - entry.stock);
+        if (shortage === 0) continue;
+
+        const cost = getUnitCost(entry);
+        if (cost === 0) {
+            hasUnset = true;
+            continue;
+        }
+        total += shortage * cost;
+    }
+
+    return { total, hasUnset };
+});
+
 const handleSelectDisplayData = (index: number) => {
     const selectIndex = index > displayData.value.length - 1 ? 0 : index;
     selectedDisplayDataIndex.value = selectIndex;
 };
 
 const renderDetailUsage = (usedInDetail: AmountByID[]): string => {
-    const groups = usedInDetail.reduce((acc, { id, total }) => {
-        if (total <= 0) return acc;
+    const groups = usedInDetail.reduce(
+        (acc, { id, total }) => {
+            if (total <= 0) return acc;
 
-        const name =
-            craftWeaponOptions.find((weapon) => Number(weapon.value) === id)?.label.replace("靈魂解放者", "") ||
-            `未知裝備 #${id}`;
+            const name =
+                craftWeaponOptions.find((weapon) => Number(weapon.value) === id)?.label.replace("靈魂解放者", "") ||
+                `未知裝備 #${id}`;
 
-        if (!acc[total]) acc[total] = [];
-        acc[total].push(name);
-        return acc;
-    }, {} as Record<number, string[]>);
+            if (!acc[total]) acc[total] = [];
+            acc[total].push(name);
+            return acc;
+        },
+        {} as Record<number, string[]>,
+    );
 
     const result = Object.entries(groups)
         .sort(([a], [b]) => Number(b) - Number(a))
@@ -479,7 +784,7 @@ watch(
             hasAddEvent.value = true;
         }
     },
-    { immediate: true }
+    { immediate: true },
 );
 </script>
 
