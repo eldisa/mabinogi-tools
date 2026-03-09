@@ -865,7 +865,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             lance_piercing: 70,
-            all_alchemy_damage: 4,
+            all_alchemy_damage: 1,
         },
     },
     // 鍊金系 - 大傷優先
@@ -902,6 +902,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             fire_alchemy_damage: 1,
+            all_alchemy_damage: 3,
         },
     },
     // 鋼瓶 - 水元素
@@ -913,6 +914,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             water_alchemy_damage: 1,
+            all_alchemy_damage: 3,
         },
     },
     // 鋼瓶 - 風元素
@@ -924,6 +926,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             wind_alchemy_damage: 1,
+            all_alchemy_damage: 3,
         },
     },
     // 鋼瓶 - 土元素
@@ -935,6 +938,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["cylinder", "shield_cylinder"],
         abilityWeights: {
             earth_alchemy_damage: 1,
+            all_alchemy_damage: 3,
         },
     },
     // 盾牌鋼瓶 - 加入 PD
