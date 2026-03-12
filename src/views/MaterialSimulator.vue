@@ -303,12 +303,17 @@
                                         clearable
                                         style="width: 180px"
                                     />
-                                    <el-button type="warning" plain @click="autoSetAcquisitionMethod">
+
+                                    <el-button type="success" @click="autoSetAcquisitionMethod">
                                         自動判斷取得方式
                                     </el-button>
-                                    <el-button type="primary" @click="setAllToToken">全部用換的</el-button>
-                                    <el-button type="primary" @click="setAllToBuy">全部用買的</el-button>
+
+                                    <el-button type="warning" plain @click="setAllToToken">全部用換的</el-button>
+
+                                    <el-button type="primary" plain @click="setAllToBuy">全部用買的</el-button>
+
                                     <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
+
                                     <el-button type="info" plain @click="resetMaterialPrices">重置</el-button>
                                 </div>
                             </div>
