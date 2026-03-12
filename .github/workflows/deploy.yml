@@ -29,8 +29,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        # 使用 npm ci 確保環境一致
-        run: npm ci
+        run: npm install
 
       - name: Build
         # 建議加入 --emptyOutDir 確保 dist 資料夾乾淨
