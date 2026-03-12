@@ -175,7 +175,11 @@
                                                         if (!entry) return "—";
                                                         const shortage = Math.max(0, row.total - entry.stock);
                                                         if (shortage === 0) return "0";
-                                                        if (selfProvideTokens && (row.id === TOKEN_ID || entry.method === "token")) return "（自備）";
+                                                        if (
+                                                            selfProvideTokens &&
+                                                            (row.id === TOKEN_ID || entry.method === "token")
+                                                        )
+                                                            return "（自備）";
                                                         const cost = getUnitCost(entry);
                                                         return cost > 0 ? (shortage * cost).toLocaleString() : "未設定";
                                                     })()
@@ -299,7 +303,11 @@
                                         clearable
                                         style="width: 180px"
                                     />
-                                    <el-button type="warning" plain @click="autoSetAcquisitionMethod">自動判斷取得方式</el-button>
+                                    <el-button type="warning" plain @click="autoSetAcquisitionMethod">
+                                        自動判斷取得方式
+                                    </el-button>
+                                    <el-button type="primary" @click="setAllToToken">全部用換的</el-button>
+                                    <el-button type="primary" @click="setAllToBuy">全部用買的</el-button>
                                     <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
                                     <el-button type="info" plain @click="resetMaterialPrices">重置</el-button>
                                 </div>
@@ -363,10 +371,23 @@
                                 <el-table-column label="價格（金幣）" width="180" align="center">
                                     <template #default="{ row }">
                                         <el-input
-                                            :model-value="row.id in editingPrices ? editingPrices[row.id] : formatNumberInput(row.price)"
+                                            :model-value="
+                                                row.id in editingPrices
+                                                    ? editingPrices[row.id]
+                                                    : formatNumberInput(row.price)
+                                            "
                                             @focus="editingPrices[row.id] = String(row.price || '')"
-                                            @input="(v: string) => { editingPrices[row.id] = v }"
-                                            @blur="() => { row.price = parseNumberInput(editingPrices[row.id] ?? '0'); delete editingPrices[row.id] }"
+                                            @input="
+                                                (v: string) => {
+                                                    editingPrices[row.id] = v;
+                                                }
+                                            "
+                                            @blur="
+                                                () => {
+                                                    row.price = parseNumberInput(editingPrices[row.id] ?? '0');
+                                                    delete editingPrices[row.id];
+                                                }
+                                            "
                                             :input-style="{ textAlign: 'center' }"
                                             size="small"
                                             style="width: 150px"
@@ -505,6 +526,30 @@ const autoSetAcquisitionMethod = () => {
         changed++;
     }
     ElMessage.success(`已自動判斷 ${changed} 項素材的取得方式`);
+};
+
+const setAllToToken = () => {
+    let changed = 0;
+    for (const entry of materialPrices.value) {
+        const source = materials.find((m) => m.id === entry.id)?.source;
+        if (!source || !("token" in source) || !source.token) continue;
+        if (entry.method !== "token") {
+            entry.method = "token";
+            changed++;
+        }
+    }
+    ElMessage.success(`已將 ${changed} 項素材的取得方式設定為珠子兌換`);
+};
+
+const setAllToBuy = () => {
+    let changed = 0;
+    for (const entry of materialPrices.value) {
+        if (entry.method !== "buy") {
+            entry.method = "buy";
+            changed++;
+        }
+    }
+    ElMessage.success(`已將 ${changed} 項素材的取得方式設定為購買`);
 };
 
 // 追蹤正在編輯的價格欄位（key: material id, value: 使用者正在輸入的原始字串）
