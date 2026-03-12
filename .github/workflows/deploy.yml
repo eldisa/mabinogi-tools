@@ -3,12 +3,13 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # 當推送到 main 分支時觸發
-
-  # 允許手動觸發 workflow
+      - main
   workflow_dispatch:
 
-# 設定 GITHUB_TOKEN 的權限
+# 強制啟用 Node 24 預覽環境（解決警告）
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: write
 
@@ -23,13 +24,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # 這裡可以維持 20 (專案版本)，Action 會自動用 Node 24 容器來跑它
+          node-version: '20' 
           cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build
+        # 建議加入 --emptyOutDir 確保 dist 資料夾乾淨
         run: npm run build
 
       - name: Deploy to gh-pages
@@ -38,5 +41,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
