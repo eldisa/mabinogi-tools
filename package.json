@@ -36,6 +36,9 @@
     "vite": "^6.3.5",
     "vue-tsc": "^2.1.4"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.34.9"
+  },
   "volta": {
     "node": "20.19.5"
   }
