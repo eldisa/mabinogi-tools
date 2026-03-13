@@ -851,15 +851,31 @@ const filteredSortedData = computed(() => {
 
 // 加工物估價
 const craftedItemsData = computed(() => {
+    // 遞迴取得材料的有效單價：
+    // 若該材料本身可製作，則改用其製作成本；否則使用 materialPrices 市價
+    const getEffectiveCost = (id: number, visited = new Set<number>()): number => {
+        if (visited.has(id)) return 0; // 防止循環依賴
+        const mat = materials.find((m) => m.id === id);
+        if (mat?.source.type === "craft") {
+            const src = mat.source as { type: "craft"; materials: { id: number; amount: number }[] };
+            const newVisited = new Set(visited);
+            newVisited.add(id);
+            const craftCost = (src.materials ?? []).reduce((sum, sub) => {
+                return sum + getEffectiveCost(sub.id, newVisited) * sub.amount;
+            }, 0);
+            if (craftCost > 0) return craftCost;
+        }
+        const entry = materialPrices.value.find((e) => e.id === id);
+        return entry ? getUnitCost(entry) : 0;
+    };
+
     return materials
         .filter((m) => m.source.type === "craft" && m.id >= 5100000)
         .map((m) => {
             const src = m.source as { type: "craft"; materials: { id: number; amount: number }[] };
             const subMaterials = src.materials ?? [];
             const materialCost = subMaterials.reduce((sum, mat) => {
-                const entry = materialPrices.value.find((e) => e.id === mat.id);
-                if (!entry) return sum;
-                return sum + getUnitCost(entry) * mat.amount;
+                return sum + getEffectiveCost(mat.id) * mat.amount;
             }, 0);
             const selfEntry = materialPrices.value.find((e) => e.id === m.id);
             const sellPrice = selfEntry?.price ?? 0;
