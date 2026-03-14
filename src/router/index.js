@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import MainLayout from '../views/MainLayout.vue'
 import Home from '../views/Home.vue';
 import About from '../views/About.vue';
-import EquipmentCraftSimulator from '../views/EquipmentCraftSimulator.vue';
 
 import MaterialSimulator from '../views/MaterialSimulator.vue';
 import TransferSimulator from '../views/TransferSimulator.vue';
@@ -28,11 +27,6 @@ const routes = [
             path: '/about',
             name: '關於',
             component: About
-        },
-        {
-            path: '/equipment-craft-simulator',
-            name: '裝備製作模擬器',
-            component: EquipmentCraftSimulator
         },
         {
             path: '/material-simulator',
