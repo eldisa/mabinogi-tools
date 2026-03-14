@@ -228,9 +228,14 @@
                         </el-tab-pane>
                         <el-tab-pane label="Roadmap 製作路線">
                             <template v-if="displayData.length > 0">
-                                <h2 class="text-lg font-semibold">
-                                    {{ displayData[selectedDisplayDataIndex].name }}
-                                </h2>
+                                <div class="flex items-center gap-4">
+                                    <h2 class="text-lg font-semibold">
+                                        {{ displayData[selectedDisplayDataIndex].name }}
+                                    </h2>
+                                    <el-checkbox v-model="useCostEstimate">
+                                        用成本估價（未設定的物品改顯示加工成本）
+                                    </el-checkbox>
+                                </div>
                                 <div class="mt-4">
                                     <el-table
                                         v-if="dataInPreviewTable?.children?.length"
@@ -265,6 +270,18 @@
                                             </template>
                                         </el-table-column>
                                         <el-table-column prop="amount" label="數量" align="right" />
+                                        <el-table-column label="物品價格" width="160" align="right">
+                                            <template #default="{ row }">
+                                                <span v-if="(materialPrices.find((e) => e.id === row.id)?.price ?? 0) > 0">
+                                                    {{ formatLargeNumber(materialPrices.find((e) => e.id === row.id)!.price) }}
+                                                </span>
+                                                <span v-else-if="useCostEstimate && (craftedItemsData.find((e) => e.id === row.id)?.materialCost ?? 0) > 0" class="text-yellow-400">
+                                                    {{ formatLargeNumber(craftedItemsData.find((e) => e.id === row.id)!.materialCost) }}
+                                                    <el-tag size="small" type="warning" class="ml-1">估</el-tag>
+                                                </span>
+                                                <span v-else class="text-gray-500">未設定</span>
+                                            </template>
+                                        </el-table-column>
                                         <!-- <el-table-column label="如何獲得">
                                             <template #default="{ row }">
                                                 <div v-if="row.source.type === 'craft'">生產製作</div>
@@ -661,6 +678,7 @@ const filteredMaterialPrices = computed(() => {
 const displayData = ref<CraftTreeNode[]>([]);
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
+const useCostEstimate = ref(false);
 const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataIndex.value]);
 
 const materialMap = ref<{ id: number; total: number }[]>([]);
