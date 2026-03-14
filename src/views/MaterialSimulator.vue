@@ -333,21 +333,21 @@
                                         </div>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="材料成本" width="140" align="right" sortable :sort-method="(a, b) => a.materialCost - b.materialCost">
+                                <el-table-column label="材料成本" width="140" align="right" sortable :sort-method="(a: { materialCost: number }, b: { materialCost: number }) => a.materialCost - b.materialCost">
                                     <template #default="{ row }">
                                         <span :class="row.materialCost === 0 ? 'text-gray-500' : ''">
                                             {{ row.materialCost > 0 ? formatLargeNumber(row.materialCost) : '未設定' }}
                                         </span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="成品售價" width="140" align="right" sortable :sort-method="(a, b) => a.sellPrice - b.sellPrice">
+                                <el-table-column label="成品售價" width="140" align="right" sortable :sort-method="(a: { sellPrice: number }, b: { sellPrice: number }) => a.sellPrice - b.sellPrice">
                                     <template #default="{ row }">
                                         <span :class="row.sellPrice === 0 ? 'text-gray-500' : ''">
                                             {{ row.sellPrice > 0 ? formatLargeNumber(row.sellPrice) : '未設定' }}
                                         </span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="利潤估算" width="140" align="right" sortable :sort-method="(a, b) => a.profit - b.profit">
+                                <el-table-column label="利潤估算" width="140" align="right" sortable :sort-method="(a: { profit: number }, b: { profit: number }) => a.profit - b.profit">
                                     <template #default="{ row }">
                                         <span
                                             v-if="row.sellPrice > 0 && row.materialCost > 0"
