@@ -970,6 +970,62 @@ const weaponEvalSummary = computed(() => {
                         {{ allCollapsed ? "▶ 全部展開" : "▼ 全部折疊" }}
                     </el-button>
                 </div>
+                <!-- 儲存配置 -->
+                <section class="form-section preset-section" :class="{ 'is-collapsed': collapsed.presets }">
+                    <h2 class="section-title section-toggle" @click="collapsed.presets = !collapsed.presets">
+                        💾 儲存配置
+                        <span class="preset-count" v-if="presets.length">{{ presets.length }}</span>
+                        <span class="toggle-chevron" :class="{ rotated: collapsed.presets }">▼</span>
+                    </h2>
+                    <div v-show="!collapsed.presets">
+                        <!-- 儲存列 -->
+                        <div class="preset-save-row">
+                            <el-input
+                                v-model="newPresetName"
+                                placeholder="配置名稱（選填）"
+                                size="small"
+                                clearable
+                                @keyup.enter="savePreset"
+                                class="preset-name-input"
+                            />
+                            <el-button type="primary" size="small" @click="savePreset">儲存</el-button>
+                        </div>
+
+                        <!-- 已儲存清單 -->
+                        <div v-if="presets.length === 0" class="preset-empty">尚無儲存配置</div>
+                        <div v-else class="preset-list">
+                            <div
+                                v-for="p in presets"
+                                :key="p.id"
+                                class="preset-item"
+                                :class="{ 'confirm-del': presetConfirmDelete === p.id }"
+                            >
+                                <div class="preset-meta">
+                                    <span class="preset-name">{{ p.name }}</span>
+                                    <span class="preset-date">{{ formatPresetDate(p.createdAt) }}</span>
+                                </div>
+                                <div class="preset-actions">
+                                    <template v-if="presetConfirmDelete === p.id">
+                                        <span class="preset-del-confirm-label">確定刪除？</span>
+                                        <el-button size="small" type="danger" plain @click="deletePreset(p.id)">
+                                            確定
+                                        </el-button>
+                                        <el-button size="small" @click="presetConfirmDelete = null">取消</el-button>
+                                    </template>
+                                    <template v-else>
+                                        <el-button size="small" type="success" plain @click="loadPreset(p)">
+                                            讀取
+                                        </el-button>
+                                        <el-button size="small" type="danger" plain @click="presetConfirmDelete = p.id">
+                                            🗑
+                                        </el-button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /collapsed.presets -->
+                </section>
 
                 <!-- A. 武器配置 -->
                 <section class="form-section" :class="{ 'is-collapsed': collapsed.weapon }">
@@ -1016,7 +1072,7 @@ const weaponEvalSummary = computed(() => {
                             <el-checkbox v-model="state.weapon.isErge50">
                                 爾格 50
                                 <span class="field-hint">
-                                    {{ state.weapon.type === 'staff' ? '(D1 中級魔法 +10%)' : '(M 組合魔法 +10%)' }}
+                                    {{ state.weapon.type === "staff" ? "(D1 中級魔法 +10%)" : "(M 組合魔法 +10%)" }}
                                 </span>
                             </el-checkbox>
                         </div>
@@ -1036,12 +1092,10 @@ const weaponEvalSummary = computed(() => {
                         <div class="field-row">
                             <label class="field-label">
                                 副手
-                                <el-tooltip
-                                    v-if="!offHandEnabled"
-                                    content="集魔杖無副手"
-                                    placement="top"
-                                >
-                                    <el-icon style="margin-left: 4px; cursor: help; color: #9ca3af"><InfoFilled /></el-icon>
+                                <el-tooltip v-if="!offHandEnabled" content="集魔杖無副手" placement="top">
+                                    <el-icon style="margin-left: 4px; cursor: help; color: #9ca3af">
+                                        <InfoFilled />
+                                    </el-icon>
                                 </el-tooltip>
                             </label>
                             <el-select
@@ -1112,6 +1166,39 @@ const weaponEvalSummary = computed(() => {
                         </div>
                     </div>
                     <!-- /collapsed.sets -->
+                </section>
+
+                <!-- K. 稱號 -->
+                <section class="form-section" :class="{ 'is-collapsed': collapsed.titles }">
+                    <h2 class="section-title section-toggle" @click="collapsed.titles = !collapsed.titles">
+                        👑 稱號
+                        <span class="toggle-chevron" :class="{ rotated: collapsed.titles }">▼</span>
+                    </h2>
+                    <div v-show="!collapsed.titles">
+                        <div class="field-row">
+                            <label class="field-label">第一稱號</label>
+                            <el-select v-model="state.titles.primary" size="small" style="width: 220px">
+                                <el-option
+                                    v-for="o in PRIMARY_TITLE_OPTIONS"
+                                    :key="o.value"
+                                    :label="o.label"
+                                    :value="o.value"
+                                />
+                            </el-select>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label">第二稱號</label>
+                            <el-select v-model="state.titles.secondary" size="small" style="width: 220px">
+                                <el-option
+                                    v-for="o in SECONDARY_TITLE_OPTIONS"
+                                    :key="o.value"
+                                    :label="o.label"
+                                    :value="o.value"
+                                />
+                            </el-select>
+                        </div>
+                    </div>
+                    <!-- /collapsed.titles -->
                 </section>
 
                 <!-- D. 細工數值 -->
@@ -1424,12 +1511,6 @@ const weaponEvalSummary = computed(() => {
                     </h2>
                     <div v-show="!collapsed.buffs">
                         <div class="field-row">
-                            <el-checkbox v-model="state.buffs.magAtkPotion">
-                                魔法攻擊藥水
-                                <span class="field-hint">— 魔攻係數 ×1.2</span>
-                            </el-checkbox>
-                        </div>
-                        <div class="field-row">
                             <label class="field-label">活潑板 %</label>
                             <el-input-number
                                 v-model="state.weapon.vivace"
@@ -1440,6 +1521,12 @@ const weaponEvalSummary = computed(() => {
                                 size="small"
                                 style="width: 110px"
                             />
+                        </div>
+                        <div class="field-row">
+                            <el-checkbox v-model="state.buffs.magAtkPotion">
+                                魔法攻擊藥水
+                                <span class="field-hint">— 魔攻係數 ×1.2</span>
+                            </el-checkbox>
                         </div>
                         <div class="field-row">
                             <el-checkbox v-model="state.generalExtra.statusSupport">
@@ -1475,39 +1562,6 @@ const weaponEvalSummary = computed(() => {
                     <!-- /collapsed.debuffs -->
                 </section>
 
-                <!-- K. 稱號 -->
-                <section class="form-section" :class="{ 'is-collapsed': collapsed.titles }">
-                    <h2 class="section-title section-toggle" @click="collapsed.titles = !collapsed.titles">
-                        👑 稱號
-                        <span class="toggle-chevron" :class="{ rotated: collapsed.titles }">▼</span>
-                    </h2>
-                    <div v-show="!collapsed.titles">
-                        <div class="field-row">
-                            <label class="field-label">第一稱號</label>
-                            <el-select v-model="state.titles.primary" size="small" style="width: 220px">
-                                <el-option
-                                    v-for="o in PRIMARY_TITLE_OPTIONS"
-                                    :key="o.value"
-                                    :label="o.label"
-                                    :value="o.value"
-                                />
-                            </el-select>
-                        </div>
-                        <div class="field-row">
-                            <label class="field-label">第二稱號</label>
-                            <el-select v-model="state.titles.secondary" size="small" style="width: 220px">
-                                <el-option
-                                    v-for="o in SECONDARY_TITLE_OPTIONS"
-                                    :key="o.value"
-                                    :label="o.label"
-                                    :value="o.value"
-                                />
-                            </el-select>
-                        </div>
-                    </div>
-                    <!-- /collapsed.titles -->
-                </section>
-
                 <!-- F. 模擬次數 -->
                 <section class="form-section" :class="{ 'is-collapsed': collapsed.simulation }">
                     <h2 class="section-title section-toggle" @click="collapsed.simulation = !collapsed.simulation">
@@ -1532,63 +1586,6 @@ const weaponEvalSummary = computed(() => {
                         </div>
                     </div>
                     <!-- /collapsed.simulation -->
-                </section>
-
-                <!-- L. 儲存配置 -->
-                <section class="form-section preset-section" :class="{ 'is-collapsed': collapsed.presets }">
-                    <h2 class="section-title section-toggle" @click="collapsed.presets = !collapsed.presets">
-                        💾 儲存配置
-                        <span class="preset-count" v-if="presets.length">{{ presets.length }}</span>
-                        <span class="toggle-chevron" :class="{ rotated: collapsed.presets }">▼</span>
-                    </h2>
-                    <div v-show="!collapsed.presets">
-                        <!-- 儲存列 -->
-                        <div class="preset-save-row">
-                            <el-input
-                                v-model="newPresetName"
-                                placeholder="配置名稱（選填）"
-                                size="small"
-                                clearable
-                                @keyup.enter="savePreset"
-                                class="preset-name-input"
-                            />
-                            <el-button type="primary" size="small" @click="savePreset">儲存</el-button>
-                        </div>
-
-                        <!-- 已儲存清單 -->
-                        <div v-if="presets.length === 0" class="preset-empty">尚無儲存配置</div>
-                        <div v-else class="preset-list">
-                            <div
-                                v-for="p in presets"
-                                :key="p.id"
-                                class="preset-item"
-                                :class="{ 'confirm-del': presetConfirmDelete === p.id }"
-                            >
-                                <div class="preset-meta">
-                                    <span class="preset-name">{{ p.name }}</span>
-                                    <span class="preset-date">{{ formatPresetDate(p.createdAt) }}</span>
-                                </div>
-                                <div class="preset-actions">
-                                    <template v-if="presetConfirmDelete === p.id">
-                                        <span class="preset-del-confirm-label">確定刪除？</span>
-                                        <el-button size="small" type="danger" plain @click="deletePreset(p.id)">
-                                            確定
-                                        </el-button>
-                                        <el-button size="small" @click="presetConfirmDelete = null">取消</el-button>
-                                    </template>
-                                    <template v-else>
-                                        <el-button size="small" type="success" plain @click="loadPreset(p)">
-                                            讀取
-                                        </el-button>
-                                        <el-button size="small" type="danger" plain @click="presetConfirmDelete = p.id">
-                                            🗑
-                                        </el-button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /collapsed.presets -->
                 </section>
             </div>
             <!-- /form-panel -->
