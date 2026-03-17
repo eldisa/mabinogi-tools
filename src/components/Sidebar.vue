@@ -12,6 +12,7 @@ import {
     Present,
     DataAnalysis,
     Handbag,
+    Lightning,
 } from "@element-plus/icons-vue";
 
 defineProps<{
@@ -32,6 +33,7 @@ const menuItems = ref([
     { name: "稱號查詢", path: "/title", icon: markRaw(Medal) },
     { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
     { name: "煉金術傷害計算器", path: "/alchemy-calculator", icon: markRaw(DataAnalysis) },
+    { name: "魔法傷害計算器", path: "/magic-calculator", icon: markRaw(Lightning) },
     { name: "賭石小遊戲", path: "/stone-gambling", icon: markRaw(Present) },
     { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
     { name: "About", path: "/about", icon: markRaw(InfoFilled) },

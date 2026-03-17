@@ -5,12 +5,6 @@ const router = useRouter();
 
 const features = [
     {
-        icon: "Tools",
-        title: "裝備製作模擬器",
-        description: "模擬裝備製作流程，計算所需材料與成本",
-        path: "/equipment-craft-simulator",
-    },
-    {
         icon: "SetUp",
         title: "裝備改造模擬器",
         description: "規劃最佳改造路線，預覽改造後的能力數值",
