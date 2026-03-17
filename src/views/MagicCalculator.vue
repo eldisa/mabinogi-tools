@@ -702,16 +702,19 @@ const lightningBoltResult = computed(() => {
 });
 
 /** 火雷組合魔法傷害 Fusion Bolt
- *  公式：(5蓄火焰 + 雷矢) × (1+K) × (1+J) × (1+F) × (1+K) × 0.85
- *  ─ J 組合魔法加成: 基礎30% + 細工×1% + 魔法陣×1% + 稱號(蝴蝶5%) + 武器(貓短/魂短 35%)
- *  ─ K 組合魔法大師稱號: +5%（(1+K) 在公式中出現兩次）
+ *  公式：(5蓄火焰 + 雷矢) × (1+K) × (1+J) × (1+F) × (1+L) × (1+M) × 0.85
+ *  ─ J 箭系組合加成: 基礎30% + 細工×1% + 魔法陣×1% + 稱號(蝴蝶5%) + 武器(貓短/魂短 35%)
+ *  ─ K 組合魔法大師稱號: +5%
+ *  ─ F 黑魔同步: 短杖10% / 長杖15%
+ *  ─ L 暗黑連結 Lighting Chain buff: +10%（toggle）
+ *  ─ M 爾格50加成: +10%
  */
 const fusionBoltResult = computed(() => {
     const fireBoltDmg = fireBoltResult.value.damage;
     const lightningBoltDmg = lightningBoltResult.value.damage;
     const baseDamage = fireBoltDmg + lightningBoltDmg;
 
-    // ── J：組合魔法加成 ────────────────────────────
+    // ── J：箭系組合加成 ────────────────────────────
     const ccRefLv = state.refinement.cc_damage;
     const comboMCLv = isMCSelected("combo") ? (state.magicCircles.levels["combo"] ?? 0) : 0;
     const titleJ = state.titles.secondary === "butterfly" ? TITLES_DATA.butterfly.ccBonus : 0;
@@ -724,12 +727,17 @@ const fusionBoltResult = computed(() => {
     // ── F：黑魔同步 ───────────────────────────────
     const F = state.weapon.type === "wand" ? 0.1 : 0.15;
 
-    // 注意：(1+K) 在公式中出現兩次
-    const damage = baseDamage * (1 + K) * (1 + J) * (1 + F) * (1 + K) * 0.85;
+    // ── L：暗黑連結 buff ──────────────────────────
+    const L = state.buffs.darkLink ? 0.1 : 0;
+
+    // ── M：爾格50加成 ──────────────────────────────
+    const M = state.weapon.isErge50 ? 0.1 : 0;
+
+    const damage = baseDamage * (1 + K) * (1 + J) * (1 + F) * (1 + L) * (1 + M) * 0.85;
 
     return {
         damage,
-        vars: { baseDamage, fireBoltDmg, lightningBoltDmg, J, K, F, ccRefLv, comboMCLv, titleJ, weaponJ },
+        vars: { baseDamage, fireBoltDmg, lightningBoltDmg, J, K, F, L, M, ccRefLv, comboMCLv, titleJ, weaponJ },
     };
 });
 
@@ -2178,10 +2186,12 @@ const weaponEvalSummary = computed(() => {
                         </div>
                         <div class="damage-value fusion-val">{{ fmt(fusionBoltResult.damage) }}</div>
                     </div>
-                    <div class="formula-line">(5蓄火焰+雷矢) × (1+K) × (1+J) × (1+F) × (1+K) × 0.85</div>
+                    <div class="formula-line">(5蓄火焰+雷矢) × (1+K) × (1+J) × (1+F) × (1+L) × (1+M) × 0.85</div>
                     <div class="formula-note">
-                        J 組合魔法加成（細工+魔法陣+稱號+武器）；K 組合魔法大師稱號（1+K 連乘兩次）
+                        J 箭系組合加成；K 組魔大師；F 黑魔同步；L 暗黑連結；M 爾格50
                         <span v-if="state.titles.primary === 'cc_master'" class="buff-active">｜K +5%</span>
+                        <span v-if="state.buffs.darkLink" class="buff-active">｜L +10%</span>
+                        <span v-if="state.weapon.isErge50" class="buff-active">｜M +10%</span>
                     </div>
 
                     <el-button
@@ -2232,7 +2242,7 @@ const weaponEvalSummary = computed(() => {
                                     </tr>
                                     <tr>
                                         <td>K</td>
-                                        <td>組合魔法大師稱號（+5%，在公式中乘兩次）</td>
+                                        <td>組合魔法大師稱號（+5%）</td>
                                         <td class="num-cell">{{ pct(fusionBoltResult.vars.K) }}</td>
                                     </tr>
                                     <tr>
@@ -2245,9 +2255,14 @@ const weaponEvalSummary = computed(() => {
                                         <td class="num-cell">{{ pct(fusionBoltResult.vars.F) }}</td>
                                     </tr>
                                     <tr>
-                                        <td>(1+K)²</td>
-                                        <td>組合魔法大師兩次乘積</td>
-                                        <td class="num-cell">{{ fmtF((1 + fusionBoltResult.vars.K) ** 2) }}</td>
+                                        <td>L</td>
+                                        <td>暗黑連結 Lighting Chain buff（+10%）</td>
+                                        <td class="num-cell">{{ pct(fusionBoltResult.vars.L) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>M</td>
+                                        <td>爾格50加成（+10%）</td>
+                                        <td class="num-cell">{{ pct(fusionBoltResult.vars.M) }}</td>
                                     </tr>
                                     <tr>
                                         <td>×0.85</td>
