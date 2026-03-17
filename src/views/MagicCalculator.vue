@@ -1015,7 +1015,9 @@ const weaponEvalSummary = computed(() => {
                         <div class="field-row">
                             <el-checkbox v-model="state.weapon.isErge50">
                                 爾格 50
-                                <span class="field-hint">(D1 中級魔法 +10%)</span>
+                                <span class="field-hint">
+                                    {{ state.weapon.type === 'staff' ? '(D1 中級魔法 +10%)' : '(M 組合魔法 +10%)' }}
+                                </span>
                             </el-checkbox>
                         </div>
 
@@ -1034,9 +1036,13 @@ const weaponEvalSummary = computed(() => {
                         <div class="field-row">
                             <label class="field-label">
                                 副手
-                                <el-tag v-if="!offHandEnabled" size="small" type="info" style="margin-left: 4px">
-                                    集魔杖無副手
-                                </el-tag>
+                                <el-tooltip
+                                    v-if="!offHandEnabled"
+                                    content="集魔杖無副手"
+                                    placement="top"
+                                >
+                                    <el-icon style="margin-left: 4px; cursor: help; color: #9ca3af"><InfoFilled /></el-icon>
+                                </el-tooltip>
                             </label>
                             <el-select
                                 v-model="state.weapon.offHand"
