@@ -2504,7 +2504,8 @@ const weaponEvalSummary = computed(() => {
     padding: 1.25rem;
 }
 .form-section.is-collapsed {
-    padding-bottom: 0;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
 }
 .form-section.is-collapsed .section-title {
     margin-bottom: 0;
