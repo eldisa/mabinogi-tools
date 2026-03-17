@@ -191,7 +191,7 @@ const state = reactive({
         lightningBolt: 0,
     },
     buffs: {
-        darkLink: true, // 暗黑連結 (Lighting Chain) debuff active → 龍焰 J +10%
+        darkLink: true, // 暗黑連結 (Lighting Chain) debuff active → 龍焰 J +30%
         magAtkPotion: false, // 魔法攻擊藥水 → 魔攻係數 ×1.2
     },
 });
@@ -443,7 +443,7 @@ const fireballResult = computed(() => {
  *  公式：A × (1+C2) × (1+E) × [B3×(1+H) + B2×(1+G+H)] × (1+F) × (1+J)
  *  ─ B3 = 5000%（固定龍焰倍率），只吃 H（不含 G 才能）
  *  ─ B2 = 火球倍率，同時吃 G+H
- *  ─ J  = 暗黑連結 buff +10%（toggle）
+ *  ─ J  = 暗黑連結 buff +30%（toggle）
  */
 const explosionLungeResult = computed(() => {
     // ── A ──────────────────────────────────────────
@@ -492,7 +492,7 @@ const explosionLungeResult = computed(() => {
     const F = state.weapon.type === "wand" ? 0.1 : 0.15;
 
     // ── J：暗黑連結 Lighting Chain buff ──
-    const J = state.buffs.darkLink ? 0.1 : 0;
+    const J = state.buffs.darkLink ? 0.3 : 0;
 
     // ── 最終傷害 ────────────────────────────────────
     // 注意：B3 只吃 H，B2 同時吃 G+H
@@ -959,7 +959,7 @@ const weaponEvalSummary = computed(() => {
                 <!-- 全部折疊/開啟 toggle -->
                 <div class="collapse-all-row">
                     <el-button size="small" plain @click="toggleAllSections">
-                        {{ allCollapsed ? '▶ 全部展開' : '▼ 全部折疊' }}
+                        {{ allCollapsed ? "▶ 全部展開" : "▼ 全部折疊" }}
                     </el-button>
                 </div>
 
@@ -1557,12 +1557,18 @@ const weaponEvalSummary = computed(() => {
                                 <div class="preset-actions">
                                     <template v-if="presetConfirmDelete === p.id">
                                         <span class="preset-del-confirm-label">確定刪除？</span>
-                                        <el-button size="small" type="danger" plain @click="deletePreset(p.id)">確定</el-button>
+                                        <el-button size="small" type="danger" plain @click="deletePreset(p.id)">
+                                            確定
+                                        </el-button>
                                         <el-button size="small" @click="presetConfirmDelete = null">取消</el-button>
                                     </template>
                                     <template v-else>
-                                        <el-button size="small" type="success" plain @click="loadPreset(p)">讀取</el-button>
-                                        <el-button size="small" type="danger" plain @click="presetConfirmDelete = p.id">🗑</el-button>
+                                        <el-button size="small" type="success" plain @click="loadPreset(p)">
+                                            讀取
+                                        </el-button>
+                                        <el-button size="small" type="danger" plain @click="presetConfirmDelete = p.id">
+                                            🗑
+                                        </el-button>
                                     </template>
                                 </div>
                             </div>
@@ -1943,7 +1949,7 @@ const weaponEvalSummary = computed(() => {
                                     <tr>
                                         <td>J</td>
                                         <td>
-                                            暗黑連結 Lighting Chain buff（+10%，{{
+                                            暗黑連結 Lighting Chain buff（+30%，{{
                                                 state.buffs.darkLink ? "✓ 啟用" : "✗ 未啟用"
                                             }}）
                                         </td>
