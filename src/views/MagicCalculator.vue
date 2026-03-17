@@ -1848,7 +1848,7 @@ const weaponEvalSummary = computed(() => {
                     <div class="formula-line">A × (1+C2) × (1+E) × [B3×(1+H) + B2×(1+G+H)] × (1+F) × (1+J)</div>
                     <div class="formula-note">
                         B3=5000%固定；B2=火球倍率；B3 段不含 G 才能加成
-                        <span v-if="state.buffs.darkLink" class="buff-active">｜暗黑連結 J +10%</span>
+                        <span v-if="state.buffs.darkLink" class="buff-active">｜暗黑連結 J +30%</span>
                     </div>
 
                     <el-button
