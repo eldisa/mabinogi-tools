@@ -65,9 +65,17 @@
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-2">
                             <p class="text-sm text-gray-300">自動停止次數</p>
-                            <span class="text-accent font-bold">{{ tempAutoStopCount === 0 ? '不限' : tempAutoStopCount }}</span>
+                            <span class="text-accent font-bold">
+                                {{ tempAutoStopCount === 0 ? "不限" : tempAutoStopCount }}
+                            </span>
                         </div>
-                        <el-slider v-model="tempAutoStopCount" :min="0" :max="10000" :step="100" :show-tooltip="false" />
+                        <el-slider
+                            v-model="tempAutoStopCount"
+                            :min="0"
+                            :max="10000"
+                            :step="100"
+                            :show-tooltip="false"
+                        />
                         <p class="text-xs text-gray-500 mt-1">執行指定次數後自動停止（0 = 不限制）</p>
                     </div>
 
@@ -96,7 +104,11 @@
                         <div class="mt-2 p-2 bg-gray-700/50 rounded text-xs">
                             <p class="text-gray-400 mb-1">各等級機率：</p>
                             <div class="grid grid-cols-5 gap-1">
-                                <div v-for="(weight, idx) in PROBABILITY_CONFIGS[tempProbabilityMode].weights" :key="idx" class="text-center">
+                                <div
+                                    v-for="(weight, idx) in PROBABILITY_CONFIGS[tempProbabilityMode].weights"
+                                    :key="idx"
+                                    class="text-center"
+                                >
                                     <span class="text-gray-500">Lv{{ idx + 1 }}</span>
                                     <p class="text-accent font-medium">{{ weight.toFixed(2) }}%</p>
                                 </div>
@@ -107,7 +119,7 @@
 
                 <!-- 保留清單 -->
                 <div class="border-t border-gray-700 pt-4">
-                    <p class="text-gray-300 font-medium mb-3">保留清單</p>
+                    <p class="text-gray-300 font-medium mb-2">保留清單</p>
                     <p class="text-xs text-gray-500 mb-3">設定各技能的最低保留等級，低於該等級將自動出售</p>
 
                     <div class="space-y-4">
@@ -119,9 +131,9 @@
                                     :key="skill.id"
                                     class="flex items-center justify-between bg-gray-700/50 rounded px-2 py-1"
                                 >
-                                    <span class="text-xs text-gray-300 truncate flex-1 mr-2">{{
-                                        skill.skillLocalName
-                                    }}</span>
+                                    <span class="text-xs text-gray-300 truncate flex-1 mr-2">
+                                        {{ skill.skillLocalName }}
+                                    </span>
                                     <el-select
                                         v-model="tempRetentionMap[skill.id]"
                                         size="small"
@@ -131,6 +143,38 @@
                                         <el-option :value="0" label="賣" />
                                         <el-option v-for="lv in 10" :key="lv" :value="lv" :label="`≥${lv}`" />
                                     </el-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自訂售價 -->
+                <div class="border-t border-gray-700 pt-4">
+                    <p class="text-gray-300 font-medium mb-1">自訂售價</p>
+                    <p class="text-xs text-gray-500 mb-3">
+                        覆寫各技能各等級的售價（單位：萬 Gold）。留空表示使用預設價格表。
+                    </p>
+
+                    <div class="space-y-4">
+                        <div v-for="(skills, job) in skillsByJob" :key="job" class="bg-gray-800/50 rounded-lg p-3">
+                            <p class="text-sm font-medium text-accent mb-2">{{ job }}</p>
+                            <div class="space-y-2">
+                                <div v-for="skill in skills" :key="skill.id" class="bg-gray-700/30 rounded p-2">
+                                    <p class="text-xs text-gray-400 mb-1">{{ skill.skillLocalName }}</p>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <div v-for="lv in 10" :key="lv" class="flex flex-col items-center gap-0.5">
+                                            <span class="text-xs text-gray-500">Lv{{ lv }}</span>
+                                            <el-input
+                                                v-model.number="tempCustomPrices[`${skill.id}__${lv}`]"
+                                                type="number"
+                                                size="small"
+                                                :placeholder="String(skill.prices[lv - 1])"
+                                                :min="0"
+                                                class="!w-full custom-price-input"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -254,11 +298,7 @@
                         <p class="text-xs text-gray-400">購買後餘額</p>
                         <p
                             class="text-lg font-bold"
-                            :class="
-                                store.canAfford(store.stonePrice * buyCount)
-                                    ? 'text-green-400'
-                                    : 'text-red-400'
-                            "
+                            :class="store.canAfford(store.stonePrice * buyCount) ? 'text-green-400' : 'text-red-400'"
                         >
                             {{
                                 store.canAfford(store.stonePrice * buyCount)
@@ -345,7 +385,9 @@
                             <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
                             <p class="font-medium result-text truncate text-sm">
                                 {{ group.ability.skillLocalName }} Lv.{{ group.level }}
-                                <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">×{{ group.count }}</span>
+                                <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">
+                                    ×{{ group.count }}
+                                </span>
                             </p>
                         </div>
                         <div class="flex items-center gap-2 ml-2 flex-shrink-0">
@@ -568,7 +610,9 @@
                                     <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
                                     <p class="font-medium result-text truncate">
                                         {{ group.ability.skillLocalName }} Lv.{{ group.level }}
-                                        <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">×{{ group.count }}</span>
+                                        <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">
+                                            ×{{ group.count }}
+                                        </span>
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-3 ml-2">
@@ -602,8 +646,8 @@
                                 <p class="text-2xl font-bold mb-1">{{ luckRating.emoji }} {{ luckRating.title }}</p>
                                 <p class="text-sm opacity-80">{{ luckRating.description }}</p>
                                 <p class="text-xs mt-2 opacity-60">
-                                    高等級率: {{ luckRating.highLevelRate.toFixed(1) }}% |
-                                    平均等級: {{ luckRating.avgLevel.toFixed(2) }}
+                                    高等級率: {{ luckRating.highLevelRate.toFixed(1) }}% | 平均等級:
+                                    {{ luckRating.avgLevel.toFixed(2) }}
                                 </p>
                             </div>
 
@@ -615,14 +659,22 @@
                                         v-for="lv in 10"
                                         :key="lv"
                                         class="text-center p-2 rounded"
-                                        :class="lv >= 9 ? 'bg-yellow-500/20' : lv >= 6 ? 'bg-blue-500/20' : 'bg-gray-700/50'"
+                                        :class="
+                                            lv >= 9 ? 'bg-yellow-500/20' : lv >= 6 ? 'bg-blue-500/20' : 'bg-gray-700/50'
+                                        "
                                     >
                                         <p class="text-xs text-gray-400">Lv.{{ lv }}</p>
                                         <p class="font-bold" :class="lv >= 9 ? 'text-yellow-400' : 'text-white'">
                                             {{ reportData.levelDist[lv] || 0 }}
                                         </p>
                                         <p class="text-xs text-gray-500">
-                                            {{ ((reportData.levelDist[lv] || 0) / Math.max(store.history.length, 1) * 100).toFixed(1) }}%
+                                            {{
+                                                (
+                                                    ((reportData.levelDist[lv] || 0) /
+                                                        Math.max(store.history.length, 1)) *
+                                                    100
+                                                ).toFixed(1)
+                                            }}%
                                         </p>
                                     </div>
                                 </div>
@@ -669,7 +721,9 @@
                         <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
                         <p class="text-sm font-medium result-text truncate">
                             {{ group.ability.skillLocalName }} Lv.{{ group.level }}
-                            <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">×{{ group.count }}</span>
+                            <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">
+                                ×{{ group.count }}
+                            </span>
                         </p>
                     </div>
                     <div class="flex items-center gap-2 ml-2 flex-shrink-0">
@@ -717,7 +771,13 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { useGambleStore, ECONOMY_CONFIG, PROBABILITY_CONFIGS, type AppraisalRecord, type DisplayMode, type ProbabilityMode } from "../stores/gamble";
+import {
+    useGambleStore,
+    ECONOMY_CONFIG,
+    PROBABILITY_CONFIGS,
+    type AppraisalRecord,
+    type ProbabilityMode,
+} from "../stores/gamble";
 import { stoneAbilities, type AbilityOption } from "../data/stoneData";
 
 const store = useGambleStore();
@@ -737,6 +797,8 @@ const tempAutoStopCount = ref(store.autoStopCount);
 const tempDisplayMode = ref(store.displayMode);
 const tempProbabilityMode = ref<ProbabilityMode>(store.probabilityMode || "equal");
 const tempRetentionMap = ref<Record<number, number>>({});
+// 自訂售價暫存：key = "skillId__level"，value = 萬 Gold（0 或空字串表示清除）
+const tempCustomPrices = ref<Record<string, number | null>>({});
 const stonePricePresets = [300_000_000, 500_000_000, 700_000_000, 1_000_000_000]; // 3億, 5億, 7億, 10億
 
 // 按職業分組的技能列表
@@ -955,9 +1017,6 @@ function setGroupStatus(ids: string[], status: "sold" | "collected") {
 }
 
 // 待處理結果統計
-const pendingTotalValue = computed(() => {
-    return pendingResults.value.reduce((sum, r) => sum + r.value, 0);
-});
 const pendingSellCount = computed(() => {
     return pendingResults.value.filter((r) => r.status === "sold").length;
 });
@@ -990,22 +1049,6 @@ function rollAbility(): AbilityOption {
     return stoneAbilities[index];
 }
 
-// 格式化能力文字
-function formatAbilityText(ability: AbilityOption, level: number): string {
-    const rawValue = ability.parameter * level;
-    // 處理浮點數精度問題：根據 parameter 的小數位數決定顯示精度
-    const decimalPlaces = ability.parameter < 1 ? 1 : 0;
-    const value = Number(rawValue.toFixed(decimalPlaces));
-    const unit = ability.parameter >= 1 ? "%" : "";
-    const maxUnit = ability.parameter >= 1 ? "%" : "";
-    return `${ability.skillLocalName} 增加 ${value}${unit} (上限 ${ability.maxLimit}${maxUnit})`;
-}
-
-// 格式化數字
-function formatNumber(num: number): string {
-    return num.toLocaleString();
-}
-
 // 格式化 Gold
 function formatGold(gold: number): string {
     if (gold >= 100000000) {
@@ -1032,8 +1075,12 @@ function getPriceMultiplier(): number {
     return store.stonePrice / ECONOMY_CONFIG.BASE_STONE_PRICE;
 }
 
-// 計算實際價值
+// 計算實際價值（優先使用自訂售價，自訂售價不受月餅價格倍率影響）
 function calculateValue(ability: AbilityOption, level: number): number {
+    const custom = store.getCustomPrice(ability.id, level);
+    if (custom !== null) {
+        return custom * 10000; // 自訂售價直接使用，單位萬 Gold → Gold
+    }
     const basePrice = ability.prices[level - 1] * 10000; // prices 單位是萬 Gold，轉為 Gold
     return Math.round(basePrice * getPriceMultiplier());
 }
@@ -1176,6 +1223,15 @@ function showSettingsDialog() {
         map[skill.id] = store.getRetentionLevel(skill.id);
     }
     tempRetentionMap.value = map;
+    // 初始化自訂售價 map
+    const priceMap: Record<string, number | null> = {};
+    for (const skill of stoneAbilities) {
+        for (let lv = 1; lv <= 10; lv++) {
+            const key = `${skill.id}__${lv}`;
+            priceMap[key] = store.getCustomPrice(skill.id, lv);
+        }
+    }
+    tempCustomPrices.value = priceMap;
     settingsDialogVisible.value = true;
 }
 
@@ -1191,6 +1247,14 @@ function confirmSettings() {
     for (const [skillId, minLevel] of Object.entries(tempRetentionMap.value)) {
         store.setRetentionItem(Number(skillId), minLevel);
     }
+    // 儲存自訂售價
+    const finalPrices: Record<string, number> = {};
+    for (const [key, val] of Object.entries(tempCustomPrices.value)) {
+        if (val !== null && val > 0) {
+            finalPrices[key] = val;
+        }
+    }
+    store.setAllCustomPrices(finalPrices);
     settingsDialogVisible.value = false;
     ElMessage({ message: "設定已儲存", type: "success", duration: 1500 });
 }
@@ -1374,5 +1438,24 @@ function toggleAutoRun() {
     color: #fff !important;
     border: none !important;
     box-shadow: none !important;
+}
+
+/* 自訂售價輸入框 */
+.custom-price-input :deep(.el-input__wrapper) {
+    background-color: #374151 !important;
+    box-shadow: none !important;
+    padding: 0 4px !important;
+}
+
+.custom-price-input :deep(.el-input__inner) {
+    color: #fbbf24 !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    padding: 0 !important;
+}
+
+.custom-price-input :deep(input::placeholder) {
+    color: #6b7280 !important;
+    font-size: 11px !important;
 }
 </style>
