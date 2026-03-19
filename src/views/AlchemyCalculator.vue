@@ -550,6 +550,10 @@ const applyPreset = (preset: string) => {
 
 <template>
     <div class="alchemy-calculator">
+        <div class="deprecation-banner">
+            ⚠️ 本計算機建立在改版前，現已和版本脫節，不構成任何參考建議，請使用者好自為之。
+        </div>
+
         <h1 class="page-title">
             <span class="text-gradient">煉金術傷害計算器</span>
         </h1>
@@ -1171,6 +1175,17 @@ const applyPreset = (preset: string) => {
 .alchemy-calculator {
     min-height: 100vh;
     padding: 1.5rem;
+}
+
+.deprecation-banner {
+    background: #451a03;
+    border: 1px solid #92400e;
+    color: #fbbf24;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
 }
 
 .page-title {

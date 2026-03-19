@@ -47,16 +47,25 @@ const features = [
         path: "/stone-gambling",
     },
     {
-        icon: "DataAnalysis",
-        title: "煉金術傷害計算器",
-        description: "計算煉金術技能傷害，支援水系、火系、大蛇等",
-        path: "/alchemy-calculator",
-    },
-    {
         icon: "Handbag",
         title: "娃娃背包查詢",
         description: "查詢娃娃背包效果、召喚重量與自動拾取分類",
         path: "/doll-bag",
+    },
+];
+
+const abandonedFeatures = [
+    {
+        icon: "DataAnalysis",
+        title: "煉金術傷害計算器",
+        description: "等待大佬提供公式和資料",
+        path: "/alchemy-calculator",
+    },
+    {
+        icon: "Lightning",
+        title: "魔法傷害計算器",
+        description: "等待大佬提供公式和資料",
+        path: "/magic-calculator",
     },
 ];
 
@@ -91,6 +100,26 @@ const navigateTo = (path: string) => {
                     </div>
                     <h3 class="feature-title">{{ feature.title }}</h3>
                     <p class="feature-description">{{ feature.description }}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features abandoned-section">
+            <h2 class="section-title abandoned-title">棄坑中 💤</h2>
+            <div class="feature-grid">
+                <div
+                    v-for="feature in abandonedFeatures"
+                    :key="feature.path"
+                    class="feature-card abandoned-card"
+                    @click="navigateTo(feature.path)"
+                >
+                    <div class="feature-icon abandoned-icon">
+                        <el-icon :size="32">
+                            <component :is="feature.icon" />
+                        </el-icon>
+                    </div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-description abandoned-desc">{{ feature.description }}</p>
                 </div>
             </div>
         </section>
@@ -195,6 +224,30 @@ const navigateTo = (path: string) => {
     font-size: 0.9rem;
     color: var(--color-text-secondary, #9ca3af);
     line-height: 1.5;
+}
+
+/* 棄坑中 */
+.abandoned-section {
+    margin-top: 2.5rem;
+    opacity: 0.65;
+}
+
+.abandoned-title {
+    border-bottom-color: #4b5563;
+    color: #6b7280;
+}
+
+.abandoned-card {
+    border-style: dashed;
+}
+
+.abandoned-icon {
+    color: #4b5563;
+}
+
+.abandoned-desc {
+    color: #6b7280;
+    font-style: italic;
 }
 
 .info {

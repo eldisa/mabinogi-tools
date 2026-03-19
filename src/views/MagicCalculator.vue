@@ -975,6 +975,10 @@ const weaponEvalSummary = computed(() => {
 
 <template>
     <div class="arch-mage-sim">
+        <div class="deprecation-banner">
+            ⚠️ 本計算機建立在改版前，現已和版本脫節，不構成任何參考建議，請使用者好自為之。
+        </div>
+
         <h1 class="page-title">
             <span class="text-gradient">魔法傷害模擬器</span>
             <span class="page-subtitle">Arch-Mage Simulator</span>
@@ -2561,6 +2565,17 @@ const weaponEvalSummary = computed(() => {
     min-height: 100vh;
     padding: 1.5rem;
     box-sizing: border-box;
+}
+
+.deprecation-banner {
+    background: #451a03;
+    border: 1px solid #92400e;
+    color: #fbbf24;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
 }
 
 .page-title {
