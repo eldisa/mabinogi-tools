@@ -280,10 +280,10 @@ const thunderResult = computed(() => {
     // ── A ──────────────────────────────────────────
     const A = totalMagAtk.value;
 
-    // ── B1：雷擊倍率 = (200% + 細工*0.5% + 魔法陣*1%) × 6 ──
+    // ── B1：單下雷擊倍率 = 200% + 細工*0.5% + 魔法陣*1% ──
     const thunderRefLv = state.refinement.thunder_max;
     const thunderMCLv = isMCSelected("thunder") ? (state.magicCircles.levels["thunder"] ?? 0) : 0;
-    const B1 = (2.0 + thunderRefLv * 0.005 + thunderMCLv * 0.01) * 6;
+    const B1 = 2.0 + thunderRefLv * 0.005 + thunderMCLv * 0.01;
 
     // ── C1：雷精通 = 1 + 15% + 細工*0.5% + 套裝15% + 賦予*1% + 稱號 + 武器 ──
     const lightRefLv = state.refinement.lightning_mast;
