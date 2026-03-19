@@ -337,28 +337,29 @@
                 <!-- 歷史紀錄列表 -->
                 <div v-if="activeTab !== 'report'" class="space-y-2 max-h-60 overflow-y-auto">
                     <div
-                        v-for="record in filteredHistory"
-                        :key="record.id"
+                        v-for="group in groupedFilteredHistory"
+                        :key="`${group.ability.skillLocalName}__${group.level}`"
                         class="flex items-center justify-between p-2 bg-gray-700/50 rounded-lg text-sm"
                     >
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs text-gray-400">{{ record.ability.job }}</p>
+                            <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
                             <p class="font-medium result-text truncate text-sm">
-                                {{ record.ability.skillLocalName }} Lv.{{ record.level }}
+                                {{ group.ability.skillLocalName }} Lv.{{ group.level }}
+                                <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">×{{ group.count }}</span>
                             </p>
                         </div>
                         <div class="flex items-center gap-2 ml-2 flex-shrink-0">
                             <span
                                 class="text-xs"
-                                :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
+                                :class="group.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
                             >
-                                {{ record.status === "collected" ? "收藏" : formatGold(record.value) }}
+                                {{ group.status === "collected" ? "收藏" : formatGold(group.totalValue) }}
                             </span>
                             <el-button
-                                v-if="record.status === 'collected'"
+                                v-if="group.status === 'collected'"
                                 type="success"
                                 size="small"
-                                @click="sellCollected(record)"
+                                @click="sellCollected(group.firstRecord)"
                             >
                                 售
                             </el-button>
@@ -559,31 +560,31 @@
                         <!-- 歷史紀錄列表 -->
                         <div v-if="activeTab !== 'report'" class="space-y-2 max-h-96 overflow-y-auto">
                             <div
-                                v-for="record in filteredHistory"
-                                :key="record.id"
+                                v-for="group in groupedFilteredHistory"
+                                :key="`${group.ability.skillLocalName}__${group.level}`"
                                 class="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
                             >
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-xs text-gray-400">{{ record.ability.job }}</p>
+                                    <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
                                     <p class="font-medium result-text truncate">
-                                        {{ formatAbilityText(record.ability, record.level) }}
+                                        {{ group.ability.skillLocalName }} Lv.{{ group.level }}
+                                        <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">×{{ group.count }}</span>
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-3 ml-2">
                                     <div class="text-right">
-                                        <p class="text-accent font-bold">Lv.{{ record.level }}</p>
                                         <p
                                             class="text-sm"
-                                            :class="record.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
+                                            :class="group.status === 'collected' ? 'text-blue-400' : 'text-green-400'"
                                         >
-                                            {{ record.status === "collected" ? "收藏" : formatGold(record.value) }}
+                                            {{ group.status === "collected" ? "收藏" : formatGold(group.totalValue) }}
                                         </p>
                                     </div>
                                     <el-button
-                                        v-if="record.status === 'collected'"
+                                        v-if="group.status === 'collected'"
                                         type="success"
                                         size="small"
-                                        @click="sellCollected(record)"
+                                        @click="sellCollected(group.firstRecord)"
                                     >
                                         出售
                                     </el-button>
@@ -657,33 +658,34 @@
         >
             <div class="space-y-2 max-h-[50vh] overflow-y-auto">
                 <div
-                    v-for="result in pendingResults"
-                    :key="result.id"
+                    v-for="group in groupedResults"
+                    :key="`${group.ability.skillLocalName}__${group.level}`"
                     class="flex items-center justify-between p-2 rounded-lg"
                     :class="
-                        result.status === 'collected' ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-700/50'
+                        group.status === 'collected' ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-700/50'
                     "
                 >
                     <div class="flex-1 min-w-0">
-                        <p class="text-xs text-gray-400">{{ result.ability.job }}</p>
+                        <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
                         <p class="text-sm font-medium result-text truncate">
-                            {{ result.ability.skillLocalName }} Lv.{{ result.level }}
+                            {{ group.ability.skillLocalName }} Lv.{{ group.level }}
+                            <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">×{{ group.count }}</span>
                         </p>
                     </div>
                     <div class="flex items-center gap-2 ml-2 flex-shrink-0">
-                        <span class="text-sm text-green-400">{{ formatGold(result.value) }}</span>
+                        <span class="text-sm text-green-400">{{ formatGold(group.value) }}</span>
                         <el-button-group size="small" class="status-btn-group">
                             <el-button
-                                :type="result.status === 'sold' ? 'success' : 'default'"
-                                :class="{ 'is-active': result.status === 'sold' }"
-                                @click="result.status = 'sold'"
+                                :type="group.status === 'sold' ? 'success' : 'default'"
+                                :class="{ 'is-active': group.status === 'sold' }"
+                                @click="setGroupStatus(group.ids, 'sold')"
                             >
                                 售
                             </el-button>
                             <el-button
-                                :type="result.status === 'collected' ? 'primary' : 'default'"
-                                :class="{ 'is-active': result.status === 'collected' }"
-                                @click="result.status = 'collected'"
+                                :type="group.status === 'collected' ? 'primary' : 'default'"
+                                :class="{ 'is-active': group.status === 'collected' }"
+                                @click="setGroupStatus(group.ids, 'collected')"
                             >
                                 藏
                             </el-button>
@@ -808,6 +810,40 @@ const filteredHistory = computed(() => {
     }
 });
 
+// 歷史紀錄分組顯示（合併相同技能+等級）
+interface GroupedHistory {
+    ability: AppraisalRecord["ability"];
+    level: number;
+    totalValue: number;
+    count: number;
+    status: "collected" | "sold" | "mixed";
+    // 收藏項目只需第一筆 id（用於出售按鈕）
+    firstRecord: AppraisalRecord;
+}
+function groupHistory(records: AppraisalRecord[]): GroupedHistory[] {
+    const map = new Map<string, GroupedHistory>();
+    for (const r of records) {
+        const key = `${r.ability.skillLocalName}__${r.level}`;
+        if (map.has(key)) {
+            const g = map.get(key)!;
+            g.count++;
+            g.totalValue += r.value;
+            if (g.status !== r.status) g.status = "mixed";
+        } else {
+            map.set(key, {
+                ability: r.ability,
+                level: r.level,
+                totalValue: r.value,
+                count: 1,
+                status: r.status,
+                firstRecord: r,
+            });
+        }
+    }
+    return [...map.values()];
+}
+const groupedFilteredHistory = computed(() => groupHistory(filteredHistory.value));
+
 // 報表數據
 const reportData = computed(() => {
     const levelDist: Record<number, number> = {};
@@ -878,6 +914,45 @@ const luckRating = computed(() => {
         };
     }
 });
+
+// 分組後的鑑定結果（合併相同技能 + 等級，大幅減少 DOM 數量）
+interface GroupedResult {
+    ability: AppraisalRecord["ability"];
+    level: number;
+    value: number;
+    count: number;
+    ids: string[];
+    status: "sold" | "collected" | "mixed";
+}
+const groupedResults = computed<GroupedResult[]>(() => {
+    const map = new Map<string, GroupedResult>();
+    for (const r of pendingResults.value) {
+        const key = `${r.ability.skillLocalName}__${r.level}`;
+        if (map.has(key)) {
+            const g = map.get(key)!;
+            g.count++;
+            g.ids.push(r.id);
+            if (g.status !== r.status) g.status = "mixed";
+        } else {
+            map.set(key, {
+                ability: r.ability,
+                level: r.level,
+                value: r.value,
+                count: 1,
+                ids: [r.id],
+                status: r.status,
+            });
+        }
+    }
+    return [...map.values()];
+});
+
+function setGroupStatus(ids: string[], status: "sold" | "collected") {
+    const idSet = new Set(ids);
+    pendingResults.value.forEach((r) => {
+        if (idSet.has(r.id)) r.status = status;
+    });
+}
 
 // 待處理結果統計
 const pendingTotalValue = computed(() => {
