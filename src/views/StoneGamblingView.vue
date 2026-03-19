@@ -122,6 +122,16 @@
                     <p class="text-gray-300 font-medium mb-2">保留清單</p>
                     <p class="text-xs text-gray-500 mb-3">設定各技能的最低保留等級，低於該等級將自動出售</p>
 
+                    <!-- 快速設定列 -->
+                    <div class="flex flex-wrap items-center gap-2 mb-3 p-2 bg-gray-700/30 rounded-lg">
+                        <el-button size="small" type="danger" plain @click="setAllRetention(0)">全部售出</el-button>
+                        <el-button size="small" type="success" plain @click="setAllRetention(1)">全留</el-button>
+                        <span class="text-xs text-gray-500 ml-1">特定等級：</span>
+                        <el-button v-for="lv in 10" :key="lv" size="small" plain @click="setAllRetention(lv)">
+                            ≥{{ lv }}
+                        </el-button>
+                    </div>
+
                     <div class="space-y-4">
                         <div v-for="(skills, job) in skillsByJob" :key="job" class="bg-gray-800/50 rounded-lg p-3">
                             <p class="text-sm font-medium text-accent mb-2">{{ job }}</p>
@@ -1233,6 +1243,13 @@ function showSettingsDialog() {
     }
     tempCustomPrices.value = priceMap;
     settingsDialogVisible.value = true;
+}
+
+// 快速批量設定保留等級（0=全售, 1=全留, n=≥n 才留）
+function setAllRetention(level: number) {
+    for (const skill of stoneAbilities) {
+        tempRetentionMap.value[skill.id] = level;
+    }
 }
 
 // 確認設定
