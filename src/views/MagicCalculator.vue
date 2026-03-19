@@ -327,14 +327,16 @@ const thunderResult = computed(() => {
     // ── I：魂長額外 ──
     const I = wb(state.weapon.mainHand).soul_extra ?? 0; // 魂杖 +10%
 
-    // ── 最終傷害 ──
-    const damage = A * B1 * C1 * D1 * (1 + E) * (1 + G + H) * (1 + F) * (1 + I);
+    // ── 傷害計算 ──
+    const singleHitDmg = A * B1 * C1 * D1 * (1 + E) * (1 + G + H) * (1 + F) * (1 + I);
+    const damage = singleHitDmg * 6; // 4下×1 + 1下×2 = ×6
 
     return {
         damage,
         vars: {
             A,
             B1,
+            singleHitDmg,
             C1,
             D1,
             E,
@@ -1606,6 +1608,16 @@ const weaponEvalSummary = computed(() => {
 
                     <!-- 公式展示 -->
                     <div class="formula-line">A × B1 × C1 × D1 × (1+E) × (1+G+H) × (1+F) × (1+I)</div>
+                    <div class="formula-note">B1 = 單下倍率；1~4下各 ×1、第5下 ×2，共 ×6</div>
+                    <!-- 每下傷害速覽 -->
+                    <div class="thunder-hit-row">
+                        <span class="thunder-hit-label">1~4下</span>
+                        <span class="thunder-hit-val">{{ fmt(thunderResult.vars.singleHitDmg) }}</span>
+                        <span class="thunder-hit-label">第5下</span>
+                        <span class="thunder-hit-val">{{ fmt(thunderResult.vars.singleHitDmg * 2) }}</span>
+                        <span class="thunder-hit-label">總和</span>
+                        <span class="thunder-hit-val thunder-hit-total">{{ fmt(thunderResult.vars.singleHitDmg * 6) }}</span>
+                    </div>
 
                     <!-- 展開/收合詳細 -->
                     <el-button
@@ -1636,11 +1648,14 @@ const weaponEvalSummary = computed(() => {
                                     <tr>
                                         <td>B1</td>
                                         <td>
-                                            雷擊倍率 (200% + 細工{{ thunderResult.vars.thunderRefLv }}等×0.5% + 魔法陣{{
-                                                thunderResult.vars.thunderMCLv
-                                            }}等×1%) ×6
+                                            單下雷擊倍率（200% + 細工{{ thunderResult.vars.thunderRefLv }}等×0.5% + 魔法陣{{ thunderResult.vars.thunderMCLv }}等×1%）
                                         </td>
                                         <td class="num-cell">{{ fmtF(thunderResult.vars.B1) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>單下傷害</td>
+                                        <td>A × B1 × C1 × D1 × (1+E) × (1+G+H) × (1+F) × (1+I)</td>
+                                        <td class="num-cell">{{ fmt(thunderResult.vars.singleHitDmg) }}</td>
                                     </tr>
                                     <tr>
                                         <td>C1</td>
@@ -2798,6 +2813,48 @@ const weaponEvalSummary = computed(() => {
     font-size: 0.68rem;
     color: var(--color-text-secondary, #6b7280);
     margin: 0.1rem 0 0.05rem;
+}
+/* 暴擊 / 期望 行 */
+.crit-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary, #9ca3af);
+    margin: 0.15rem 0 0.35rem;
+}
+.crit-val {
+    color: #fbbf24;
+    font-weight: 600;
+}
+.crit-sep {
+    color: var(--color-text-secondary, #4b5563);
+    margin: 0 0.2rem;
+}
+.exp-val {
+    color: #34d399;
+    font-weight: 600;
+}
+
+.thunder-hit-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    flex-wrap: wrap;
+}
+.thunder-hit-label {
+    color: var(--color-text-secondary, #9ca3af);
+}
+.thunder-hit-val {
+    color: #818cf8;
+    font-weight: 600;
+    margin-right: 0.6rem;
+}
+.thunder-hit-total {
+    color: #a5b4fc;
+    font-size: 0.9rem;
 }
 .buff-active {
     color: #34d399;
