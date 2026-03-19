@@ -177,9 +177,12 @@ const state = reactive({
     },
     critDmg: {
         spiritWeapon: true, // 精靈武器 +15%
-        farm: 7, // 農場物 %
-        totem: 5, // 圖騰 %
-        other: 0, // 其他 %
+        sets: 0,   // 套裝 %
+        bag: 0,    // 娃娃背包 %
+        holy: 0,   // 聖水 %
+        farm: 7,   // 農場物 %
+        totem: 5,  // 圖騰 %
+        other: 0,  // 其他 %
     },
     simulation: {
         darklink: 0,
@@ -802,11 +805,27 @@ const critDmgR7Bonus = computed(() => (state.weapon.upgrade === "R7" ? 74 : stat
 const critDmgTotal = computed(() => {
     const base = 260;
     const spirit = state.critDmg.spiritWeapon ? 15 : 0;
-    const farm = state.critDmg.farm;
+    const sets  = state.critDmg.sets;
+    const bag   = state.critDmg.bag;
+    const holy  = state.critDmg.holy;
+    const farm  = state.critDmg.farm;
     const totem = state.critDmg.totem;
     const other = state.critDmg.other;
-    return base + spirit + farm + totem + other + critDmgR7Bonus.value;
+    return base + spirit + sets + bag + holy + farm + totem + other + critDmgR7Bonus.value;
 });
+
+/** 暴擊 / 期望傷害 helper
+ *  critDmg = base × (critDmgTotal / 100)
+ *  expected = base × (1 + critRate/100 × (critDmgTotal/100 - 1))
+ */
+function calcCrit(base: number) {
+    const dmgMult = critDmgTotal.value / 100;
+    const rate = critRateTotal.value / 100;
+    return {
+        crit: base * dmgMult,
+        expected: base * (1 + rate * (dmgMult - 1)),
+    };
+}
 
 // ── UI helpers ────────────────────────────────────────
 const showThunderBreak = ref(false);
@@ -1462,6 +1481,39 @@ const weaponEvalSummary = computed(() => {
                             </el-checkbox>
                         </div>
                         <div class="field-row">
+                            <label class="field-label">套裝 %</label>
+                            <el-input-number
+                                v-model="state.critDmg.sets"
+                                :min="0"
+                                :max="50"
+                                :precision="0"
+                                size="small"
+                                style="width: 90px"
+                            />
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label">娃娃背包 %</label>
+                            <el-input-number
+                                v-model="state.critDmg.bag"
+                                :min="0"
+                                :max="50"
+                                :precision="0"
+                                size="small"
+                                style="width: 90px"
+                            />
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label">聖水 %</label>
+                            <el-input-number
+                                v-model="state.critDmg.holy"
+                                :min="0"
+                                :max="30"
+                                :precision="0"
+                                size="small"
+                                style="width: 90px"
+                            />
+                        </div>
+                        <div class="field-row">
                             <label class="field-label">農場物 %</label>
                             <el-input-number
                                 v-model="state.critDmg.farm"
@@ -1605,6 +1657,11 @@ const weaponEvalSummary = computed(() => {
                         </div>
                         <div class="damage-value">{{ fmt(thunderResult.damage) }}</div>
                     </div>
+                    <div class="crit-row">
+                        暴擊 <span class="crit-val">{{ fmt(calcCrit(thunderResult.damage).crit) }}</span>
+                        <span class="crit-sep">│</span>
+                        期望 <span class="exp-val">{{ fmt(calcCrit(thunderResult.damage).expected) }}</span>
+                    </div>
 
                     <!-- 公式展示 -->
                     <div class="formula-line">A × B1 × C1 × D1 × (1+E) × (1+G+H) × (1+F) × (1+I)</div>
@@ -1743,6 +1800,11 @@ const weaponEvalSummary = computed(() => {
                         </div>
                         <div class="damage-value fireball-val">{{ fmt(fireballResult.damage) }}</div>
                     </div>
+                    <div class="crit-row">
+                        暴擊 <span class="crit-val">{{ fmt(calcCrit(fireballResult.damage).crit) }}</span>
+                        <span class="crit-sep">│</span>
+                        期望 <span class="exp-val">{{ fmt(calcCrit(fireballResult.damage).expected) }}</span>
+                    </div>
 
                     <!-- 公式展示 -->
                     <div class="formula-line">A × B2 × C2 × D1 × (1+E) × (1+G+H) × (1+F)</div>
@@ -1868,6 +1930,11 @@ const weaponEvalSummary = computed(() => {
                             <span class="skill-en">Explosion Lunge</span>
                         </div>
                         <div class="damage-value lunge-val">{{ fmt(explosionLungeResult.damage) }}</div>
+                    </div>
+                    <div class="crit-row">
+                        暴擊 <span class="crit-val">{{ fmt(calcCrit(explosionLungeResult.damage).crit) }}</span>
+                        <span class="crit-sep">│</span>
+                        期望 <span class="exp-val">{{ fmt(calcCrit(explosionLungeResult.damage).expected) }}</span>
                     </div>
 
                     <!-- 公式展示 -->
@@ -1996,6 +2063,11 @@ const weaponEvalSummary = computed(() => {
                         </div>
                         <div class="damage-value firebolt-val">{{ fmt(fireBoltResult.damage) }}</div>
                     </div>
+                    <div class="crit-row">
+                        暴擊 <span class="crit-val">{{ fmt(calcCrit(fireBoltResult.damage).crit) }}</span>
+                        <span class="crit-sep">│</span>
+                        期望 <span class="exp-val">{{ fmt(calcCrit(fireBoltResult.damage).expected) }}</span>
+                    </div>
                     <div class="formula-line">A × B4 × C3 × (1+E) × (1+G+H) × (1+F) × {{ FIRE_BOLT_CONST }}</div>
                     <div class="formula-note">
                         C3 含精通魔杖150% + 箭系20% 基礎；B4 基礎30%
@@ -2101,6 +2173,11 @@ const weaponEvalSummary = computed(() => {
                         </div>
                         <div class="damage-value lightningbolt-val">{{ fmt(lightningBoltResult.damage) }}</div>
                     </div>
+                    <div class="crit-row">
+                        暴擊 <span class="crit-val">{{ fmt(calcCrit(lightningBoltResult.damage).crit) }}</span>
+                        <span class="crit-sep">│</span>
+                        期望 <span class="exp-val">{{ fmt(calcCrit(lightningBoltResult.damage).expected) }}</span>
+                    </div>
                     <div class="formula-line">A × B5 × C4 × (1+E) × (1+G+H) × (1+F)</div>
                     <div class="formula-note">
                         C4 含精通魔杖150% + 箭系20% + 5蓄獎勵28%；B5 基礎40%
@@ -2204,6 +2281,11 @@ const weaponEvalSummary = computed(() => {
                         </div>
                         <div class="damage-value fusion-val">{{ fmt(fusionBoltResult.damage) }}</div>
                     </div>
+                    <div class="crit-row">
+                        暴擊 <span class="crit-val">{{ fmt(calcCrit(fusionBoltResult.damage).crit) }}</span>
+                        <span class="crit-sep">│</span>
+                        期望 <span class="exp-val">{{ fmt(calcCrit(fusionBoltResult.damage).expected) }}</span>
+                    </div>
                     <div class="formula-line">(5蓄火焰+雷矢) × (1+K) × (1+J) × (1+F) × (1+L) × (1+M) × 0.85</div>
                     <div class="formula-note">
                         J 箭系組合加成；K 組魔大師；F 黑魔同步；L 暗黑連結；M 爾格50
@@ -2302,6 +2384,11 @@ const weaponEvalSummary = computed(() => {
                             <span class="skill-en">Lighting Chain</span>
                         </div>
                         <div class="damage-value chain-val">{{ fmt(lightingChainResult.damage) }}</div>
+                    </div>
+                    <div class="crit-row">
+                        暴擊 <span class="crit-val">{{ fmt(calcCrit(lightingChainResult.damage).crit) }}</span>
+                        <span class="crit-sep">│</span>
+                        期望 <span class="exp-val">{{ fmt(calcCrit(lightingChainResult.damage).expected) }}</span>
                     </div>
                     <div class="formula-line">(555% × (1+C4) × (1+G+H) × (1+E) + 1) × 雷矢傷害 × (1+F)</div>
                     <div class="formula-note">C4 = 雷精通（同雷矢）；+1 為括號內雷矢基礎倍數</div>
