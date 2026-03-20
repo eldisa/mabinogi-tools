@@ -70,6 +70,10 @@ onMounted(() => {
                         <strong>GitHub：</strong>
                         <a href="https://github.com/eldisa" target="_blank" rel="noopener noreferrer">eldisa</a>
                     </li>
+                    <li>
+                        <strong>Discord：</strong>
+                        eldisa
+                    </li>
                 </ul>
             </section>
 
@@ -177,6 +181,10 @@ onMounted(() => {
                     <li>
                         <strong>GitHub：</strong>
                         <a href="https://github.com/eldisa" target="_blank" rel="noopener noreferrer">eldisa</a>
+                    </li>
+                    <li>
+                        <strong>Discord：</strong>
+                        eldisa
                     </li>
                 </ul>
             </section>

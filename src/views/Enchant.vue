@@ -1,5 +1,8 @@
 <template>
     <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
+        <div class="enchant-notice">
+            ⚠️ 作者沒動力更新，沒用的捲那麼多，反正大家也就用那些而已
+        </div>
         <div class="max-w-6xl mx-auto space-y-8">
             <header class="text-center pt-8 pb-4">
                 <h1 class="text-4xl sm:text-5xl font-bold mb-2 tracking-wide font-serif drop-shadow-lg">
@@ -213,6 +216,17 @@
 </template>
 
 <style>
+.enchant-notice {
+    max-width: 72rem;
+    margin: 0 auto 1rem;
+    padding: 0.6rem 1rem;
+    background: #422006;
+    border: 1px solid #92400e;
+    border-radius: 8px;
+    color: #fcd34d;
+    font-size: 0.9rem;
+}
+
 /* 保持 Element UI 預設樣式覆蓋，並調整輸入框的文字顏色 */
 .el-form-item {
     margin-bottom: 1rem;

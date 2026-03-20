@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+
 defineEmits<{
     toggleSidebar: [];
 }>();
+
+const router = useRouter();
 </script>
 
 <template>
@@ -16,11 +20,14 @@ defineEmits<{
             </svg>
         </button>
 
-        <div class="flex items-center space-x-3">
+        <div
+            class="flex items-center space-x-3 cursor-pointer"
+            @click="router.push('/')"
+        >
             <div class="w-8 h-8 bg-gradient-to-br rounded-lg flex items-center justify-center">
                 <img src="/favicon.ico" />
             </div>
-            <h1 class="text-xl font-semibold text-gray-100">瑪奇小工具</h1>
+            <h1 class="text-xl font-semibold text-gray-100 hover:text-yellow-400 transition-colors">瑪奇小工具</h1>
         </div>
     </header>
 </template>

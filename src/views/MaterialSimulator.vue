@@ -60,9 +60,15 @@
                 <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
                         <el-tab-pane label="Total 材料總計">
-                            <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
                                 <h2 class="text-lg font-semibold text-accent">庫存與所需材料</h2>
-                                <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
+                                <div v-if="!layoutStore.isMobile" class="flex items-center gap-4 flex-wrap">
+                                    <el-checkbox v-model="hideFullStock">隱藏數量充足</el-checkbox>
+                                    <el-checkbox v-model="showG27Materials">顯示 G27 素材</el-checkbox>
+                                    <el-checkbox v-model="showNonG27Materials">顯示非 G27 素材</el-checkbox>
+                                    <el-divider direction="vertical" />
+                                    <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
+                                </div>
                             </div>
                             <!--todo: 庫存與所需材料-->
                             <div class="mt-4 overflow-x-auto overflow-y-auto">
@@ -99,7 +105,7 @@
                                 <!-- 桌面版 -->
                                 <!-- <div v-else-if="layoutStore.isTablet">平板版佈局</div> -->
                                 <div v-else>
-                                    <el-table :data="sortedData" :row-key="'id'" border class="material-table">
+                                    <el-table :data="filteredSortedData" :row-key="'id'" border class="material-table">
                                         <el-table-column prop="id" label="圖片" width="80" fixed="left">
                                             <template #default="{ row }">
                                                 <img
@@ -222,9 +228,14 @@
                         </el-tab-pane>
                         <el-tab-pane label="Roadmap 製作路線">
                             <template v-if="displayData.length > 0">
-                                <h2 class="text-lg font-semibold">
-                                    {{ displayData[selectedDisplayDataIndex].name }}
-                                </h2>
+                                <div class="flex items-center gap-4">
+                                    <h2 class="text-lg font-semibold">
+                                        {{ displayData[selectedDisplayDataIndex].name }}
+                                    </h2>
+                                    <el-checkbox v-model="useCostEstimate">
+                                        用成本估價（未設定的物品改顯示加工成本）
+                                    </el-checkbox>
+                                </div>
                                 <div class="mt-4">
                                     <el-table
                                         v-if="dataInPreviewTable?.children?.length"
@@ -259,6 +270,18 @@
                                             </template>
                                         </el-table-column>
                                         <el-table-column prop="amount" label="數量" align="right" />
+                                        <el-table-column label="物品價格" width="160" align="right">
+                                            <template #default="{ row }">
+                                                <span v-if="(materialPrices.find((e) => e.id === row.id)?.price ?? 0) > 0">
+                                                    {{ formatLargeNumber(materialPrices.find((e) => e.id === row.id)!.price) }}
+                                                </span>
+                                                <span v-else-if="useCostEstimate && (craftedItemsData.find((e) => e.id === row.id)?.materialCost ?? 0) > 0" class="text-yellow-400">
+                                                    {{ formatLargeNumber(craftedItemsData.find((e) => e.id === row.id)!.materialCost) }}
+                                                    <el-tag size="small" type="warning" class="ml-1">估</el-tag>
+                                                </span>
+                                                <span v-else class="text-gray-500">未設定</span>
+                                            </template>
+                                        </el-table-column>
                                         <!-- <el-table-column label="如何獲得">
                                             <template #default="{ row }">
                                                 <div v-if="row.source.type === 'craft'">生產製作</div>
@@ -293,6 +316,68 @@
                                 </el-table>
                             </div>
                         </el-tab-pane>
+                        <el-tab-pane label="加工物估價">
+                            <h2 class="text-lg font-semibold text-accent mb-4">加工物成本與利潤估算</h2>
+                            <el-table :data="craftedItemsData" border style="width: 100%" :row-key="'id'">
+                                <el-table-column label="圖片" width="70" align="center" fixed="left">
+                                    <template #default="{ row }">
+                                        <img
+                                            :src="`${baseUrl}itemImage/${row.id}.png`"
+                                            class="w-8 h-8 object-contain mx-auto"
+                                        />
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="名稱" min-width="200" fixed="left">
+                                    <template #default="{ row }">
+                                        <span>{{ row.name }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="所需材料" min-width="220">
+                                    <template #default="{ row }">
+                                        <div class="text-sm space-y-0.5">
+                                            <div
+                                                v-for="mat in row.subMaterials"
+                                                :key="mat.id"
+                                                class="flex items-center gap-1"
+                                            >
+                                                <img
+                                                    :src="`${baseUrl}itemImage/${mat.id}.png`"
+                                                    class="w-5 h-5 object-contain"
+                                                />
+                                                <span class="text-gray-300">{{ getMaterialName(mat.id) }}</span>
+                                                <span class="text-gray-400">× {{ mat.amount }}</span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="材料成本" width="140" align="right" sortable :sort-method="(a: { materialCost: number }, b: { materialCost: number }) => a.materialCost - b.materialCost">
+                                    <template #default="{ row }">
+                                        <span :class="row.materialCost === 0 ? 'text-gray-500' : ''">
+                                            {{ row.materialCost > 0 ? formatLargeNumber(row.materialCost) : '未設定' }}
+                                        </span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="成品售價" width="140" align="right" sortable :sort-method="(a: { sellPrice: number }, b: { sellPrice: number }) => a.sellPrice - b.sellPrice">
+                                    <template #default="{ row }">
+                                        <span :class="row.sellPrice === 0 ? 'text-gray-500' : ''">
+                                            {{ row.sellPrice > 0 ? formatLargeNumber(row.sellPrice) : '未設定' }}
+                                        </span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="利潤估算" width="140" align="right" sortable :sort-method="(a: { profit: number }, b: { profit: number }) => a.profit - b.profit">
+                                    <template #default="{ row }">
+                                        <span
+                                            v-if="row.sellPrice > 0 && row.materialCost > 0"
+                                            :class="row.profit >= 0 ? 'text-green-400' : 'text-red-400'"
+                                        >
+                                            {{ row.profit >= 0 ? '+' : '' }}{{ formatLargeNumber(row.profit) }}
+                                        </span>
+                                        <span v-else class="text-gray-500">—</span>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-tab-pane>
+
                         <el-tab-pane label="材料與庫存價格設定">
                             <div class="flex justify-between items-center mb-4">
                                 <h2 class="text-lg font-semibold text-accent">材料庫存與價格設定</h2>
@@ -511,6 +596,12 @@ const getUnitCost = (entry: MaterialPriceEntry): number => {
 
 const showTokenCount = ref(false);
 
+// Total tab 篩選
+const hideFullStock = ref(false);
+const showG27Materials = ref(true);
+const showNonG27Materials = ref(true);
+const G27MaterialIds = new Set(G27bossDropsUsage.map((e) => e.id));
+
 const getRowTokenCount = (id: number): number => {
     const source = materials.find((m) => m.id === id)?.source;
     return source && "token" in source ? (source.token ?? 0) : 0;
@@ -587,6 +678,7 @@ const filteredMaterialPrices = computed(() => {
 const displayData = ref<CraftTreeNode[]>([]);
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
+const useCostEstimate = ref(false);
 const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataIndex.value]);
 
 const materialMap = ref<{ id: number; total: number }[]>([]);
@@ -760,6 +852,60 @@ const sortedData = computed(() => {
         const bVal = b[key as keyof MaterialSummary];
         return order === TableV2SortOrder.ASC ? Number(aVal) - Number(bVal) : Number(bVal) - Number(aVal);
     });
+});
+
+const filteredSortedData = computed(() => {
+    return sortedData.value.filter((row) => {
+        if (hideFullStock.value) {
+            const stock = materialPrices.value.find((e) => e.id === row.id)?.stock ?? 0;
+            if (Math.max(0, row.total - stock) <= 0) return false;
+        }
+        const isG27 = G27MaterialIds.has(row.id);
+        if (isG27 && !showG27Materials.value) return false;
+        if (!isG27 && !showNonG27Materials.value) return false;
+        return true;
+    });
+});
+
+// 加工物估價
+const craftedItemsData = computed(() => {
+    // 遞迴取得材料的有效單價：
+    // 若該材料本身可製作，則改用其製作成本；否則使用 materialPrices 市價
+    const getEffectiveCost = (id: number, visited = new Set<number>()): number => {
+        if (visited.has(id)) return 0; // 防止循環依賴
+        const mat = materials.find((m) => m.id === id);
+        if (mat?.source.type === "craft") {
+            const src = mat.source as { type: "craft"; materials: { id: number; amount: number }[] };
+            const newVisited = new Set(visited);
+            newVisited.add(id);
+            const craftCost = (src.materials ?? []).reduce((sum, sub) => {
+                return sum + getEffectiveCost(sub.id, newVisited) * sub.amount;
+            }, 0);
+            if (craftCost > 0) return craftCost;
+        }
+        const entry = materialPrices.value.find((e) => e.id === id);
+        return entry ? getUnitCost(entry) : 0;
+    };
+
+    return materials
+        .filter((m) => m.source.type === "craft" && m.id >= 5100000)
+        .map((m) => {
+            const src = m.source as { type: "craft"; materials: { id: number; amount: number }[] };
+            const subMaterials = src.materials ?? [];
+            const materialCost = subMaterials.reduce((sum, mat) => {
+                return sum + getEffectiveCost(mat.id) * mat.amount;
+            }, 0);
+            const selfEntry = materialPrices.value.find((e) => e.id === m.id);
+            const sellPrice = selfEntry?.price ?? 0;
+            return {
+                id: m.id,
+                name: getMaterialName(m.id),
+                subMaterials,
+                materialCost,
+                sellPrice,
+                profit: sellPrice - materialCost,
+            };
+        });
 });
 
 const totalCostSummary = computed(() => {

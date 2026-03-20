@@ -60,6 +60,7 @@ export interface GambleSettings {
     autoStopCount: number; // 自動停止次數 (0 表示不限制)
     displayMode: DisplayMode; // 顯示模式
     probabilityMode: ProbabilityMode; // 機率模式
+    customPrices: Record<string, number>; // 自訂售價，key = "skillId__level"，value 單位：萬 Gold
 }
 
 // 預設設定
@@ -72,6 +73,7 @@ function getDefaultSettings(): GambleSettings {
         autoStopCount: 0,
         displayMode: "all",
         probabilityMode: "equal", // 預設平均機率
+        customPrices: {},
     };
 }
 
@@ -147,6 +149,7 @@ export const useGambleStore = defineStore("gamble", () => {
     const autoStopCount = ref(settings.autoStopCount); // 自動停止次數
     const displayMode = ref<DisplayMode>(settings.displayMode); // 顯示模式
     const probabilityMode = ref<ProbabilityMode>(settings.probabilityMode); // 機率模式
+    const customPrices = ref<Record<string, number>>(settings.customPrices ?? {}); // 自訂售價
 
     // 儲存
     function save() {
@@ -206,6 +209,7 @@ export const useGambleStore = defineStore("gamble", () => {
             autoStopCount: autoStopCount.value,
             displayMode: displayMode.value,
             probabilityMode: probabilityMode.value,
+            customPrices: customPrices.value,
         });
     }
 
@@ -260,6 +264,29 @@ export const useGambleStore = defineStore("gamble", () => {
     function getRetentionLevel(skillId: number): number {
         const item = retentionList.value.find((i) => i.skillId === skillId);
         return item?.minLevel ?? 0; // 0 表示 Sell All
+    }
+
+    // 設定自訂售價（price 為 null 時清除，unit: 萬 Gold）
+    function setCustomPrice(skillId: number, level: number, price: number | null) {
+        const key = `${skillId}__${level}`;
+        if (price === null || price <= 0) {
+            delete customPrices.value[key];
+        } else {
+            customPrices.value[key] = price;
+        }
+        saveAllSettings();
+    }
+
+    // 取得自訂售價（null 表示使用預設）
+    function getCustomPrice(skillId: number, level: number): number | null {
+        const key = `${skillId}__${level}`;
+        return customPrices.value[key] ?? null;
+    }
+
+    // 批次設定自訂售價（整個 map 替換，key = "skillId__level"）
+    function setAllCustomPrices(map: Record<string, number>) {
+        customPrices.value = { ...map };
+        saveAllSettings();
     }
 
     // 鑑定月餅（回傳鑑定結果陣列）
@@ -340,5 +367,9 @@ export const useGambleStore = defineStore("gamble", () => {
         setAutoStopCount,
         setDisplayMode,
         setProbabilityMode,
+        customPrices,
+        setCustomPrice,
+        getCustomPrice,
+        setAllCustomPrices,
     };
 });

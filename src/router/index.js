@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import MainLayout from '../views/MainLayout.vue'
 import Home from '../views/Home.vue';
 import About from '../views/About.vue';
-import EquipmentCraftSimulator from '../views/EquipmentCraftSimulator.vue';
 
 import MaterialSimulator from '../views/MaterialSimulator.vue';
 import TransferSimulator from '../views/TransferSimulator.vue';
@@ -13,6 +12,7 @@ import Title from '../views/Title.vue';
 import StoneGamblingView from '../views/StoneGamblingView.vue';
 import AlchemyCalculator from '../views/AlchemyCalculator.vue';
 import DollBagSearch from '../views/DollBagSearch.vue';
+import MagicCalculator from '../views/MagicCalculator.vue';
 
 const routes = [
     {
@@ -28,11 +28,6 @@ const routes = [
             path: '/about',
             name: '關於',
             component: About
-        },
-        {
-            path: '/equipment-craft-simulator',
-            name: '裝備製作模擬器',
-            component: EquipmentCraftSimulator
         },
         {
             path: '/material-simulator',
@@ -78,6 +73,11 @@ const routes = [
             path: '/doll-bag',
             name: '娃娃背包查詢',
             component: DollBagSearch,
+        },
+        {
+            path: '/magic-calculator',
+            name: '魔法傷害計算器',
+            component: MagicCalculator,
         },]
     },
 

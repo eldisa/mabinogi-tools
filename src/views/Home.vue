@@ -5,12 +5,6 @@ const router = useRouter();
 
 const features = [
     {
-        icon: "Tools",
-        title: "裝備製作模擬器",
-        description: "模擬裝備製作流程，計算所需材料與成本",
-        path: "/equipment-craft-simulator",
-    },
-    {
         icon: "SetUp",
         title: "裝備改造模擬器",
         description: "規劃最佳改造路線，預覽改造後的能力數值",
@@ -27,12 +21,6 @@ const features = [
         title: "裝備能力轉移費用估算",
         description: "估算能力轉移所需的金幣成本",
         path: "/transfer-simulator",
-    },
-    {
-        icon: "MagicStick",
-        title: "賦予查詢",
-        description: "查詢賦予卷軸資訊、能力加成與來源",
-        path: "/enchant",
     },
     {
         icon: "House",
@@ -53,16 +41,34 @@ const features = [
         path: "/stone-gambling",
     },
     {
-        icon: "DataAnalysis",
-        title: "煉金術傷害計算器",
-        description: "計算煉金術技能傷害，支援水系、火系、大蛇等",
-        path: "/alchemy-calculator",
-    },
-    {
         icon: "Handbag",
         title: "娃娃背包查詢",
         description: "查詢娃娃背包效果、召喚重量與自動拾取分類",
         path: "/doll-bag",
+    },
+];
+
+const pendingFeatures = [
+    {
+        icon: "MagicStick",
+        title: "賦予查詢",
+        description: "資料待更新",
+        path: "/enchant",
+    },
+];
+
+const abandonedFeatures = [
+    {
+        icon: "DataAnalysis",
+        title: "煉金術傷害計算器",
+        description: "等待大佬提供公式和資料",
+        path: "/alchemy-calculator",
+    },
+    {
+        icon: "Lightning",
+        title: "魔法傷害計算器",
+        description: "等待大佬提供公式和資料",
+        path: "/magic-calculator",
     },
 ];
 
@@ -97,6 +103,46 @@ const navigateTo = (path: string) => {
                     </div>
                     <h3 class="feature-title">{{ feature.title }}</h3>
                     <p class="feature-description">{{ feature.description }}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features pending-section">
+            <h2 class="section-title pending-title">待更新</h2>
+            <div class="feature-grid">
+                <div
+                    v-for="feature in pendingFeatures"
+                    :key="feature.path"
+                    class="feature-card pending-card"
+                    @click="navigateTo(feature.path)"
+                >
+                    <div class="feature-icon pending-icon">
+                        <el-icon :size="32">
+                            <component :is="feature.icon" />
+                        </el-icon>
+                    </div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-description pending-desc">{{ feature.description }}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features abandoned-section">
+            <h2 class="section-title abandoned-title">棄坑中 💤</h2>
+            <div class="feature-grid">
+                <div
+                    v-for="feature in abandonedFeatures"
+                    :key="feature.path"
+                    class="feature-card abandoned-card"
+                    @click="navigateTo(feature.path)"
+                >
+                    <div class="feature-icon abandoned-icon">
+                        <el-icon :size="32">
+                            <component :is="feature.icon" />
+                        </el-icon>
+                    </div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-description abandoned-desc">{{ feature.description }}</p>
                 </div>
             </div>
         </section>
@@ -201,6 +247,55 @@ const navigateTo = (path: string) => {
     font-size: 0.9rem;
     color: var(--color-text-secondary, #9ca3af);
     line-height: 1.5;
+}
+
+/* 待更新 */
+.pending-section {
+    margin-top: 2.5rem;
+    opacity: 0.8;
+}
+
+.pending-title {
+    border-bottom-color: #78716c;
+    color: #a8a29e;
+}
+
+.pending-card {
+    border-style: dashed;
+    border-color: #78716c;
+}
+
+.pending-icon {
+    color: #a8a29e;
+}
+
+.pending-desc {
+    color: #a8a29e;
+    font-style: italic;
+}
+
+/* 棄坑中 */
+.abandoned-section {
+    margin-top: 2.5rem;
+    opacity: 0.65;
+}
+
+.abandoned-title {
+    border-bottom-color: #4b5563;
+    color: #6b7280;
+}
+
+.abandoned-card {
+    border-style: dashed;
+}
+
+.abandoned-icon {
+    color: #4b5563;
+}
+
+.abandoned-desc {
+    color: #6b7280;
+    font-style: italic;
 }
 
 .info {
