@@ -23,12 +23,6 @@ const features = [
         path: "/transfer-simulator",
     },
     {
-        icon: "MagicStick",
-        title: "賦予查詢",
-        description: "查詢賦予卷軸資訊、能力加成與來源",
-        path: "/enchant",
-    },
-    {
         icon: "House",
         title: "農場模型查詢",
         description: "查詢農場模型資料與相關資訊",
@@ -51,6 +45,15 @@ const features = [
         title: "娃娃背包查詢",
         description: "查詢娃娃背包效果、召喚重量與自動拾取分類",
         path: "/doll-bag",
+    },
+];
+
+const pendingFeatures = [
+    {
+        icon: "MagicStick",
+        title: "賦予查詢",
+        description: "資料待更新",
+        path: "/enchant",
     },
 ];
 
@@ -100,6 +103,26 @@ const navigateTo = (path: string) => {
                     </div>
                     <h3 class="feature-title">{{ feature.title }}</h3>
                     <p class="feature-description">{{ feature.description }}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features pending-section">
+            <h2 class="section-title pending-title">待更新</h2>
+            <div class="feature-grid">
+                <div
+                    v-for="feature in pendingFeatures"
+                    :key="feature.path"
+                    class="feature-card pending-card"
+                    @click="navigateTo(feature.path)"
+                >
+                    <div class="feature-icon pending-icon">
+                        <el-icon :size="32">
+                            <component :is="feature.icon" />
+                        </el-icon>
+                    </div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-description pending-desc">{{ feature.description }}</p>
                 </div>
             </div>
         </section>
@@ -224,6 +247,31 @@ const navigateTo = (path: string) => {
     font-size: 0.9rem;
     color: var(--color-text-secondary, #9ca3af);
     line-height: 1.5;
+}
+
+/* 待更新 */
+.pending-section {
+    margin-top: 2.5rem;
+    opacity: 0.8;
+}
+
+.pending-title {
+    border-bottom-color: #78716c;
+    color: #a8a29e;
+}
+
+.pending-card {
+    border-style: dashed;
+    border-color: #78716c;
+}
+
+.pending-icon {
+    color: #a8a29e;
+}
+
+.pending-desc {
+    color: #a8a29e;
+    font-style: italic;
 }
 
 /* 棄坑中 */
