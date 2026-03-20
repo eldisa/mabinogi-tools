@@ -18,7 +18,7 @@ const features = [
     },
     {
         icon: "Money",
-        title: "裝備能力轉移費用估算",
+        title: "裝備繼承費用估算",
         description: "估算能力轉移所需的金幣成本",
         path: "/transfer-simulator",
     },
