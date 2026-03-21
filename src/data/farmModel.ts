@@ -4225,4 +4225,106 @@ export const farmModel: FarmModel[] = [
         ],
         desc: "浪漫農場昆蟲採集區\n浪漫農場釣魚池\n浪漫農場夏季休憩空間",
     },
+    {
+        id: "animalSet-2-pc",
+        name: {
+            tw: "動物組合 (2件)",
+            en: "Animal Set (2pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "LUK",
+                value: 20,
+            },
+        ],
+        desc: "浪漫農場蹭蹭貓模型\n浪漫農場哈士奇模型\n浪漫農場駱駝模型\n浪漫農場探險家小象模型",
+    },
+    {
+        id: "animalSet-4-pc",
+        name: {
+            tw: "動物組合 (4件)",
+            en: "Animal Set (4pc)",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+        desc: "浪漫農場蹭蹭貓模型\n浪漫農場哈士奇模型\n浪漫農場駱駝模型\n浪漫農場探險家小象模型",
+    },
+    {
+        id: "1096",
+        name: {
+            tw: "浪漫農場蹭蹭喵醬模型",
+            en: "Munchkin Cat Miniature",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "LUK",
+                value: 10,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+    },
+    {
+        id: "1097",
+        name: {
+            tw: "浪漫農場哈士奇模型",
+            en: "Sled Dog Miniature",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "DEX",
+                value: 10,
+            },
+            {
+                id: "MP",
+                value: 30,
+            },
+        ],
+    },
+    {
+        id: "1098",
+        name: {
+            tw: "浪漫農場駱駝模型",
+            en: "Camel Marathon Runner Miniature",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "WIL",
+                value: 10,
+            },
+            {
+                id: "SP",
+                value: 30,
+            },
+        ],
+    },
+    {
+        id: "1099",
+        name: {
+            tw: "浪漫農場探險家小象模型",
+            en: "Elephant Traveler Miniature",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "STR",
+                value: 10,
+            },
+            {
+                id: "HP",
+                value: 30,
+            },
+        ],
+    },
 ];
