@@ -28,7 +28,7 @@ const router = useRouter();
 const menuItems = ref([
     { name: "裝備改造模擬器", path: "/weapon-upgrade-simulator", icon: markRaw(Setting) },
     { name: "材料計算機", path: "/material-simulator", icon: markRaw(Box) },
-    { name: "裝備能力轉移費用估算", path: "/transfer-simulator", icon: markRaw(Money) },
+    { name: "裝備繼承費用估算", path: "/transfer-simulator", icon: markRaw(Money) },
     { name: "賦予查詢", path: "enchant", icon: markRaw(MagicStick) },
     { name: "稱號查詢", path: "/title", icon: markRaw(Medal) },
     { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },

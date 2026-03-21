@@ -36,7 +36,7 @@ const routes = [
         },
         {
             path: '/transfer-simulator',
-            name: '裝備能力轉移費用估算',
+            name: '裝備繼承費用估算',
             component: TransferSimulator,
         },
         {
