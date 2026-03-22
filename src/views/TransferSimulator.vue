@@ -458,6 +458,7 @@ const weaponOptions: Option[] = [
 const armorOptions: Option[] = [
     { label: "精緻/蓋亞斯", value: 2 }, // 費用同兇猛/章魚
     { label: "安安套", value: 3 }, // 費用同貓武
+    { label: "草頭", value: 4 }, // 費用同靈魂/日月
 ];
 
 const currentOptions = computed(() => (equipType.value === "weapon" ? weaponOptions : armorOptions));
