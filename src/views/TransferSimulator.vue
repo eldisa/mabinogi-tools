@@ -40,10 +40,13 @@
                         <input type="checkbox" v-model="form.hasSR" hidden />
                         SR
                     </label>
-                    <label class="chip" :class="{ 'chip--active': form.hasBlessing }">
-                        <input type="checkbox" v-model="form.hasBlessing" hidden />
-                        祝福／聖火／聖水
-                    </label>
+                    <label
+                        v-for="b in blessingOptions"
+                        :key="b.value"
+                        class="chip"
+                        :class="{ 'chip--active': form.blessingType === b.value }"
+                        @click.prevent="form.blessingType = form.blessingType === b.value ? null : b.value"
+                    >{{ b.label }}</label>
                     <label class="chip" :class="{ 'chip--active': form.hasEnhancement }">
                         <input type="checkbox" v-model="form.hasEnhancement" hidden />
                         賦予
@@ -429,9 +432,17 @@ const costArray: Cost[] = [
     { level: 4, reforgeBasicCost: 240, reforgeBreakCost: 20000, otherCost: 200 },
 ];
 
+const blessingOptions = [
+    { label: "祝福", value: "blessing" as const },
+    { label: "聖火", value: "holyFire" as const },
+    { label: "聖水", value: "holyWater" as const },
+];
+
+type BlessingType = "blessing" | "holyFire" | "holyWater" | null;
+
 const form = ref({
     hasSR: true,
-    hasBlessing: true,
+    blessingType: "blessing" as BlessingType,
     hasEnhancement: true,
     hasEnchantPrefix: true,
     enchantPrefixAbove5: false,
@@ -472,7 +483,7 @@ watch(equipType, (type) => {
 const evaluateCost = computed(() => {
     const {
         hasSR,
-        hasBlessing,
+        blessingType,
         hasEnhancement,
         hasEnchantPrefix,
         enchantPrefixAbove5,
@@ -487,8 +498,11 @@ const evaluateCost = computed(() => {
 
     let totalCost = 0;
 
-    // SR 與祝福
-    totalCost += (Number(hasSR) + Number(hasBlessing)) * otherCost;
+    // SR（5× otherCost）
+    totalCost += Number(hasSR) * otherCost * 5;
+    // 祝福/聖火 → 1×，聖水 → 10×
+    if (blessingType === "holyWater") totalCost += otherCost * 10;
+    else if (blessingType !== null) totalCost += otherCost;
 
     // 賦予：每個槽位等級 ≤ 5 → 1×，等級 > 5 → 2×
     if (hasEnhancement) {
