@@ -18,6 +18,8 @@
     "echarts": "^5.4.3",
     "element-plus": "^2.10.2",
     "pinia": "^3.0.3",
+    "playwright": "^1.58.2",
+    "scraper": "^0.0.9",
     "vant": "^4.9.19",
     "vue": "^3.4.38",
     "vue-echarts": "^7.0.3",
