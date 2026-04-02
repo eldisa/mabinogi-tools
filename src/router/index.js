@@ -89,10 +89,25 @@ const router = createRouter({
     routes
 });
 
+const pageTitles = {
+    '首頁':             '瑪奇小工具',
+    '裝備改造模擬器':   '裝備改造模擬器 | 瑪奇小工具',
+    '材料計算機':       '材料計算機 | 瑪奇小工具',
+    '裝備繼承費用估算': '裝備能力轉移費用估算 | 瑪奇小工具',
+    '賦予查詢':         '賦予查詢 | 瑪奇小工具',
+    '農場模型查詢':     '農場模型查詢 | 瑪奇小工具',
+    '稱號查詢':         '稱號查詢 | 瑪奇小工具',
+    '賭石小遊戲':       '賭石小遊戲 | 瑪奇小工具',
+    '娃娃背包查詢':     '娃娃背包查詢 | 瑪奇小工具',
+    '關於':             '關於 | 瑪奇小工具',
+};
+
 router.afterEach((to) => {
+    document.title = pageTitles[to.name] ?? '瑪奇小工具';
+
     if (typeof window.gtag === 'function') {
         window.gtag('event', 'page_view', {
-            page_title: to.name,
+            page_title: document.title,
             page_path: to.fullPath,
         });
     }
