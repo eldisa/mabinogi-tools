@@ -89,4 +89,13 @@ const router = createRouter({
     routes
 });
 
+router.afterEach((to) => {
+    if (typeof window.gtag === 'function') {
+        window.gtag('event', 'page_view', {
+            page_title: to.name,
+            page_path: to.fullPath,
+        });
+    }
+});
+
 export default router;
