@@ -742,7 +742,8 @@ const materialSummaryTable = computed(() => {
     result.forEach((ele) => {
         const entry = materialPrices.value.find((e) => e.id === ele.id);
         if (entry?.method === "token" && ele.source.type === "desc" && ele.source.token) {
-            tokenTotal += ele.source.token * ele.total;
+            // 用 shortage（需求 - 庫存）而非 total，避免已持有部分被重複計入珠子需求
+            tokenTotal += ele.source.token * ele.shortage;
         }
     });
     let tokenData = materials.find((ele) => ele.id === TOKEN_ID);
