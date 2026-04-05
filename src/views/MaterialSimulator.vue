@@ -905,26 +905,40 @@ const filteredSortedData = computed(() => {
     });
 });
 
+// 遞迴取得材料的有效單價（用於估算成本）：
+// 1. 優先用 entry.price（直接市價，不受 token/buy method 影響）
+// 2. 無市價且為加工品 → 遞迴算製作成本
+// 注意：不使用快取，確保 materialPrices 變動後立即反映
+const getEffectiveCost = (id: number, visited = new Set<number>()): number => {
+    if (visited.has(id)) return 0; // 防止循環依賴
+
+    // 直接取 price（不透過 getUnitCost，避免 token method 讓價格變 0）
+    const entry = materialPrices.value.find((e) => e.id === id);
+    const marketPrice = entry?.price ?? 0;
+    if (marketPrice > 0) return marketPrice;
+
+    // 無市價 → 嘗試遞迴計算製作成本
+    const mat = materials.find((m) => m.id === id);
+    if (mat?.source?.type === "craft") {
+        const src = mat.source as {
+            type: "craft";
+            materials: { id: number; amount: number }[];
+            yield?: number;
+        };
+        const newVisited = new Set(visited);
+        newVisited.add(id);
+        const craftTotal = src.materials.reduce((sum, sub) => {
+            return sum + getEffectiveCost(sub.id, newVisited) * sub.amount;
+        }, 0);
+        const yieldAmt = src.yield || 1;
+        if (craftTotal > 0) return craftTotal / yieldAmt;
+    }
+
+    return 0;
+};
+
 // 加工物估價
 const craftedItemsData = computed(() => {
-    // 遞迴取得材料的有效單價：
-    // 若該材料本身可製作，則改用其製作成本；否則使用 materialPrices 市價
-    const getEffectiveCost = (id: number, visited = new Set<number>()): number => {
-        if (visited.has(id)) return 0; // 防止循環依賴
-        const mat = materials.find((m) => m.id === id);
-        if (mat?.source.type === "craft") {
-            const src = mat.source as { type: "craft"; materials: { id: number; amount: number }[] };
-            const newVisited = new Set(visited);
-            newVisited.add(id);
-            const craftCost = (src.materials ?? []).reduce((sum, sub) => {
-                return sum + getEffectiveCost(sub.id, newVisited) * sub.amount;
-            }, 0);
-            if (craftCost > 0) return craftCost;
-        }
-        const entry = materialPrices.value.find((e) => e.id === id);
-        return entry ? getUnitCost(entry) : 0;
-    };
-
     return materials
         .filter((m) => m.source.type === "craft" && m.id >= 5100000)
         .map((m) => {
@@ -959,7 +973,8 @@ const totalCostSummary = computed(() => {
         const shortage = Math.max(0, row.total - entry.stock);
         if (shortage === 0) continue;
 
-        const cost = getUnitCost(entry);
+        // 市場售價優先；未設定時才遞迴用製作成本（處理多層加工品中間材料無市價的情況）
+        const cost = getUnitCost(entry) > 0 ? getUnitCost(entry) : getEffectiveCost(entry.id);
         if (cost === 0) {
             hasUnset = true;
             continue;
