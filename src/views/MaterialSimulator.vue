@@ -181,11 +181,11 @@
                                                         if (!entry) return "—";
                                                         const shortage = Math.max(0, row.total - entry.stock);
                                                         if (shortage === 0) return "0";
-                                                        if (
-                                                            selfProvideTokens &&
-                                                            (row.id === TOKEN_ID || entry.method === "token")
-                                                        )
-                                                            return "（自備）";
+                                                        if (entry.method === "token")
+                                                            return selfProvideTokens
+                                                                ? "（自行用珠子換）"
+                                                                : "（收珠子來換）";
+                                                        if (row.id === TOKEN_ID && selfProvideTokens) return "（自備）";
                                                         const cost = getUnitCost(entry);
                                                         return cost > 0 ? (shortage * cost).toLocaleString() : "未設定";
                                                     })()
@@ -272,11 +272,28 @@
                                         <el-table-column prop="amount" label="數量" align="right" />
                                         <el-table-column label="物品價格" width="160" align="right">
                                             <template #default="{ row }">
-                                                <span v-if="(materialPrices.find((e) => e.id === row.id)?.price ?? 0) > 0">
-                                                    {{ formatLargeNumber(materialPrices.find((e) => e.id === row.id)!.price) }}
+                                                <span
+                                                    v-if="(materialPrices.find((e) => e.id === row.id)?.price ?? 0) > 0"
+                                                >
+                                                    {{
+                                                        formatLargeNumber(
+                                                            materialPrices.find((e) => e.id === row.id)!.price,
+                                                        )
+                                                    }}
                                                 </span>
-                                                <span v-else-if="useCostEstimate && (craftedItemsData.find((e) => e.id === row.id)?.materialCost ?? 0) > 0" class="text-yellow-400">
-                                                    {{ formatLargeNumber(craftedItemsData.find((e) => e.id === row.id)!.materialCost) }}
+                                                <span
+                                                    v-else-if="
+                                                        useCostEstimate &&
+                                                        (craftedItemsData.find((e) => e.id === row.id)?.materialCost ??
+                                                            0) > 0
+                                                    "
+                                                    class="text-yellow-400"
+                                                >
+                                                    {{
+                                                        formatLargeNumber(
+                                                            craftedItemsData.find((e) => e.id === row.id)!.materialCost,
+                                                        )
+                                                    }}
                                                     <el-tag size="small" type="warning" class="ml-1">估</el-tag>
                                                 </span>
                                                 <span v-else class="text-gray-500">未設定</span>
@@ -350,27 +367,51 @@
                                         </div>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="材料成本" width="140" align="right" sortable :sort-method="(a: { materialCost: number }, b: { materialCost: number }) => a.materialCost - b.materialCost">
+                                <el-table-column
+                                    label="材料成本"
+                                    width="140"
+                                    align="right"
+                                    sortable
+                                    :sort-method="
+                                        (a: { materialCost: number }, b: { materialCost: number }) =>
+                                            a.materialCost - b.materialCost
+                                    "
+                                >
                                     <template #default="{ row }">
                                         <span :class="row.materialCost === 0 ? 'text-gray-500' : ''">
-                                            {{ row.materialCost > 0 ? formatLargeNumber(row.materialCost) : '未設定' }}
+                                            {{ row.materialCost > 0 ? formatLargeNumber(row.materialCost) : "未設定" }}
                                         </span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="成品售價" width="140" align="right" sortable :sort-method="(a: { sellPrice: number }, b: { sellPrice: number }) => a.sellPrice - b.sellPrice">
+                                <el-table-column
+                                    label="成品售價"
+                                    width="140"
+                                    align="right"
+                                    sortable
+                                    :sort-method="
+                                        (a: { sellPrice: number }, b: { sellPrice: number }) =>
+                                            a.sellPrice - b.sellPrice
+                                    "
+                                >
                                     <template #default="{ row }">
                                         <span :class="row.sellPrice === 0 ? 'text-gray-500' : ''">
-                                            {{ row.sellPrice > 0 ? formatLargeNumber(row.sellPrice) : '未設定' }}
+                                            {{ row.sellPrice > 0 ? formatLargeNumber(row.sellPrice) : "未設定" }}
                                         </span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="利潤估算" width="140" align="right" sortable :sort-method="(a: { profit: number }, b: { profit: number }) => a.profit - b.profit">
+                                <el-table-column
+                                    label="利潤估算"
+                                    width="140"
+                                    align="right"
+                                    sortable
+                                    :sort-method="(a: { profit: number }, b: { profit: number }) => a.profit - b.profit"
+                                >
                                     <template #default="{ row }">
                                         <span
                                             v-if="row.sellPrice > 0 && row.materialCost > 0"
                                             :class="row.profit >= 0 ? 'text-green-400' : 'text-red-400'"
                                         >
-                                            {{ row.profit >= 0 ? '+' : '' }}{{ formatLargeNumber(row.profit) }}
+                                            {{ row.profit >= 0 ? "+" : "" }}{{ formatLargeNumber(row.profit) }}
                                         </span>
                                         <span v-else class="text-gray-500">—</span>
                                     </template>
@@ -586,10 +627,7 @@ const selfProvideTokens = ref(false);
 
 const getUnitCost = (entry: MaterialPriceEntry): number => {
     if (entry.method === "token") {
-        if (selfProvideTokens.value) return 0;
-        const source = materials.find((m) => m.id === entry.id)?.source;
-        const tokenCount = source && "token" in source ? (source.token ?? 0) : 0;
-        return tokenCount * tokenPrice.value;
+        return 0;
     }
     return entry.price;
 };
@@ -719,7 +757,7 @@ const materialSummaryTable = computed(() => {
                 otherName: "",
                 total: tokenTotal,
                 owned: inventory.value[TOKEN_ID] || 0,
-                shortage: Math.max(0, 0 - (inventory.value[TOKEN_ID] || 0)),
+                shortage: Math.max(0, tokenTotal - (inventory.value[TOKEN_ID] || 0)),
                 source: tokenData.source,
             });
         }
@@ -913,8 +951,8 @@ const totalCostSummary = computed(() => {
     let hasUnset = false;
 
     for (const row of sortedData.value) {
-        // 5300217（珠子）本身跳過：token 成本已透過 method="token" 材料的 getUnitCost 計入
-        if (row.id === TOKEN_ID) continue;
+        // 珠子自備時跳過 TOKEN_ID，否則由珠子行的 shortage × price 計入總成本
+        if (row.id === TOKEN_ID && selfProvideTokens.value) continue;
 
         const entry = materialPrices.value.find((e) => e.id === row.id);
         if (!entry) continue;
