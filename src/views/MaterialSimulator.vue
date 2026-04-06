@@ -60,15 +60,20 @@
                 <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
                         <el-tab-pane label="Total 材料總計">
-                            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                            <div class="flex justify-between items-center mb-2">
                                 <h2 class="text-lg font-semibold text-accent">庫存與所需材料</h2>
-                                <div v-if="!layoutStore.isMobile" class="flex items-center gap-4 flex-wrap">
-                                    <el-checkbox v-model="hideFullStock">隱藏數量充足</el-checkbox>
-                                    <el-checkbox v-model="showG27Materials">顯示 G27 素材</el-checkbox>
-                                    <el-checkbox v-model="showNonG27Materials">顯示非 G27 素材</el-checkbox>
-                                    <el-divider direction="vertical" />
-                                    <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
+                                <div v-if="!layoutStore.isMobile" class="flex gap-2">
+                                    <el-button type="success" @click="autoSetAcquisitionMethod">自動判斷取得方式</el-button>
+                                    <el-button type="warning" plain @click="setAllToToken">全部用換的</el-button>
+                                    <el-button type="primary" plain @click="setAllToBuy">全部用買的</el-button>
                                 </div>
+                            </div>
+                            <div v-if="!layoutStore.isMobile" class="flex items-center gap-4 flex-wrap mb-4">
+                                <el-checkbox v-model="hideFullStock">隱藏數量充足</el-checkbox>
+                                <el-checkbox v-model="showG27Materials">顯示 G27 素材</el-checkbox>
+                                <el-checkbox v-model="showNonG27Materials">顯示非 G27 素材</el-checkbox>
+                                <el-divider direction="vertical" />
+                                <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
                             </div>
                             <!--todo: 庫存與所需材料-->
                             <div class="mt-4 overflow-x-auto overflow-y-auto">
@@ -210,7 +215,13 @@
 
                             <!-- 總成本 summary（overflow 外，確保顯示） -->
                             <div class="mt-3 flex justify-between items-center gap-2 text-sm text-gray-300 flex-wrap">
-                                <el-checkbox v-model="selfProvideTokens">珠子自備（不計入成本）</el-checkbox>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <el-checkbox v-model="selfProvideTokens">珠子自備（不計入成本）</el-checkbox>
+                                    <el-divider direction="vertical" />
+                                    <el-button type="success" @click="autoSetAcquisitionMethod">自動判斷取得方式</el-button>
+                                    <el-button type="warning" plain @click="setAllToToken">全部用換的</el-button>
+                                    <el-button type="primary" plain @click="setAllToBuy">全部用買的</el-button>
+                                </div>
                                 <div class="flex items-center gap-2">
                                     <span>總成本估算：</span>
                                     <span class="text-accent font-semibold text-base">
@@ -973,6 +984,9 @@ const totalCostSummary = computed(() => {
         if (!entry) continue;
         const shortage = Math.max(0, row.total - entry.stock);
         if (shortage === 0) continue;
+
+        // 用珠子換的素材成本已由 TOKEN_ID 行的珠子需求量代表，不重複計入
+        if (entry.method === "token") continue;
 
         // 市場售價優先；未設定時才遞迴用製作成本（處理多層加工品中間材料無市價的情況）
         const cost = getUnitCost(entry) > 0 ? getUnitCost(entry) : getEffectiveCost(entry.id);
