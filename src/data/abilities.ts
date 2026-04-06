@@ -205,6 +205,7 @@ export const abilitiesMap: Record<string, string> = {
     death_marker_time: "死神烙印的持續時間增加",
     chain_impale_damage: "鎖鏈刺擊的最終傷害增加",
     spinning_slash_damage: "闇夜掠擊的最終傷害增加",
+    critical_chain_cooldown_reset: "暴擊發動時連續技冷卻時間初始化機率",
 };
 
 export const reverseAbilitiesMap: Record<string, string> = {
@@ -385,6 +386,7 @@ export const reverseAbilitiesMap: Record<string, string> = {
     死神烙印的持續時間增加: "death_marker_time",
     鎖鏈刺擊的最終傷害增加: "chain_impale_damage",
     闇夜掠擊的最終傷害增加: "spinning_slash_damage",
+    暴擊發動時連續技冷卻時間初始化機率: "critical_chain_cooldown_reset",
 };
 
 export const abilitiesValueWithPercentArray: string[] = [
@@ -459,6 +461,7 @@ export const abilitiesValueWithPercentArray: string[] = [
     "chain_impale_damage",
     "spinning_slash_damage",
     "windmill_attack_range",
+    "critical_chain_cooldown_reset",
 ];
 
 export const abilitiesValueWithRangeArray: string[] = [
