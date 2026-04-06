@@ -493,7 +493,7 @@
                                         <el-input-number
                                             v-model="row.stock"
                                             :min="0"
-                                            :controls="false"
+                                            :controls="true"
                                             size="small"
                                             style="width: 120px"
                                         />
