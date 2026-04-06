@@ -762,7 +762,12 @@ import { ref, computed, watch, nextTick } from "vue";
 import { Option } from "../types";
 import { infoForG27Weapon } from "../data/infoForG27Weapon";
 import { upgradeForG27Weapons } from "../data/upgradeForG27Weapons";
-import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
+import {
+    abilitiesMap,
+    abilitiesValueWithPercentArray,
+    abilitiesValueWithRangeArray,
+    abilitiesValueWithTimeArray,
+} from "../data/abilities";
 import { UpgradeAbility, CraftsManUpgradeAbility, Gems } from "../types/Upgrade";
 
 interface UpgradeStatus {
@@ -1094,10 +1099,22 @@ const getMinMax = (id: string) => {
     );
 };
 
+const renderAbilitiesSuffix = (id: string): string => {
+    let suffix = "";
+    if (abilitiesValueWithPercentArray.includes(id)) {
+        suffix = "%";
+    } else if (abilitiesValueWithRangeArray.includes(id)) {
+        suffix = " (cm)";
+    } else if (abilitiesValueWithTimeArray.includes(id)) {
+        suffix = " (秒)";
+    }
+    return suffix;
+};
+
 const renderAbilitiesWithMinMax = (id: string): string => {
     const { min, max } = getMinMax(id);
     const randomValue = min === max ? `` : `:${min} - ${max}`;
-    const suffix = abilitiesValueWithPercentArray.includes(id) ? "(%)" : "";
+    const suffix = renderAbilitiesSuffix(id);
     return `${abilitiesMap[id] || id} ${randomValue} ${suffix}`;
 };
 
@@ -1121,7 +1138,7 @@ const renderAbilities = (abilityIdArray: UpgradeAbility[] | CraftsManUpgradeAbil
         .map((ability) => {
             const { id } = ability;
             const abilityName = abilitiesMap[id] || id;
-            const suffix = abilitiesValueWithPercentArray.includes(id) ? "%" : "";
+            const suffix = renderAbilitiesSuffix(id);
 
             if ("min" in ability && "max" in ability) {
                 return `${abilityName}: ${format(ability.min)} ~ ${format(ability.max)} ${suffix}`;
