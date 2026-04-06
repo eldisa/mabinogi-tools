@@ -4855,6 +4855,10 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                         id: "critical",
                         value: 10,
                     },
+                    {
+                        id: "knuckle_chain_damage",
+                        value: 30,
+                    },
                 ],
                 progress: [0],
             },
@@ -4874,6 +4878,10 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                     {
                         id: "attack_max",
                         value: 60,
+                    },
+                    {
+                        id: "critical_chain_cooldown_reset",
+                        value: 50,
                     },
                     {
                         id: "durability_max",

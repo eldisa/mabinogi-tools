@@ -37,7 +37,7 @@
                         v-if="selectedCondition === 'condition'"
                         id="search-by-ability"
                     >
-                        <el-select v-model="orderBy" style="width: 240px" filterable clearable placeholder="請選擇能力">
+                        <el-select v-model="selectedAbility" style="width: 360px" filterable clearable multiple placeholder="請選擇能力（可複選）">
                             <el-option
                                 v-for="ability in selectableAbility"
                                 :key="`selectable-${ability}`"

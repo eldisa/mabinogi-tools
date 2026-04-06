@@ -37,6 +37,21 @@ export const infoForG27Weapon = [
                 min: 1,
                 max: 1,
             },
+            {
+                id: "bash_damage",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "bash_move_range",
+                min: 100,
+                max: 100,
+            },
+            {
+                id: "windmill_attack_range",
+                min: 0.1,
+                max: 0.1,
+            },
         ],
     },
     {
@@ -77,6 +92,21 @@ export const infoForG27Weapon = [
                 min: 1,
                 max: 1,
             },
+            {
+                id: "bash_damage",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "bash_move_range",
+                min: 1,
+                max: 1,
+            },
+            {
+                id: "windmill_attack_range",
+                min: 0.1,
+                max: 0.1,
+            },
         ],
     },
     {
@@ -116,6 +146,21 @@ export const infoForG27Weapon = [
                 id: "lance_piercing",
                 min: 1,
                 max: 1,
+            },
+            {
+                id: "bash_damage",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "bash_move_range",
+                min: 1,
+                max: 1,
+            },
+            {
+                id: "windmill_attack_range",
+                min: 0.1,
+                max: 0.1,
             },
         ],
     },
@@ -158,9 +203,24 @@ export const infoForG27Weapon = [
                 max: 3,
             },
             {
-                id: "",
+                id: "attack_range",
                 min: 2000,
                 max: 2000,
+            },
+            {
+                id: "magnum_shot_damage",
+                min: 15,
+                max: 15,
+            },
+            {
+                id: "crash_shot_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "final_shot_damage",
+                min: 15,
+                max: 15,
             },
         ],
     },
@@ -207,6 +267,21 @@ export const infoForG27Weapon = [
                 min: 1900,
                 max: 1900,
             },
+            {
+                id: "magnum_shot_damage",
+                min: 15,
+                max: 15,
+            },
+            {
+                id: "crash_shot_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "final_shot_damage",
+                min: 15,
+                max: 15,
+            },
         ],
     },
     {
@@ -252,6 +327,16 @@ export const infoForG27Weapon = [
                 min: 70,
                 max: 80,
             },
+            {
+                id: "bolt_compose",
+                min: 35,
+                max: 35,
+            },
+            {
+                id: "bolt_magic_attack_range",
+                min: 100,
+                max: 100,
+            },
         ],
     },
     {
@@ -296,6 +381,21 @@ export const infoForG27Weapon = [
                 id: "all_alchemy_damage",
                 min: 80,
                 max: 80,
+            },
+            {
+                id: "AlchemyElementalBonus",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "hydra_time",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "chain_cylinder_cooldown",
+                min: 3,
+                max: 3,
             },
         ],
     },
@@ -346,6 +446,21 @@ export const infoForG27Weapon = [
                 id: "marionette_attack_max",
                 min: 200,
                 max: 200,
+            },
+            {
+                id: "marionette_revival",
+                min: 60,
+                max: 60,
+            },
+            {
+                id: "marionette_move_range",
+                min: 150,
+                max: 150,
+            },
+            {
+                id: "angry_rush_damage",
+                min: 20,
+                max: 20,
             },
         ],
     },
@@ -427,6 +542,11 @@ export const infoForG27Weapon = [
                 min: 70,
                 max: 80,
             },
+            {
+                id: "astrologist_damage",
+                min: 60,
+                max: 60,
+            },
         ],
     },
     {
@@ -460,12 +580,22 @@ export const infoForG27Weapon = [
             {
                 id: "durability_max",
                 min: 23,
-                max: 63,
+                max: 33,
             },
             {
                 id: "lance_piercing",
                 min: 3,
                 max: 3,
+            },
+            {
+                id: "smash_final_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "down_attack_damage",
+                min: 10,
+                max: 10,
             },
         ],
     },
@@ -507,6 +637,31 @@ export const infoForG27Weapon = [
                 min: 3,
                 max: 3,
             },
+            {
+                id: "smash_final_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "down_attack_damage",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "giant_full_swing_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "stamped_move_range",
+                min: 100,
+                max: 100,
+            },
+            {
+                id: "stamped_melee_enhance",
+                min: 20,
+                max: 20,
+            },
         ],
     },
     {
@@ -546,6 +701,31 @@ export const infoForG27Weapon = [
                 id: "lance_piercing",
                 min: 3,
                 max: 3,
+            },
+            {
+                id: "smash_final_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "down_attack_damage",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "giant_full_swing_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "stamped_move_range",
+                min: 1,
+                max: 1,
+            },
+            {
+                id: "stamped_melee_enhance",
+                min: 20,
+                max: 20,
             },
         ],
     },
@@ -592,6 +772,26 @@ export const infoForG27Weapon = [
                 min: 75,
                 max: 85,
             },
+            {
+                id: "intermediate_magic",
+                min: 35,
+                max: 35,
+            },
+            {
+                id: "advanced_magic_damage",
+                min: 30,
+                max: 30,
+            },
+            {
+                id: "thunder_damage",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "lightning_road_charging",
+                min: 1,
+                max: 1,
+            },
         ],
     },
     {
@@ -631,6 +831,11 @@ export const infoForG27Weapon = [
                 id: "lance_piercing",
                 min: 4,
                 max: 4,
+            },
+            {
+                id: "lancecharge_damage",
+                min: 50,
+                max: 50,
             },
         ],
     },
@@ -672,6 +877,31 @@ export const infoForG27Weapon = [
                 min: 1,
                 max: 1,
             },
+            {
+                id: "knuckle_chain_damage",
+                min: 40,
+                max: 40,
+            },
+            {
+                id: "dropkick_range",
+                min: 25,
+                max: 25,
+            },
+            {
+                id: "nuckle_will_enhance",
+                min: 90,
+                max: 90,
+            },
+            {
+                id: "dashpunch_attack_range",
+                min: 100,
+                max: 100,
+            },
+            {
+                id: "dropkick_damage",
+                min: 15,
+                max: 15,
+            },
         ],
     },
     {
@@ -704,8 +934,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "max_bullet",
-                min: 64,
-                max: 64,
+                min: 89,
+                max: 89,
             },
             {
                 id: "attack_range",
@@ -721,6 +951,26 @@ export const infoForG27Weapon = [
                 id: "lance_piercing",
                 min: 3,
                 max: 3,
+            },
+            {
+                id: "attack_range_2",
+                min: 100,
+                max: 100,
+            },
+            {
+                id: "frenzy_damage",
+                min: 25,
+                max: 25,
+            },
+            {
+                id: "shooting_rush_damage",
+                min: 20,
+                max: 20,
+            },
+            {
+                id: "bullet_storm_damage",
+                min: 20,
+                max: 20,
             },
         ],
     },
@@ -762,6 +1012,26 @@ export const infoForG27Weapon = [
                 min: 3,
                 max: 3,
             },
+            {
+                id: "shuriken_blasting",
+                min: 30,
+                max: 30,
+            },
+            {
+                id: "shuriken_storm_damage",
+                min: 30,
+                max: 30,
+            },
+            {
+                id: "shadow_stealth_time",
+                min: 3,
+                max: 3,
+            },
+            {
+                id: "cherry_blossom_wind_enhance",
+                min: 20,
+                max: 20,
+            },
         ],
     },
     {
@@ -801,6 +1071,26 @@ export const infoForG27Weapon = [
                 id: "lance_piercing",
                 min: 3,
                 max: 3,
+            },
+            {
+                id: "dorcha_conversion_bonus",
+                min: 2,
+                max: 2,
+            },
+            {
+                id: "death_marker_time",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "chain_impale_damage",
+                min: 30,
+                max: 30,
+            },
+            {
+                id: "spinning_slash_damage",
+                min: 20,
+                max: 20,
             },
         ],
     },
@@ -912,6 +1202,11 @@ export const infoForG27Weapon = [
                 min: 60,
                 max: 60,
             },
+            {
+                id: "bonus_damage",
+                min: 25,
+                max: 25,
+            },
         ],
     },
     {
@@ -931,6 +1226,11 @@ export const infoForG27Weapon = [
                 id: "attack_max",
                 min: 60,
                 max: 60,
+            },
+            {
+                id: "bonus_damage",
+                min: 25,
+                max: 25,
             },
         ],
     },
@@ -986,6 +1286,16 @@ export const infoForG27Weapon = [
                 id: "mana_regen",
                 min: 400,
                 max: 450,
+            },
+            {
+                id: "manause_revised",
+                min: 50,
+                max: 50,
+            },
+            {
+                id: "immune_magic",
+                min: 10,
+                max: 10,
             },
         ],
     },
@@ -1061,6 +1371,11 @@ export const infoForG27Weapon = [
                 id: "durability_max",
                 min: 20,
                 max: 35,
+            },
+            {
+                id: "manause_revised",
+                min: 10,
+                max: 10,
             },
         ],
     },
