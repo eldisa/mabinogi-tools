@@ -974,6 +974,9 @@ const totalCostSummary = computed(() => {
         const shortage = Math.max(0, row.total - entry.stock);
         if (shortage === 0) continue;
 
+        // 用珠子換的素材成本已由 TOKEN_ID 行的珠子需求量代表，不重複計入
+        if (entry.method === "token") continue;
+
         // 市場售價優先；未設定時才遞迴用製作成本（處理多層加工品中間材料無市價的情況）
         const cost = getUnitCost(entry) > 0 ? getUnitCost(entry) : getEffectiveCost(entry.id);
         if (cost === 0) {
