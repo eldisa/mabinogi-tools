@@ -772,6 +772,26 @@ export const infoForG27Weapon = [
                 min: 75,
                 max: 85,
             },
+            {
+                id: "intermediate_magic",
+                min: 35,
+                max: 35,
+            },
+            {
+                id: "advanced_magic_damage",
+                min: 30,
+                max: 30,
+            },
+            {
+                id: "thunder_damage",
+                min: 10,
+                max: 10,
+            },
+            {
+                id: "lightning_road_charging",
+                min: 1,
+                max: 1,
+            },
         ],
     },
     {
