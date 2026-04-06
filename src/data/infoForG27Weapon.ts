@@ -44,8 +44,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "bash_move_range",
-                min: 1,
-                max: 1,
+                min: 100,
+                max: 100,
             },
             {
                 id: "windmill_attack_range",
@@ -327,6 +327,16 @@ export const infoForG27Weapon = [
                 min: 70,
                 max: 80,
             },
+            {
+                id: "bolt_compose",
+                min: 35,
+                max: 35,
+            },
+            {
+                id: "bolt_magic_attack_range",
+                min: 100,
+                max: 100,
+            },
         ],
     },
     {
@@ -444,8 +454,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "marionette_move_range",
-                min: 1.5,
-                max: 1.5,
+                min: 150,
+                max: 150,
             },
             {
                 id: "angry_rush_damage",
@@ -644,8 +654,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "stamped_move_range",
-                min: 1,
-                max: 1,
+                min: 100,
+                max: 100,
             },
             {
                 id: "stamped_melee_enhance",
@@ -864,8 +874,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "dashpunch_attack_range",
-                min: 1,
-                max: 1,
+                min: 100,
+                max: 100,
             },
             {
                 id: "dropkick_damage",
