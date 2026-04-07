@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
-import { Setting } from "@element-plus/icons-vue";
+import { ref, computed, reactive, watch, onMounted } from "vue";
+import { Setting, Search, Warning } from "@element-plus/icons-vue";
 import dollBagsData from "../data/doll_bags.json";
 
 interface Effect {
@@ -85,18 +85,27 @@ const allEffects = [
 
 // 初始化自訂權重
 const initCustomWeights = () => {
-    allEffects.forEach(({ name }) => {
-        if (!(name in customWeights.value)) {
-            customWeights.value[name] = 0;
+    allEffects.forEach(({ key }) => {
+        if (!(key in customWeights.value)) {
+            customWeights.value[key] = 0;
         }
     });
 };
+
+onMounted(initCustomWeights);
+
+// 計算指定效果的數值總和（抽出共用邏輯）
+const getEffectSum = (bag: DollBag, effectNames: string[]): number =>
+    effectNames.reduce((sum, effectName) => {
+        const effect = bag.effects.find((e) => e.name === effectName);
+        return sum + (effect?.value ?? 0);
+    }, 0);
 
 // 計算背包自訂權重分數
 const calculateCustomScore = (bag: DollBag): number => {
     let totalScore = 0;
     bag.effects.forEach((effect) => {
-        const weight = customWeights.value[effect.name] ?? 0;
+        const weight = customWeights.value[effect.key] ?? 0;
         totalScore += effect.value * weight;
     });
     if (customWeightsDivideByWeight.value && bag.summon_cost) {
@@ -106,7 +115,7 @@ const calculateCustomScore = (bag: DollBag): number => {
 };
 
 // 展開的卡片
-const expandedCardId = ref<number | null>(0);
+const expandedCardId = ref<number | null>(null);
 
 // 取得所有可用的效果類型（依照 allEffects 順序，只保留資料中存在的）
 const availableEffects = computed(() => {
@@ -186,27 +195,15 @@ const filteredBags = computed(() => {
 
         // 如果有選擇效果篩選且排序為「依篩選效果」，按效果數值總和排序
         if (sortField.value === "selected_effects" && selectedEffects.value.length > 0) {
-            const sumA = selectedEffects.value.reduce((sum, effectName) => {
-                const effect = a.effects.find((e) => e.name === effectName);
-                return sum + (effect?.value ?? 0);
-            }, 0);
-            const sumB = selectedEffects.value.reduce((sum, effectName) => {
-                const effect = b.effects.find((e) => e.name === effectName);
-                return sum + (effect?.value ?? 0);
-            }, 0);
+            const sumA = getEffectSum(a, selectedEffects.value);
+            const sumB = getEffectSum(b, selectedEffects.value);
             return sortOrder.value === "asc" ? sumA - sumB : sumB - sumA;
         }
 
         // 效果/重量排序：篩選效果數值總和 / 召喚重量
         if (sortField.value === "effect_per_weight" && selectedEffects.value.length > 0) {
-            const sumA = selectedEffects.value.reduce((sum, effectName) => {
-                const effect = a.effects.find((e) => e.name === effectName);
-                return sum + (effect?.value ?? 0);
-            }, 0);
-            const sumB = selectedEffects.value.reduce((sum, effectName) => {
-                const effect = b.effects.find((e) => e.name === effectName);
-                return sum + (effect?.value ?? 0);
-            }, 0);
+            const sumA = getEffectSum(a, selectedEffects.value);
+            const sumB = getEffectSum(b, selectedEffects.value);
             const ratioA = a.summon_cost ? sumA / a.summon_cost : 0;
             const ratioB = b.summon_cost ? sumB / b.summon_cost : 0;
             return sortOrder.value === "asc" ? ratioA - ratioB : ratioB - ratioA;
@@ -259,19 +256,19 @@ const filteredBags = computed(() => {
     return result;
 });
 
-// 格式化效果顯示
-const formatEffect = (effect: Effect) => {
-    const sign = effect.value >= 0 ? "+" : "";
-    const suffix = effect.isPercent ? "%" : "";
-    return `${effect.name} ${sign}${effect.value}${suffix}`;
-};
-
 // 格式化效果顯示（簡短版）
 const formatEffectShort = (effect: Effect) => {
     const sign = effect.value >= 0 ? "+" : "";
     const suffix = effect.isPercent ? "%" : "";
     return `${sign}${effect.value}${suffix}`;
 };
+
+// 清空效果篩選時，重置依賴篩選的排序選項
+watch(selectedEffects, (effects) => {
+    if (effects.length === 0 && ["selected_effects", "effect_per_weight"].includes(sortField.value)) {
+        sortField.value = "id";
+    }
+});
 
 // 切換卡片展開狀態
 const toggleCard = (id: number) => {
@@ -288,25 +285,30 @@ const clearFilters = () => {
     summonCostRange.max = 1;
 };
 
-// 效果分類
-const effectCategories = {
-    基礎屬性: ["力量", "敏捷", "智力", "意志", "幸運"],
-    生命相關: ["最大生命力", "最大魔力值", "最大耐力"],
-    傷害相關: ["最小傷害", "最大傷害", "暴擊率", "暴擊傷害", "魔法攻擊力"],
-    防禦相關: ["防禦", "保護", "魔法防禦", "魔法保護"],
-    煉金術: ["所有(水/火/風/土)屬性鍊金術傷害", "煉金術傷害"],
-    其他: ["移動速度", "攻擊速度", "音樂增益技能持續時間"],
+// 效果分類（以 effect.key 對應）
+const effectCategoryMap: Record<string, string> = {
+    attack_max: "effect-damage",
+    attack_min: "effect-damage",
+    magic_attack: "effect-damage",
+    critical_damage: "effect-damage",
+    protection: "effect-defense",
+    magic_protection: "effect-defense",
+    alchemy_all: "effect-alchemy",
+    fire_alchemy: "effect-alchemy",
+    water_alchemy: "effect-alchemy",
+    earth_alchemy: "effect-alchemy",
+    wind_alchemy: "effect-alchemy",
+    music_buff_effect: "effect-other",
+    music_buff_duration: "effect-other",
+    move_speed: "effect-other",
+    gather_speed: "effect-other",
+    exp: "effect-other",
+    pet_exp: "effect-other",
 };
 
 // 取得效果的 CSS 類別
-const getEffectClass = (effectName: string) => {
-    if (effectCategories["基礎屬性"].includes(effectName)) return "effect-stat";
-    if (effectCategories["生命相關"].includes(effectName)) return "effect-hp";
-    if (effectCategories["傷害相關"].includes(effectName)) return "effect-damage";
-    if (effectCategories["防禦相關"].includes(effectName)) return "effect-defense";
-    if (effectCategories["煉金術"].some((e) => effectName.includes("煉金") || effectName.includes("鍊金")))
-        return "effect-alchemy";
-    return "effect-other";
+const getEffectClass = (effectKey: string) => {
+    return effectCategoryMap[effectKey] ?? "effect-other";
 };
 </script>
 
@@ -358,7 +360,7 @@ const getEffectClass = (effectName: string) => {
                                 <div v-for="effect in allEffects" :key="effect.key" class="weight-item">
                                     <span class="weight-label">{{ effect.name }}</span>
                                     <el-input-number
-                                        v-model="customWeights[effect.name]"
+                                        v-model="customWeights[effect.key]"
                                         :min="0"
                                         :max="100"
                                         size="small"
@@ -496,7 +498,7 @@ const getEffectClass = (effectName: string) => {
                         v-for="effect in getImportantEffects(bag)"
                         :key="effect.key"
                         class="effect-chip"
-                        :class="getEffectClass(effect.name)"
+                        :class="getEffectClass(effect.key)"
                     >
                         <span class="effect-name">{{ effect.name }}</span>
                         <span class="effect-value">{{ formatEffectShort(effect) }}</span>
@@ -508,7 +510,7 @@ const getEffectClass = (effectName: string) => {
                             v-for="effect in getOtherEffects(bag)"
                             :key="effect.key"
                             class="effect-chip"
-                            :class="getEffectClass(effect.name)"
+                            :class="getEffectClass(effect.key)"
                         >
                             <span class="effect-name">{{ effect.name }}</span>
                             <span class="effect-value">{{ formatEffectShort(effect) }}</span>
