@@ -4327,4 +4327,102 @@ export const farmModel: FarmModel[] = [
             },
         ],
     },
+    {
+        id: "1217",
+        name: {
+            tw: "羅西尼特別模型",
+            en: "Loiscneach Miniature",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "SP",
+                value: 15,
+            },
+        ],
+    },
+    {
+        id: "1217-MAX",
+        name: {
+            tw: "羅西尼特別模型 (強化到頂)",
+            en: "Loiscneach Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "SP",
+                value: 15,
+            },
+            {
+                id: "STR",
+                value: 7,
+            },
+            {
+                id: "DEX",
+                value: 7,
+            },
+            {
+                id: "attack_max",
+                value: 8,
+            },
+            {
+                id: "critical_damage",
+                value: 4,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+        desc: "力量+0~7\n敏捷+0~7\n大傷+0~8\n暴擊傷害+0~4%\n移動速度+0~2%",
+    },
+    {
+        id: "1216",
+        name: {
+            tw: "蘿晚特別模型",
+            en: "Rowan Miniature",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "MP",
+                value: 15,
+            },
+        ],
+    },
+    {
+        id: "1216-MAX",
+        name: {
+            tw: "蘿晚特別模型 (強化到頂)",
+            en: "Rowan Miniature (Enhanced Max)",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "MP",
+                value: 15,
+            },
+            {
+                id: "INT",
+                value: 7,
+            },
+            {
+                id: "WIL",
+                value: 7,
+            },
+            {
+                id: "magic_attack",
+                value: 8,
+            },
+            {
+                id: "bonus_damage",
+                value: 2,
+            },
+            {
+                id: "move_speed",
+                value: 2,
+            },
+        ],
+        desc: "智力+0~7\n意志+0~7\n魔法攻擊+0~8\n額外傷害+0~2%\n移動速度+0~2%",
+    },
 ];
