@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { enchants, reward } from "../data/enchants";
+import { enchants } from "../data/enchants";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 import type { Enchant } from "../types/Enchant";
 
@@ -15,6 +15,43 @@ interface SlotGroup {
     slot: string;
     subtypes: EquipmentType[];
 }
+
+// ===== 細工道具 Definitions =====
+interface RerollTool {
+    id: number;
+    name: string;
+    shortName: string;
+    breakthroughProb: number; // 突破機率 (0–1)
+}
+
+const REROLL_TOOLS: RerollTool[] = [
+    { id: 5050006, name: "普通細工道具", shortName: "普通", breakthroughProb: 0 },
+    { id: 5050005, name: "精緻細工道具", shortName: "精緻", breakthroughProb: 0.001 },
+    { id: 5050013, name: "璀璨細工道具", shortName: "璀璨", breakthroughProb: 0.001 },
+    { id: 5050020, name: "燦爛細工道具", shortName: "燦爛", breakthroughProb: 0.005 },
+];
+
+// ===== Min Level Table =====
+// Column order: [普通, 精緻, 璀璨, 燦爛]
+// Each cell: { normal: 平時最低等級, event: 活動期間最低等級 }
+interface MinLevelEntry {
+    normal: number;
+    event: number;
+}
+const MIN_LEVEL_TABLE: Array<{ maxLevel: number; tools: MinLevelEntry[] }> = [
+    { maxLevel: 1,  tools: [{ normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:1 }] },
+    { maxLevel: 3,  tools: [{ normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:2 }] },
+    { maxLevel: 5,  tools: [{ normal:1,event:2 }, { normal:2,event:2 }, { normal:2,event:2 }, { normal:2,event:3 }] },
+    { maxLevel: 6,  tools: [{ normal:1,event:2 }, { normal:2,event:2 }, { normal:2,event:3 }, { normal:3,event:3 }] },
+    { maxLevel: 7,  tools: [{ normal:1,event:3 }, { normal:3,event:3 }, { normal:3,event:3 }, { normal:3,event:4 }] },
+    { maxLevel: 8,  tools: [{ normal:1,event:3 }, { normal:3,event:3 }, { normal:3,event:4 }, { normal:4,event:4 }] },
+    { maxLevel: 10, tools: [{ normal:1,event:4 }, { normal:4,event:4 }, { normal:4,event:5 }, { normal:5,event:5 }] },
+    { maxLevel: 12, tools: [{ normal:1,event:4 }, { normal:4,event:5 }, { normal:5,event:5 }, { normal:5,event:6 }] },
+    { maxLevel: 15, tools: [{ normal:1,event:5 }, { normal:5,event:6 }, { normal:6,event:7 }, { normal:7,event:8 }] },
+    { maxLevel: 20, tools: [{ normal:1,event:7 }, { normal:7,event:8 }, { normal:8,event:9 }, { normal:9,event:10 }] },
+];
+
+const EQUIP_MAX_LEVELS = MIN_LEVEL_TABLE.map((r) => r.maxLevel);
 
 // ===== Equipment Definitions =====
 const ARMOR_SLOT_GROUPS: SlotGroup[] = [
@@ -93,18 +130,21 @@ const WEAPON_SLOT_GROUPS: SlotGroup[] = [
     },
 ];
 
-// ===== Selection State =====
+// ===== State =====
 const selectedCategory = ref<"防具" | "武器" | null>(null);
 const selectedEquipType = ref<EquipmentType | null>(null);
 const selectedRace = ref<string>("全種族");
-const selectedSources = ref<string[]>([]);
+const selectedMaxLevel = ref<number | null>(null);
+const selectedToolIdx = ref<number | null>(null);
+const isEventPeriod = ref<boolean>(false); // 最低等級補正
+const doubleBreakthrough = ref<boolean>(false); // 突破機率加倍
 
 // Simulation state
 const selectedPrefixId = ref<number | null>(null);
 const selectedSuffixId = ref<number | null>(null);
 const costPerRoll = ref<number>(0);
 
-// ===== Static Data =====
+// ===== Static Lookups =====
 const RACE_OPTIONS = [
     "全種族",
     "人類限定",
@@ -114,32 +154,55 @@ const RACE_OPTIONS = [
     "巨人限定",
 ];
 
-const SOURCE_OPTIONS = reward.map((r) => r.raidName);
-
-// ===== Current Slot Groups for Selected Category =====
+// ===== Derived: current slot groups =====
 const currentSlotGroups = computed<SlotGroup[]>(() => {
     if (selectedCategory.value === "防具") return ARMOR_SLOT_GROUPS;
     if (selectedCategory.value === "武器") return WEAPON_SLOT_GROUPS;
     return [];
 });
 
-// ===== Enchant Source IDs =====
-const sourceEnchantIds = computed((): Set<number> => {
-    const ids = new Set<number>();
-    for (const source of reward) {
-        if (selectedSources.value.includes(source.raidName)) {
-            source.list.forEach((id) => ids.add(id));
-        }
-    }
-    return ids;
+// ===== Tool / Level Computeds =====
+const selectedTool = computed(() =>
+    selectedToolIdx.value !== null ? REROLL_TOOLS[selectedToolIdx.value] : null,
+);
+
+const minLevelEntry = computed((): MinLevelEntry | null => {
+    if (selectedMaxLevel.value === null || selectedToolIdx.value === null) return null;
+    const row = MIN_LEVEL_TABLE.find((r) => r.maxLevel === selectedMaxLevel.value);
+    return row?.tools[selectedToolIdx.value] ?? null;
 });
 
+/** 實際生效的最低等級（依 checkbox 狀態） */
+const effectiveMinLevel = computed((): number | null => {
+    if (!minLevelEntry.value) return null;
+    return isEventPeriod.value ? minLevelEntry.value.event : minLevelEntry.value.normal;
+});
+
+/** 實際突破機率（依 checkbox 狀態） */
+const effectiveBreakthroughProb = computed((): number => {
+    if (!selectedTool.value) return 0;
+    const base = selectedTool.value.breakthroughProb;
+    return doubleBreakthrough.value ? base * 2 : base;
+});
+
+/** 是否已完成所有必要選擇（可顯示詞條池） */
+const isReady = computed(
+    () =>
+        selectedEquipType.value !== null &&
+        selectedMaxLevel.value !== null &&
+        selectedToolIdx.value !== null,
+);
+
 // ===== Enchant Pool =====
+// 使用現有詞條庫（暫時），依裝備類型 + 等級範圍過濾
+// 詞條庫後續擴充後自動生效
 const eligibleEnchants = computed((): Enchant[] => {
-    if (!selectedEquipType.value || selectedSources.value.length === 0) return [];
-    const equipLimits = selectedEquipType.value.limits;
+    if (!isReady.value) return [];
+    const minLv = effectiveMinLevel.value ?? 1;
+    const maxLv = selectedMaxLevel.value!;
+    const equipLimits = selectedEquipType.value!.limits;
     return enchants.filter(
-        (e) => sourceEnchantIds.value.has(e.id) && e.limit.some((l) => equipLimits.includes(l)),
+        (e) => e.limit.some((l) => equipLimits.includes(l)) && e.level >= minLv && e.level <= maxLv,
     );
 });
 
@@ -155,9 +218,6 @@ const formatEffect = (id: string, min: number, max: number): string => {
     if (min === max) return `${name} ${fmt(min)}`;
     return `${name} ${fmt(min)}～${fmt(max)}`;
 };
-
-const getEnchantLabel = (enchant: Enchant): string =>
-    `${enchant.name.tw}（Lv.${enchant.level}）`;
 
 // ===== Simulation (Analytical Geometric Distribution) =====
 interface SimResult {
@@ -189,15 +249,15 @@ const simResult = computed((): SimResult | null => {
     const p50 = Math.ceil(Math.log(0.5) / Math.log(1 - p));
     const p90 = Math.ceil(Math.log(0.1) / Math.log(1 - p));
     const p99 = Math.ceil(Math.log(0.01) / Math.log(1 - p));
-    const avgCost = mean * costPerRoll.value;
 
-    return { p, mean, p50, p90, p99, avgCost, prefixPoolSize: prefixSize, suffixPoolSize: suffixSize };
+    return { p, mean, p50, p90, p99, avgCost: mean * costPerRoll.value, prefixPoolSize: prefixSize, suffixPoolSize: suffixSize };
 });
 
-// ===== Watchers =====
+// ===== Actions =====
 const selectCategory = (cat: "防具" | "武器") => {
     selectedCategory.value = cat;
     selectedEquipType.value = null;
+    selectedMaxLevel.value = null;
     selectedPrefixId.value = null;
     selectedSuffixId.value = null;
 };
@@ -208,7 +268,8 @@ const selectEquipType = (eq: EquipmentType) => {
     selectedSuffixId.value = null;
 };
 
-watch(selectedSources, () => {
+// Reset targets when pool changes
+watch([selectedMaxLevel, selectedToolIdx, isEventPeriod], () => {
     selectedPrefixId.value = null;
     selectedSuffixId.value = null;
 });
@@ -224,15 +285,15 @@ watch(selectedSources, () => {
                 <p class="text-lg text-gray-400 mt-4">模擬賦予洗詞條所需次數與費用</p>
             </header>
 
-            <!-- Step 1 & 2: 選擇裝備 -->
+            <!-- ── Card 1: 選擇裝備 ── -->
             <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
                 <div class="mb-4 border-b border-gray-700 pb-3">
                     <h2 class="text-xl font-bold text-accent">選擇裝備</h2>
                 </div>
 
-                <!-- Step 1: 大分類 -->
+                <!-- ① 大分類 -->
                 <div class="mb-5">
-                    <p class="text-sm text-gray-400 mb-2">① 裝備大分類</p>
+                    <p class="step-label">① 裝備大分類</p>
                     <div class="flex gap-3 flex-wrap">
                         <el-tag
                             v-for="cat in ['防具', '武器'] as const"
@@ -248,15 +309,10 @@ watch(selectedSources, () => {
                     </div>
                 </div>
 
-                <!-- Step 2: 部位/類型選擇 -->
+                <!-- ② 部位 / 類型 -->
                 <div v-if="selectedCategory" class="mb-5">
-                    <p class="text-sm text-gray-400 mb-2">② 裝備部位 / 類型</p>
-                    <div
-                        v-for="group in currentSlotGroups"
-                        :key="group.slot"
-                        class="mb-3"
-                    >
-                        <!-- 顯示 slot group 名稱（防具用分隔線，武器用標籤） -->
+                    <p class="step-label">② 裝備部位 / 類型</p>
+                    <div v-for="group in currentSlotGroups" :key="group.slot" class="mb-3">
                         <span
                             v-if="selectedCategory === '武器'"
                             class="text-xs text-gray-500 mr-2 font-semibold uppercase tracking-wide"
@@ -272,15 +328,19 @@ watch(selectedSources, () => {
                                 class="cursor-pointer select-none"
                                 @click="selectEquipType(eq)"
                             >
-                                {{ selectedCategory === "防具" ? `${group.slot}・${eq.name}` : eq.name }}
+                                {{
+                                    selectedCategory === "防具"
+                                        ? `${group.slot}・${eq.name}`
+                                        : eq.name
+                                }}
                             </el-tag>
                         </div>
                     </div>
                 </div>
 
-                <!-- Step 3: 穿戴限制（僅顯示，不影響池） -->
+                <!-- ③ 穿戴限制 -->
                 <div v-if="selectedEquipType" class="mb-5">
-                    <p class="text-sm text-gray-400 mb-2">③ 穿戴限制（不影響詞條池）</p>
+                    <p class="step-label">③ 穿戴限制（不影響詞條池）</p>
                     <div class="flex gap-2 flex-wrap">
                         <el-tag
                             v-for="race in RACE_OPTIONS"
@@ -295,48 +355,135 @@ watch(selectedSources, () => {
                     </div>
                 </div>
 
-                <!-- Step 4: 洗詞條道具 -->
+                <!-- ④ 選項最大值 -->
                 <div v-if="selectedEquipType">
-                    <p class="text-sm text-gray-400 mb-2">④ 洗詞條道具（可複選）</p>
+                    <p class="step-label">④ 選項最大值（裝備能賦予的最高等級）</p>
                     <div class="flex gap-2 flex-wrap">
                         <el-tag
-                            v-for="src in SOURCE_OPTIONS"
-                            :key="src"
-                            :type="selectedSources.includes(src) ? 'primary' : 'info'"
-                            :effect="selectedSources.includes(src) ? 'dark' : 'plain'"
+                            v-for="lv in EQUIP_MAX_LEVELS"
+                            :key="lv"
+                            :type="selectedMaxLevel === lv ? 'warning' : 'info'"
+                            :effect="selectedMaxLevel === lv ? 'dark' : 'plain'"
                             class="cursor-pointer select-none"
-                            @click="
-                                selectedSources.includes(src)
-                                    ? (selectedSources = selectedSources.filter((s) => s !== src))
-                                    : selectedSources.push(src)
-                            "
+                            @click="selectedMaxLevel = lv"
                         >
-                            {{ src }}
+                            Lv.{{ lv }}
                         </el-tag>
                     </div>
                 </div>
             </el-card>
 
-            <!-- Enchant Pool -->
-            <template v-if="eligibleEnchants.length > 0">
+            <!-- ── Card 2: 細工道具 ── -->
+            <el-card
+                v-if="selectedEquipType && selectedMaxLevel !== null"
+                class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl"
+            >
+                <div class="mb-4 border-b border-gray-700 pb-3">
+                    <h2 class="text-xl font-bold text-accent">細工道具</h2>
+                </div>
+
+                <!-- 道具選擇 -->
+                <div class="mb-5">
+                    <p class="step-label">⑤ 使用的道具</p>
+                    <div class="flex gap-3 flex-wrap">
+                        <div
+                            v-for="(tool, idx) in REROLL_TOOLS"
+                            :key="tool.id"
+                            class="tool-chip"
+                            :class="{ 'tool-chip--active': selectedToolIdx === idx }"
+                            @click="selectedToolIdx = idx"
+                        >
+                            <span class="tool-name">{{ tool.name }}</span>
+                            <span class="tool-prob">
+                                突破 {{
+                                    tool.breakthroughProb === 0
+                                        ? "無"
+                                        : `${(tool.breakthroughProb * 100).toFixed(1)}%`
+                                }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkboxes -->
+                <div class="flex flex-wrap gap-6">
+                    <el-checkbox v-model="doubleBreakthrough" :disabled="!selectedTool || selectedTool.breakthroughProb === 0">
+                        <span class="text-gray-200">突破機率加倍</span>
+                        <span v-if="selectedTool && selectedTool.breakthroughProb > 0" class="text-xs text-gray-400 ml-2">
+                            {{ (selectedTool.breakthroughProb * 100).toFixed(1) }}%
+                            → {{ (selectedTool.breakthroughProb * 2 * 100).toFixed(1) }}%
+                        </span>
+                    </el-checkbox>
+
+                    <el-checkbox v-model="isEventPeriod" :disabled="!minLevelEntry || minLevelEntry.normal === minLevelEntry.event">
+                        <span class="text-gray-200">最低等級補正（活動期間）</span>
+                        <span
+                            v-if="minLevelEntry && minLevelEntry.normal !== minLevelEntry.event"
+                            class="text-xs text-gray-400 ml-2"
+                        >
+                            最低 Lv.{{ minLevelEntry.normal }} → Lv.{{ minLevelEntry.event }}
+                        </span>
+                    </el-checkbox>
+                </div>
+            </el-card>
+
+            <!-- ── 設定摘要 ── -->
+            <div
+                v-if="isReady"
+                class="mb-4 flex flex-wrap gap-3 items-center px-1"
+            >
+                <el-tag type="warning" effect="dark" size="large">
+                    {{ selectedEquipType!.name }}
+                </el-tag>
+                <el-tag type="info" effect="dark" size="large">
+                    選項最大 Lv.{{ selectedMaxLevel }}
+                </el-tag>
+                <el-tag type="primary" effect="dark" size="large">
+                    {{ selectedTool!.name }}
+                </el-tag>
+                <el-tag type="success" effect="dark" size="large">
+                    範圍 Lv.{{ effectiveMinLevel }} ～ Lv.{{ selectedMaxLevel }}
+                </el-tag>
+                <el-tag
+                    :type="effectiveBreakthroughProb > 0 ? 'warning' : 'info'"
+                    effect="plain"
+                    size="large"
+                >
+                    突破 {{
+                        effectiveBreakthroughProb === 0
+                            ? "無"
+                            : `${(effectiveBreakthroughProb * 100).toFixed(1)}%`
+                    }}
+                </el-tag>
+            </div>
+
+            <!-- ── Card 3: 詞條池 ── -->
+            <template v-if="isReady">
                 <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
-                    <div class="mb-4 border-b border-gray-700 pb-3 flex items-center gap-3">
+                    <div class="mb-4 border-b border-gray-700 pb-3 flex items-center gap-3 flex-wrap">
                         <h2 class="text-xl font-bold text-accent">詞條池</h2>
                         <el-tag type="info" size="small">
-                            共 {{ eligibleEnchants.length }} 個（前綴 {{ prefixPool.length }}、後綴
+                            共 {{ eligibleEnchants.length }} 個（前綴 {{ prefixPool.length }}・後綴
                             {{ suffixPool.length }}）
                         </el-tag>
-                        <el-tag v-if="selectedEquipType" size="small" type="warning">
-                            {{ selectedEquipType.name }}・{{ selectedRace }}
+                        <el-tag size="small" type="warning">
+                            Lv.{{ effectiveMinLevel }}～{{ selectedMaxLevel }}
                         </el-tag>
+                        <el-tag v-if="isEventPeriod" size="small" type="success">活動期間</el-tag>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <el-empty
+                        v-if="eligibleEnchants.length === 0"
+                        description="目前詞條庫尚未收錄此裝備類型的詞條，待更新"
+                        :image-size="60"
+                    />
+
+                    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Prefix Pool -->
                         <div>
-                            <h3 class="text-base font-semibold text-gray-300 mb-2">
+                            <h3 class="pool-title">
                                 前綴
-                                <span class="text-sm text-gray-500">（{{ prefixPool.length }} 個）</span>
+                                <span class="pool-count">{{ prefixPool.length }} 個</span>
                             </h3>
                             <el-table
                                 :data="prefixPool"
@@ -344,10 +491,7 @@ watch(selectedSources, () => {
                                 :max-height="400"
                                 :header-cell-style="{ background: '#374151', color: '#d1d5db' }"
                                 :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
-                                :row-class-name="
-                                    ({ row }: { row: Enchant }) =>
-                                        selectedPrefixId === row.id ? 'selected-row' : ''
-                                "
+                                :row-class-name="({ row }: { row: Enchant }) => selectedPrefixId === row.id ? 'selected-row' : ''"
                                 @row-click="(row: Enchant) => (selectedPrefixId = selectedPrefixId === row.id ? null : row.id)"
                             >
                                 <el-table-column label="名稱" min-width="120">
@@ -374,9 +518,9 @@ watch(selectedSources, () => {
 
                         <!-- Suffix Pool -->
                         <div>
-                            <h3 class="text-base font-semibold text-gray-300 mb-2">
+                            <h3 class="pool-title">
                                 後綴
-                                <span class="text-sm text-gray-500">（{{ suffixPool.length }} 個）</span>
+                                <span class="pool-count">{{ suffixPool.length }} 個</span>
                             </h3>
                             <el-table
                                 :data="suffixPool"
@@ -384,10 +528,7 @@ watch(selectedSources, () => {
                                 :max-height="400"
                                 :header-cell-style="{ background: '#374151', color: '#d1d5db' }"
                                 :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
-                                :row-class-name="
-                                    ({ row }: { row: Enchant }) =>
-                                        selectedSuffixId === row.id ? 'selected-row' : ''
-                                "
+                                :row-class-name="({ row }: { row: Enchant }) => selectedSuffixId === row.id ? 'selected-row' : ''"
                                 @row-click="(row: Enchant) => (selectedSuffixId = selectedSuffixId === row.id ? null : row.id)"
                             >
                                 <el-table-column label="名稱" min-width="120">
@@ -414,7 +555,7 @@ watch(selectedSources, () => {
                     </div>
                 </el-card>
 
-                <!-- Simulation -->
+                <!-- ── Card 4: 模擬計算 ── -->
                 <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
                     <div class="mb-4 border-b border-gray-700 pb-3">
                         <h2 class="text-xl font-bold text-accent">模擬計算</h2>
@@ -422,40 +563,31 @@ watch(selectedSources, () => {
 
                     <!-- Target Summary -->
                     <div class="mb-5 flex flex-wrap gap-3 items-center">
-                        <div class="text-sm text-gray-400">目標：</div>
+                        <span class="text-sm text-gray-400">目標：</span>
                         <template v-if="selectedPrefixId !== null">
                             <el-tag type="warning" effect="dark">
-                                前綴：{{
-                                    prefixPool.find((e) => e.id === selectedPrefixId)?.name.tw ?? "—"
-                                }}
+                                前綴：{{ prefixPool.find((e) => e.id === selectedPrefixId)?.name.tw ?? "—" }}
                             </el-tag>
                         </template>
                         <template v-else>
-                            <el-tag type="info" effect="plain">前綴：任意（不限）</el-tag>
+                            <el-tag type="info" effect="plain">前綴：任意</el-tag>
                         </template>
-
                         <template v-if="selectedSuffixId !== null">
                             <el-tag type="primary" effect="dark">
-                                後綴：{{
-                                    suffixPool.find((e) => e.id === selectedSuffixId)?.name.tw ?? "—"
-                                }}
+                                後綴：{{ suffixPool.find((e) => e.id === selectedSuffixId)?.name.tw ?? "—" }}
                             </el-tag>
                         </template>
                         <template v-else>
-                            <el-tag type="info" effect="plain">後綴：任意（不限）</el-tag>
+                            <el-tag type="info" effect="plain">後綴：任意</el-tag>
                         </template>
-
                         <el-button
                             v-if="selectedPrefixId !== null || selectedSuffixId !== null"
                             size="small"
                             type="danger"
                             plain
-                            @click="
-                                selectedPrefixId = null;
-                                selectedSuffixId = null;
-                            "
+                            @click="selectedPrefixId = null; selectedSuffixId = null;"
                         >
-                            清除目標
+                            清除
                         </el-button>
                     </div>
 
@@ -476,7 +608,7 @@ watch(selectedSources, () => {
                         <div class="mb-4 border-b border-gray-700 pb-2">
                             <h3 class="text-base font-semibold text-gray-300">計算結果</h3>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
                             <div class="stat-card">
                                 <div class="stat-label">每次成功率</div>
                                 <div class="stat-value text-yellow-400">
@@ -487,21 +619,18 @@ watch(selectedSources, () => {
                                     }}
                                 </div>
                                 <div class="stat-sub">
-                                    前綴池 {{ simResult.prefixPoolSize }} 個・後綴池
-                                    {{ simResult.suffixPoolSize }} 個
+                                    前綴池 {{ simResult.prefixPoolSize }}・後綴池 {{ simResult.suffixPoolSize }}
                                 </div>
                             </div>
-
                             <div class="stat-card">
                                 <div class="stat-label">平均洗次數</div>
                                 <div class="stat-value text-blue-400">
-                                    {{ simResult.mean.toFixed(1).toLocaleString() }} 次
+                                    {{ simResult.mean.toFixed(1) }} 次
                                 </div>
                                 <div v-if="costPerRoll > 0" class="stat-sub">
                                     ≈ {{ Math.round(simResult.avgCost).toLocaleString() }} 金
                                 </div>
                             </div>
-
                             <div class="stat-card">
                                 <div class="stat-label">中位數（P50）</div>
                                 <div class="stat-value text-green-400">
@@ -509,7 +638,6 @@ watch(selectedSources, () => {
                                 </div>
                                 <div class="stat-sub">50% 機率在此次數內成功</div>
                             </div>
-
                             <div class="stat-card">
                                 <div class="stat-label">P90</div>
                                 <div class="stat-value text-orange-400">
@@ -520,7 +648,6 @@ watch(selectedSources, () => {
                                 </div>
                                 <div v-else class="stat-sub">90% 機率在此次數內成功</div>
                             </div>
-
                             <div class="stat-card">
                                 <div class="stat-label">P99（最壞情況）</div>
                                 <div class="stat-value text-red-400">
@@ -533,25 +660,18 @@ watch(selectedSources, () => {
                             </div>
                         </div>
 
-                        <!-- Probability table -->
-                        <div class="mt-5">
-                            <p class="text-sm text-gray-400 mb-2">累積成功機率</p>
-                            <div class="flex flex-wrap gap-2">
-                                <div
-                                    v-for="n in [1, 5, 10, 20, 50, 100, 200, 500]"
-                                    :key="n"
-                                    class="prob-chip"
-                                >
-                                    <span class="text-gray-400 text-xs">{{ n }} 次</span>
-                                    <span class="font-semibold text-sm text-white">
-                                        {{
-                                            (
-                                                (1 - Math.pow(1 - simResult.p, n)) *
-                                                100
-                                            ).toFixed(1)
-                                        }}%
-                                    </span>
-                                </div>
+                        <!-- Cumulative probability chips -->
+                        <p class="text-sm text-gray-400 mb-2">累積成功機率</p>
+                        <div class="flex flex-wrap gap-2">
+                            <div
+                                v-for="n in [1, 5, 10, 20, 50, 100, 200, 500]"
+                                :key="n"
+                                class="prob-chip"
+                            >
+                                <span class="text-gray-400 text-xs">{{ n }} 次</span>
+                                <span class="font-semibold text-sm text-white">
+                                    {{ ((1 - Math.pow(1 - simResult.p, n)) * 100).toFixed(1) }}%
+                                </span>
                             </div>
                         </div>
                     </template>
@@ -563,19 +683,72 @@ watch(selectedSources, () => {
                     />
                 </el-card>
             </template>
-
-            <!-- Empty state when conditions not met -->
-            <el-card
-                v-else-if="selectedEquipType && selectedSources.length > 0"
-                class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl"
-            >
-                <el-empty description="所選裝備與道具組合沒有符合的詞條" :image-size="80" />
-            </el-card>
         </div>
     </div>
 </template>
 
 <style scoped>
+.step-label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+/* 細工道具 chip */
+.tool-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 16px;
+    background: #1f2937;
+    border: 1.5px solid #374151;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    min-width: 110px;
+    user-select: none;
+}
+.tool-chip:hover {
+    border-color: #6b7280;
+    background: #263548;
+}
+.tool-chip--active {
+    border-color: #f59e0b;
+    background: #2d2207;
+}
+
+.tool-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #e5e7eb;
+}
+.tool-prob {
+    font-size: 0.7rem;
+    color: #9ca3af;
+}
+.tool-chip--active .tool-name {
+    color: #fbbf24;
+}
+.tool-chip--active .tool-prob {
+    color: #d97706;
+}
+
+/* Pool title */
+.pool-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #d1d5db;
+    margin-bottom: 0.5rem;
+}
+.pool-count {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-left: 4px;
+    font-weight: 400;
+}
+
+/* Stat cards */
 .stat-card {
     background: #111827;
     border: 1px solid #374151;
@@ -585,23 +758,21 @@ watch(selectedSources, () => {
     flex-direction: column;
     gap: 4px;
 }
-
 .stat-label {
     font-size: 0.75rem;
     color: #9ca3af;
 }
-
 .stat-value {
     font-size: 1.4rem;
     font-weight: 700;
     line-height: 1.2;
 }
-
 .stat-sub {
     font-size: 0.7rem;
     color: #6b7280;
 }
 
+/* Probability chips */
 .prob-chip {
     background: #1f2937;
     border: 1px solid #374151;
@@ -614,15 +785,14 @@ watch(selectedSources, () => {
     min-width: 64px;
 }
 
+/* Selected row highlight */
 :deep(.selected-row td) {
     background: #1c3a4f !important;
     border-color: #3b82f6 !important;
 }
-
 :deep(.el-table__row) {
     cursor: pointer;
 }
-
 :deep(.el-table__row:hover td) {
     background: #1f3040 !important;
 }
