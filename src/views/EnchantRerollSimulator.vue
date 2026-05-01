@@ -21,8 +21,6 @@ interface ReforgeData {
 }
 
 const reforgeData = reforgeDataRaw as ReforgeData;
-
-// ===== Image base URL =====
 const baseUrl = import.meta.env.BASE_URL;
 
 // ===== Equipment Types =====
@@ -129,23 +127,6 @@ const REROLL_TOOLS: RerollTool[] = [
     { id: 5050020, name: "燦爛細工道具", shortName: "燦爛", breakthroughProb: 0.005 },
 ];
 
-// ===== Min Level Table =====
-// Column order: [普通, 精緻, 璀璨, 燦爛] — each { normal, event }
-interface MinLevelEntry { normal: number; event: number; }
-const MIN_LEVEL_TABLE: Array<{ maxLevel: number; tools: MinLevelEntry[] }> = [
-    { maxLevel: 1,  tools: [{ normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:1 }] },
-    { maxLevel: 3,  tools: [{ normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:1 }, { normal:1,event:2 }] },
-    { maxLevel: 5,  tools: [{ normal:1,event:2 }, { normal:2,event:2 }, { normal:2,event:2 }, { normal:2,event:3 }] },
-    { maxLevel: 6,  tools: [{ normal:1,event:2 }, { normal:2,event:2 }, { normal:2,event:3 }, { normal:3,event:3 }] },
-    { maxLevel: 7,  tools: [{ normal:1,event:3 }, { normal:3,event:3 }, { normal:3,event:3 }, { normal:3,event:4 }] },
-    { maxLevel: 8,  tools: [{ normal:1,event:3 }, { normal:3,event:3 }, { normal:3,event:4 }, { normal:4,event:4 }] },
-    { maxLevel: 10, tools: [{ normal:1,event:4 }, { normal:4,event:4 }, { normal:4,event:5 }, { normal:5,event:5 }] },
-    { maxLevel: 12, tools: [{ normal:1,event:4 }, { normal:4,event:5 }, { normal:5,event:5 }, { normal:5,event:6 }] },
-    { maxLevel: 15, tools: [{ normal:1,event:5 }, { normal:5,event:6 }, { normal:6,event:7 }, { normal:7,event:8 }] },
-    { maxLevel: 20, tools: [{ normal:1,event:7 }, { normal:7,event:8 }, { normal:8,event:9 }, { normal:9,event:10 }] },
-];
-const EQUIP_MAX_LEVELS = MIN_LEVEL_TABLE.map((r) => r.maxLevel);
-
 // Race → pool key mapping
 const RACE_POOL_KEY: Record<string, string | null> = {
     "全種族": null,
@@ -155,42 +136,27 @@ const RACE_POOL_KEY: Record<string, string | null> = {
     "人類/巨人限定": "human_giant",
     "巨人限定": "giant",
 };
-
 const RACE_OPTIONS = Object.keys(RACE_POOL_KEY);
 
 // ===== State =====
 const selectedCategory = ref<"防具" | "武器" | null>(null);
 const selectedEquipType = ref<EquipmentType | null>(null);
 const selectedRace = ref<string>("全種族");
-const selectedMaxLevel = ref<number | null>(null);
 const selectedToolIdx = ref<number | null>(null);
-const isEventPeriod = ref<boolean>(false);
 const doubleBreakthrough = ref<boolean>(false);
 const selectedTargetName = ref<string | null>(null);
 const costPerRoll = ref<number>(0);
 
-// ===== Derived: slot groups =====
+// ===== Derived =====
 const currentSlotGroups = computed<SlotGroup[]>(() => {
     if (selectedCategory.value === "防具") return ARMOR_SLOT_GROUPS;
     if (selectedCategory.value === "武器") return WEAPON_SLOT_GROUPS;
     return [];
 });
 
-// ===== Tool / Level Computeds =====
 const selectedTool = computed(() =>
     selectedToolIdx.value !== null ? REROLL_TOOLS[selectedToolIdx.value] : null,
 );
-
-const minLevelEntry = computed((): MinLevelEntry | null => {
-    if (selectedMaxLevel.value === null || selectedToolIdx.value === null) return null;
-    const row = MIN_LEVEL_TABLE.find((r) => r.maxLevel === selectedMaxLevel.value);
-    return row?.tools[selectedToolIdx.value] ?? null;
-});
-
-const effectiveMinLevel = computed((): number => {
-    if (!minLevelEntry.value) return 1;
-    return isEventPeriod.value ? minLevelEntry.value.event : minLevelEntry.value.normal;
-});
 
 const effectiveBreakthroughProb = computed((): number => {
     if (!selectedTool.value) return 0;
@@ -199,50 +165,53 @@ const effectiveBreakthroughProb = computed((): number => {
 });
 
 const isReady = computed(
-    () =>
-        selectedEquipType.value !== null &&
-        selectedMaxLevel.value !== null &&
-        selectedToolIdx.value !== null,
+    () => selectedEquipType.value !== null && selectedToolIdx.value !== null,
 );
 
-// ===== Reforge Pool Construction =====
+// ===== Breakthrough helpers =====
+/** 突破後最高等級 = ceil(maxLevel * 1.25) */
+const btMaxLevel = (entry: ReforgeEntry): number =>
+    Math.ceil(entry.maxLevel * 1.25);
+
+/** 突破後等級範圍：[maxLevel+1, btMaxLevel] */
+const btLevelRange = (entry: ReforgeEntry): [number, number] => [
+    entry.maxLevel + 1,
+    btMaxLevel(entry),
+];
+
+// ===== Pool Construction =====
 const activePool = computed((): ReforgeEntry[] => {
     if (!isReady.value) return [];
-    const minLv = effectiveMinLevel.value;
 
-    // 1. Base pool
     const names = new Set<string>(reforgeData.pools.base);
 
-    // 2. Heavy armor addition
     if (selectedEquipType.value!.isHeavy) {
         reforgeData.pools.heavyOnly.forEach((n) => names.add(n));
     }
 
-    // 3. Race pool
     const raceKey = RACE_POOL_KEY[selectedRace.value];
     if (raceKey && reforgeData.pools.races[raceKey]) {
         reforgeData.pools.races[raceKey].forEach((n) => names.add(n));
     }
 
-    // 4. Level filter: item must be reachable (maxLevel >= minLv)
     return Array.from(names)
         .map((n) => reforgeData.library[n])
-        .filter((e): e is ReforgeEntry => !!e && e.maxLevel >= minLv);
+        .filter((e): e is ReforgeEntry => !!e);
 });
 
-// Effective max level for each entry (capped by equipment)
-const effectiveMaxLevelForEntry = (entry: ReforgeEntry): number =>
-    Math.min(entry.maxLevel, selectedMaxLevel.value ?? entry.maxLevel);
-
-const effectiveMaxValueForEntry = (entry: ReforgeEntry): number => {
-    const lv = effectiveMaxLevelForEntry(entry);
-    return entry.baseValue * lv;
+// ===== Formatting =====
+const fmtValue = (baseValue: number, level: number, unit: string): string => {
+    const v = baseValue * level;
+    const s = Number.isInteger(v) ? v.toString() : v.toFixed(2).replace(/\.?0+$/, "");
+    return `${s} ${unit}`.trim();
 };
 
-// ===== Simulation =====
+// ===== Simulation (3 draws without replacement, geometric) =====
+// P(target in one draw of 3 from N) = min(3,N) / N
 interface SimResult {
     p: number;
     poolSize: number;
+    drawCount: number;
     mean: number;
     p50: number;
     p90: number;
@@ -252,20 +221,20 @@ interface SimResult {
 
 const simResult = computed((): SimResult | null => {
     if (!selectedTargetName.value || activePool.value.length === 0) return null;
-    const poolSize = activePool.value.length;
-    const p = 1 / poolSize;
-    const mean = poolSize;
+    const N = activePool.value.length;
+    const draws = Math.min(3, N);
+    const p = draws / N;
+    const mean = N / draws;
     const p50 = Math.ceil(Math.log(0.5) / Math.log(1 - p));
     const p90 = Math.ceil(Math.log(0.1) / Math.log(1 - p));
     const p99 = Math.ceil(Math.log(0.01) / Math.log(1 - p));
-    return { p, poolSize, mean, p50, p90, p99, avgCost: mean * costPerRoll.value };
+    return { p, poolSize: N, drawCount: draws, mean, p50, p90, p99, avgCost: mean * costPerRoll.value };
 });
 
 // ===== Actions =====
 const selectCategory = (cat: "防具" | "武器") => {
     selectedCategory.value = cat;
     selectedEquipType.value = null;
-    selectedMaxLevel.value = null;
     selectedTargetName.value = null;
 };
 
@@ -274,25 +243,9 @@ const selectEquipType = (eq: EquipmentType) => {
     selectedTargetName.value = null;
 };
 
-watch([selectedMaxLevel, selectedToolIdx, isEventPeriod, selectedRace], () => {
+watch([selectedToolIdx, selectedRace], () => {
     selectedTargetName.value = null;
 });
-
-// ===== Formatting =====
-const formatValue = (entry: ReforgeEntry): string => {
-    const maxLv = effectiveMaxLevelForEntry(entry);
-    const val = entry.baseValue * maxLv;
-    // For negative values (reduction effects), show actual value
-    const formatted = Number.isInteger(val) ? val.toString() : val.toFixed(2).replace(/\.?0+$/, "");
-    return `${formatted} ${entry.unit}`.trim();
-};
-
-const formatLevelRange = (entry: ReforgeEntry): string => {
-    const minLv = effectiveMinLevel.value;
-    const maxLv = effectiveMaxLevelForEntry(entry);
-    if (minLv === maxLv) return `Lv.${minLv}`;
-    return `Lv.${minLv} ～ ${maxLv}`;
-};
 </script>
 
 <template>
@@ -355,7 +308,7 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
                 </div>
 
                 <!-- ③ 穿戴限制 -->
-                <div v-if="selectedEquipType" class="mb-5">
+                <div v-if="selectedEquipType">
                     <p class="step-label">③ 穿戴限制</p>
                     <div class="flex gap-2 flex-wrap">
                         <el-tag
@@ -370,37 +323,19 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
                         </el-tag>
                     </div>
                 </div>
-
-                <!-- ④ 選項最大值 -->
-                <div v-if="selectedEquipType">
-                    <p class="step-label">④ 選項最大值（裝備能賦予的最高等級）</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <el-tag
-                            v-for="lv in EQUIP_MAX_LEVELS"
-                            :key="lv"
-                            :type="selectedMaxLevel === lv ? 'warning' : 'info'"
-                            :effect="selectedMaxLevel === lv ? 'dark' : 'plain'"
-                            class="cursor-pointer select-none"
-                            @click="selectedMaxLevel = lv"
-                        >
-                            Lv.{{ lv }}
-                        </el-tag>
-                    </div>
-                </div>
             </el-card>
 
             <!-- ── Card 2: 細工道具 ── -->
             <el-card
-                v-if="selectedEquipType && selectedMaxLevel !== null"
+                v-if="selectedEquipType"
                 class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl"
             >
                 <div class="mb-4 border-b border-gray-700 pb-3">
                     <h2 class="text-xl font-bold text-accent">細工道具</h2>
                 </div>
 
-                <!-- 道具選擇 -->
                 <div class="mb-5">
-                    <p class="step-label">⑤ 使用的道具</p>
+                    <p class="step-label">④ 使用的道具</p>
                     <div class="flex gap-3 flex-wrap">
                         <div
                             v-for="(tool, idx) in REROLL_TOOLS"
@@ -427,52 +362,32 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
                     </div>
                 </div>
 
-                <!-- Checkboxes -->
-                <div class="flex flex-wrap gap-6 items-center">
-                    <el-checkbox
-                        v-model="doubleBreakthrough"
-                        :disabled="!selectedTool || selectedTool.breakthroughProb === 0"
+                <!-- 突破機率加倍 checkbox only -->
+                <el-checkbox
+                    v-model="doubleBreakthrough"
+                    :disabled="!selectedTool || selectedTool.breakthroughProb === 0"
+                >
+                    <span class="text-gray-200">突破機率加倍</span>
+                    <span
+                        v-if="selectedTool && selectedTool.breakthroughProb > 0"
+                        class="text-xs text-gray-400 ml-2"
                     >
-                        <span class="text-gray-200">突破機率加倍</span>
-                        <span
-                            v-if="selectedTool && selectedTool.breakthroughProb > 0"
-                            class="text-xs text-gray-400 ml-2"
-                        >
-                            {{ (selectedTool.breakthroughProb * 100).toFixed(1) }}% →
-                            {{ (selectedTool.breakthroughProb * 2 * 100).toFixed(1) }}%
-                        </span>
-                    </el-checkbox>
-
-                    <el-checkbox
-                        v-model="isEventPeriod"
-                        :disabled="!minLevelEntry || minLevelEntry.normal === minLevelEntry.event"
-                    >
-                        <span class="text-gray-200">最低等級補正（活動期間）</span>
-                        <span
-                            v-if="minLevelEntry && minLevelEntry.normal !== minLevelEntry.event"
-                            class="text-xs text-gray-400 ml-2"
-                        >
-                            最低 Lv.{{ minLevelEntry.normal }} → Lv.{{ minLevelEntry.event }}
-                        </span>
-                    </el-checkbox>
-                </div>
+                        {{ (selectedTool.breakthroughProb * 100).toFixed(1) }}% →
+                        {{ (selectedTool.breakthroughProb * 2 * 100).toFixed(1) }}%
+                    </span>
+                </el-checkbox>
             </el-card>
 
             <!-- ── 設定摘要 ── -->
             <div v-if="isReady" class="mb-4 flex flex-wrap gap-2 items-center px-1">
                 <el-tag type="warning" effect="dark">{{ selectedEquipType!.name }}</el-tag>
-                <el-tag type="info" effect="dark">
-                    選項最大 Lv.{{ selectedMaxLevel }}
-                </el-tag>
                 <el-tag type="primary" effect="dark">{{ selectedTool!.name }}</el-tag>
-                <el-tag type="success" effect="dark">
-                    範圍 Lv.{{ effectiveMinLevel }} ～ {{ selectedMaxLevel }}
-                </el-tag>
                 <el-tag v-if="effectiveBreakthroughProb > 0" type="warning" effect="plain">
                     突破 {{ (effectiveBreakthroughProb * 100).toFixed(1) }}%
                 </el-tag>
-                <el-tag v-if="isEventPeriod" type="success" effect="plain">活動期間</el-tag>
-                <el-tag type="info" effect="plain">池 {{ activePool.length }} 個詞條</el-tag>
+                <el-tag type="info" effect="plain">
+                    每次抽 3 個・池 {{ activePool.length }} 個
+                </el-tag>
             </div>
 
             <!-- ── Card 3: 詞條池 ── -->
@@ -483,42 +398,67 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
                 <div class="mb-4 border-b border-gray-700 pb-3 flex items-center gap-3 flex-wrap">
                     <h2 class="text-xl font-bold text-accent">詞條池</h2>
                     <el-tag type="info" size="small">{{ activePool.length }} 個</el-tag>
-                    <span
-                        v-if="selectedEquipType!.isHeavy"
-                        class="text-xs text-yellow-500"
-                    >+ 重甲專屬</span>
-                    <span
-                        v-if="RACE_POOL_KEY[selectedRace]"
-                        class="text-xs text-green-500"
-                    >+ {{ selectedRace }}專屬</span>
+                    <span v-if="selectedEquipType!.isHeavy" class="text-xs text-yellow-500">
+                        含重甲專屬
+                    </span>
+                    <span v-if="RACE_POOL_KEY[selectedRace]" class="text-xs text-green-500">
+                        含{{ selectedRace }}專屬
+                    </span>
                 </div>
 
-                <p class="text-xs text-gray-500 mb-3">點擊列以選擇模擬目標</p>
+                <p class="text-xs text-gray-500 mb-3">
+                    每次洗詞隨機抽取 3 個不重複詞條，各條再獨立抽突破與等級。點擊列選擇模擬目標。
+                </p>
 
                 <el-table
                     :data="activePool"
                     size="small"
-                    :max-height="420"
+                    :max-height="460"
                     :header-cell-style="{ background: '#374151', color: '#d1d5db' }"
                     :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
                     :row-class-name="({ row }: { row: ReforgeEntry }) => selectedTargetName === row.name ? 'selected-row' : ''"
                     @row-click="(row: ReforgeEntry) => (selectedTargetName = selectedTargetName === row.name ? null : row.name)"
                 >
-                    <el-table-column label="詞條名稱" min-width="180">
+                    <el-table-column label="詞條名稱" min-width="170">
                         <template #default="{ row }">
                             <span class="font-medium">{{ row.name }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="等級範圍" width="130" align="center">
+
+                    <!-- 一般等級範圍 -->
+                    <el-table-column label="一般等級" width="110" align="center">
                         <template #default="{ row }">
-                            {{ formatLevelRange(row) }}
+                            Lv.1 ～ {{ row.maxLevel }}
                         </template>
                     </el-table-column>
-                    <el-table-column label="最大效果" min-width="160" align="right">
+
+                    <!-- 一般最大效果 -->
+                    <el-table-column label="最大效果" min-width="140" align="right">
                         <template #default="{ row }">
-                            <span class="text-green-400">{{ formatValue(row) }}</span>
+                            <span class="text-green-400">
+                                {{ fmtValue(row.baseValue, row.maxLevel, row.unit) }}
+                            </span>
                         </template>
                     </el-table-column>
+
+                    <!-- 突破欄（僅在突破機率 > 0 時顯示） -->
+                    <template v-if="effectiveBreakthroughProb > 0">
+                        <el-table-column label="突破等級" width="120" align="center">
+                            <template #default="{ row }">
+                                <span class="text-yellow-400">
+                                    Lv.{{ btLevelRange(row)[0] }} ～ {{ btLevelRange(row)[1] }}
+                                </span>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column label="突破最大效果" min-width="150" align="right">
+                            <template #default="{ row }">
+                                <span class="text-yellow-300">
+                                    {{ fmtValue(row.baseValue, btLevelRange(row)[1], row.unit) }}
+                                </span>
+                            </template>
+                        </el-table-column>
+                    </template>
                 </el-table>
             </el-card>
 
@@ -563,20 +503,28 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
 
                 <!-- Results -->
                 <template v-if="simResult">
-                    <div class="mb-4 border-b border-gray-700 pb-2">
+                    <div class="mb-3 border-b border-gray-700 pb-2 flex items-center gap-3">
                         <h3 class="text-base font-semibold text-gray-300">計算結果</h3>
+                        <span class="text-xs text-gray-500">
+                            每次抽 {{ simResult.drawCount }} 個・池 {{ simResult.poolSize }} 個・
+                            命中率 {{ simResult.drawCount }}/{{ simResult.poolSize }}
+                        </span>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
                         <div class="stat-card">
                             <div class="stat-label">每次成功率</div>
                             <div class="stat-value text-yellow-400">
-                                {{ `1 / ${simResult.poolSize}` }}
+                                {{ simResult.drawCount }} / {{ simResult.poolSize }}
                             </div>
-                            <div class="stat-sub">池共 {{ simResult.poolSize }} 個詞條</div>
+                            <div class="stat-sub">
+                                ≈ {{ (simResult.p * 100).toFixed(2) }}%
+                            </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">平均洗次數</div>
-                            <div class="stat-value text-blue-400">{{ simResult.mean }} 次</div>
+                            <div class="stat-value text-blue-400">
+                                {{ Number.isInteger(simResult.mean) ? simResult.mean : simResult.mean.toFixed(1) }} 次
+                            </div>
                             <div v-if="costPerRoll > 0" class="stat-sub">
                                 ≈ {{ Math.round(simResult.avgCost).toLocaleString() }} 金
                             </div>
@@ -643,7 +591,6 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
     margin-bottom: 0.5rem;
 }
 
-/* 細工道具 chip */
 .tool-chip {
     display: flex;
     flex-direction: column;
@@ -658,35 +605,14 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
     min-width: 120px;
     user-select: none;
 }
-.tool-chip:hover {
-    border-color: #6b7280;
-    background: #263548;
-}
-.tool-chip--active {
-    border-color: #f59e0b;
-    background: #2d2207;
-}
-
-.tool-icon {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
-    image-rendering: pixelated;
-}
-.tool-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #e5e7eb;
-    text-align: center;
-}
-.tool-prob {
-    font-size: 0.68rem;
-    color: #9ca3af;
-}
+.tool-chip:hover { border-color: #6b7280; background: #263548; }
+.tool-chip--active { border-color: #f59e0b; background: #2d2207; }
+.tool-icon { width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; }
+.tool-name { font-size: 0.8rem; font-weight: 600; color: #e5e7eb; text-align: center; }
+.tool-prob { font-size: 0.68rem; color: #9ca3af; }
 .tool-chip--active .tool-name { color: #fbbf24; }
 .tool-chip--active .tool-prob { color: #d97706; }
 
-/* Stat cards */
 .stat-card {
     background: #111827;
     border: 1px solid #374151;
@@ -700,7 +626,6 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
 .stat-value { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
 .stat-sub { font-size: 0.7rem; color: #6b7280; }
 
-/* Probability chips */
 .prob-chip {
     background: #1f2937;
     border: 1px solid #374151;
@@ -713,11 +638,7 @@ const formatLevelRange = (entry: ReforgeEntry): string => {
     min-width: 64px;
 }
 
-/* Selected row */
-:deep(.selected-row td) {
-    background: #1c3a4f !important;
-    border-color: #3b82f6 !important;
-}
+:deep(.selected-row td) { background: #1c3a4f !important; border-color: #3b82f6 !important; }
 :deep(.el-table__row) { cursor: pointer; }
 :deep(.el-table__row:hover td) { background: #1f3040 !important; }
 </style>
