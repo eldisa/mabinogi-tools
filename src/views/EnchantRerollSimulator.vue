@@ -295,11 +295,16 @@ interface RollResultItem {
 interface RollState {
     items: RollResultItem[];
     isSuccess: boolean;
+    thisRunCount: number; // 本次花了幾次
+    hitCap: boolean;      // 是否撞上限
 }
+
+const AUTO_CAP = 1_000_000;
 
 const lastRoll = ref<RollState | null>(null);
 const rollCount = ref<number>(0);
 const successCount = ref<number>(0);
+const autoMode = ref<boolean>(false);
 
 const isItemHit = (item: RollResultItem): boolean =>
     selectedTargets.value.some((t) => t.name === item.entry.name && item.level >= t.minLevel);
@@ -307,41 +312,65 @@ const isItemHit = (item: RollResultItem): boolean =>
 const isItemTargeted = (item: RollResultItem): boolean =>
     selectedTargets.value.some((t) => t.name === item.entry.name);
 
-const performRoll = () => {
+/** 單次抽選核心邏輯（供單次和自動模式共用） */
+const rollOnce = (): RollResultItem[] => {
     const pool = activePool.value;
-    if (pool.length === 0) return;
-
-    // Partial Fisher-Yates: pick 3 non-duplicate indices
     const indices = Array.from({ length: pool.length }, (_, i) => i);
     const drawCount = Math.min(3, pool.length);
     for (let i = 0; i < drawCount; i++) {
         const j = i + Math.floor(Math.random() * (pool.length - i));
         [indices[i], indices[j]] = [indices[j], indices[i]];
     }
-
     const btProb = effectiveBreakthroughProb.value;
-    const items: RollResultItem[] = indices.slice(0, drawCount).map((idx) => {
+    return indices.slice(0, drawCount).map((idx) => {
         const entry = pool[idx];
         const isBt = btProb > 0 && Math.random() < btProb;
-        let level: number;
-        if (isBt) {
-            const btMin = entry.maxLevel + 1;
-            const btMax = btMaxLevel(entry);
-            level = btMin + Math.floor(Math.random() * (btMax - btMin + 1));
-        } else {
-            level = 1 + Math.floor(Math.random() * entry.maxLevel);
-        }
+        const level = isBt
+            ? (entry.maxLevel + 1) + Math.floor(Math.random() * (btMaxLevel(entry) - entry.maxLevel))
+            : 1 + Math.floor(Math.random() * entry.maxLevel);
         return { entry, level, isBreakthrough: isBt };
     });
+};
 
-    const success =
-        selectedTargets.value.length > 0 &&
-        selectedTargets.value.every((t) =>
-            items.some((item) => item.entry.name === t.name && item.level >= t.minLevel),
-        );
+const checkTargets = (items: RollResultItem[]): boolean =>
+    selectedTargets.value.length > 0 &&
+    selectedTargets.value.every((t) =>
+        items.some((item) => item.entry.name === t.name && item.level >= t.minLevel),
+    );
+
+/** 單次細工 */
+const performRoll = () => {
+    if (activePool.value.length === 0) return;
+    const items = rollOnce();
+    const success = checkTargets(items);
     if (success) successCount.value++;
     rollCount.value++;
-    lastRoll.value = { items, isSuccess: success };
+    lastRoll.value = { items, isSuccess: success, thisRunCount: 1, hitCap: false };
+};
+
+/** 自動衝到達標（同步迴圈，上限 AUTO_CAP 次） */
+const performAutoRoll = () => {
+    if (activePool.value.length === 0 || selectedTargets.value.length === 0) return;
+    let count = 0;
+    let finalItems: RollResultItem[] = [];
+    let success = false;
+    while (count < AUTO_CAP) {
+        count++;
+        finalItems = rollOnce();
+        success = checkTargets(finalItems);
+        if (success) break;
+    }
+    rollCount.value += count;
+    if (success) successCount.value++;
+    lastRoll.value = { items: finalItems, isSuccess: success, thisRunCount: count, hitCap: !success };
+};
+
+const doRoll = () => {
+    if (autoMode.value && selectedTargets.value.length > 0) {
+        performAutoRoll();
+    } else {
+        performRoll();
+    }
 };
 
 const resetRollHistory = () => {
@@ -629,12 +658,21 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
                     </template>
                 </div>
 
-                <div class="flex items-center gap-3 mb-5">
-                    <el-button type="warning" size="large" @click="performRoll">
-                        ⚒ 進行細工
+                <div class="flex items-center gap-3 mb-5 flex-wrap">
+                    <el-button type="warning" size="large" @click="doRoll">
+                        ⚒ {{ autoMode && selectedTargets.length > 0 ? '自動細工' : '進行細工' }}
                     </el-button>
+                    <el-checkbox
+                        v-model="autoMode"
+                        :disabled="selectedTargets.length === 0"
+                    >
+                        <span class="text-sm"
+                            :class="selectedTargets.length === 0 ? 'text-gray-600' : 'text-gray-300'"
+                        >自動衝到達標</span>
+                        <span class="text-xs text-gray-600 ml-1">（需設定目標）</span>
+                    </el-checkbox>
                     <el-button
-                        v-if="rollCount > 0" size="small" plain
+                        v-if="rollCount > 0" size="small" plain class="ml-auto"
                         @click="resetRollHistory"
                     >重置紀錄</el-button>
                 </div>
@@ -647,9 +685,33 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
                             class="mb-3 py-2 px-4 rounded-lg font-bold text-center text-base"
                             :class="lastRoll.isSuccess
                                 ? 'bg-green-900/40 border border-green-500 text-green-400'
-                                : 'bg-gray-900/40 border border-gray-700 text-gray-500'"
+                                : lastRoll.hitCap
+                                    ? 'bg-red-900/30 border border-red-700 text-red-400'
+                                    : 'bg-gray-900/40 border border-gray-700 text-gray-500'"
                         >
-                            {{ lastRoll.isSuccess ? "🎉 成功！所有目標達標" : "未達標，繼續加油" }}
+                            <template v-if="lastRoll.isSuccess">🎉 成功！所有目標達標</template>
+                            <template v-else-if="lastRoll.hitCap">
+                                ⚠ 已達上限（{{ AUTO_CAP.toLocaleString() }} 次）仍未達標
+                            </template>
+                            <template v-else>未達標，繼續加油</template>
+                        </div>
+
+                        <!-- 本次花了幾次（自動模式才顯示） -->
+                        <div v-if="lastRoll.thisRunCount > 1"
+                            class="mb-3 flex flex-wrap items-center gap-3 px-1 text-sm"
+                        >
+                            <span class="text-gray-400">本次花了</span>
+                            <span class="text-yellow-400 font-bold text-lg">
+                                {{ lastRoll.thisRunCount.toLocaleString() }}
+                            </span>
+                            <span class="text-gray-400">次</span>
+                            <template v-if="costPerRoll > 0">
+                                <span class="text-gray-600">≈</span>
+                                <span class="text-orange-400 font-semibold">
+                                    {{ (lastRoll.thisRunCount * costPerRoll).toLocaleString() }}
+                                </span>
+                                <span class="text-gray-400">金</span>
+                            </template>
                         </div>
 
                         <!-- 3 stat tiles -->
