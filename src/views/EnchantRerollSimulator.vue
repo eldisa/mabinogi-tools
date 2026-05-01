@@ -279,6 +279,73 @@ const fmtValue = (baseValue: number, level: number, unit: string): string => {
 
 const fmtPct = (p: number): string =>
     p >= 0.01 ? `${(p * 100).toFixed(2)}%` : `1 / ${Math.round(1 / p).toLocaleString()}`;
+
+// ===== 進行細工 =====
+interface RollResultItem {
+    entry: ReforgeEntry;
+    level: number;
+    isBreakthrough: boolean;
+}
+interface RollState {
+    items: RollResultItem[];
+    isSuccess: boolean;
+}
+
+const lastRoll = ref<RollState | null>(null);
+const rollCount = ref<number>(0);
+const successCount = ref<number>(0);
+
+const isItemHit = (item: RollResultItem): boolean =>
+    selectedTargets.value.some((t) => t.name === item.entry.name && item.level >= t.minLevel);
+
+const isItemTargeted = (item: RollResultItem): boolean =>
+    selectedTargets.value.some((t) => t.name === item.entry.name);
+
+const performRoll = () => {
+    const pool = activePool.value;
+    if (pool.length === 0) return;
+
+    // Partial Fisher-Yates: pick 3 non-duplicate indices
+    const indices = Array.from({ length: pool.length }, (_, i) => i);
+    const drawCount = Math.min(3, pool.length);
+    for (let i = 0; i < drawCount; i++) {
+        const j = i + Math.floor(Math.random() * (pool.length - i));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
+    const btProb = effectiveBreakthroughProb.value;
+    const items: RollResultItem[] = indices.slice(0, drawCount).map((idx) => {
+        const entry = pool[idx];
+        const isBt = btProb > 0 && Math.random() < btProb;
+        let level: number;
+        if (isBt) {
+            const btMin = entry.maxLevel + 1;
+            const btMax = btMaxLevel(entry);
+            level = btMin + Math.floor(Math.random() * (btMax - btMin + 1));
+        } else {
+            level = 1 + Math.floor(Math.random() * entry.maxLevel);
+        }
+        return { entry, level, isBreakthrough: isBt };
+    });
+
+    const success =
+        selectedTargets.value.length > 0 &&
+        selectedTargets.value.every((t) =>
+            items.some((item) => item.entry.name === t.name && item.level >= t.minLevel),
+        );
+    if (success) successCount.value++;
+    rollCount.value++;
+    lastRoll.value = { items, isSuccess: success };
+};
+
+const resetRollHistory = () => {
+    lastRoll.value = null;
+    rollCount.value = 0;
+    successCount.value = 0;
+};
+
+// Reset roll history when core settings that affect the pool change
+watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
 </script>
 
 <template>
@@ -538,7 +605,86 @@ const fmtPct = (p: number): string =>
                 </div>
             </el-card>
 
-            <!-- ── Card 4: 模擬計算 ── -->
+            <!-- ── Card 4: 進行細工 ── -->
+            <el-card v-if="isReady"
+                class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
+                <div class="mb-4 border-b border-gray-700 pb-3 flex items-center gap-3 flex-wrap">
+                    <h2 class="text-xl font-bold text-accent">進行細工</h2>
+                    <template v-if="rollCount > 0">
+                        <span class="text-sm text-gray-400 ml-auto">
+                            已洗 <span class="text-white font-bold">{{ rollCount.toLocaleString() }}</span> 次
+                        </span>
+                        <span v-if="selectedTargets.length > 0" class="text-sm text-gray-400">
+                            成功 <span class="text-green-400 font-bold">{{ successCount.toLocaleString() }}</span> 次
+                            <span class="text-gray-600">
+                                （{{ ((successCount / rollCount) * 100).toFixed(1) }}%）
+                            </span>
+                        </span>
+                    </template>
+                </div>
+
+                <div class="flex items-center gap-3 mb-5">
+                    <el-button type="warning" size="large" @click="performRoll">
+                        ⚒ 進行細工
+                    </el-button>
+                    <el-button
+                        v-if="rollCount > 0" size="small" plain
+                        @click="resetRollHistory"
+                    >重置紀錄</el-button>
+                </div>
+
+                <!-- Roll result -->
+                <Transition name="roll-fade" mode="out-in">
+                    <div v-if="lastRoll" :key="rollCount">
+                        <!-- Success / fail banner -->
+                        <div v-if="selectedTargets.length > 0"
+                            class="mb-3 py-2 px-4 rounded-lg font-bold text-center text-base"
+                            :class="lastRoll.isSuccess
+                                ? 'bg-green-900/40 border border-green-500 text-green-400'
+                                : 'bg-gray-900/40 border border-gray-700 text-gray-500'"
+                        >
+                            {{ lastRoll.isSuccess ? "🎉 成功！所有目標達標" : "未達標，繼續加油" }}
+                        </div>
+
+                        <!-- 3 stat tiles -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div
+                                v-for="item in lastRoll.items" :key="item.entry.name"
+                                class="roll-tile"
+                                :class="{
+                                    'roll-tile--hit': isItemHit(item),
+                                    'roll-tile--miss': isItemTargeted(item) && !isItemHit(item),
+                                    'roll-tile--bt': item.isBreakthrough,
+                                }"
+                            >
+                                <!-- breakthrough badge (top-left) -->
+                                <span v-if="item.isBreakthrough" class="roll-bt-badge">突破</span>
+
+                                <!-- hit/miss indicator (top-right) -->
+                                <span v-if="isItemHit(item)" class="roll-status roll-status--hit">✓</span>
+                                <span v-else-if="isItemTargeted(item)" class="roll-status roll-status--miss">✗</span>
+
+                                <!-- content -->
+                                <div class="roll-name"
+                                    :class="isItemHit(item) ? 'text-green-300'
+                                          : isItemTargeted(item) ? 'text-orange-300'
+                                          : 'text-gray-200'"
+                                >{{ item.entry.name }}</div>
+
+                                <div class="roll-level"
+                                    :class="item.isBreakthrough ? 'text-yellow-400' : 'text-blue-400'"
+                                >Lv.{{ item.level }}</div>
+
+                                <div class="roll-value"
+                                    :class="item.isBreakthrough ? 'text-yellow-300' : 'text-green-400'"
+                                >{{ fmtValue(item.entry.baseValue, item.level, item.entry.unit) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+            </el-card>
+
+            <!-- ── Card 5: 模擬計算 ── -->
             <el-card v-if="isReady"
                 class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
                 <div class="mb-4 border-b border-gray-700 pb-3">
@@ -688,4 +834,47 @@ const fmtPct = (p: number): string =>
 :deep(.selected-row td) { background: #1c3a4f !important; border-color: #3b82f6 !important; }
 :deep(.el-table__row) { cursor: pointer; }
 :deep(.el-table__row:hover td) { background: #1f3040 !important; }
+
+/* ── Roll tiles ── */
+.roll-tile {
+    position: relative;
+    background: #111827;
+    border: 2px solid #374151;
+    border-radius: 12px;
+    padding: 1rem 0.85rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 96px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.roll-tile--hit  { border-color: #22c55e; background: rgba(5, 46, 22, 0.4); }
+.roll-tile--miss { border-color: #f97316; background: rgba(67, 20, 7, 0.3); }
+.roll-tile--bt   { box-shadow: 0 0 14px rgba(251, 191, 36, 0.25); }
+.roll-tile--hit.roll-tile--bt { border-color: #fbbf24; }
+
+.roll-bt-badge {
+    position: absolute; top: 7px; left: 9px;
+    font-size: 0.58rem; font-weight: 700; letter-spacing: 0.02em;
+    background: #f59e0b; color: #000;
+    padding: 1px 5px; border-radius: 4px;
+}
+.roll-status {
+    position: absolute; top: 7px; right: 9px;
+    width: 20px; height: 20px; border-radius: 50%;
+    font-size: 0.7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+.roll-status--hit  { background: #22c55e; color: #000; }
+.roll-status--miss { background: #f97316; color: #fff; }
+
+.roll-name  { font-size: 0.88rem; font-weight: 600; padding-top: 0.2rem; line-height: 1.3; }
+.roll-level { font-size: 1.15rem; font-weight: 700; line-height: 1.1; }
+.roll-value { font-size: 0.82rem; }
+
+/* Animation */
+.roll-fade-enter-active { transition: opacity 0.18s ease, transform 0.18s ease; }
+.roll-fade-leave-active { transition: opacity 0.1s ease; }
+.roll-fade-enter-from   { opacity: 0; transform: translateY(-6px); }
+.roll-fade-leave-to     { opacity: 0; }
 </style>
