@@ -168,8 +168,14 @@ const activePool = computed((): ReforgeEntry[] => {
     if (selectedEquipType.value!.isHeavy)
         reforgeData.pools.heavyOnly.forEach((n) => names.add(n));
     const raceKey = RACE_POOL_KEY[selectedRace.value];
-    if (raceKey && reforgeData.pools.races[raceKey])
+    if (raceKey === null) {
+        // 全種族：加入所有種族專屬池
+        Object.values(reforgeData.pools.races).forEach((pool) =>
+            pool.forEach((n) => names.add(n)),
+        );
+    } else if (reforgeData.pools.races[raceKey]) {
         reforgeData.pools.races[raceKey].forEach((n) => names.add(n));
+    }
     return Array.from(names)
         .map((n) => reforgeData.library[n])
         .filter((e): e is ReforgeEntry => !!e);
