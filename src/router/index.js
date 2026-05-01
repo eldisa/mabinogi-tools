@@ -13,6 +13,7 @@ import StoneGamblingView from '../views/StoneGamblingView.vue';
 import AlchemyCalculator from '../views/AlchemyCalculator.vue';
 import DollBagSearch from '../views/DollBagSearch.vue';
 import MagicCalculator from '../views/MagicCalculator.vue';
+import EnchantRerollSimulator from '../views/EnchantRerollSimulator.vue';
 
 const routes = [
     {
@@ -78,6 +79,11 @@ const routes = [
             path: '/magic-calculator',
             name: '魔法傷害計算器',
             component: MagicCalculator,
+        },
+        {
+            path: '/enchant-reroll',
+            name: '洗詞條模擬器',
+            component: EnchantRerollSimulator,
         },]
     },
 
@@ -99,6 +105,7 @@ const pageTitles = {
     '稱號查詢':         '稱號查詢 | 瑪奇小工具',
     '賭石小遊戲':       '賭石小遊戲 | 瑪奇小工具',
     '娃娃背包查詢':     '娃娃背包查詢 | 瑪奇小工具',
+    '洗詞條模擬器':     '洗詞條模擬器 | 瑪奇小工具',
     '關於':             '關於 | 瑪奇小工具',
 };
 
