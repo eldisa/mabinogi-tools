@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { Search } from "@element-plus/icons-vue";
-import reforgeDataRaw from "../../scripts/reforge_data.json";
+import reforgeDataRaw from "../../scripts/mabi_reforge_slim_with_race.json";
 
 // ===== Data Types =====
 interface ReforgeEntry {
     name: string;
     maxLevel: number;
-    baseValue: number;
-    maxValue: number;
+    maxLevelBreak: number; // explicit in new data (= ceil(maxLevel * 1.25))
+    stepValue: number;     // value per level
     unit: string;
 }
 
 interface ReforgeData {
     library: Record<string, ReforgeEntry>;
     pools: {
-        base: string[];
-        heavyOnly: string[];
+        categories: Record<string, string[]>; // per-equipment-type pools
         races: Record<string, string[]>;
     };
 }
@@ -34,8 +33,7 @@ const baseUrl = import.meta.env.BASE_URL;
 interface EquipmentType {
     id: string;
     name: string;
-    limits: string[];
-    isHeavy: boolean;
+    categoryKey: string; // maps to pools.categories key in JSON
 }
 interface SlotGroup { slot: string; subtypes: EquipmentType[]; }
 
@@ -43,67 +41,69 @@ const ARMOR_SLOT_GROUPS: SlotGroup[] = [
     {
         slot: "帽子",
         subtypes: [
-            { id: "hat_normal", name: "一般帽", limits: ["頭部裝備"], isHeavy: false },
-            { id: "hat_heavy", name: "重甲頭盔", limits: ["頭部裝備", "重甲"], isHeavy: true },
+            { id: "hat_normal", name: "一般帽",   categoryKey: "hat" },
+            { id: "hat_heavy",  name: "重甲頭盔", categoryKey: "hat" },
         ],
     },
     {
         slot: "上衣",
         subtypes: [
-            { id: "cloth", name: "布衣", limits: ["布衣", "衣物"], isHeavy: false },
-            { id: "light_armor", name: "輕甲", limits: ["輕甲", "衣物"], isHeavy: false },
-            { id: "heavy_armor", name: "重甲", limits: ["重甲", "衣物"], isHeavy: true },
+            { id: "cloth",       name: "布衣", categoryKey: "body" },
+            { id: "light_armor", name: "輕甲", categoryKey: "body" },
+            { id: "heavy_armor", name: "重甲", categoryKey: "body" },
         ],
     },
     {
         slot: "手套",
         subtypes: [
-            { id: "glove_normal", name: "一般手套", limits: ["手部裝備", "手"], isHeavy: false },
-            { id: "glove_heavy", name: "重甲手套", limits: ["手部裝備", "重甲", "手"], isHeavy: true },
+            { id: "glove_normal", name: "一般手套", categoryKey: "glove" },
+            { id: "glove_heavy",  name: "重甲手套", categoryKey: "glove" },
         ],
     },
     {
         slot: "鞋子",
         subtypes: [
-            { id: "shoe_normal", name: "一般鞋", limits: ["腳部裝備"], isHeavy: false },
-            { id: "shoe_heavy", name: "重甲鞋", limits: ["腳部裝備", "重甲"], isHeavy: true },
+            { id: "shoe_normal", name: "一般鞋", categoryKey: "shoes" },
+            { id: "shoe_heavy",  name: "重甲鞋", categoryKey: "shoes" },
         ],
     },
-    { slot: "飾品", subtypes: [{ id: "accessory", name: "飾品", limits: ["飾品"], isHeavy: false }] },
-    { slot: "盾牌", subtypes: [{ id: "shield", name: "盾牌", limits: ["盾牌"], isHeavy: false }] },
+    { slot: "飾品", subtypes: [{ id: "accessory", name: "飾品", categoryKey: "accessory" }] },
+    { slot: "盾牌",  subtypes: [{ id: "shield",    name: "盾牌",  categoryKey: "shield" }] },
 ];
 
 const WEAPON_SLOT_GROUPS: SlotGroup[] = [
     {
         slot: "近戰",
         subtypes: [
-            { id: "one_hand", name: "單手武器", limits: ["單手武器"], isHeavy: false },
-            { id: "two_hand", name: "雙手武器", limits: ["雙手武器"], isHeavy: false },
-            { id: "lance", name: "騎槍", limits: ["騎槍"], isHeavy: false },
-            { id: "knuckle_w", name: "手把", limits: ["手把"], isHeavy: false },
-            { id: "glove_w", name: "拳套", limits: ["拳套"], isHeavy: false },
-            { id: "chain", name: "鎖鏈鐮刃", limits: ["鎖鏈鐮刃"], isHeavy: false },
+            { id: "one_hand",       name: "單手武器",     categoryKey: "weapon_melee_oh" },
+            { id: "two_hand_sword", name: "雙手劍",       categoryKey: "THSword" },
+            { id: "two_hand",       name: "雙手斧/鈍器",  categoryKey: "weapon_melee_th" },
+            { id: "lance",          name: "騎槍",         categoryKey: "lance" },
+            { id: "knuckle",        name: "手把/拳套",    categoryKey: "knuckle" },
+            { id: "chain",          name: "鎖鏈鐮刃",     categoryKey: "chainblade" },
+            { id: "scythe",         name: "鐮刀",         categoryKey: "scythe" },
         ],
     },
     {
         slot: "遠程",
         subtypes: [
-            { id: "bow", name: "弓", limits: ["弓"], isHeavy: false },
-            { id: "crossbow", name: "弩", limits: ["弩"], isHeavy: false },
-            { id: "dual_gun", name: "雙槍", limits: ["雙槍"], isHeavy: false },
-            { id: "shuriken", name: "手裡劍", limits: ["手裡劍"], isHeavy: false },
+            { id: "bow",      name: "弓",     categoryKey: "weapon_range" },
+            { id: "crossbow", name: "弩",     categoryKey: "weapon_range" },
+            { id: "dual_gun", name: "雙槍",   categoryKey: "dualgun" },
+            { id: "shuriken", name: "手裡劍", categoryKey: "shuriken" },
         ],
     },
     {
         slot: "魔法",
         subtypes: [
-            { id: "wand", name: "短杖（魔杖）", limits: ["魔杖", "單手魔杖、集魔杖"], isHeavy: false },
-            { id: "staff", name: "集魔杖", limits: ["集魔杖", "單手魔杖、集魔杖"], isHeavy: false },
-            { id: "grimoire", name: "魔導書/水晶球", limits: ["魔導書、水晶球"], isHeavy: false },
-            { id: "cylinder", name: "鋼瓶", limits: ["鋼瓶"], isHeavy: false },
+            { id: "healing_wand",  name: "魔杖（治癒）",  categoryKey: "healingWand" },
+            { id: "tribolt_wand",  name: "三矛魔杖",      categoryKey: "triboltWand" },
+            { id: "staff",         name: "集魔杖",        categoryKey: "staff" },
+            { id: "grimoire",      name: "魔導書/水晶球", categoryKey: "orb" },
+            { id: "cylinder",      name: "鋼瓶",          categoryKey: "cylinder" },
         ],
     },
-    { slot: "其他", subtypes: [{ id: "instrument", name: "樂器", limits: ["樂器"], isHeavy: false }] },
+    { slot: "其他", subtypes: [{ id: "instrument", name: "樂器", categoryKey: "instrument" }] },
 ];
 
 // ===== 細工道具 =====
@@ -158,8 +158,9 @@ const isReady = computed(
 );
 
 // ===== Breakthrough helpers =====
-const btMaxLevel = (entry: ReforgeEntry): number => Math.ceil(entry.maxLevel * 1.25);
-const btLevelRange = (entry: ReforgeEntry): [number, number] => [entry.maxLevel + 1, btMaxLevel(entry)];
+// maxLevelBreak is now stored directly in the data (= ceil(maxLevel * 1.25))
+const btMaxLevel = (entry: ReforgeEntry): number => entry.maxLevelBreak;
+const btLevelRange = (entry: ReforgeEntry): [number, number] => [entry.maxLevel + 1, entry.maxLevelBreak];
 
 /** 一個詞條能填入的最低等級上限（考慮突破） */
 const maxSettableMinLevel = (entry: ReforgeEntry): number =>
@@ -168,9 +169,8 @@ const maxSettableMinLevel = (entry: ReforgeEntry): number =>
 // ===== Pool =====
 const activePool = computed((): ReforgeEntry[] => {
     if (!isReady.value) return [];
-    const names = new Set<string>(reforgeData.pools.base);
-    if (selectedEquipType.value!.isHeavy)
-        reforgeData.pools.heavyOnly.forEach((n) => names.add(n));
+    const catKey = selectedEquipType.value!.categoryKey;
+    const names = new Set<string>(reforgeData.pools.categories[catKey] ?? []);
     for (const key of RACE_POOL_KEYS[selectedRace.value] ?? []) {
         reforgeData.pools.races[key]?.forEach((n) => names.add(n));
     }
@@ -284,8 +284,8 @@ watch(effectiveBreakthroughProb, () => {
 });
 
 // ===== Formatting =====
-const fmtValue = (baseValue: number, level: number, unit: string): string => {
-    const v = baseValue * level;
+const fmtValue = (stepValue: number, level: number, unit: string): string => {
+    const v = stepValue * level;
     const s = Number.isInteger(v) ? v.toString() : v.toFixed(2).replace(/\.?0+$/, "");
     return `${s} ${unit}`.trim();
 };
@@ -565,7 +565,6 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
                 <div class="mb-3 border-b border-gray-700 pb-3 flex items-center gap-3 flex-wrap">
                     <h2 class="text-xl font-bold text-accent">詞條池</h2>
                     <el-tag type="info" size="small">{{ activePool.length }} 個</el-tag>
-                    <span v-if="selectedEquipType!.isHeavy" class="text-xs text-yellow-500">含重甲專屬</span>
                     <span v-if="selectedRace !== '全種族'" class="text-xs text-green-500">含{{ selectedRace }}專屬</span>
                     <span class="ml-auto text-xs text-gray-500">
                         每次洗詞隨機抽 3 個不重複，點擊列可選為目標（至多 3 個）
@@ -624,9 +623,9 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
 
                     <el-table-column label="最大效果" min-width="140" align="right">
                         <template #default="{ row }">
-                            <div class="text-green-400">{{ fmtValue(row.baseValue, row.maxLevel, row.unit) }}</div>
+                            <div class="text-green-400">{{ fmtValue(row.stepValue, row.maxLevel, row.unit) }}</div>
                             <div v-if="effectiveBreakthroughProb > 0" class="text-yellow-300 text-xs mt-0.5">
-                                突破 {{ fmtValue(row.baseValue, btLevelRange(row)[1], row.unit) }}
+                                突破 {{ fmtValue(row.stepValue, btLevelRange(row)[1], row.unit) }}
                             </div>
                         </template>
                     </el-table-column>
