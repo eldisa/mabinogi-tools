@@ -296,10 +296,7 @@ interface RollState {
     items: RollResultItem[];
     isSuccess: boolean;
     thisRunCount: number; // 本次花了幾次
-    hitCap: boolean;      // 是否撞上限
 }
-
-const AUTO_CAP = 1_000_000;
 
 const lastRoll = ref<RollState | null>(null);
 const rollCount = ref<number>(0);
@@ -312,7 +309,7 @@ const isItemHit = (item: RollResultItem): boolean =>
 const isItemTargeted = (item: RollResultItem): boolean =>
     selectedTargets.value.some((t) => t.name === item.entry.name);
 
-/** 單次抽選核心邏輯（供單次和自動模式共用） */
+/** 單次抽選核心邏輯 */
 const rollOnce = (): RollResultItem[] => {
     const pool = activePool.value;
     const indices = Array.from({ length: pool.length }, (_, i) => i);
@@ -345,24 +342,75 @@ const performRoll = () => {
     const success = checkTargets(items);
     if (success) successCount.value++;
     rollCount.value++;
-    lastRoll.value = { items, isSuccess: success, thisRunCount: 1, hitCap: false };
+    lastRoll.value = { items, isSuccess: success, thisRunCount: 1 };
 };
 
-/** 自動衝到達標（同步迴圈，上限 AUTO_CAP 次） */
-const performAutoRoll = () => {
-    if (activePool.value.length === 0 || selectedTargets.value.length === 0) return;
-    let count = 0;
-    let finalItems: RollResultItem[] = [];
-    let success = false;
-    while (count < AUTO_CAP) {
-        count++;
-        finalItems = rollOnce();
-        success = checkTargets(finalItems);
-        if (success) break;
+/**
+ * 構造一次「必定成功」的抽選結果，供自動模式顯示用：
+ * - 目標詞條保證抽中且等級達標
+ * - 剩餘槽位隨機填入非目標詞條
+ */
+const constructWinningRoll = (): RollResultItem[] => {
+    const pool = activePool.value;
+    const btProb = effectiveBreakthroughProb.value;
+    const targets = selectedTargets.value;
+
+    const items: RollResultItem[] = targets.map((t) => {
+        const entry = t.entry;
+        const mustBt = t.minLevel > entry.maxLevel; // 必須突破才能達標
+
+        let isBt: boolean;
+        let level: number;
+        if (mustBt) {
+            isBt = true;
+            const btMin = Math.max(entry.maxLevel + 1, t.minLevel);
+            const btMax = btMaxLevel(entry);
+            level = btMin + Math.floor(Math.random() * Math.max(1, btMax - btMin + 1));
+        } else {
+            isBt = btProb > 0 && Math.random() < btProb;
+            if (isBt) {
+                const btMin = entry.maxLevel + 1;
+                const btMax = btMaxLevel(entry);
+                level = btMin + Math.floor(Math.random() * (btMax - btMin + 1));
+            } else {
+                level = t.minLevel + Math.floor(Math.random() * (entry.maxLevel - t.minLevel + 1));
+            }
+        }
+        return { entry, level, isBreakthrough: isBt };
+    });
+
+    // 剩餘槽位填入隨機非目標詞條
+    const targetNames = new Set(targets.map((t) => t.name));
+    const available = pool.filter((e) => !targetNames.has(e.name));
+    const fillCount = Math.min(3 - items.length, available.length);
+    for (let i = 0; i < fillCount; i++) {
+        const j = i + Math.floor(Math.random() * (available.length - i));
+        [available[i], available[j]] = [available[j], available[i]];
+        const entry = available[i];
+        const isBt = btProb > 0 && Math.random() < btProb;
+        const level = isBt
+            ? (entry.maxLevel + 1) + Math.floor(Math.random() * (btMaxLevel(entry) - entry.maxLevel))
+            : 1 + Math.floor(Math.random() * entry.maxLevel);
+        items.push({ entry, level, isBreakthrough: isBt });
     }
+    return items;
+};
+
+/**
+ * 自動細工：幾何分布直接採樣次數，瞬間完成、無 UI 阻塞。
+ * 原理：若每次成功率為 p，所需次數 N ~ Geometric(p)。
+ *       N = ceil(log(U) / log(1-p))，U ~ Uniform(0,1)
+ * 等價於逐次模擬，但不論 p 多小都能即時得出結果。
+ */
+const performAutoRoll = () => {
+    if (!simResult.value || simResult.value.p <= 0 || selectedTargets.value.length === 0) return;
+    const p = simResult.value.p;
+    const u = Math.max(Number.EPSILON, Math.random());
+    const count = Math.ceil(Math.log(u) / Math.log(1 - p));
+
     rollCount.value += count;
-    if (success) successCount.value++;
-    lastRoll.value = { items: finalItems, isSuccess: success, thisRunCount: count, hitCap: !success };
+    successCount.value++;
+    lastRoll.value = { items: constructWinningRoll(), isSuccess: true, thisRunCount: count };
 };
 
 const doRoll = () => {
@@ -685,15 +733,9 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
                             class="mb-3 py-2 px-4 rounded-lg font-bold text-center text-base"
                             :class="lastRoll.isSuccess
                                 ? 'bg-green-900/40 border border-green-500 text-green-400'
-                                : lastRoll.hitCap
-                                    ? 'bg-red-900/30 border border-red-700 text-red-400'
-                                    : 'bg-gray-900/40 border border-gray-700 text-gray-500'"
+                                : 'bg-gray-900/40 border border-gray-700 text-gray-500'"
                         >
-                            <template v-if="lastRoll.isSuccess">🎉 成功！所有目標達標</template>
-                            <template v-else-if="lastRoll.hitCap">
-                                ⚠ 已達上限（{{ AUTO_CAP.toLocaleString() }} 次）仍未達標
-                            </template>
-                            <template v-else>未達標，繼續加油</template>
+                            {{ lastRoll.isSuccess ? "🎉 成功！所有目標達標" : "未達標，繼續加油" }}
                         </div>
 
                         <!-- 本次花了幾次（自動模式才顯示） -->
