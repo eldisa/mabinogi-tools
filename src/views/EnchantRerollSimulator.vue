@@ -79,7 +79,8 @@ const WEAPON_SLOT_GROUPS: SlotGroup[] = [
             { id: "two_hand_sword", name: "雙手劍",       categoryKey: "THSword" },
             { id: "two_hand",       name: "雙手斧/鈍器",  categoryKey: "weapon_melee_th" },
             { id: "lance",          name: "騎槍",         categoryKey: "lance" },
-            { id: "knuckle",        name: "手把/拳套",    categoryKey: "knuckle" },
+            { id: "handle",         name: "手把",         categoryKey: "handle" },
+            { id: "knuckle",        name: "拳套",         categoryKey: "knuckle" },
             { id: "chain",          name: "鎖鏈鐮刃",     categoryKey: "chainblade" },
             { id: "scythe",         name: "鐮刀",         categoryKey: "scythe" },
         ],
@@ -170,11 +171,25 @@ const maxSettableMinLevel = (entry: ReforgeEntry): number =>
 const activePool = computed((): ReforgeEntry[] => {
     if (!isReady.value) return [];
     const catKey = selectedEquipType.value!.categoryKey;
-    const names = new Set<string>(reforgeData.pools.categories[catKey] ?? []);
-    for (const key of RACE_POOL_KEYS[selectedRace.value] ?? []) {
-        reforgeData.pools.races[key]?.forEach((n) => names.add(n));
-    }
-    return Array.from(names)
+    const catNames = reforgeData.pools.categories[catKey] ?? [];
+
+    // All stats that are race-restricted (appear in any race pool)
+    const allRaceStats = new Set<string>(
+        Object.values(reforgeData.pools.races).flat(),
+    );
+    // Stats allowed by the current race restriction setting
+    const allowedRaceStats = new Set<string>(
+        (RACE_POOL_KEYS[selectedRace.value] ?? []).flatMap(
+            (k) => reforgeData.pools.races[k] ?? [],
+        ),
+    );
+
+    // Keep a stat if: it's universal (not race-restricted) OR it's in the allowed race set
+    const names = catNames.filter(
+        (n) => !allRaceStats.has(n) || allowedRaceStats.has(n),
+    );
+
+    return names
         .map((n) => reforgeData.library[n])
         .filter((e): e is ReforgeEntry => !!e);
 });
