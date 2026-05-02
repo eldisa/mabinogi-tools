@@ -613,32 +613,23 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="一般等級" width="110" align="center">
-                        <template #default="{ row }">Lv.1 ～ {{ row.maxLevel }}</template>
+                    <el-table-column label="等級" width="150" align="center">
+                        <template #default="{ row }">
+                            <div>Lv.1 ～ {{ row.maxLevel }}</div>
+                            <div v-if="effectiveBreakthroughProb > 0" class="text-yellow-400 text-xs mt-0.5">
+                                突破 Lv.{{ btLevelRange(row)[0] }} ～ {{ btLevelRange(row)[1] }}
+                            </div>
+                        </template>
                     </el-table-column>
 
                     <el-table-column label="最大效果" min-width="140" align="right">
                         <template #default="{ row }">
-                            <span class="text-green-400">{{ fmtValue(row.baseValue, row.maxLevel, row.unit) }}</span>
+                            <div class="text-green-400">{{ fmtValue(row.baseValue, row.maxLevel, row.unit) }}</div>
+                            <div v-if="effectiveBreakthroughProb > 0" class="text-yellow-300 text-xs mt-0.5">
+                                突破 {{ fmtValue(row.baseValue, btLevelRange(row)[1], row.unit) }}
+                            </div>
                         </template>
                     </el-table-column>
-
-                    <template v-if="effectiveBreakthroughProb > 0">
-                        <el-table-column label="突破等級" width="120" align="center">
-                            <template #default="{ row }">
-                                <span class="text-yellow-400">
-                                    Lv.{{ btLevelRange(row)[0] }} ～ {{ btLevelRange(row)[1] }}
-                                </span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="突破最大效果" min-width="150" align="right">
-                            <template #default="{ row }">
-                                <span class="text-yellow-300">
-                                    {{ fmtValue(row.baseValue, btLevelRange(row)[1], row.unit) }}
-                                </span>
-                            </template>
-                        </el-table-column>
-                    </template>
                 </el-table>
 
                 <p v-if="selectedTargets.length >= 3" class="text-xs text-orange-400 mt-2">
