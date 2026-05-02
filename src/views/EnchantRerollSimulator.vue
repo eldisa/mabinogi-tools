@@ -115,12 +115,16 @@ const REROLL_TOOLS: RerollTool[] = [
     { id: 5050020, name: "燦爛細工道具", shortName: "燦爛", breakthroughProb: 0.005 },
 ];
 
-// Race → pool key
-const RACE_POOL_KEY: Record<string, string | null> = {
-    "全種族": null, "人類限定": "human", "精靈限定": "elf",
-    "人類/精靈限定": "human_elf", "人類/巨人限定": "human_giant", "巨人限定": "giant",
+// Race restriction → relevant pool keys to merge in
+const RACE_POOL_KEYS: Record<string, string[]> = {
+    "全種族":        Object.keys(reforgeData.pools.races),          // 全部種族池
+    "人類限定":      ["human"],
+    "精靈限定":      ["elf"],
+    "巨人限定":      ["giant"],
+    "人類/精靈限定": ["human", "elf", "human_elf"],                  // 人 + 精 + 人精共通
+    "人類/巨人限定": ["human", "giant", "human_giant"],              // 人 + 巨 + 人巨共通
 };
-const RACE_OPTIONS = Object.keys(RACE_POOL_KEY);
+const RACE_OPTIONS = Object.keys(RACE_POOL_KEYS);
 
 // ===== State =====
 const selectedCategory = ref<"防具" | "武器" | null>(null);
@@ -167,14 +171,8 @@ const activePool = computed((): ReforgeEntry[] => {
     const names = new Set<string>(reforgeData.pools.base);
     if (selectedEquipType.value!.isHeavy)
         reforgeData.pools.heavyOnly.forEach((n) => names.add(n));
-    const raceKey = RACE_POOL_KEY[selectedRace.value];
-    if (raceKey === null) {
-        // 全種族：加入所有種族專屬池
-        Object.values(reforgeData.pools.races).forEach((pool) =>
-            pool.forEach((n) => names.add(n)),
-        );
-    } else if (reforgeData.pools.races[raceKey]) {
-        reforgeData.pools.races[raceKey].forEach((n) => names.add(n));
+    for (const key of RACE_POOL_KEYS[selectedRace.value] ?? []) {
+        reforgeData.pools.races[key]?.forEach((n) => names.add(n));
     }
     return Array.from(names)
         .map((n) => reforgeData.library[n])
@@ -256,7 +254,7 @@ const simResult = computed((): SimResult | null => {
 });
 
 // ===== Actions =====
-const selectCategory = (cat: "防具" | "武器") => {
+const selectCategory = (cat: "防具" | "武器" | null) => {
     selectedCategory.value = cat;
     selectedEquipType.value = null;
     selectedTargets.value = [];
@@ -264,6 +262,15 @@ const selectCategory = (cat: "防具" | "武器") => {
 const selectEquipType = (eq: EquipmentType) => {
     selectedEquipType.value = eq;
     selectedTargets.value = [];
+};
+
+// el-select handlers
+const onCategoryChange = (v: string) => {
+    if (v === "防具" || v === "武器") selectCategory(v);
+};
+const onEquipTypeChange = (id: string) => {
+    const eq = currentSlotGroups.value.flatMap((g) => g.subtypes).find((e) => e.id === id);
+    if (eq) selectEquipType(eq);
 };
 
 watch([selectedToolIdx, selectedRace], () => { selectedTargets.value = []; });
@@ -447,49 +454,58 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
                     <h2 class="text-xl font-bold text-accent">選擇裝備</h2>
                 </div>
 
-                <div class="mb-5">
-                    <p class="step-label">① 裝備大分類</p>
-                    <div class="flex gap-3 flex-wrap">
-                        <el-tag
-                            v-for="cat in ['防具', '武器'] as const" :key="cat"
-                            :type="selectedCategory === cat ? 'warning' : 'info'"
-                            :effect="selectedCategory === cat ? 'dark' : 'plain'"
-                            size="large" class="cursor-pointer select-none"
-                            @click="selectCategory(cat)"
-                        >{{ cat }}</el-tag>
+                <div class="flex flex-wrap gap-5 items-end">
+                    <!-- ① 分類 -->
+                    <div>
+                        <p class="step-label">① 分類</p>
+                        <el-select
+                            :model-value="selectedCategory ?? ''"
+                            placeholder="選擇分類"
+                            clearable
+                            style="width: 110px"
+                            @change="onCategoryChange"
+                            @clear="selectCategory(null)"
+                        >
+                            <el-option label="防具" value="防具" />
+                            <el-option label="武器" value="武器" />
+                        </el-select>
                     </div>
-                </div>
 
-                <div v-if="selectedCategory" class="mb-5">
-                    <p class="step-label">② 裝備部位 / 類型</p>
-                    <div v-for="group in currentSlotGroups" :key="group.slot" class="mb-3">
-                        <span v-if="selectedCategory === '武器'"
-                            class="text-xs text-gray-500 mr-2 font-semibold uppercase tracking-wide"
-                        >{{ group.slot }}</span>
-                        <div class="flex gap-2 flex-wrap mt-1">
-                            <el-tag
-                                v-for="eq in group.subtypes" :key="eq.id"
-                                :type="selectedEquipType?.id === eq.id ? 'warning' : 'info'"
-                                :effect="selectedEquipType?.id === eq.id ? 'dark' : 'plain'"
-                                class="cursor-pointer select-none"
-                                @click="selectEquipType(eq)"
+                    <!-- ② 部位 / 類型 -->
+                    <div v-if="selectedCategory">
+                        <p class="step-label">② 部位 / 類型</p>
+                        <el-select
+                            :model-value="selectedEquipType?.id ?? ''"
+                            placeholder="選擇部位"
+                            style="width: 210px"
+                            @change="onEquipTypeChange"
+                        >
+                            <el-option-group
+                                v-for="group in currentSlotGroups"
+                                :key="group.slot"
+                                :label="group.slot"
                             >
-                                {{ selectedCategory === "防具" ? `${group.slot}・${eq.name}` : eq.name }}
-                            </el-tag>
-                        </div>
+                                <el-option
+                                    v-for="eq in group.subtypes"
+                                    :key="eq.id"
+                                    :label="selectedCategory === '防具' ? `${group.slot}・${eq.name}` : eq.name"
+                                    :value="eq.id"
+                                />
+                            </el-option-group>
+                        </el-select>
                     </div>
-                </div>
 
-                <div v-if="selectedEquipType">
-                    <p class="step-label">③ 穿戴限制</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <el-tag
-                            v-for="race in RACE_OPTIONS" :key="race"
-                            :type="selectedRace === race ? 'success' : 'info'"
-                            :effect="selectedRace === race ? 'dark' : 'plain'"
-                            class="cursor-pointer select-none"
-                            @click="selectedRace = race"
-                        >{{ race }}</el-tag>
+                    <!-- ③ 穿戴限制 -->
+                    <div v-if="selectedEquipType">
+                        <p class="step-label">③ 穿戴限制</p>
+                        <el-select v-model="selectedRace" style="width: 175px">
+                            <el-option
+                                v-for="race in RACE_OPTIONS"
+                                :key="race"
+                                :label="race"
+                                :value="race"
+                            />
+                        </el-select>
                     </div>
                 </div>
             </el-card>
@@ -550,7 +566,7 @@ watch([selectedEquipType, selectedToolIdx, selectedRace], resetRollHistory);
                     <h2 class="text-xl font-bold text-accent">詞條池</h2>
                     <el-tag type="info" size="small">{{ activePool.length }} 個</el-tag>
                     <span v-if="selectedEquipType!.isHeavy" class="text-xs text-yellow-500">含重甲專屬</span>
-                    <span v-if="RACE_POOL_KEY[selectedRace]" class="text-xs text-green-500">含{{ selectedRace }}專屬</span>
+                    <span v-if="selectedRace !== '全種族'" class="text-xs text-green-500">含{{ selectedRace }}專屬</span>
                     <span class="ml-auto text-xs text-gray-500">
                         每次洗詞隨機抽 3 個不重複，點擊列可選為目標（至多 3 個）
                     </span>
