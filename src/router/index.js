@@ -81,7 +81,7 @@ const routes = [
             component: MagicCalculator,
         },
         {
-            path: '/enchant-reroll',
+            path: '/reforge',
             name: '細工模擬器',
             component: ReforgeSimulator,
         },]
