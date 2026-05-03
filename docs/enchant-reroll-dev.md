@@ -2,7 +2,7 @@
 
 **最後更新**: 2026-05-02  
 **對應檔案**: `src/views/ReforgeSimulator.vue`  
-**路由**: `/enchant-reroll`
+**路由**: `/reforge`
 
 ---
 
