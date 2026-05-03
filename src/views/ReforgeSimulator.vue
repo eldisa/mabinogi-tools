@@ -193,7 +193,7 @@ const REROLL_TOOLS: RerollTool[] = [
         id: 5050020,
         name: "燦爛細工道具",
         shortName: "燦爛",
-        breakthroughProb: 0.005,
+        breakthroughProb: 0.0015,
         minLevelTable: {
             1: { normal: 1, activity: 1 },
             3: { normal: 1, activity: 2 },
@@ -405,9 +405,13 @@ watch([selectedToolIdx, selectedRace], () => {
 });
 
 // 選好裝備後自動縮起裝備卡
-watch(selectedEquipType, (v) => { if (v) showEquipCard.value = false; });
+watch(selectedEquipType, (v) => {
+    if (v) showEquipCard.value = false;
+});
 // 選好工具後自動縮起工具卡
-watch(selectedToolIdx, (v) => { if (v !== null) showToolCard.value = false; });
+watch(selectedToolIdx, (v) => {
+    if (v !== null) showToolCard.value = false;
+});
 
 // 突破設定或活動狀態改變時，確保 minLevel 在 [toolMin, maxSettable] 範圍內
 watch([effectiveBreakthroughProb, activityMode], () => {
@@ -563,9 +567,9 @@ const doRoll = () => {
 };
 
 const showEquipCard = ref<boolean>(true);
-const showToolCard  = ref<boolean>(true);
-const showPoolCard  = ref<boolean>(true);
-const showSimCard   = ref<boolean>(false);
+const showToolCard = ref<boolean>(true);
+const showPoolCard = ref<boolean>(true);
+const showSimCard = ref<boolean>(false);
 
 const resetRollHistory = () => {
     lastRoll.value = null;
@@ -812,8 +816,12 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                     @click="showEquipCard = !showEquipCard"
                 >
                     <h2 class="text-xl font-bold text-accent">選擇裝備</h2>
-                    <span class="ml-auto text-gray-400 text-sm transition-transform duration-200"
-                        :style="{ transform: showEquipCard ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
+                    <span
+                        class="ml-auto text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showEquipCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >
+                        ▼
+                    </span>
                 </div>
 
                 <div v-show="showEquipCard" class="flex flex-wrap gap-5 items-end">
@@ -871,54 +879,59 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                     @click="showToolCard = !showToolCard"
                 >
                     <h2 class="text-xl font-bold text-accent">細工道具</h2>
-                    <span class="ml-auto text-gray-400 text-sm transition-transform duration-200"
-                        :style="{ transform: showToolCard ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
+                    <span
+                        class="ml-auto text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showToolCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >
+                        ▼
+                    </span>
                 </div>
                 <template v-if="showToolCard">
-                <div class="mb-5">
-                    <p class="step-label">④ 使用的道具</p>
-                    <div class="flex gap-3 flex-wrap">
-                        <div
-                            v-for="(tool, idx) in REROLL_TOOLS"
-                            :key="tool.id"
-                            class="tool-chip"
-                            :class="{ 'tool-chip--active': selectedToolIdx === idx }"
-                            @click="selectedToolIdx = idx"
-                        >
-                            <img
-                                :src="`${baseUrl}itemImage/${tool.id}.png`"
-                                :alt="tool.name"
-                                class="tool-icon"
-                                @error="($event.target as HTMLImageElement).style.display = 'none'"
-                            />
-                            <span class="tool-name">{{ tool.name }}</span>
-                            <span class="tool-prob">
-                                突破：{{
-                                    tool.breakthroughProb === 0 ? "無" : `${(tool.breakthroughProb * 100).toFixed(1)}%`
-                                }}
-                            </span>
+                    <div class="mb-5">
+                        <p class="step-label">④ 使用的道具</p>
+                        <div class="flex gap-3 flex-wrap">
+                            <div
+                                v-for="(tool, idx) in REROLL_TOOLS"
+                                :key="tool.id"
+                                class="tool-chip"
+                                :class="{ 'tool-chip--active': selectedToolIdx === idx }"
+                                @click="selectedToolIdx = idx"
+                            >
+                                <img
+                                    :src="`${baseUrl}itemImage/${tool.id}.png`"
+                                    :alt="tool.name"
+                                    class="tool-icon"
+                                    @error="($event.target as HTMLImageElement).style.display = 'none'"
+                                />
+                                <span class="tool-name">{{ tool.name }}</span>
+                                <span class="tool-prob">
+                                    突破：{{
+                                        tool.breakthroughProb === 0
+                                            ? "無"
+                                            : `${(tool.breakthroughProb * 100).toFixed(1)}%`
+                                    }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flex flex-wrap items-center gap-4">
-                    <el-checkbox v-model="doubleBreakthrough">
-                        <span class="text-gray-200">細工突破上限機率增加</span>
-                        <span
-                            v-if="selectedTool && selectedTool.breakthroughProb > 0"
-                            class="text-xs text-gray-400 ml-2"
-                        >
-                            {{ (selectedTool.breakthroughProb * 100).toFixed(1) }}% →
-                            {{ (selectedTool.breakthroughProb * 2 * 100).toFixed(1) }}%
-                        </span>
-                    </el-checkbox>
-                    <el-checkbox v-model="activityMode">
-                        <span class="text-gray-200">細工最少等級補正增加</span>
-                    </el-checkbox>
-                </div>
-                </template><!-- /showToolCard -->
+                    <div class="flex flex-wrap items-center gap-4">
+                        <el-checkbox v-model="doubleBreakthrough">
+                            <span class="text-gray-200">細工突破上限機率增加</span>
+                            <span
+                                v-if="selectedTool && selectedTool.breakthroughProb > 0"
+                                class="text-xs text-gray-400 ml-2"
+                            >
+                                {{ (selectedTool.breakthroughProb * 100).toFixed(1) }}% →
+                                {{ (selectedTool.breakthroughProb * 2 * 100).toFixed(1) }}%
+                            </span>
+                        </el-checkbox>
+                        <el-checkbox v-model="activityMode">
+                            <span class="text-gray-200">細工最少等級補正增加</span>
+                        </el-checkbox>
+                    </div>
+                </template>
+                <!-- /showToolCard -->
             </el-card>
-
-
 
             <!-- ── Card 3: 詞條池 ── -->
             <el-card v-if="isReady" class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
@@ -935,80 +948,85 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                     <span class="ml-auto text-xs text-gray-500 hidden sm:inline">
                         每次洗詞隨機抽 3 個不重複，點擊列可選為目標（至多 3 個）
                     </span>
-                    <span class="text-gray-400 text-sm transition-transform duration-200"
-                        :style="{ transform: showPoolCard ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
-                </div>
-
-                <template v-if="showPoolCard">
-                <!-- 搜尋過濾 -->
-                <div class="mb-3">
-                    <el-input
-                        v-model="filterText"
-                        placeholder="搜尋詞條名稱…"
-                        clearable
-                        size="small"
-                        style="max-width: 280px"
+                    <span
+                        class="text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showPoolCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
                     >
-                        <template #prefix>
-                            <el-icon><Search /></el-icon>
-                        </template>
-                    </el-input>
-                    <span v-if="filterText" class="text-xs text-gray-500 ml-3">
-                        顯示 {{ filteredPool.length }} / {{ activePool.length }} 個
+                        ▼
                     </span>
                 </div>
 
-                <el-table
-                    :data="filteredPool"
-                    size="small"
-                    :max-height="420"
-                    :header-cell-style="{ background: '#374151', color: '#d1d5db' }"
-                    :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
-                    :row-class-name="({ row }: { row: ReforgeEntry }) => (isTargeted(row.name) ? 'selected-row' : '')"
-                    @row-click="(row: ReforgeEntry) => toggleTarget(row)"
-                >
-                    <el-table-column width="32" align="center">
-                        <template #default="{ row }">
-                            <span v-if="isTargeted(row.name)" class="text-yellow-400 text-base">✓</span>
-                        </template>
-                    </el-table-column>
+                <template v-if="showPoolCard">
+                    <!-- 搜尋過濾 -->
+                    <div class="mb-3">
+                        <el-input
+                            v-model="filterText"
+                            placeholder="搜尋詞條名稱…"
+                            clearable
+                            size="small"
+                            style="max-width: 280px"
+                        >
+                            <template #prefix>
+                                <el-icon><Search /></el-icon>
+                            </template>
+                        </el-input>
+                        <span v-if="filterText" class="text-xs text-gray-500 ml-3">
+                            顯示 {{ filteredPool.length }} / {{ activePool.length }} 個
+                        </span>
+                    </div>
 
-                    <el-table-column label="詞條名稱" min-width="170">
-                        <template #default="{ row }">
-                            <span :class="isTargeted(row.name) ? 'text-yellow-300 font-semibold' : ''">
-                                {{ row.name }}
-                            </span>
-                        </template>
-                    </el-table-column>
+                    <el-table
+                        :data="filteredPool"
+                        size="small"
+                        :max-height="420"
+                        :header-cell-style="{ background: '#374151', color: '#d1d5db' }"
+                        :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
+                        :row-class-name="
+                            ({ row }: { row: ReforgeEntry }) => (isTargeted(row.name) ? 'selected-row' : '')
+                        "
+                        @row-click="(row: ReforgeEntry) => toggleTarget(row)"
+                    >
+                        <el-table-column width="32" align="center">
+                            <template #default="{ row }">
+                                <span v-if="isTargeted(row.name)" class="text-yellow-400 text-base">✓</span>
+                            </template>
+                        </el-table-column>
 
-                    <el-table-column label="等級" width="150" align="center">
-                        <template #default="{ row }">
-                            <div>Lv.1 ～ {{ row.maxLevel }}</div>
-                            <div v-if="effectiveBreakthroughProb > 0" class="text-yellow-400 text-xs mt-0.5">
-                                突破 Lv.{{ btLevelRange(row)[0] }} ～ {{ btLevelRange(row)[1] }}
-                            </div>
-                        </template>
-                    </el-table-column>
+                        <el-table-column label="詞條名稱" min-width="170">
+                            <template #default="{ row }">
+                                <span :class="isTargeted(row.name) ? 'text-yellow-300 font-semibold' : ''">
+                                    {{ row.name }}
+                                </span>
+                            </template>
+                        </el-table-column>
 
-                    <el-table-column label="最大效果" min-width="140" align="right">
-                        <template #default="{ row }">
-                            <div class="text-green-400">{{ fmtValue(row.stepValue, row.maxLevel, row.unit) }}</div>
-                            <div v-if="effectiveBreakthroughProb > 0" class="text-yellow-300 text-xs mt-0.5">
-                                突破 {{ fmtValue(row.stepValue, btLevelRange(row)[1], row.unit) }}
-                            </div>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                        <el-table-column label="等級" width="150" align="center">
+                            <template #default="{ row }">
+                                <div>Lv.1 ～ {{ row.maxLevel }}</div>
+                                <div v-if="effectiveBreakthroughProb > 0" class="text-yellow-400 text-xs mt-0.5">
+                                    突破 Lv.{{ btLevelRange(row)[0] }} ～ {{ btLevelRange(row)[1] }}
+                                </div>
+                            </template>
+                        </el-table-column>
 
-                <p v-if="selectedTargets.length >= 3" class="text-xs text-orange-400 mt-2">
-                    已選 3 個目標（上限），請先移除才能繼續新增
-                </p>
-                <div class="mt-4 flex justify-end">
-                    <el-button type="primary" size="small" @click="showPoolCard = false">
-                        選好了 ✓
-                    </el-button>
-                </div>
-                </template><!-- /showPoolCard -->
+                        <el-table-column label="最大效果" min-width="140" align="right">
+                            <template #default="{ row }">
+                                <div class="text-green-400">{{ fmtValue(row.stepValue, row.maxLevel, row.unit) }}</div>
+                                <div v-if="effectiveBreakthroughProb > 0" class="text-yellow-300 text-xs mt-0.5">
+                                    突破 {{ fmtValue(row.stepValue, btLevelRange(row)[1], row.unit) }}
+                                </div>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <p v-if="selectedTargets.length >= 3" class="text-xs text-orange-400 mt-2">
+                        已選 3 個目標（上限），請先移除才能繼續新增
+                    </p>
+                    <div class="mt-4 flex justify-end">
+                        <el-button type="primary" size="small" @click="showPoolCard = false">選好了 ✓</el-button>
+                    </div>
+                </template>
+                <!-- /showPoolCard -->
             </el-card>
 
             <!-- ── 目標設定 ── -->
@@ -1214,94 +1232,111 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                     @click="showSimCard = !showSimCard"
                 >
                     <h2 class="text-xl font-bold text-accent">模擬計算</h2>
-                    <span class="ml-auto text-gray-400 text-sm transition-transform duration-200"
-                        :style="{ transform: showSimCard ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
+                    <span
+                        class="ml-auto text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showSimCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >
+                        ▼
+                    </span>
                 </div>
 
                 <template v-if="showSimCard">
-                <div class="mb-6">
-                    <p class="text-sm text-gray-400 mb-2">每次洗詞花費（金幣，選填）</p>
-                    <el-input-number v-model="costPerRoll" :min="0" :step="10000" :precision="0" style="width: 200px" />
-                </div>
+                    <div class="mb-6">
+                        <p class="text-sm text-gray-400 mb-2">每次洗詞花費（金幣，選填）</p>
+                        <el-input-number
+                            v-model="costPerRoll"
+                            :min="0"
+                            :step="10000"
+                            :precision="0"
+                            style="width: 200px"
+                        />
+                    </div>
 
-                <template v-if="simResult">
-                    <!-- 機率分解 -->
-                    <div class="mb-4 p-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm space-y-1">
-                        <div class="flex gap-2 flex-wrap items-center text-gray-300">
-                            <span>抽中機率：</span>
-                            <span class="text-blue-400 font-mono">
-                                {{
-                                    simResult.targetCount === 1
-                                        ? `3/${simResult.poolSize}`
-                                        : simResult.targetCount === 2
-                                          ? `6/(${simResult.poolSize}×${simResult.poolSize - 1})`
-                                          : `6/(${simResult.poolSize}×${simResult.poolSize - 1}×${simResult.poolSize - 2})`
-                                }}
-                            </span>
-                            <span class="text-gray-500">= {{ (simResult.drawP * 100).toFixed(3) }}%</span>
-                        </div>
-                        <div v-for="t in selectedTargets" :key="t.name" class="flex gap-2 items-center text-gray-300">
-                            <span>等級達標（{{ t.name }} ≥ Lv.{{ t.minLevel }}）：</span>
-                            <span
-                                class="font-mono"
-                                :class="calcLevelProb(t.entry, t.minLevel) < 0.1 ? 'text-orange-400' : 'text-green-400'"
+                    <template v-if="simResult">
+                        <!-- 機率分解 -->
+                        <div class="mb-4 p-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm space-y-1">
+                            <div class="flex gap-2 flex-wrap items-center text-gray-300">
+                                <span>抽中機率：</span>
+                                <span class="text-blue-400 font-mono">
+                                    {{
+                                        simResult.targetCount === 1
+                                            ? `3/${simResult.poolSize}`
+                                            : simResult.targetCount === 2
+                                              ? `6/(${simResult.poolSize}×${simResult.poolSize - 1})`
+                                              : `6/(${simResult.poolSize}×${simResult.poolSize - 1}×${simResult.poolSize - 2})`
+                                    }}
+                                </span>
+                                <span class="text-gray-500">= {{ (simResult.drawP * 100).toFixed(3) }}%</span>
+                            </div>
+                            <div
+                                v-for="t in selectedTargets"
+                                :key="t.name"
+                                class="flex gap-2 items-center text-gray-300"
                             >
-                                {{ (calcLevelProb(t.entry, t.minLevel) * 100).toFixed(1) }}%
-                            </span>
+                                <span>等級達標（{{ t.name }} ≥ Lv.{{ t.minLevel }}）：</span>
+                                <span
+                                    class="font-mono"
+                                    :class="
+                                        calcLevelProb(t.entry, t.minLevel) < 0.1 ? 'text-orange-400' : 'text-green-400'
+                                    "
+                                >
+                                    {{ (calcLevelProb(t.entry, t.minLevel) * 100).toFixed(1) }}%
+                                </span>
+                            </div>
+                            <div class="border-t border-gray-700 pt-1 flex gap-2 items-center">
+                                <span class="text-gray-400">每次成功率 =</span>
+                                <span class="text-yellow-400 font-bold">{{ fmtPct(simResult.p) }}</span>
+                            </div>
                         </div>
-                        <div class="border-t border-gray-700 pt-1 flex gap-2 items-center">
-                            <span class="text-gray-400">每次成功率 =</span>
-                            <span class="text-yellow-400 font-bold">{{ fmtPct(simResult.p) }}</span>
-                        </div>
-                    </div>
 
-                    <!-- Stats grid -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
-                        <div class="stat-card">
-                            <div class="stat-label">平均洗次數</div>
-                            <div class="stat-value text-blue-400">
-                                {{
-                                    simResult.mean < 10000
-                                        ? simResult.mean.toFixed(1)
-                                        : Math.round(simResult.mean).toLocaleString()
-                                }}
-                                次
+                        <!-- Stats grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
+                            <div class="stat-card">
+                                <div class="stat-label">平均洗次數</div>
+                                <div class="stat-value text-blue-400">
+                                    {{
+                                        simResult.mean < 10000
+                                            ? simResult.mean.toFixed(1)
+                                            : Math.round(simResult.mean).toLocaleString()
+                                    }}
+                                    次
+                                </div>
+                                <div v-if="costPerRoll > 0" class="stat-sub">
+                                    ≈ {{ Math.round(simResult.avgCost).toLocaleString() }} 金
+                                </div>
                             </div>
-                            <div v-if="costPerRoll > 0" class="stat-sub">
-                                ≈ {{ Math.round(simResult.avgCost).toLocaleString() }} 金
+                            <div class="stat-card">
+                                <div class="stat-label">中位數（P50）</div>
+                                <div class="stat-value text-green-400">{{ simResult.p50.toLocaleString() }} 次</div>
+                                <div class="stat-sub">50% 機率在此次數內</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">P90</div>
+                                <div class="stat-value text-orange-400">{{ simResult.p90.toLocaleString() }} 次</div>
+                                <div v-if="costPerRoll > 0" class="stat-sub">
+                                    ≈ {{ Math.round(simResult.p90 * costPerRoll).toLocaleString() }} 金
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">P99（最壞情況）</div>
+                                <div class="stat-value text-red-400">{{ simResult.p99.toLocaleString() }} 次</div>
+                                <div v-if="costPerRoll > 0" class="stat-sub">
+                                    ≈ {{ Math.round(simResult.p99 * costPerRoll).toLocaleString() }} 金
+                                </div>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-label">中位數（P50）</div>
-                            <div class="stat-value text-green-400">{{ simResult.p50.toLocaleString() }} 次</div>
-                            <div class="stat-sub">50% 機率在此次數內</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">P90</div>
-                            <div class="stat-value text-orange-400">{{ simResult.p90.toLocaleString() }} 次</div>
-                            <div v-if="costPerRoll > 0" class="stat-sub">
-                                ≈ {{ Math.round(simResult.p90 * costPerRoll).toLocaleString() }} 金
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">P99（最壞情況）</div>
-                            <div class="stat-value text-red-400">{{ simResult.p99.toLocaleString() }} 次</div>
-                            <div v-if="costPerRoll > 0" class="stat-sub">
-                                ≈ {{ Math.round(simResult.p99 * costPerRoll).toLocaleString() }} 金
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- 累積分布圖 -->
-                    <div
-                        ref="distChartEl"
-                        style="width: 100%; height: 260px"
-                        class="mt-4 rounded-lg overflow-hidden"
-                    ></div>
+                        <!-- 累積分布圖 -->
+                        <div
+                            ref="distChartEl"
+                            style="width: 100%; height: 260px"
+                            class="mt-4 rounded-lg overflow-hidden"
+                        ></div>
+                    </template>
+
+                    <el-empty v-else description="在上方詞條池點選目標後即可計算" :image-size="60" />
                 </template>
-
-                <el-empty v-else description="在上方詞條池點選目標後即可計算" :image-size="60" />
-                </template><!-- /showSimCard -->
+                <!-- /showSimCard -->
             </el-card>
         </div>
     </div>
