@@ -48,8 +48,8 @@ const features = [
     },
     {
         icon: "MagicStick",
-        title: "洗詞條模擬器",
-        description: "模擬賦予洗詞條所需次數與費用，支援前綴後綴分別設定目標",
+        title: "細工模擬器",
+        description: "模擬細工洗詞條所需次數與費用，支援前綴後綴分別設定目標",
         path: "/enchant-reroll",
     },
 ];

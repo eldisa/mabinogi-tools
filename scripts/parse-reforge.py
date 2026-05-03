@@ -61,7 +61,7 @@ def generate_complete_slim_library():
         "weapon_melee_th": ['THAxe.txt', 'THBlunt.txt', 'THSword.txt'], # 雙手近戰(巨人爆裂猛擊專用武器)
         "weapon_range": ['Bow.txt'],    # 遠程武器（弓弩） 2個一樣
         "cylinder":['Cylinder.txt'], # 鋼瓶
-        "chainblade":['Chainblade.txt'],
+        "chainblade":['chainblade.txt'],
         "dualgun": ['dualgun.txt'], # 雙槍
         "healingWand": ['healingWand.txt'], # 治癒魔杖
         "instrument": ['InstrumentLure.txt'], # 樂器
@@ -73,6 +73,7 @@ def generate_complete_slim_library():
         "shuriken": ['shuriken.txt'], # 手裏劍
         "staff": ['staff.txt'], # 法杖
         "triboltWand": ['TriboltWand.txt'], # 三矛魔杖
+        "handle": ['handle.txt'], # 把手
     }
 
     race_map = {
@@ -84,27 +85,35 @@ def generate_complete_slim_library():
     }
 
     full_library = {}
-    category_pools = {cat: [] for cat in file_groups}
+    category_name_pools = {cat: [] for cat in file_groups}  # 名稱列表（用於 race 過濾）
+    category_data = {cat: {} for cat in file_groups}        # 各部位專屬的完整 entry data
     race_pools = {r: [] for r in race_map}
 
     for category, files in file_groups.items():
         for filename in files:
             if not os.path.exists(filename): continue
             file_data = parse_mabi_reforge(filename)
-            
+
             for name, attr in file_data.items():
-                full_library[name] = attr
-                if name not in category_pools[category]:
-                    category_pools[category].append(name)
+                full_library[name] = attr                    # 仍保留共用 library（供 heavy extra 查詢）
+                if name not in category_name_pools[category]:
+                    category_name_pools[category].append(name)
+                category_data[category][name] = attr        # 記錄此部位的專屬 data
                 for race, keywords in race_map.items():
                     if any(kw in name for kw in keywords):
                         if name not in race_pools[race]:
                             race_pools[race].append(name)
 
+    # categories 改存完整 entry list（避免不同部位同名詞條互相覆蓋 maxLevel）
+    category_entry_pools = {
+        cat: [category_data[cat][name] for name in names]
+        for cat, names in category_name_pools.items()
+    }
+
     output = {
         "library": full_library,
         "pools": {
-            "categories": category_pools,
+            "categories": category_entry_pools,
             "races": race_pools
         }
     }
