@@ -46,6 +46,12 @@ const features = [
         description: "查詢娃娃背包效果、召喚重量與自動拾取分類",
         path: "/doll-bag",
     },
+    {
+        icon: "MagicStick",
+        title: "細工模擬器",
+        description: "模擬細工洗詞條所需次數與費用，支援前綴後綴分別設定目標",
+        path: "/enchant-reroll",
+    },
 ];
 
 const pendingFeatures = [

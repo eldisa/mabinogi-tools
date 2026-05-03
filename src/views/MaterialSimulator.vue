@@ -788,6 +788,7 @@ const buildCraftTree = (
     multiplier: number = 1,
     path = "",
     accMap: Map<number, number> = new Map(),
+    stockLookup: Map<number, MaterialPriceEntry> = new Map(),
 ): { node: CraftTreeNode; accMap: Map<number, number> } => {
     const unitAmount = 1;
     const totalAmount = multiplier * unitAmount;
@@ -806,14 +807,24 @@ const buildCraftTree = (
     if (item.source.type === "craft") {
         node.children = item.source.materials.map((mat) => {
             const matched = allItems.find((x) => x.id === mat.id);
+            const fullAmount = mat.amount * multiplier;
 
             if (matched) {
-                return buildCraftTree(matched, allItems, mat.amount * multiplier, currentPath, accMap).node;
+                // 若子材料本身也是加工品，扣除庫存後再遞迴計算子材料需求
+                // 方案B：node 仍顯示完整需求量，只有子材料的累計受庫存影響
+                let effectiveAmount = fullAmount;
+                if (matched.source.type === "craft") {
+                    const matStock = stockLookup.get(mat.id)?.stock ?? 0;
+                    effectiveAmount = Math.max(0, fullAmount - matStock);
+                }
+                const childResult = buildCraftTree(matched, allItems, effectiveAmount, currentPath, accMap, stockLookup);
+                childResult.node.amount = fullAmount; // 還原顯示用的完整數量
+                return childResult.node;
             } else {
                 const fallback = {
                     id: mat.id,
                     name: `未知素材 #${mat.id}`,
-                    amount: mat.amount * multiplier,
+                    amount: fullAmount,
                     unitAmount: mat.amount,
                     source: { type: "" } as MaterialSource,
                     uniqueKey: currentPath,
@@ -1020,7 +1031,7 @@ watch(
         if (newData) {
             const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
             const accMap = new Map<number, number>();
-            displayData.value = craftTarget.map((target) => buildCraftTree(target, materials, 1, "", accMap).node);
+            displayData.value = craftTarget.map((target) => buildCraftTree(target, materials, 1, "", accMap, materialPriceMap.value).node);
             materialMap.value = Array.from(accMap.entries()).map(([id, total]) => ({ id, total }));
         } else {
             displayData.value = [];
