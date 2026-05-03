@@ -1,7 +1,7 @@
 # 洗詞條模擬器 開發進度
 
 **最後更新**: 2026-05-02  
-**對應檔案**: `src/views/EnchantRerollSimulator.vue`  
+**對應檔案**: `src/views/ReforgeSimulator.vue`  
 **路由**: `/enchant-reroll`
 
 ---

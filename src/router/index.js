@@ -13,7 +13,7 @@ import StoneGamblingView from '../views/StoneGamblingView.vue';
 import AlchemyCalculator from '../views/AlchemyCalculator.vue';
 import DollBagSearch from '../views/DollBagSearch.vue';
 import MagicCalculator from '../views/MagicCalculator.vue';
-import EnchantRerollSimulator from '../views/EnchantRerollSimulator.vue';
+import ReforgeSimulator from '../views/ReforgeSimulator.vue';
 
 const routes = [
     {
@@ -83,7 +83,7 @@ const routes = [
         {
             path: '/enchant-reroll',
             name: '細工模擬器',
-            component: EnchantRerollSimulator,
+            component: ReforgeSimulator,
         },]
     },
 
