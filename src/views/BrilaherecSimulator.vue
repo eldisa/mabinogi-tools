@@ -192,6 +192,9 @@ const resetAll = () => {
     history.value        = [];
 };
 
+// 切換硬幣類型時清空所有紀錄
+watch(selectedTypeId, resetAll);
+
 // Reset success count when targets change (old rate invalid)
 watch([curTargets, curEnabled], () => { successCount.value = 0; }, { deep: true });
 
