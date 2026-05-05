@@ -14,6 +14,7 @@ import AlchemyCalculator from '../views/AlchemyCalculator.vue';
 import DollBagSearch from '../views/DollBagSearch.vue';
 import MagicCalculator from '../views/MagicCalculator.vue';
 import ReforgeSimulator from '../views/ReforgeSimulator.vue';
+import BrilaherecSimulator from '../views/BrilaherecSimulator.vue';
 
 const routes = [
     {
@@ -84,6 +85,11 @@ const routes = [
             path: '/reforge',
             name: '細工模擬器',
             component: ReforgeSimulator,
+        },
+        {
+            path: '/brilaherec',
+            name: '布里萊赫硬幣模擬器',
+            component: BrilaherecSimulator,
         },]
     },
 
@@ -105,8 +111,9 @@ const pageTitles = {
     '稱號查詢':         '稱號查詢 | 瑪奇小工具',
     '賭石小遊戲':       '賭石小遊戲 | 瑪奇小工具',
     '娃娃背包查詢':     '娃娃背包查詢 | 瑪奇小工具',
-    '細工模擬器':       '細工模擬器 | 瑪奇小工具',
-    '關於':             '關於 | 瑪奇小工具',
+    '細工模擬器':           '細工模擬器 | 瑪奇小工具',
+    '布里萊赫硬幣模擬器':   '布里萊赫硬幣模擬器 | 瑪奇小工具',
+    '關於':                 '關於 | 瑪奇小工具',
 };
 
 router.afterEach((to) => {
