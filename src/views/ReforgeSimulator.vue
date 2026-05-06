@@ -1203,9 +1203,7 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                                     :class="item.isBreakthrough ? 'text-yellow-400' : 'text-blue-400'"
                                 >
                                     Lv.{{ item.level }}
-                                    <span class="text-xs text-gray-500 font-normal">
-                                        /{{ item.entry.maxLevel }}
-                                    </span>
+                                    <span class="text-xs text-gray-500 font-normal">/{{ item.entry.maxLevel }}</span>
                                 </div>
 
                                 <div
