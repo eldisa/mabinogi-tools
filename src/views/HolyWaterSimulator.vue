@@ -9,6 +9,7 @@ interface StatDef {
     label: string;
     max: number; // max === 1 → fixed value, no range input needed
     unit: string;
+    prob: number; // raw probability (e.g. 0.065 = 6.5%)
 }
 
 interface StatGroup {
@@ -16,81 +17,88 @@ interface StatGroup {
     stats: StatDef[];
 }
 
+// Probabilities verified from JP data:
+//   6.5% : 生命力 / 魔力 / 體力
+//   5.0% : 防禦力 / 魔法防禦力 / 生命力自然回復量 / 魔力自然回復量 / 體力自然回復量
+//   4.5% : 最大傷害 / 魔法攻擊力 / 四大屬性煉金術傷害 / 魁儡最大傷害
+//   2.5% : STR / INT / DEX / WILL / LUCK
+//   2.0% : 治療效果 / 暴擊傷害
+//   1.0% : (remaining 21 stats)
 const STAT_GROUPS: StatGroup[] = [
     {
         label: "戰鬥",
         stats: [
-            { key: "maxDmg", label: "最大傷害", max: 30, unit: "" },
-            { key: "magicAtk", label: "魔法攻擊力", max: 30, unit: "" },
-            { key: "alchDmg", label: "四大鍊金屬性", max: 50, unit: "" },
-            { key: "dollDmg", label: "人偶最大傷害", max: 50, unit: "" },
-            { key: "heal", label: "治療效果", max: 10, unit: "%" },
-            { key: "critRate", label: "暴擊率", max: 5, unit: "%" },
-            { key: "critDmg", label: "暴擊傷害", max: 4, unit: "%" },
-            { key: "balance", label: "平衡性", max: 5, unit: "%" },
+            { key: "maxDmg", label: "最大傷害", max: 30, unit: "", prob: 0.045 },
+            { key: "magicAtk", label: "魔法攻擊力", max: 30, unit: "", prob: 0.045 },
+            { key: "alchDmg", label: "四大屬性煉金術傷害", max: 50, unit: "", prob: 0.045 },
+            { key: "dollDmg", label: "人偶最大傷害", max: 50, unit: "", prob: 0.045 },
+            { key: "heal", label: "治療效果", max: 10, unit: "%", prob: 0.02 },
+            { key: "critRate", label: "暴擊率", max: 5, unit: "%", prob: 0.01 },
+            { key: "critDmg", label: "暴擊傷害", max: 4, unit: "%", prob: 0.02 },
+            { key: "balance", label: "平衡", max: 5, unit: "%", prob: 0.01 },
         ],
     },
     {
         label: "基本屬性",
         stats: [
-            { key: "hp", label: "生命值", max: 300, unit: "" },
-            { key: "mp", label: "魔力值", max: 300, unit: "" },
-            { key: "sp", label: "耐力值", max: 300, unit: "" },
-            { key: "str", label: "力量", max: 30, unit: "" },
-            { key: "int", label: "智力", max: 30, unit: "" },
-            { key: "dex", label: "敏捷", max: 30, unit: "" },
-            { key: "will", label: "意志", max: 30, unit: "" },
-            { key: "luck", label: "幸運", max: 30, unit: "" },
+            { key: "hp", label: "生命值", max: 300, unit: "", prob: 0.065 },
+            { key: "mp", label: "魔力值", max: 300, unit: "", prob: 0.065 },
+            { key: "sp", label: "耐力值", max: 300, unit: "", prob: 0.065 },
+            { key: "str", label: "力量", max: 30, unit: "", prob: 0.025 },
+            { key: "int", label: "智力", max: 30, unit: "", prob: 0.025 },
+            { key: "dex", label: "敏捷", max: 30, unit: "", prob: 0.025 },
+            { key: "will", label: "意志", max: 30, unit: "", prob: 0.025 },
+            { key: "luck", label: "幸運", max: 30, unit: "", prob: 0.025 },
         ],
     },
     {
         label: "防禦",
         stats: [
-            { key: "def", label: "防禦", max: 100, unit: "" },
-            { key: "magicDef", label: "魔法防禦", max: 100, unit: "" },
-            { key: "prot", label: "保護", max: 3, unit: "" },
-            { key: "magicProt", label: "魔法保護", max: 3, unit: "" },
+            { key: "def", label: "防禦", max: 100, unit: "", prob: 0.05 },
+            { key: "magicDef", label: "魔法防禦", max: 100, unit: "", prob: 0.05 },
+            { key: "prot", label: "保護", max: 3, unit: "", prob: 0.01 },
+            { key: "magicProt", label: "魔法保護", max: 3, unit: "", prob: 0.01 },
         ],
     },
     {
-        label: "自然恢復速度",
+        label: "自然回復速度",
         stats: [
-            { key: "hpRegen", label: "自然恢復生命值速度", max: 500, unit: "%" },
-            { key: "mpRegen", label: "自然恢復魔力值速度", max: 500, unit: "%" },
-            { key: "spRegen", label: "自然恢復耐力值速度", max: 500, unit: "%" },
+            { key: "hpRegen", label: "生命力自然回復量", max: 500, unit: "%", prob: 0.05 },
+            { key: "mpRegen", label: "魔力自然回復量", max: 500, unit: "%", prob: 0.05 },
+            { key: "spRegen", label: "體力自然回復量", max: 500, unit: "%", prob: 0.05 },
         ],
     },
     {
         label: "特殊",
         stats: [
-            { key: "sharp", label: "銳利抵抗", max: 1, unit: "" },
-            { key: "music", label: "音樂演奏效果", max: 1, unit: "" },
+            { key: "pierceRes", label: "銳利抵抗", max: 1, unit: "", prob: 0.01 },
+            { key: "music", label: "音樂演奏效果", max: 1, unit: "", prob: 0.01 },
         ],
     },
     {
         label: "套裝效果強化",
         stats: [
-            { key: "iceLance", label: "冰矛套裝效果強化", max: 1, unit: "" },
-            { key: "fireBolt", label: "火焰套裝效果強化", max: 1, unit: "" },
-            { key: "fireBreath", label: "火焰噴射套裝效果強化", max: 1, unit: "" },
-            { key: "waterCannon", label: "水砲套裝效果強化", max: 1, unit: "" },
-            { key: "lifeAbsorb", label: "生命吸收套裝效果強化", max: 1, unit: "" },
-            { key: "atkSpeed", label: "攻擊速度套裝效果強化", max: 1, unit: "" },
-            { key: "arrowPierce", label: "穿心箭套裝效果強化", max: 1, unit: "" },
-            { key: "smash", label: "猛擊套裝效果強化", max: 1, unit: "" },
-            { key: "supportArrow", label: "支援箭套裝效果強化", max: 1, unit: "" },
-            { key: "shockAbsorb", label: "衝擊吸收套裝效果強化", max: 1, unit: "" },
-            { key: "heavyStrike", label: "重擊套裝效果強化", max: 1, unit: "" },
-            { key: "whirlwind", label: "旋風擺蓮腿套裝效果強化", max: 1, unit: "" },
-            { key: "charge", label: "突擊套裝效果強化", max: 1, unit: "" },
-            { key: "leapAtk", label: "躍擊套裝效果強化", max: 1, unit: "" },
+            { key: "iceBolt", label: "冰矛套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "fireBolt", label: "火焰套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "flamer", label: "火焰噴射套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "waterCannon", label: "水砲套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "lifeDrain", label: "生命吸收套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "atkSpeed", label: "攻擊速度套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "magnumShot", label: "穿心箭套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "bash", label: "猛擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "supportShot", label: "支援箭套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "shockAbsorb", label: "衝擊吸收套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "smash", label: "重擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "windmill", label: "旋風擺蓮腿套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "rush", label: "突擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "healingEnh", label: "治癒套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "downAtk", label: "躍擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
         ],
     },
 ];
 
-// Flat list for easy lookup
+// Flat list for weighted random
 const ALL_STATS: StatDef[] = STAT_GROUPS.flatMap((g) => g.stats);
-const POOL_SIZE = ALL_STATS.length;
 
 // ===== State =====
 interface UseResult {
@@ -122,19 +130,26 @@ const hasTarget = computed(() => targetStat.value !== null);
 const successProb = computed((): number => {
     if (!targetStat.value) return 0;
     const s = targetStat.value;
-    const pStat = 1 / POOL_SIZE;
-    if (s.max === 1) return pStat;
+    if (s.max === 1) return s.prob;
     const pVal = Math.max(0, s.max - targetMinValue.value + 1) / s.max;
-    return pStat * pVal;
+    return s.prob * pVal;
 });
 
 const fmtPct = (p: number): string =>
-    p >= 0.01 ? `${(p * 100).toFixed(2)}%` : `1 / ${Math.round(1 / p).toLocaleString()}`;
+    p >= 0.001 ? `${parseFloat((p * 100).toFixed(3))}%` : `1 / ${Math.round(1 / p).toLocaleString()}`;
 
 const fmtVal = (s: StatDef, v: number): string => `${v}${s.unit}`;
 
 // ===== Roll helpers =====
-const rollStat = (): StatDef => ALL_STATS[Math.floor(Math.random() * POOL_SIZE)];
+const rollStat = (): StatDef => {
+    const r = Math.random();
+    let cum = 0;
+    for (const s of ALL_STATS) {
+        cum += s.prob;
+        if (r < cum) return s;
+    }
+    return ALL_STATS[ALL_STATS.length - 1];
+};
 
 const rollValue = (s: StatDef, minVal = 1): number =>
     s.max === 1 ? 1 : minVal + Math.floor(Math.random() * (s.max - minVal + 1));
@@ -152,11 +167,11 @@ const doUse = () => {
     let isSuccess: boolean;
 
     if (autoMode.value && hasTarget.value && successProb.value > 0) {
-        // Geometric sampling
+        // Geometric sampling: count = ceil(log(U) / log(1-p))
         const p = successProb.value;
         count = Math.ceil(Math.log(Math.max(Number.EPSILON, Math.random())) / Math.log(1 - p));
         stat = targetStat.value!;
-        value = rollValue(stat, targetStat.value!.max === 1 ? 1 : targetMinValue.value);
+        value = rollValue(stat, isFixed(stat) ? 1 : targetMinValue.value);
         isSuccess = true;
         successCount.value++;
     } else {
@@ -206,23 +221,13 @@ watch(targetStatKey, () => {
                 <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
                     聖水模擬器
                 </h1>
-                <p class="text-lg text-gray-400 mt-2">
-                    模擬使用聖水的素質分布
-                    <span class="text-xs text-gray-600 ml-2">池：{{ POOL_SIZE }} 種</span>
-                </p>
-                <p class="text-lg text-gray-400 mt-2">目前沒機率表，當前是隨便設定的，所以機率非常低</p>
+                <p class="text-lg text-gray-400 mt-2">模擬使用聖水的素質分布</p>
             </header>
 
             <!-- ── 目標設定 ── -->
             <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
-                <div class="mb-4 border-b border-gray-700 pb-3 flex items-center gap-4 flex-wrap">
+                <div class="mb-4 border-b border-gray-700 pb-3">
                     <h2 class="text-xl font-bold text-accent">目標設定</h2>
-                    <el-checkbox v-model="autoMode" :disabled="!hasTarget">
-                        <span class="text-sm" :class="!hasTarget ? 'text-gray-600' : 'text-gray-300'">
-                            自動衝到達標
-                        </span>
-                        <span class="text-xs text-gray-600 ml-1">（需選目標）</span>
-                    </el-checkbox>
                 </div>
 
                 <!-- Stat select -->
@@ -269,7 +274,7 @@ watch(targetStatKey, () => {
                     <span class="text-gray-400">每次成功率：</span>
                     <span class="text-yellow-400 font-bold text-base">{{ fmtPct(successProb) }}</span>
                     <span class="text-gray-500 ml-auto">
-                        = 1/{{ POOL_SIZE }}
+                        = {{ parseFloat((targetStat!.prob * 100).toFixed(1)) }}%
                         <template v-if="targetStat && !isFixed(targetStat)">
                             × {{ targetStat.max - targetMinValue + 1 }}/{{ targetStat.max }}
                         </template>
@@ -322,10 +327,16 @@ watch(targetStatKey, () => {
                 </div>
 
                 <!-- Action -->
-                <div class="flex items-center gap-3 mb-5">
+                <div class="flex items-center gap-3 mb-5 flex-wrap">
                     <el-button type="warning" size="large" @click="doUse">
                         💧 {{ autoMode && hasTarget ? "自動使用" : "使用聖水" }}
                     </el-button>
+                    <el-checkbox v-model="autoMode" :disabled="!hasTarget" class="ml-1">
+                        <span class="text-sm" :class="!hasTarget ? 'text-gray-600' : 'text-gray-300'">
+                            自動衝到達標
+                        </span>
+                        <span class="text-xs text-gray-600 ml-1">（需選目標）</span>
+                    </el-checkbox>
                     <el-button v-if="totalUses > 0" size="small" plain class="ml-auto" @click="resetAll">
                         重置紀錄
                     </el-button>
