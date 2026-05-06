@@ -13,6 +13,8 @@ import {
     DataAnalysis,
     Handbag,
     Lightning,
+    TrendCharts,
+    Coin,
 } from "@element-plus/icons-vue";
 
 defineProps<{
@@ -31,6 +33,9 @@ const menuItems = ref([
     { name: "裝備繼承費用估算", path: "/transfer-simulator", icon: markRaw(Money) },
     { name: "賦予查詢", path: "enchant", icon: markRaw(MagicStick) },
     { name: "稱號查詢", path: "/title", icon: markRaw(Medal) },
+    { name: "細工模擬器", path: "/reforge", icon: markRaw(MagicStick) },
+    { name: "布里萊赫硬幣模擬器", path: "/brilaherec", icon: markRaw(Coin) },
+    { name: "聖水模擬器", path: "/holy-water", icon: markRaw(MagicStick) },
     { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
     { name: "賭石小遊戲", path: "/stone-gambling", icon: markRaw(Present) },
     { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },

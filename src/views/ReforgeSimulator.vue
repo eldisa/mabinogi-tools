@@ -408,10 +408,6 @@ watch([selectedToolIdx, selectedRace], () => {
 watch(selectedEquipType, (v) => {
     if (v) showEquipCard.value = false;
 });
-// 選好工具後自動縮起工具卡
-watch(selectedToolIdx, (v) => {
-    if (v !== null) showToolCard.value = false;
-});
 
 // 突破設定或活動狀態改變時，確保 minLevel 在 [toolMin, maxSettable] 範圍內
 watch([effectiveBreakthroughProb, activityMode], () => {
@@ -908,7 +904,7 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                                     突破：{{
                                         tool.breakthroughProb === 0
                                             ? "無"
-                                            : `${(tool.breakthroughProb * 100).toFixed(1)}%`
+                                            : `${parseFloat((tool.breakthroughProb * 100).toFixed(3))}%`
                                     }}
                                 </span>
                             </div>
@@ -921,8 +917,8 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                                 v-if="selectedTool && selectedTool.breakthroughProb > 0"
                                 class="text-xs text-gray-400 ml-2"
                             >
-                                {{ (selectedTool.breakthroughProb * 100).toFixed(1) }}% →
-                                {{ (selectedTool.breakthroughProb * 2 * 100).toFixed(1) }}%
+                                {{ parseFloat((selectedTool.breakthroughProb * 100).toFixed(3)) }}% →
+                                {{ parseFloat((selectedTool.breakthroughProb * 2 * 100).toFixed(3)) }}%
                             </span>
                         </el-checkbox>
                         <el-checkbox v-model="activityMode">
@@ -1114,7 +1110,7 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                     <el-tag type="warning" effect="dark">{{ selectedEquipType!.name }}</el-tag>
                     <el-tag type="primary" effect="dark">{{ selectedTool!.name }}</el-tag>
                     <el-tag v-if="effectiveBreakthroughProb > 0" type="warning" effect="plain">
-                        突破 {{ (effectiveBreakthroughProb * 100).toFixed(1) }}%
+                        突破 {{ parseFloat((effectiveBreakthroughProb * 100).toFixed(3)) }}%
                     </el-tag>
                     <el-tag type="info" effect="plain">每次抽 3 個・池 {{ activePool.length }} 個</el-tag>
                 </div>
@@ -1207,9 +1203,7 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                                     :class="item.isBreakthrough ? 'text-yellow-400' : 'text-blue-400'"
                                 >
                                     Lv.{{ item.level }}
-                                    <span class="text-xs text-gray-500 font-normal">
-                                        /{{ item.isBreakthrough ? btMaxLevel(item.entry) : item.entry.maxLevel }}
-                                    </span>
+                                    <span class="text-xs text-gray-500 font-normal">/{{ item.entry.maxLevel }}</span>
                                 </div>
 
                                 <div

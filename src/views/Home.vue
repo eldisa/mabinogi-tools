@@ -52,6 +52,18 @@ const features = [
         description: "模擬細工洗詞條所需次數與費用，支援前綴後綴分別設定目標",
         path: "/reforge",
     },
+    {
+        icon: "Coin",
+        title: "布里萊赫硬幣模擬器",
+        description: "模擬製作布里萊赫硬幣的素質分布，支援目標設定與自動製作",
+        path: "/brilaherec",
+    },
+    {
+        icon: "MagicStick",
+        title: "聖水模擬器",
+        description: "模擬聖水洗屬性所需次數，支援目標屬性設定與自動模擬",
+        path: "/holy-water",
+    },
 ];
 
 const pendingFeatures = [
