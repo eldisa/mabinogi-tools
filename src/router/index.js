@@ -15,7 +15,6 @@ import DollBagSearch from '../views/DollBagSearch.vue';
 import MagicCalculator from '../views/MagicCalculator.vue';
 import ReforgeSimulator from '../views/ReforgeSimulator.vue';
 import BrilaherecSimulator from '../views/BrilaherecSimulator.vue';
-import GearGapChecker from '../views/GearGapChecker.vue';
 import HolyWaterSimulator from '../views/HolyWaterSimulator.vue';
 
 const routes = [
@@ -94,11 +93,6 @@ const routes = [
             component: BrilaherecSimulator,
         },
         {
-            path: '/gear-gap',
-            name: '頂裝差距',
-            component: GearGapChecker,
-        },
-        {
             path: '/holy-water',
             name: '聖水模擬器',
             component: HolyWaterSimulator,
@@ -114,20 +108,20 @@ const router = createRouter({
 });
 
 const pageTitles = {
-    '首頁':             '瑪奇小工具',
-    '裝備改造模擬器':   '裝備改造模擬器 | 瑪奇小工具',
-    '材料計算機':       '材料計算機 | 瑪奇小工具',
+    '首頁': '瑪奇小工具',
+    '裝備改造模擬器': '裝備改造模擬器 | 瑪奇小工具',
+    '材料計算機': '材料計算機 | 瑪奇小工具',
     '裝備繼承費用估算': '裝備能力轉移費用估算 | 瑪奇小工具',
-    '賦予查詢':         '賦予查詢 | 瑪奇小工具',
-    '農場模型查詢':     '農場模型查詢 | 瑪奇小工具',
-    '稱號查詢':         '稱號查詢 | 瑪奇小工具',
-    '賭石小遊戲':       '賭石小遊戲 | 瑪奇小工具',
-    '娃娃背包查詢':     '娃娃背包查詢 | 瑪奇小工具',
-    '細工模擬器':           '細工模擬器 | 瑪奇小工具',
-    '布里萊赫硬幣模擬器':   '布里萊赫硬幣模擬器 | 瑪奇小工具',
-    '頂裝差距':             '頂裝差距 | 瑪奇小工具',
-    '聖水模擬器':           '聖水模擬器 | 瑪奇小工具',
-    '關於':                 '關於 | 瑪奇小工具',
+    '賦予查詢': '賦予查詢 | 瑪奇小工具',
+    '農場模型查詢': '農場模型查詢 | 瑪奇小工具',
+    '稱號查詢': '稱號查詢 | 瑪奇小工具',
+    '賭石小遊戲': '賭石小遊戲 | 瑪奇小工具',
+    '娃娃背包查詢': '娃娃背包查詢 | 瑪奇小工具',
+    '細工模擬器': '細工模擬器 | 瑪奇小工具',
+    '布里萊赫硬幣模擬器': '布里萊赫硬幣模擬器 | 瑪奇小工具',
+    '頂裝差距': '頂裝差距 | 瑪奇小工具',
+    '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
+    '關於': '關於 | 瑪奇小工具',
 };
 
 router.afterEach((to) => {

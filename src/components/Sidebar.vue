@@ -39,7 +39,6 @@ const menuItems = ref([
     { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
     { name: "賭石小遊戲", path: "/stone-gambling", icon: markRaw(Present) },
     { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
-    { name: "頂裝差距", path: "/gear-gap", icon: markRaw(TrendCharts) },
     { name: "About", path: "/about", icon: markRaw(InfoFilled) },
 ]);
 </script>
