@@ -16,6 +16,7 @@ import MagicCalculator from '../views/MagicCalculator.vue';
 import ReforgeSimulator from '../views/ReforgeSimulator.vue';
 import BrilaherecSimulator from '../views/BrilaherecSimulator.vue';
 import GearGapChecker from '../views/GearGapChecker.vue';
+import HolyWaterSimulator from '../views/HolyWaterSimulator.vue';
 
 const routes = [
     {
@@ -96,6 +97,11 @@ const routes = [
             path: '/gear-gap',
             name: '頂裝差距',
             component: GearGapChecker,
+        },
+        {
+            path: '/holy-water',
+            name: '聖水模擬器',
+            component: HolyWaterSimulator,
         },]
     },
 
@@ -120,6 +126,7 @@ const pageTitles = {
     '細工模擬器':           '細工模擬器 | 瑪奇小工具',
     '布里萊赫硬幣模擬器':   '布里萊赫硬幣模擬器 | 瑪奇小工具',
     '頂裝差距':             '頂裝差距 | 瑪奇小工具',
+    '聖水模擬器':           '聖水模擬器 | 瑪奇小工具',
     '關於':                 '關於 | 瑪奇小工具',
 };
 
