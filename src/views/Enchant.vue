@@ -140,17 +140,27 @@
                         </el-select>
                     </el-form-item>
 
+                    <el-form-item label="轉專用">
+                        <el-radio-group v-model="filterPersonalize">
+                            <el-radio label="全部" value="all" />
+                            <el-radio label="會轉專用" value="yes" />
+                            <el-radio label="不轉專用" value="no" />
+                        </el-radio-group>
+                    </el-form-item>
+
+                    <el-form-item label="排序">
+                        <el-radio-group v-model="sortBy">
+                            <el-radio label="預設" value="default" />
+                            <el-radio label="等級 ↑" value="rank_asc" />
+                            <el-radio label="等級 ↓" value="rank_desc" />
+                        </el-radio-group>
+                    </el-form-item>
+
                     <el-form-item>
-                        <div class="flex gap-3">
-                            <el-button type="primary" @click="handleSearch">
-                                <el-icon class="mr-1"><Search /></el-icon>
-                                搜尋
-                            </el-button>
-                            <el-button @click="handleReset">
-                                <el-icon class="mr-1"><RefreshLeft /></el-icon>
-                                重置
-                            </el-button>
-                        </div>
+                        <el-button @click="handleReset">
+                            <el-icon class="mr-1"><RefreshLeft /></el-icon>
+                            重置條件
+                        </el-button>
                     </el-form-item>
                 </el-form>
             </el-card>
@@ -180,9 +190,10 @@
                         <el-table-column prop="name" label="名稱" width="280" align="center">
                             <template #default="{ row }">
                                 <div class="flex flex-col items-center gap-1">
-                                    <div>
+                                    <div class="flex gap-1 flex-wrap justify-center">
                                         <el-tag v-if="row.type === 'prefix'" type="danger" size="small">接頭</el-tag>
                                         <el-tag v-else type="primary" size="small">接尾</el-tag>
+                                        <el-tag v-if="row.personalize" type="warning" size="small">轉專用</el-tag>
                                     </div>
                                     <span class="font-medium">{{ row.name.tw || row.name.en }}</span>
                                     <span class="text-xs text-gray-400">Rank {{ formatRank(row.level) }}</span>
@@ -299,7 +310,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Search, RefreshLeft } from '@element-plus/icons-vue';
+import { RefreshLeft } from '@element-plus/icons-vue';
 import { Enchant, EnchantAbility, EnchantSource } from "../types/Enchant";
 import { enchants, reward } from "../data/enchants";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
@@ -315,38 +326,17 @@ const selectedRaid = ref<string>("G27/布里萊赫");
 const searchRank = ref<number | null>(null);
 const searchRankOperator = ref("");
 const searchLimit = ref("");
+const filterPersonalize = ref<"all" | "yes" | "no">("all");
+const sortBy = ref<"default" | "rank_asc" | "rank_desc">("default");
 
-// 可選擇的能力列表
-const selectableAbility = [
-    "attack_max",
-    "attack_min",
-    "balance",
-    "critical",
-    "magic_attack",
-    "all_alchemy_damage",
-    "HP",
-    "MP",
-    "SP",
-    "STR",
-    "INT",
-    "DEX",
-    "WIL",
-    "LUK",
-    "defense",
-    "protection",
-    "magic_defense",
-    "magic_protection",
-    "marionette_defense",
-    "marionette_protect",
-    "marionette_attack_max",
-    "marionette_critical",
-    "marionette_magic_defense",
-    "wound_max",
-    "wound_min",
-    "musicbuff_bonus",
-    "move_speed",
-    "critical_damage",
-];
+// 從資料中動態推導所有出現過的能力（有中文名稱的才列出）
+const selectableAbility = computed(() => {
+    const seen = new Set<string>();
+    enchants.forEach(e => e.effect.forEach(eff => seen.add(eff.id)));
+    return Array.from(seen)
+        .filter(id => abilitiesMap[id])
+        .sort((a, b) => (abilitiesMap[a] ?? a).localeCompare(abilitiesMap[b] ?? b, "zh-TW"));
+});
 
 // 副本選項
 const raidOptions: { label: string; value: string }[] = [
@@ -432,35 +422,36 @@ const displayData = computed(() => {
     if (rankOp && rank !== null) {
         filteredResult = filteredResult.filter(item => {
             switch(rankOp) {
-                case 'eq':
-                    return item.level === rank;
-                case 'gte':
-                    return item.level >= rank;
-                case 'lte':
-                    return item.level <= rank;
-                default:
-                    return true;
+                case 'eq':  return item.level === rank;
+                case 'gte': return item.level >= rank;
+                case 'lte': return item.level <= rank;
+                default:    return true;
             }
         });
     }
 
     // 裝備類型篩選
     if (limit) {
+        filteredResult = filteredResult.filter(item => item.limit.includes(limit));
+    }
+
+    // 轉專用篩選
+    const personalize = filterPersonalize.value;
+    if (personalize !== "all") {
         filteredResult = filteredResult.filter(item =>
-            item.limit.includes(limit)
+            personalize === "yes" ? item.personalize : !item.personalize
         );
     }
+
+    // 排序
+    const sort = sortBy.value;
+    if (sort === "rank_asc")  filteredResult = [...filteredResult].sort((a, b) => a.level - b.level);
+    if (sort === "rank_desc") filteredResult = [...filteredResult].sort((a, b) => b.level - a.level);
 
     return filteredResult;
 });
 
-// 搜尋按鈕
-const handleSearch = () => {
-    // 觸發重新計算（computed 會自動執行）
-    // 可以在這裡添加搜尋統計或其他邏輯
-};
-
-// 重置按鈕
+// 重置
 const handleReset = () => {
     searchName.value = "";
     searchAbility.value = "";
@@ -472,6 +463,8 @@ const handleReset = () => {
     searchRankOperator.value = "";
     searchLimit.value = "";
     selectedCondition.value = "search";
+    filterPersonalize.value = "all";
+    sortBy.value = "default";
 };
 
 // 格式化賦予等級顯示 (1-6 => F-A, 7-15 => 9-1)
