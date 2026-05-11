@@ -47,10 +47,10 @@
                             <img
                                 v-for="(obj, index) in displayData"
                                 :src="`${baseUrl}itemImage/${obj.id}.png`"
-                                :class="`tab-icon p-2 ${
+                                :class="`tab-icon ${
                                     obj.id === selectedWeapons[selectedDisplayDataIndex]
-                                        ? 'ring-4 ring-blue-400 ring-offset-2 ring-offset-blue-100 animate-pulse scale-110 bg-white rounded-xl shadow-xl'
-                                        : 'hover:scale-105 hover:ring-2 hover:ring-gray-300 rounded-md'
+                                        ? 'p-1 scale-110 rounded-xl selected-weapon-glow'
+                                        : 'p-2 hover:scale-105 hover:ring-2 hover:ring-gray-500 rounded-md'
                                 }`"
                                 @click="handleSelectDisplayData(index)"
                             />
@@ -560,7 +560,21 @@ interface MaterialSummary {
 
 const baseUrl = import.meta.env.BASE_URL;
 const TOKEN_ID = 5300217;
-const selectedWeapons = ref<number[]>([]);
+
+const loadSelectedWeapons = (): number[] => {
+    try {
+        const saved = localStorage.getItem(WEAPONS_STORAGE_KEY);
+        if (!saved) return [];
+        const parsed: unknown = JSON.parse(saved);
+        if (!Array.isArray(parsed)) return [];
+        const validIds = new Set(G27Weapons.map((w) => w.id));
+        return (parsed as unknown[]).filter((id): id is number => typeof id === "number" && validIds.has(id));
+    } catch {
+        return [];
+    }
+};
+
+const selectedWeapons = ref<number[]>(loadSelectedWeapons());
 
 const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
     const { id, name } = weapon;
@@ -571,6 +585,7 @@ const scrollRow = ref<HTMLElement | null>(null);
 
 // 材料價格與庫存設定
 const STORAGE_KEY = "mabinogi-material-prices";
+const WEAPONS_STORAGE_KEY = "mabinogi-selected-weapons";
 
 const loadMaterialPrices = (): MaterialPriceEntry[] => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -1028,6 +1043,8 @@ const hasAddEvent = ref(false);
 watch(
     () => selectedWeapons.value,
     (newData) => {
+        localStorage.setItem(WEAPONS_STORAGE_KEY, JSON.stringify(newData));
+
         if (newData) {
             const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
             const accMap = new Map<number, number>();
@@ -1067,15 +1084,29 @@ tr td:first-child .cell {
 }
 
 .tab-icon {
-    /* width: 40px;
-    height: 40px; */
     border-radius: 8px;
     object-fit: contain;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .tab-icon:hover {
     transform: scale(1.1);
+}
+.selected-weapon-glow {
+    animation: weapon-glow-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes weapon-glow-pulse {
+    0%, 100% {
+        box-shadow:
+            0 0 0 2px #fbbf24,
+            0 0 8px 3px rgba(250, 204, 21, 0.4);
+    }
+    50% {
+        box-shadow:
+            0 0 0 2px #f97316,
+            0 0 18px 7px rgba(249, 115, 22, 0.55);
+    }
 }
 
 .title-row {
