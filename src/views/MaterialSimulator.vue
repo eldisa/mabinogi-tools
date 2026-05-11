@@ -47,10 +47,10 @@
                             <img
                                 v-for="(obj, index) in displayData"
                                 :src="`${baseUrl}itemImage/${obj.id}.png`"
-                                :class="`tab-icon p-2 ${
+                                :class="`tab-icon ${
                                     obj.id === selectedWeapons[selectedDisplayDataIndex]
-                                        ? 'ring-4 ring-blue-400 ring-offset-2 ring-offset-blue-100 animate-pulse scale-110 bg-white rounded-xl shadow-xl'
-                                        : 'hover:scale-105 hover:ring-2 hover:ring-gray-300 rounded-md'
+                                        ? 'p-1 scale-110 rounded-xl selected-weapon-glow'
+                                        : 'p-2 hover:scale-105 hover:ring-2 hover:ring-gray-500 rounded-md'
                                 }`"
                                 @click="handleSelectDisplayData(index)"
                             />
@@ -1084,15 +1084,29 @@ tr td:first-child .cell {
 }
 
 .tab-icon {
-    /* width: 40px;
-    height: 40px; */
     border-radius: 8px;
     object-fit: contain;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .tab-icon:hover {
     transform: scale(1.1);
+}
+.selected-weapon-glow {
+    animation: weapon-glow-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes weapon-glow-pulse {
+    0%, 100% {
+        box-shadow:
+            0 0 0 2px #fbbf24,
+            0 0 8px 3px rgba(250, 204, 21, 0.4);
+    }
+    50% {
+        box-shadow:
+            0 0 0 2px #f97316,
+            0 0 18px 7px rgba(249, 115, 22, 0.55);
+    }
 }
 
 .title-row {
