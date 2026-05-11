@@ -113,13 +113,20 @@
                                 <el-option label="大於等於" value="gte" />
                                 <el-option label="小於等於" value="lte" />
                             </el-select>
-                            <el-input-number
+                            <el-select
                                 v-model="searchRank"
-                                :min="1"
-                                :max="20"
+                                placeholder="選擇等級"
+                                clearable
                                 :disabled="!searchRankOperator"
                                 style="width: 150px"
-                            />
+                            >
+                                <el-option
+                                    v-for="opt in rankSelectOptions"
+                                    :key="opt.value"
+                                    :label="opt.label"
+                                    :value="opt.value"
+                                />
+                            </el-select>
                         </div>
                     </el-form-item>
 
@@ -189,7 +196,7 @@
                     >
                         <el-table-column prop="name" label="名稱" width="280" align="center">
                             <template #default="{ row }">
-                                <div class="flex flex-col items-center gap-1">
+                                <div class="flex flex-col items-center gap-1 w-full">
                                     <div class="flex gap-1 flex-wrap justify-center">
                                         <el-tag v-if="row.type === 'prefix'" type="danger" size="small">接頭</el-tag>
                                         <el-tag v-else type="primary" size="small">接尾</el-tag>
@@ -323,6 +330,68 @@ import { Enchant, EnchantAbility, EnchantSource } from "../types/Enchant";
 import { enchants, reward } from "../data/enchants";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
+// ── 自定義排序設定 ──────────────────────────────────────────────
+// 在陣列中列出的項目會優先顯示（依陣列順序），其餘依中文字母排序
+
+/** 裝備類型選單順序 */
+const LIMIT_ORDER: string[] = [
+    // 身體部位
+    "頭部裝備", "衣服", "衣物", "布衣", "皮質盔甲", "輕甲", "輕盔甲", "重甲", "重盔甲", "盔甲",
+    "手套", "金屬手套", "重盔甲手套", "鞋子", "金屬靴", "盾牌", "飾品",
+    // 武器（通用）
+    "武器", "近距離武器", "單手武器", "雙手武器",
+    // 武器（分類）
+    "弓", "弩", "拳套", "鈍器", "斧", "斧頭",
+    "手把", "鋼瓶", "雙槍", "魔杖", "集魔杖", "單手魔杖、集魔杖",
+    "魔導書、水晶球", "騎槍", "大型鐮刀", "鎖鏈鐮刃", "手裏劍", "手裡劍",
+    // 樂器
+    "樂器", "管樂器", "絃樂器", "電子吉他",
+];
+
+/** 能力選單順序 */
+const ABILITY_ORDER: string[] = [
+    // 基礎數值
+    "HP", "LifeMax", "MP", "ManaMax", "SP", "StaminaMax",
+    // 能力值
+    "STR", "STR2", "Str", "DEX", "Dex", "dex", "WIL", "Will", "LUK", "Luck", "INT", "Int", "int",
+    // 攻擊
+    "attack_max", "AttMax", "Attmax", "wAttMax",
+    "attack_min", "AttMin", "wAttMin",
+    "balance", "critical", "Crit",
+    "critical_damage", "criticaldamage", "critical_cap_increase",
+    "bonus_damage", "bonusdamage",
+    // 防禦
+    "defense", "Def", "protection", "Prot", "prot", "protect",
+    "magic_defense", "magicdefence", "magic_protection", "magicprotect",
+    "damage_reduction_rate",
+    // 移動
+    "move_speed", "Hurry",
+];
+
+/** 根據自定義順序陣列排序（順序內的靠前，其餘依中文字母） */
+const sortWithOrder = <T extends string>(
+    items: T[],
+    order: string[],
+    nameGetter: (id: T) => string
+): T[] => {
+    const orderIndex = new Map(order.map((id, i) => [id, i]));
+    return [...items].sort((a, b) => {
+        const ai = orderIndex.get(a) ?? Infinity;
+        const bi = orderIndex.get(b) ?? Infinity;
+        if (ai !== bi) return ai - bi;
+        return nameGetter(a).localeCompare(nameGetter(b), "zh-TW");
+    });
+};
+
+// 賦予等級選項（F/E/D/C/B/A → 9/8/7/.../1）
+const rankSelectOptions = [
+    { label: "F", value: 1 }, { label: "E", value: 2 }, { label: "D", value: 3 },
+    { label: "C", value: 4 }, { label: "B", value: 5 }, { label: "A", value: 6 },
+    { label: "9", value: 7 }, { label: "8", value: 8 }, { label: "7", value: 9 },
+    { label: "6", value: 10 }, { label: "5", value: 11 }, { label: "4", value: 12 },
+    { label: "3", value: 13 }, { label: "2", value: 14 }, { label: "1", value: 15 },
+];
+
 // 搜尋條件
 const selectedCondition = ref<string>("search");
 const searchName = ref("");
@@ -347,9 +416,8 @@ const getEnchantSource = (id: number): string => enchantSourceMap.get(id) ?? "�
 const selectableAbility = computed(() => {
     const seen = new Set<string>();
     enchants.forEach(e => e.effect.forEach(eff => seen.add(eff.id)));
-    return Array.from(seen)
-        .filter(id => abilitiesMap[id])
-        .sort((a, b) => (abilitiesMap[a] ?? a).localeCompare(abilitiesMap[b] ?? b, "zh-TW"));
+    const ids = Array.from(seen).filter(id => abilitiesMap[id]);
+    return sortWithOrder(ids, ABILITY_ORDER, id => abilitiesMap[id] ?? id);
 });
 
 // 副本選項
@@ -364,7 +432,7 @@ const limitTypes = computed(() => {
     enchants.forEach(enchant => {
         enchant.limit.forEach(limit => types.add(limit));
     });
-    return Array.from(types).sort();
+    return sortWithOrder(Array.from(types), LIMIT_ORDER, id => id);
 });
 
 // 搜尋結果
