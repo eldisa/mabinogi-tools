@@ -560,7 +560,21 @@ interface MaterialSummary {
 
 const baseUrl = import.meta.env.BASE_URL;
 const TOKEN_ID = 5300217;
-const selectedWeapons = ref<number[]>([]);
+
+const loadSelectedWeapons = (): number[] => {
+    try {
+        const saved = localStorage.getItem(WEAPONS_STORAGE_KEY);
+        if (!saved) return [];
+        const parsed: unknown = JSON.parse(saved);
+        if (!Array.isArray(parsed)) return [];
+        const validIds = new Set(G27Weapons.map((w) => w.id));
+        return (parsed as unknown[]).filter((id): id is number => typeof id === "number" && validIds.has(id));
+    } catch {
+        return [];
+    }
+};
+
+const selectedWeapons = ref<number[]>(loadSelectedWeapons());
 
 const craftWeaponOptions: Option[] = G27Weapons.map((weapon) => {
     const { id, name } = weapon;
@@ -571,6 +585,7 @@ const scrollRow = ref<HTMLElement | null>(null);
 
 // 材料價格與庫存設定
 const STORAGE_KEY = "mabinogi-material-prices";
+const WEAPONS_STORAGE_KEY = "mabinogi-selected-weapons";
 
 const loadMaterialPrices = (): MaterialPriceEntry[] => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -1028,6 +1043,8 @@ const hasAddEvent = ref(false);
 watch(
     () => selectedWeapons.value,
     (newData) => {
+        localStorage.setItem(WEAPONS_STORAGE_KEY, JSON.stringify(newData));
+
         if (newData) {
             const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
             const accMap = new Map<number, number>();
