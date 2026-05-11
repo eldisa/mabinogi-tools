@@ -219,6 +219,14 @@
                                 <div v-html="renderAbilities(row.effect)" class="text-left"></div>
                             </template>
                         </el-table-column>
+                        <el-table-column label="來源" width="200" align="center">
+                            <template #default="{ row }">
+                                <span v-if="getEnchantSource(row.id) !== '—'" class="text-yellow-400 text-sm">
+                                    {{ getEnchantSource(row.id) }}
+                                </span>
+                                <span v-else class="text-gray-600 text-sm">—</span>
+                            </template>
+                        </el-table-column>
                     </el-table>
                 </div>
             </el-card>
@@ -328,6 +336,12 @@ const searchRankOperator = ref("");
 const searchLimit = ref("");
 const filterPersonalize = ref<"all" | "yes" | "no">("all");
 const sortBy = ref<"default" | "rank_asc" | "rank_desc">("default");
+
+// 建立 enchant id → 副本名稱 的對照表
+const enchantSourceMap = new Map<number, string>();
+reward.forEach(r => r.list.forEach(id => enchantSourceMap.set(id, r.raidName)));
+
+const getEnchantSource = (id: number): string => enchantSourceMap.get(id) ?? "—";
 
 // 從資料中動態推導所有出現過的能力（有中文名稱的才列出）
 const selectableAbility = computed(() => {
