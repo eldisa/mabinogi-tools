@@ -505,8 +505,7 @@ def convert(xml_path: Path, trans_path: Path, output_path: Path) -> None:
         else:
             lines.append("        effect: [],")
 
-        if r["personalize"]:
-            lines.append("        personalize: true,")
+        lines.append(f'        personalize: {"true" if r["personalize"] else "false"},')
 
         lines.append("    },")
 
