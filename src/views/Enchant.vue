@@ -647,7 +647,8 @@ const wearBrokenRobe = ref<boolean>(false);
 interface WeaponOpt {
     label: string;
     limits: string[];
-    topN?: number; // 每格最多顯示幾筆，預設 5
+    topN?: number;         // 每格最多顯示幾筆，預設 5
+    strictFilter?: boolean; // true = 只顯示有相關能力的賦予，不包含中性賦予
 }
 
 const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
@@ -656,7 +657,7 @@ const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
     { label: "鐮刀",  limits: ["大型鐮刀", "鎖鏈鐮刃", "支援用鎖鏈鐮刃"] },
     { label: "鋼瓶",  limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"] },
     { label: "物理",  limits: ["武器", "近距離武器", "單手武器", "雙手武器", "弓", "弩", "拳套", "鈍器", "斧", "斧頭", "手把", "雙槍", "騎槍"] },
-    { label: "音樂",  limits: ["樂器", "管樂器", "絃樂器", "電子吉他"], topN: 3 },
+    { label: "音樂",  limits: ["樂器", "管樂器", "絃樂器", "電子吉他"], topN: 3, strictFilter: true },
 ];
 
 // 各武器類型「相關」能力 ID 集合
@@ -676,7 +677,7 @@ const PRIMARY_IDS: Record<string, string[]> = {
     "集魔杖": ["magic_attack", "MagicAttack", "magic_damage"],
     "鋼瓶":  ["all_alchemy_damage", "fire_alchemy_damage", "water_alchemy_damage", "earth_alchemy_damage", "wind_alchemy_damage", "AlchemyElementalBonus"],
     "鐮刀":  ["chainblade_attack_max", "attack_max", "AttMax", "Attmax"],
-    "音樂":  ["music_buff_bonus", "musicbuff_bonus"],
+    "音樂":  ["music_buff_bonus"],
 };
 
 // 各武器類型「顯示」能力 ID（效果摘要只顯示此集合內的屬性）
@@ -686,7 +687,7 @@ const RELEVANT_IDS: Record<string, Set<string>> = {
     "集魔杖": new Set([...MAGIC_IDS]),
     "鋼瓶":  new Set([...ALCHEMY_IDS]),
     "鐮刀":  new Set([...CHAIN_IDS, ...PHYS_DMG_IDS, "critical", "Crit", "critical_damage"]),
-    "音樂":  new Set([...MUSIC_IDS]),
+    "音樂":  new Set(["music_buff_bonus"]),
 };
 
 /** 合併同 ID 的多個詞條（數值加總） */
@@ -773,12 +774,19 @@ const quickViewData = computed((): QuickViewRow[] => {
 
         let applicable = enchants.filter(e => e.limit.some(l => limits.includes(l)));
 
-        // 篩選：有對應武器的相關能力，OR 完全中性（無任何武器專屬能力）
+        // 篩選：strictFilter = 只顯示含相關能力的賦予；一般模式 = 有相關能力 OR 完全中性
         if (relevant) {
-            applicable = applicable.filter(e =>
-                e.effect.some(eff => relevant.has(eff.id)) ||
-                !e.effect.some(eff => ANY_EXCLUSIVE.has(eff.id))
-            );
+            const strict = weaponOpt?.strictFilter ?? false;
+            if (strict) {
+                applicable = applicable.filter(e =>
+                    e.effect.some(eff => relevant.has(eff.id))
+                );
+            } else {
+                applicable = applicable.filter(e =>
+                    e.effect.some(eff => relevant.has(eff.id)) ||
+                    !e.effect.some(eff => ANY_EXCLUSIVE.has(eff.id))
+                );
+            }
         }
 
         // 不綁專 filter
@@ -797,7 +805,7 @@ const quickViewData = computed((): QuickViewRow[] => {
             prefix: sorted.filter(e => e.type === "prefix").slice(0, topN),
             suffix: sorted.filter(e => e.type === "suffix").slice(0, topN),
         };
-    });
+    }).filter(row => row.prefix.length > 0 || row.suffix.length > 0);
 });
 
 // 從資料中動態推導所有出現過的能力（有中文名稱的才列出）
