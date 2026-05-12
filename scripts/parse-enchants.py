@@ -203,12 +203,20 @@ def normalize_id(raw_id: str) -> str:
 def parse_value(val_str: str) -> Optional[tuple[int, int]]:
     """
     解析數值字串，回傳 (min, max)。
-    支援格式：+(20~25)、-(3~6)、+15、-10、15
+    支援格式：+(20~25)、-(3~6)、+12~15（無括號範圍）、+15、-10、15
     回傳 None 若無法解析。
     """
     val_str = val_str.strip()
-    # 範圍格式：+(20~25) 或 -(3~6)
+    # 有括號範圍：+(20~25) 或 -(3~6)
     m = re.match(r'^([+-]?)\((\d+)~(\d+)\)$', val_str)
+    if m:
+        sign, lo, hi = m.group(1), int(m.group(2)), int(m.group(3))
+        if sign == "-":
+            return (-hi, -lo)
+        else:
+            return (lo, hi)
+    # 無括號範圍：+12~15 或 12~15
+    m = re.match(r'^([+-]?)(\d+)~(\d+)$', val_str)
     if m:
         sign, lo, hi = m.group(1), int(m.group(2)), int(m.group(3))
         if sign == "-":
@@ -223,8 +231,8 @@ def parse_value(val_str: str) -> Optional[tuple[int, int]]:
     return None
 
 
-# 數值 pattern：[+-]?(num~num) 或 [+-]?num  (允許浮點)
-_VAL = r'[+-]?(?:\(\d+(?:\.\d+)?~\d+(?:\.\d+)?\)|\d+(?:\.\d+)?)'
+# 數值 pattern：[+-]?(num~num)、[+-]?num~num（無括號）、[+-]?num  (允許浮點)
+_VAL = r'[+-]?(?:\(\d+(?:\.\d+)?~\d+(?:\.\d+)?\)|\d+(?:\.\d+)?~\d+(?:\.\d+)?|\d+(?:\.\d+)?)'
 
 # SetParamOnEquip / SetParamonEquip / SetSetItemEffectOnEquip
 _FUNC_RE = re.compile(
@@ -340,7 +348,13 @@ def is_old_version(feature: str) -> bool:
 
 def escape_ts_string(s: str) -> str:
     """轉義 TypeScript 字串中的特殊字元"""
-    return s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "")
+    # 遊戲翻譯檔以字面 \\n 作為換行符號，先轉成 LF，再統一轉義為 \\n escape
+    s = s.replace("\\n", "\n")
+    s = s.replace("\\", "\\\\")
+    s = s.replace('"', '\\"')
+    s = s.replace("\n", "\\n")
+    s = s.replace("\r", "")
+    return s
 
 
 def format_effect(eff: dict) -> str:
