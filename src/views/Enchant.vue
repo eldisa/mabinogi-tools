@@ -253,6 +253,10 @@
                                             <span class="text-sm text-gray-300">標示 G27 / VH</span>
                                             <span class="text-xs text-gray-500 ml-1">（標示出處）</span>
                                         </el-checkbox>
+                                        <el-checkbox v-model="wearBrokenRobe">
+                                            <span class="text-sm text-gray-300">裝備破袍</span>
+                                            <span class="text-xs text-gray-500 ml-1">（隱藏袍/翅膀欄）</span>
+                                        </el-checkbox>
                                     </div>
                                 </el-form-item>
                             </el-form>
@@ -638,6 +642,7 @@ const activeTab = ref<"search" | "quickview">("search");
 const quickWeaponType = ref<string>("魔杖");
 const filterNonPersonalize = ref<boolean>(false);
 const showSourceHighlight = ref<boolean>(false);
+const wearBrokenRobe = ref<boolean>(false);
 
 interface WeaponOpt {
     label: string;
@@ -733,8 +738,9 @@ const quickViewData = computed((): QuickViewRow[] => {
     const weaponLimits  = weaponOpt?.limits ?? [];
     const excluded = EXCLUDED_BY_WEAPON[wType] ?? new Set<string>();
     const noPersonalize = filterNonPersonalize.value;
+    const hideRobe = wearBrokenRobe.value;
 
-    return QUICK_VIEW_SLOTS.map(slot => {
+    return QUICK_VIEW_SLOTS.filter(slot => !(hideRobe && slot.label === "袍/翅膀")).map(slot => {
         const limits = slot.isWeapon ? weaponLimits : slot.limits;
 
         let applicable = enchants.filter(e => e.limit.some(l => limits.includes(l)));
