@@ -657,21 +657,16 @@ const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
     { label: "物理",  limits: ["武器", "近距離武器", "單手武器", "雙手武器", "弓", "弩", "拳套", "鈍器", "斧", "斧頭", "手把", "雙槍", "騎槍"] },
 ];
 
-// 各武器類型「排除」的能力 ID（含此集合內任何能力的賦予在該武器類型下隱藏）
-const MAGIC_IDS   = new Set(["magic_attack", "MagicAttack", "magic_damage", "magicfastcasting", "casting_speed", "chain_casting", "magicice", "magicfire", "magiclightning", "intermediate_magic", "advanced_magic_damage", "bolt_compose", "bolt_magic_attack_range", "manause_revised", "mana_saving", "thunder_damage", "lightning_road_charging"]);
-const ALCHEMY_IDS = new Set(["fire_alchemy_damage", "water_alchemy_damage", "earth_alchemy_damage", "wind_alchemy_damage", "all_alchemy_damage", "AlchemyElementalBonus", "elemental_wave_bonus"]);
+// 各武器類型「相關」能力 ID 集合
+const MAGIC_IDS    = new Set(["magic_attack", "MagicAttack", "magic_damage", "magicfastcasting", "casting_speed", "chain_casting", "magicice", "magicfire", "magiclightning", "intermediate_magic", "advanced_magic_damage", "bolt_compose", "bolt_magic_attack_range", "manause_revised", "mana_saving", "thunder_damage", "lightning_road_charging"]);
+const ALCHEMY_IDS  = new Set(["fire_alchemy_damage", "water_alchemy_damage", "earth_alchemy_damage", "wind_alchemy_damage", "all_alchemy_damage", "AlchemyElementalBonus", "elemental_wave_bonus"]);
 const PHYS_DMG_IDS = new Set(["attack_max", "AttMax", "Attmax", "wAttMax", "attack_min", "AttMin", "wAttMin", "balance"]);
-const CHAIN_IDS   = new Set(["chainblade_attack_max", "chainblade_attack_min"]);
+const CHAIN_IDS    = new Set(["chainblade_attack_max", "chainblade_attack_min"]);
 
-const EXCLUDED_BY_WEAPON: Record<string, Set<string>> = {
-    "物理":  new Set([...MAGIC_IDS, ...ALCHEMY_IDS, ...CHAIN_IDS]),
-    "魔杖":  new Set([...PHYS_DMG_IDS, ...ALCHEMY_IDS, ...CHAIN_IDS]),
-    "集魔杖": new Set([...PHYS_DMG_IDS, ...ALCHEMY_IDS, ...CHAIN_IDS]),
-    "鋼瓶":  new Set([...PHYS_DMG_IDS, ...MAGIC_IDS, ...CHAIN_IDS]),
-    "鐮刀":  new Set([...MAGIC_IDS, ...ALCHEMY_IDS]),
-};
+// 所有武器專屬能力的聯集（用於判斷賦予是否「中性」）
+const ANY_EXCLUSIVE = new Set([...PHYS_DMG_IDS, ...MAGIC_IDS, ...ALCHEMY_IDS, ...CHAIN_IDS]);
 
-// 各武器類型主要數值 ID（排序用）
+// 各武器類型「主要數值」ID（排序用）
 const PRIMARY_IDS: Record<string, string[]> = {
     "物理":  ["attack_max", "AttMax", "Attmax", "wAttMax"],
     "魔杖":  ["magic_attack", "MagicAttack", "magic_damage"],
@@ -689,10 +684,22 @@ const RELEVANT_IDS: Record<string, Set<string>> = {
     "鐮刀":  new Set([...CHAIN_IDS, ...PHYS_DMG_IDS, "critical", "Crit", "critical_damage"]),
 };
 
+/** 合併同 ID 的多個詞條（數值加總） */
+interface MergedEff { id: string; min: number; max: number; }
+const mergeEffects = (enchant: Enchant): MergedEff[] => {
+    const map = new Map<string, MergedEff>();
+    for (const eff of enchant.effect) {
+        const ex = map.get(eff.id);
+        if (ex) { ex.min += eff.min; ex.max += eff.max; }
+        else     { map.set(eff.id, { id: eff.id, min: eff.min, max: eff.max }); }
+    }
+    return Array.from(map.values());
+};
+
 const getPrimaryValue = (enchant: Enchant, weaponType: string): number => {
     const ids = PRIMARY_IDS[weaponType] ?? [];
     let best = 0;
-    for (const eff of enchant.effect) {
+    for (const eff of mergeEffects(enchant)) {
         if (ids.includes(eff.id)) best = Math.max(best, eff.max);
     }
     return best;
@@ -701,11 +708,13 @@ const getPrimaryValue = (enchant: Enchant, weaponType: string): number => {
 const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
     const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
     const relevant = RELEVANT_IDS[weaponType];
+    const merged = mergeEffects(enchant);
     // 優先只顯示對應武器的屬性；若無符合則顯示全部（中性屬性如 HP/DEF 等）
-    const effects = relevant
-        ? enchant.effect.filter(eff => relevant.has(eff.id))
-        : enchant.effect;
-    const toShow = effects.length > 0 ? effects : enchant.effect;
+    const toShow = relevant
+        ? (merged.filter(e => relevant.has(e.id)).length > 0
+            ? merged.filter(e => relevant.has(e.id))
+            : merged)
+        : merged;
     return toShow
         .map(eff => {
             const name = abilitiesMap[eff.id] ?? eff.id;
@@ -748,10 +757,10 @@ interface QuickViewRow {
 }
 
 const quickViewData = computed((): QuickViewRow[] => {
-    const wType    = quickWeaponType.value;
+    const wType     = quickWeaponType.value;
     const weaponOpt = QUICK_WEAPON_OPTIONS.find(w => w.label === wType);
-    const weaponLimits  = weaponOpt?.limits ?? [];
-    const excluded = EXCLUDED_BY_WEAPON[wType] ?? new Set<string>();
+    const weaponLimits = weaponOpt?.limits ?? [];
+    const relevant     = RELEVANT_IDS[wType];
     const noPersonalize = filterNonPersonalize.value;
     const hideRobe = wearBrokenRobe.value;
 
@@ -760,8 +769,13 @@ const quickViewData = computed((): QuickViewRow[] => {
 
         let applicable = enchants.filter(e => e.limit.some(l => limits.includes(l)));
 
-        // 篩掉不相關武器能力
-        applicable = applicable.filter(e => !e.effect.some(eff => excluded.has(eff.id)));
+        // 篩選：有對應武器的相關能力，OR 完全中性（無任何武器專屬能力）
+        if (relevant) {
+            applicable = applicable.filter(e =>
+                e.effect.some(eff => relevant.has(eff.id)) ||
+                !e.effect.some(eff => ANY_EXCLUSIVE.has(eff.id))
+            );
+        }
 
         // 不綁專 filter
         if (noPersonalize) applicable = applicable.filter(e => !e.personalize);
