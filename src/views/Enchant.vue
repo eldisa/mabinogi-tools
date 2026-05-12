@@ -652,12 +652,12 @@ interface WeaponOpt {
 }
 
 const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
-    { label: "魔杖",  limits: ["魔杖", "單手魔杖、集魔杖"] },
-    { label: "集魔杖", limits: ["集魔杖", "單手魔杖、集魔杖"] },
-    { label: "鐮刀",  limits: ["大型鐮刀", "鎖鏈鐮刃", "支援用鎖鏈鐮刃"] },
-    { label: "鋼瓶",  limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"] },
-    { label: "物理",  limits: ["武器", "近距離武器", "單手武器", "雙手武器", "弓", "弩", "拳套", "鈍器", "斧", "斧頭", "手把", "雙槍", "騎槍"] },
-    { label: "音樂",  limits: ["樂器", "管樂器", "絃樂器", "電子吉他"], topN: 3, strictFilter: true },
+    { label: "魔杖",  limits: ["魔杖", "單手魔杖、集魔杖"],                                                                              strictFilter: true },
+    { label: "集魔杖", limits: ["集魔杖", "單手魔杖、集魔杖"],                                                                            strictFilter: true },
+    { label: "鐮刀",  limits: ["大型鐮刀", "鎖鏈鐮刃", "支援用鎖鏈鐮刃"],                                                                strictFilter: true },
+    { label: "鋼瓶",  limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"],                                                         strictFilter: true },
+    { label: "物理",  limits: ["武器", "近距離武器", "單手武器", "雙手武器", "弓", "弩", "拳套", "鈍器", "斧", "斧頭", "手把", "雙槍", "騎槍"], strictFilter: true },
+    { label: "音樂",  limits: ["樂器", "管樂器", "絃樂器", "電子吉他"], topN: 3,                                                         strictFilter: true },
 ];
 
 // 各武器類型「相關」能力 ID 集合
