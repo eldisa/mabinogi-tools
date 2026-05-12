@@ -789,6 +789,9 @@ const quickViewData = computed((): QuickViewRow[] => {
             }
         }
 
+        // 排除無法提取魔力賦予的項目
+        applicable = applicable.filter(e => !e.list.includes("no_enchant_extract(true)"));
+
         // 不綁專 filter
         if (noPersonalize) applicable = applicable.filter(e => !e.personalize);
 
