@@ -374,9 +374,12 @@ const simResult = computed((): SimResult | null => {
     if (p <= 0) return null;
 
     const mean = 1 / p;
-    const p50 = Math.ceil(Math.log(0.5) / Math.log(1 - p));
-    const p90 = Math.ceil(Math.log(0.1) / Math.log(1 - p));
-    const p99 = Math.ceil(Math.log(0.01) / Math.log(1 - p));
+    // Use Math.log1p(-p) instead of Math.log(1-p): when p < ~1e-16, 1-p rounds to 1.0
+    // in float64 making Math.log(1-p)=0 and causing division-by-zero (-Infinity results).
+    const logQ = Math.log1p(-p);
+    const p50 = Math.ceil(Math.log(0.5) / logQ);
+    const p90 = Math.ceil(Math.log(0.1) / logQ);
+    const p99 = Math.ceil(Math.log(0.01) / logQ);
     return { p, drawP, levelP, poolSize: N, targetCount: k, mean, p50, p90, p99, avgCost: mean * costPerRoll.value };
 });
 
@@ -547,7 +550,7 @@ const performAutoRoll = () => {
     if (!simResult.value || simResult.value.p <= 0 || selectedTargets.value.length === 0) return;
     const p = simResult.value.p;
     const u = Math.max(Number.EPSILON, Math.random());
-    const count = Math.ceil(Math.log(u) / Math.log(1 - p));
+    const count = Math.ceil(Math.log(u) / Math.log1p(-p));
 
     rollCount.value += count;
     successCount.value++;
