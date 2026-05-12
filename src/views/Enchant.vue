@@ -290,7 +290,7 @@
                                                         <span v-else class="text-yellow-400 text-xs">★</span>
                                                     </template>
                                                 </div>
-                                                <div class="text-xs text-gray-500 pl-5 leading-tight">{{ formatEnchantEffects(e) }}</div>
+                                                <div class="text-xs text-gray-500 pl-5 leading-tight">{{ formatEnchantEffects(e, quickWeaponType) }}</div>
                                             </div>
                                         </div>
                                     </template>
@@ -314,7 +314,7 @@
                                                         <span v-else class="text-yellow-400 text-xs">★</span>
                                                     </template>
                                                 </div>
-                                                <div class="text-xs text-gray-500 pl-5 leading-tight">{{ formatEnchantEffects(e) }}</div>
+                                                <div class="text-xs text-gray-500 pl-5 leading-tight">{{ formatEnchantEffects(e, quickWeaponType) }}</div>
                                             </div>
                                         </div>
                                     </template>
@@ -671,13 +671,22 @@ const EXCLUDED_BY_WEAPON: Record<string, Set<string>> = {
     "鐮刀":  new Set([...MAGIC_IDS, ...ALCHEMY_IDS]),
 };
 
-// 各武器類型主要數值 ID（用於排序優先 + 顯示主要數值）
+// 各武器類型主要數值 ID（排序用）
 const PRIMARY_IDS: Record<string, string[]> = {
     "物理":  ["attack_max", "AttMax", "Attmax", "wAttMax"],
     "魔杖":  ["magic_attack", "MagicAttack", "magic_damage"],
     "集魔杖": ["magic_attack", "MagicAttack", "magic_damage"],
     "鋼瓶":  ["all_alchemy_damage", "fire_alchemy_damage", "water_alchemy_damage", "earth_alchemy_damage", "wind_alchemy_damage", "AlchemyElementalBonus"],
     "鐮刀":  ["chainblade_attack_max", "attack_max", "AttMax", "Attmax"],
+};
+
+// 各武器類型「顯示」能力 ID（效果摘要只顯示此集合內的屬性）
+const RELEVANT_IDS: Record<string, Set<string>> = {
+    "物理":  new Set([...PHYS_DMG_IDS, "critical", "Crit", "critical_damage", "criticaldamage", "critical_cap_increase", "lance_piercing", "bonus_damage", "bonusdamage", "ArcheryTalentAttMax", "CombatTalentAttMax"]),
+    "魔杖":  new Set([...MAGIC_IDS]),
+    "集魔杖": new Set([...MAGIC_IDS]),
+    "鋼瓶":  new Set([...ALCHEMY_IDS]),
+    "鐮刀":  new Set([...CHAIN_IDS, ...PHYS_DMG_IDS, "critical", "Crit", "critical_damage"]),
 };
 
 const getPrimaryValue = (enchant: Enchant, weaponType: string): number => {
@@ -689,9 +698,15 @@ const getPrimaryValue = (enchant: Enchant, weaponType: string): number => {
     return best;
 };
 
-const formatEnchantEffects = (enchant: Enchant): string => {
+const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
     const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
-    return enchant.effect
+    const relevant = RELEVANT_IDS[weaponType];
+    // 優先只顯示對應武器的屬性；若無符合則顯示全部（中性屬性如 HP/DEF 等）
+    const effects = relevant
+        ? enchant.effect.filter(eff => relevant.has(eff.id))
+        : enchant.effect;
+    const toShow = effects.length > 0 ? effects : enchant.effect;
+    return toShow
         .map(eff => {
             const name = abilitiesMap[eff.id] ?? eff.id;
             const pct = abilitiesValueWithPercentArray.includes(eff.id) ? "%" : "";
@@ -761,8 +776,8 @@ const quickViewData = computed((): QuickViewRow[] => {
 
         return {
             label: slot.label,
-            prefix: sorted.filter(e => e.type === "prefix"),
-            suffix: sorted.filter(e => e.type === "suffix"),
+            prefix: sorted.filter(e => e.type === "prefix").slice(0, 5),
+            suffix: sorted.filter(e => e.type === "suffix").slice(0, 5),
         };
     });
 });
