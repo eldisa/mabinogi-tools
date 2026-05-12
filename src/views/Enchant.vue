@@ -714,11 +714,9 @@ const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
     const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
     const relevant = RELEVANT_IDS[weaponType];
     const merged = mergeEffects(enchant);
-    // 優先只顯示對應武器的屬性；若無符合則顯示全部（中性屬性如 HP/DEF 等）
+    // 只顯示對應武器的相關屬性；若無符合就不強制顯示其他屬性
     const toShow = relevant
-        ? (merged.filter(e => relevant.has(e.id)).length > 0
-            ? merged.filter(e => relevant.has(e.id))
-            : merged)
+        ? merged.filter(e => relevant.has(e.id))
         : merged;
     return toShow
         .map(eff => {
