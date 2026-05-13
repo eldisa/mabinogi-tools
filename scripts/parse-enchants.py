@@ -9,6 +9,7 @@ parse-enchants.py
 """
 
 import argparse
+import json
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -500,6 +501,27 @@ def convert(xml_path: Path, trans_path: Path, output_path: Path) -> None:
     # 依 ID 排序
     records.sort(key=lambda r: r["id"])
     print(f"[轉換] 有效賦予記錄：{len(records)} 筆")
+
+    # ── 套用手動 patch ───────────────────────────────────────
+    patch_path = Path(__file__).with_name("enchants-patches.json")
+    if patch_path.exists():
+        patch_data = json.loads(patch_path.read_text(encoding="utf-8"))
+        patches: dict = patch_data.get("patches", {})
+        id_to_rec = {r["id"]: r for r in records}
+        applied, skipped = 0, 0
+        for id_str, overrides in patches.items():
+            # 跳過非數字 key（如範例、註解）
+            if not id_str.isdigit():
+                continue
+            id_val = int(id_str)
+            if id_val in id_to_rec:
+                id_to_rec[id_val].update(overrides)
+                applied += 1
+            else:
+                print(f"[patch] 警告：ID {id_val} 不存在於生成資料，跳過")
+                skipped += 1
+        if applied or skipped:
+            print(f"[patch] 套用 {applied} 筆修正，{skipped} 筆找不到 ID")
 
     if unknown_allow_items:
         print(f"\n[警告] 未匹配的 AllowItem pattern（共 {len(unknown_allow_items)} 筆，需手動確認）：")
