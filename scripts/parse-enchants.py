@@ -156,6 +156,20 @@ ALLOW_LIMIT_RULES: list[tuple[str, list[str]]] = [
     ("/lefthand/shield/",                   ["盾牌"]),
     # ── 手裏劍 ──────────────────────────────────────────────
     ("shuriken",                            ["手裏劍"]),
+    # ── 具名裝備通用後綴（& 模式用；需在對應 path 規則後）─────────
+    # 用底線前綴避免誤匹配路徑（e.g. _bow ≠ /weapon/bow/）
+    ("_crossbow",                           ["弩"]),          # divine_crossbow_enchant
+    ("_dualgun",                            ["雙槍"]),        # divine_dualgun_enchant
+    ("_lance",                              ["騎槍"]),        # divine_small_lance_enchant
+    ("_bow",                                ["弓"]),          # ruin_bow, banana_bow, archer_bow, disciple_bow
+    ("wand",                                ["魔杖"]),        # divine_wand_enchant, hardwand（/weapon/wand/ 已在前）
+    ("_staff",                              ["集魔杖"]),      # ruin_staff, disciple_staff
+    ("_knuckle",                            ["拳套"]),        # disciple_knuckle, tan_knuckle, ferocious_tormented_knuckle
+    ("_cylinder",                           ["鋼瓶"]),        # disciple_cylinder, ferocious_tyrannous_cylinder
+    ("_sword",                              ["單手武器"]),    # miku_sword, saber_sword, disciple_sword, divine_bastard_sword_enchant
+    ("_blade",                              ["單手武器"]),    # disciple_blade, divine_blade_enchant
+    ("_shield",                             ["盾牌"]),        # divine_shield_enchant
+    ("_acc",                                ["飾品"]),        # blony_acc, palala_acc
     # ── 特定命名武器/裝備 ───────────────────────────────────
     ("trollblunt",                          ["鈍器"]),
     ("eldra_sword",                         ["單手武器"]),
@@ -323,22 +337,32 @@ def split_allow_item(allow_item: str) -> list[str]:
 def allow_item_to_limits(allow_item: str) -> list[str]:
     """
     將 AllowItem 字串轉換為 limit[] 名稱陣列
+
+    支援 | (OR) 和 & (AND) 運算子：
+    - | 拆成多個子 pattern，各自產生 limit 並合併
+    - & 拆成多個 AND-part，取最具體（最早命中 ALLOW_LIMIT_RULES）的那個結果
     """
     sub_patterns = split_allow_item(allow_item)
     seen: set[str] = set()
     result: list[str] = []
 
     for sub in sub_patterns:
-        matched = False
-        for keyword, names in ALLOW_LIMIT_RULES:
-            if keyword in sub:
-                for n in names:
-                    if n not in seen:
-                        seen.add(n)
-                        result.append(n)
-                matched = True
-                break
-        # 若沒有匹配，稍後會在統計中報告
+        # 支援 & (AND) 運算子：取最具體 AND-part 的規則結果
+        and_parts = [p.strip() for p in sub.split("&") if p.strip()]
+        best_idx = len(ALLOW_LIMIT_RULES)   # 預設：無命中
+        best_names: list[str] = []
+        for and_part in and_parts:
+            for idx, (keyword, names) in enumerate(ALLOW_LIMIT_RULES):
+                if keyword in and_part:
+                    if idx < best_idx:
+                        best_idx = idx
+                        best_names = names
+                    break  # 只取此 and_part 的第一個命中
+
+        for n in best_names:
+            if n not in seen:
+                seen.add(n)
+                result.append(n)
 
     return result
 

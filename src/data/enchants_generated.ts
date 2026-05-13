@@ -3529,7 +3529,7 @@ export const enchants: Enchant[] = [
         desc: "狂徒巨劍可強化\n最大傷害 20~27 增加\n力量 10 增加\n聖光之錐等級 5 以上時\n最大生命值 50~80 增加\n修理費 10% 減少",
         level: 5,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["單手武器"],
         effect: [
             { id: "attack_max", min: 20, max: 27 },
             { id: "STR", min: 10, max: 10 },
@@ -4825,7 +4825,7 @@ export const enchants: Enchant[] = [
         desc: "青蔥可魔力賦予\n最大傷害值增加10~20\n當套用上初音未來稱號時最大傷害值增加10\n[把魔力賦予的裝備變為專用裝備]",
         level: 7,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["單手武器"],
         effect: [
             { id: "attack_max", min: 20, max: 30 },
         ],
@@ -4838,7 +4838,7 @@ export const enchants: Enchant[] = [
         desc: "橘子可魔力賦予\n最大傷害值增加5~15\n暴擊率增加8%\n套用上鏡音鈴稱號時最大傷害值增加7\n[把魔力賦予的裝備變為專用裝備]",
         level: 7,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["拳套"],
         effect: [
             { id: "attack_max", min: 12, max: 22 },
             { id: "critical", min: 8, max: 8 },
@@ -4852,7 +4852,7 @@ export const enchants: Enchant[] = [
         desc: "香蕉可魔力賦予\n暴擊率增加5~15%\n敏捷增加7\n套用上鏡音連稱號時最大傷害值增加7\n[把魔力賦予的裝備變為專用裝備]",
         level: 7,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["弓"],
         effect: [
             { id: "critical", min: 5, max: 15 },
             { id: "DEX", min: 7, max: 7 },
@@ -4867,7 +4867,7 @@ export const enchants: Enchant[] = [
         desc: "冰棒可魔力賦予\n魔法攻擊力增加2~4\n智力增加15\n套用上KAITO稱號時暴擊率增加3%\n[把魔力賦予的裝備變為專用裝備]",
         level: 7,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["魔杖"],
         effect: [
             { id: "magic_attack", min: 2, max: 4 },
             { id: "INT", min: 15, max: 15 },
@@ -4941,7 +4941,7 @@ export const enchants: Enchant[] = [
         desc: "聖痕拳套可強化\n最大傷害 18~23 增加\n意志 15 增加\n審判之刃等級 5 以上時\n最大生命值 50~80 增加\n修理費 10% 減少",
         level: 7,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["拳套"],
         effect: [
             { id: "attack_max", min: 18, max: 23 },
             { id: "WIL", min: 15, max: 15 },
@@ -5598,7 +5598,7 @@ export const enchants: Enchant[] = [
         desc: "朝聖者之劍可強化\n最大傷害 12~16 增加\n力量 10 增加\n聖盾庇護等級 5 以上時\n最大生命值 50~80 增加\n修理費 10% 減少",
         level: 8,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["單手武器"],
         effect: [
             { id: "attack_max", min: 12, max: 16 },
             { id: "STR", min: 10, max: 10 },
@@ -5613,7 +5613,7 @@ export const enchants: Enchant[] = [
         desc: "救贖聖弓可強化\n最大傷害 10~12 增加\n敏捷 12 增加\n審判之刃等級 5 以上時\n最大傷害 2~5 增加\n修理費 10% 減少",
         level: 8,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["弓"],
         effect: [
             { id: "attack_max", min: 12, max: 17 },
             { id: "DEX", min: 12, max: 12 },
@@ -5627,7 +5627,7 @@ export const enchants: Enchant[] = [
         desc: "原罪魔杖可強化\n魔法攻擊力 5~8 增加\n智力 10 增加\n聖盾庇護等級 5 以上時\n最大魔力 30~50 增加\n修理費 10% 減少",
         level: 8,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["集魔杖"],
         effect: [
             { id: "magic_attack", min: 5, max: 8 },
             { id: "INT", min: 10, max: 10 },
@@ -5642,7 +5642,7 @@ export const enchants: Enchant[] = [
         desc: "福音鋼瓶可強化\n水屬性鍊金術傷害值 14~17 增加\n火屬性鍊金術傷害值 14~17 增加\n聖光之錐等級 5 以上時\n耐力消耗量 10% 減少\n修理費 10% 減少",
         level: 8,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["鋼瓶"],
         effect: [
             { id: "water_alchemy_damage", min: 14, max: 17 },
             { id: "fire_alchemy_damage", min: 14, max: 17 },
@@ -6040,7 +6040,7 @@ export const enchants: Enchant[] = [
         desc: "神秘的鳳凰羽毛劍可魔力賦予\n魔力消耗減少增加1~4\n魔力賦予攻擊力增加1~3\n使用守護鳳凰的誕生稱號時,智力增加10",
         level: 9,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["魔杖"],
         effect: [
             { id: "mana_saving", min: 1, max: 4 },
             { id: "magic_attack", min: 1, max: 3 },
@@ -7862,7 +7862,7 @@ export const enchants: Enchant[] = [
         desc: "Saber的勝利之劍可以進行魔力賦予\n猛擊等級 8 以上時, 最大傷害 30~40 增加\n暴擊率3%增加\n修理費 25% 減少\n[把魔力賦予的裝備變為專用裝備]",
         level: 7,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["單手武器"],
         effect: [
             { id: "attack_max", min: 30, max: 40 },
             { id: "critical", min: 3, max: 3 },
@@ -7876,7 +7876,7 @@ export const enchants: Enchant[] = [
         desc: "Archer的弓可以進行魔力賦予\n零秒狙擊等級 A 以上時, 暴擊率10~20%增加\n[智力 12 減少]\n耐力 30 增加\n[把魔力賦予的裝備變為專用裝備]",
         level: 7,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["弓"],
         effect: [
             { id: "critical", min: 10, max: 20 },
             { id: "INT", min: -12, max: -12 },
@@ -7891,7 +7891,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n等級 10 以上最大傷害 3 增加\n最大生命力 5 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_max", min: 3, max: 3 },
             { id: "HP", min: 5, max: 5 },
@@ -7905,7 +7905,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n等級 20 以上最大傷害 4 增加\n最大生命力 5 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_max", min: 4, max: 4 },
             { id: "HP", min: 5, max: 5 },
@@ -7919,7 +7919,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n等級 30 以上最大傷害 6 增加\n最大生命力 10 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_max", min: 6, max: 6 },
             { id: "HP", min: 10, max: 10 },
@@ -7933,7 +7933,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n等級 40 以上最大傷害 7 增加\n最大生命力 10 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_max", min: 7, max: 7 },
             { id: "HP", min: 10, max: 10 },
@@ -7947,7 +7947,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n等級 50 以上最大傷害 8 增加\n最大生命力 15 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_max", min: 8, max: 8 },
             { id: "HP", min: 15, max: 15 },
@@ -8327,7 +8327,7 @@ export const enchants: Enchant[] = [
         desc: "可魔力賦予在神聖弩\n最大傷害值25~40增加\n暴擊率13%增加\n敏捷30增加\n銳利等級1~3增加\n[修理費增加400%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["弩"],
         effect: [
             { id: "attack_max", min: 25, max: 40 },
             { id: "critical", min: 13, max: 13 },
@@ -8871,7 +8871,7 @@ export const enchants: Enchant[] = [
         desc: "記憶的胸針可以進行魔力賦予\n累積等級 10000以下時, 魔法攻擊力 1~2 增加 \n累積等級 10000以下時, 最大魔法值 5~12 增加 \n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "prefix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "magic_attack", min: 1, max: 2 },
             { id: "MP", min: 5, max: 12 },
@@ -12523,7 +12523,7 @@ export const enchants: Enchant[] = [
         desc: "魔族牌魔杖上可以進行魔力賦予\n等級 60 以下時最大魔法值增加 20 \n等級 60 以下時智力增加10\n年齡13歲以下時最大生命力增加15",
         level: 6,
         type: "suffix",
-        limit: ["武器"],
+        limit: ["魔杖"],
         effect: [
             { id: "MP", min: 20, max: 20 },
             { id: "INT", min: 10, max: 10 },
@@ -14770,7 +14770,7 @@ export const enchants: Enchant[] = [
         desc: "青蔥,橘子, 香蕉, 冰棒,電子吉他可魔力賦予\n最大生命力增加50\n最大魔法增加50\n最大耐力值增加50\n修理費減少25%\n[把魔力賦予的裝備變為專用裝備]",
         level: 9,
         type: "suffix",
-        limit: ["電子吉他"],
+        limit: ["單手武器", "拳套", "弓", "魔杖", "電子吉他"],
         effect: [
             { id: "HP", min: 50, max: 50 },
             { id: "MP", min: 50, max: 50 },
@@ -16910,7 +16910,7 @@ export const enchants: Enchant[] = [
         desc: "Saber的勝利之劍可以進行魔力賦予\n掛著最強的從者稱號時, 幸運 15~30 增加\n力量 8 增加\n敏捷 3 增加\n[最大魔力 20 減少]\n[把魔力賦予的裝備變為專用裝備]",
         level: 6,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["單手武器"],
         effect: [
             { id: "LUK", min: 15, max: 30 },
             { id: "STR", min: 8, max: 8 },
@@ -16926,7 +16926,7 @@ export const enchants: Enchant[] = [
         desc: "Archer的弓可以進行魔力賦予\n掛著最強的從者稱號時, 最大傷害 8 增加\n力量 12 增加\n意志 5 增加\n修理費 25% 減少\n[把魔力賦予的裝備變為專用裝備]",
         level: 6,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["弓"],
         effect: [
             { id: "attack_max", min: 8, max: 8 },
             { id: "STR", min: 12, max: 12 },
@@ -16941,7 +16941,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n最大傷害 1 增加\n意志 2 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_max", min: 1, max: 1 },
             { id: "WIL", min: 2, max: 2 },
@@ -16955,7 +16955,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n最小傷害 1 增加\n最大傷害 1 增加\n意志 2 增加\n敏捷 2 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_min", min: 1, max: 1 },
             { id: "attack_max", min: 1, max: 1 },
@@ -16971,7 +16971,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n最小傷害 1 增加\n最大傷害 2 增加\n意志 2 增加\n敏捷 2 增加\n力量 2 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_min", min: 1, max: 1 },
             { id: "attack_max", min: 2, max: 2 },
@@ -16988,7 +16988,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n最小傷害 2 增加\n最大傷害 2 增加\n意志 2 增加\n敏捷 2 增加\n力量 2 增加\n智力 2 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_min", min: 2, max: 2 },
             { id: "attack_max", min: 2, max: 2 },
@@ -17006,7 +17006,7 @@ export const enchants: Enchant[] = [
         desc: "帕拉魯的碎片可魔力賦予\n最小傷害 3 增加\n最大傷害 2 增加\n意志 2 增加\n敏捷 2 增加\n力量 2 增加\n智力 2 增加\n幸運 2 增加\n防禦 1 增加\n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 1,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_min", min: 3, max: 3 },
             { id: "attack_max", min: 2, max: 2 },
@@ -17196,7 +17196,7 @@ export const enchants: Enchant[] = [
         desc: "'可在神聖變形劍上魔力賦予\n最小傷害值15~30增加\n最大傷害值25~45增加\n暴擊率10%增加\n[修理費增加400%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["單手武器"],
         effect: [
             { id: "attack_min", min: 15, max: 30 },
             { id: "attack_max", min: 25, max: 45 },
@@ -17211,7 +17211,7 @@ export const enchants: Enchant[] = [
         desc: "可魔力賦予在神聖雙手劍\n最小傷害值10增加\n最大傷害值25~50增加\n力量25增加\n意志3增加\n銳利等級1~3增加\n幸運10增加\n[修理費增加400%]\n[把把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["單手武器"],
         effect: [
             { id: "attack_min", min: 10, max: 10 },
             { id: "attack_max", min: 25, max: 50 },
@@ -17228,7 +17228,7 @@ export const enchants: Enchant[] = [
         desc: "可在神聖小型騎士槍上魔力賦予\n最大傷害值25~50增加\n暴擊率10%增加\n銳利等級1~3增加\n力量25增加\n[修理費增加400%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["騎槍"],
         effect: [
             { id: "attack_max", min: 25, max: 50 },
             { id: "critical", min: 10, max: 10 },
@@ -17243,7 +17243,7 @@ export const enchants: Enchant[] = [
         desc: "可在神聖三矛魔杖上魔力賦予\n魔法攻擊力15~30增加\n減少魔力消耗4增加\n最大魔力10~50增加\n暴擊率7%增加\n最大生命力30增加\n[力量15減少]\n[修理費增加400%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["魔杖"],
         effect: [
             { id: "magic_attack", min: 15, max: 30 },
             { id: "mana_saving", min: 4, max: 4 },
@@ -17261,7 +17261,7 @@ export const enchants: Enchant[] = [
         desc: "神聖雙槍L2可以使用魔力賦予技能\n最小傷害增加5~10\n最大傷害增加38~52\n暴擊率增加20%\n力量增加50\n最大生命力增加100\n[修理費增加400%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["雙槍"],
         effect: [
             { id: "attack_min", min: 5, max: 10 },
             { id: "attack_max", min: 38, max: 52 },
@@ -17278,7 +17278,7 @@ export const enchants: Enchant[] = [
         desc: "可在神聖盾牌上魔力賦予\n暴擊率3%增加\n攻擊速度1~3增加\n防禦3增加\n保護1增加\n魔法防禦3增加\n魔法保護1增加\n[修理費增加400%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["盾牌"],
         effect: [
             { id: "critical", min: 3, max: 3 },
             { id: "fast_attack", min: 1, max: 3 },
@@ -17792,7 +17792,7 @@ export const enchants: Enchant[] = [
         desc: "記憶的胸針可以進行魔力賦予\n最大傷害值 4 增加\n魔法攻擊力 2 增加\n100% 魔力賦予成功",
         level: 7,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "attack_max", min: 4, max: 4 },
             { id: "magic_attack", min: 2, max: 2 },
@@ -17837,7 +17837,7 @@ export const enchants: Enchant[] = [
         desc: "記憶的胸針可以進行魔力賦予\n累積等級 10000以下時, 最大生命值 5~15 增加 \n[把魔力賦予的裝備變為專用裝備]\n100% 魔力賦予成功",
         level: 6,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["飾品"],
         effect: [
             { id: "HP", min: 5, max: 15 },
         ],
@@ -17850,7 +17850,7 @@ export const enchants: Enchant[] = [
         desc: "兇猛暴君鋼瓶可以進行魔力賦予\n火焰噴射3階段以上時, 火屬性傷害 22~35 增加\n水炮3階段以上時, 水屬性傷害 40~60 增加\n沙暴3階段以上時, 土屬性傷害 20 增加\n巨魔像鍊成等級1以上時, 最大生命力 30 增加\n火花等級1以上時, 最大魔力 30 增加\n海德拉鍊成等級1以上時, 最大耐力 30 增加\n[修理費10倍增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 13,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["鋼瓶"],
         effect: [
             { id: "alchemy_fire", min: 22, max: 35 },
             { id: "alchemy_water", min: 40, max: 60 },
@@ -17867,7 +17867,7 @@ export const enchants: Enchant[] = [
         desc: "兇猛折磨拳套可以進行魔力賦予\n突拳3階段以上時, 最大傷害 27~42 增加\n螺旋勾拳3階段以上時, 意志 15~25 增加\n猛烈突擊3階段以上時, 暴擊率15%增加\n[修理費 10 倍增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 13,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["拳套"],
         effect: [
             { id: "attack_max", min: 27, max: 42 },
             { id: "WIL", min: 15, max: 25 },
@@ -17898,7 +17898,7 @@ export const enchants: Enchant[] = [
         desc: "終焉毀滅之弓可以進行魔力賦予\n穿心箭3階段以上時, 最大傷害 20~36 增加\n爆裂箭3階段以上時, 銳利 1 增加\n精通遠距離戰術技能3階段以上時, 敏捷 15~25 增加\n[修理費 10 倍增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 13,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["弓"],
         effect: [
             { id: "attack_max", min: 20, max: 36 },
             { id: "DEX", min: 15, max: 25 },
@@ -17912,7 +17912,7 @@ export const enchants: Enchant[] = [
         desc: "破碎超載集魔杖可以進行魔力賦予\n雹暴等級1以上時, 魔法攻擊力 20~34 增加\n火石狂熱等級1以上時, 智力 50~70 增加\n聚精凝魔等級1以上時, 最大魔力 60 增加\n雷氣鎖鏈3階段以上時, 銳利 1 增加\n[修理費 10 倍增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 13,
         type: "suffix",
-        limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["集魔杖"],
         effect: [
             { id: "magic_attack", min: 20, max: 34 },
             { id: "INT", min: 50, max: 70 },
