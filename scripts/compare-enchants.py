@@ -190,6 +190,16 @@ def load_file(path: Path) -> dict[int, dict]:
 # 比較邏輯
 # ============================================================
 
+# [""] 在 enchants.ts 裡代表「無限制（全裝備）」，
+# 與 generated 產生的全裝備兜底結果視為語意相同
+_NO_LIMIT_EMPTY    = frozenset([""])
+_NO_LIMIT_FULL     = frozenset(["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"])
+
+def is_no_limit(lst: list[str]) -> bool:
+    s = frozenset(lst)
+    return s == _NO_LIMIT_EMPTY or s == _NO_LIMIT_FULL
+
+
 def fmt_limit(lst: list[str] | None) -> str:
     if lst is None:
         return "(無)"
@@ -247,11 +257,12 @@ def compare_entries(gen: dict, cur: dict) -> list[str]:
     if gen.get("personalize") != cur.get("personalize"):
         diffs.append(f'  personalize: gen={gen.get("personalize")}  |  cur={cur.get("personalize")}')
 
-    # limit
+    # limit（[""] 視為「無限制」，與全裝備兜底結果語意相同，不計差異）
     gl, cl = gen.get("limit") or [], cur.get("limit") or []
     if sorted(gl) != sorted(cl):
-        diffs.append(f'  limit    : gen={fmt_limit(gl)}')
-        diffs.append(f'           : cur={fmt_limit(cl)}')
+        if not (is_no_limit(gl) and is_no_limit(cl)):
+            diffs.append(f'  limit    : gen={fmt_limit(gl)}')
+            diffs.append(f'           : cur={fmt_limit(cl)}')
 
     # effect
     ge, ce = gen.get("effect") or [], cur.get("effect") or []
