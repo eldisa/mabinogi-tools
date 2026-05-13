@@ -126,6 +126,8 @@ ALLOW_LIMIT_RULES: list[tuple[str, list[str]]] = [
     ("/head/helmet/steel/",                 ["頭部裝備"]),
     ("/hand/gauntlet/steel/",               ["金屬手套"]),
     ("/foot/armorboots/steel/",             ["金屬靴"]),
+    # /equip/armor/* 泛路徑涵蓋所有盔甲（含布甲），需在 /armor/ 前處理
+    ("/equip/armor/",                       ["衣服", "衣物", "盔甲"]),
     ("/armor/",                             ["盔甲"]),
     # ── 頭 ──────────────────────────────────────────────────
     ("/equip/head/",                        ["頭部裝備"]),
@@ -149,6 +151,8 @@ ALLOW_LIMIT_RULES: list[tuple[str, list[str]]] = [
     # ── 飾品 ────────────────────────────────────────────────
     ("accessary",                           ["飾品"]),
     # ── 盾牌 ────────────────────────────────────────────────
+    # /equip/lefthand/* 泛路徑→盾牌（需在 /lefthand/shield/ 前，避免被 /equip/ 兜底覆蓋）
+    ("/equip/lefthand/",                    ["盾牌"]),
     ("/lefthand/shield/",                   ["盾牌"]),
     # ── 手裏劍 ──────────────────────────────────────────────
     ("shuriken",                            ["手裏劍"]),

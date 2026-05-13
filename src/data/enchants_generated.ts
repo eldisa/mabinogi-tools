@@ -993,7 +993,7 @@ export const enchants: Enchant[] = [
         desc: "頭部,腳部裝備,盾牌可以進行魔力賦予\n等級 15 以上時,平衡性增加 3~5%",
         level: 6,
         type: "prefix",
-        limit: ["鞋子", "頭部裝備", "武器", "衣服", "手套", "飾品"],
+        limit: ["鞋子", "頭部裝備", "盾牌"],
         effect: [
             { id: "balance", min: 3, max: 5 },
         ],
@@ -1006,7 +1006,7 @@ export const enchants: Enchant[] = [
         desc: "頭部,腳部裝備,盾牌可以進行魔力賦予\n等級 41 以上時,平衡性增加5~7%",
         level: 9,
         type: "prefix",
-        limit: ["鞋子", "頭部裝備", "武器", "衣服", "手套", "飾品"],
+        limit: ["鞋子", "頭部裝備", "盾牌"],
         effect: [
             { id: "balance", min: 5, max: 7 },
         ],
@@ -1019,7 +1019,7 @@ export const enchants: Enchant[] = [
         desc: "頭部,腳部裝備,盾牌可以進行魔力賦予\n等級 70 以上時,平衡性增加 7~9%",
         level: 13,
         type: "prefix",
-        limit: ["鞋子", "頭部裝備", "武器", "衣服", "手套", "飾品"],
+        limit: ["鞋子", "頭部裝備", "盾牌"],
         effect: [
             { id: "balance", min: 7, max: 9 },
         ],
@@ -1032,7 +1032,7 @@ export const enchants: Enchant[] = [
         desc: "頭部,腳部裝備,盾牌可以進行魔力賦予\n等級 101 以上時,平衡性增加 9~11%",
         level: 15,
         type: "prefix",
-        limit: ["鞋子", "頭部裝備", "武器", "衣服", "手套", "飾品"],
+        limit: ["鞋子", "頭部裝備", "盾牌"],
         effect: [
             { id: "balance", min: 9, max: 11 },
         ],
@@ -1110,7 +1110,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 30 以上時\n防禦增加 2",
         level: 8,
         type: "suffix",
-        limit: ["盔甲", "武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["衣服", "衣物", "盔甲", "盾牌"],
         effect: [
             { id: "defense", min: 2, max: 2 },
         ],
@@ -1123,7 +1123,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 51 以上時\n防禦增加 4",
         level: 12,
         type: "suffix",
-        limit: ["盔甲", "武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["衣服", "衣物", "盔甲", "盾牌"],
         effect: [
             { id: "defense", min: 4, max: 4 },
         ],
@@ -1136,7 +1136,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 76 以上時\n防禦增加 5",
         level: 14,
         type: "suffix",
-        limit: ["盔甲", "武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["衣服", "衣物", "盔甲", "盾牌"],
         effect: [
             { id: "defense", min: 5, max: 5 },
         ],
@@ -1149,7 +1149,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 99 以上時\n防禦增加 7",
         level: 15,
         type: "suffix",
-        limit: ["盔甲", "武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
+        limit: ["衣服", "衣物", "盔甲", "盾牌"],
         effect: [
             { id: "defense", min: 7, max: 7 },
         ],
@@ -1227,7 +1227,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,頭,飾品上可魔力賦予\n等級36以上時\n保護增加2",
         level: 8,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "protection", min: 2, max: 2 },
         ],
@@ -1240,7 +1240,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,頭,飾品上可魔力賦予\n等級68以上時\n保護增加3",
         level: 10,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "protection", min: 3, max: 3 },
         ],
@@ -1253,7 +1253,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,頭,飾品上可魔力賦予\n等級85以上時\n保護增加4",
         level: 13,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "protection", min: 4, max: 4 },
         ],
@@ -1266,7 +1266,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,頭,飾品上可魔力賦予\n等級108以上時\n保護增加5",
         level: 14,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "protection", min: 5, max: 5 },
         ],
@@ -1279,7 +1279,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,頭,飾品上可魔力賦予\n等級134以上時\n保護增加6",
         level: 15,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "protection", min: 6, max: 6 },
         ],
@@ -1370,7 +1370,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,腳部裝備裝備可以進行魔力賦予\n等級35以上時 \n力量增加5~10",
         level: 8,
         type: "suffix",
-        limit: ["盔甲", "鞋子"],
+        limit: ["衣服", "衣物", "盔甲", "鞋子"],
         effect: [
             { id: "STR", min: 5, max: 10 },
         ],
@@ -1383,7 +1383,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,腳部裝備,飾品可以進行魔力賦予\n等級 62 以上時\n力量增加 5~7",
         level: 10,
         type: "suffix",
-        limit: ["盔甲", "鞋子", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "鞋子", "飾品"],
         effect: [
             { id: "STR", min: 5, max: 7 },
         ],
@@ -1396,7 +1396,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,腳部裝備,飾品可以進行魔力賦予\n等級 92 以上時\n力量增加 7~9",
         level: 12,
         type: "suffix",
-        limit: ["盔甲", "鞋子", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "鞋子", "飾品"],
         effect: [
             { id: "STR", min: 7, max: 9 },
         ],
@@ -1409,7 +1409,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,腳部裝備,飾品可以進行魔力賦予\n等級 112 以上時\n力量增加 9~11",
         level: 14,
         type: "suffix",
-        limit: ["盔甲", "鞋子", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "鞋子", "飾品"],
         effect: [
             { id: "STR", min: 9, max: 11 },
         ],
@@ -2007,7 +2007,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,飾品,頭盔可以進行魔力賦予\n等級 7 以上時\n最大生命值增加 4~7",
         level: 6,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "HP", min: 4, max: 7 },
         ],
@@ -2020,7 +2020,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,帽子類可以進行魔力賦予\n等級29以上時 \n最大生命值增加12~16",
         level: 8,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備"],
         effect: [
             { id: "HP", min: 12, max: 16 },
         ],
@@ -2033,7 +2033,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,頭, 盾牌可以進行魔力賦予\n等級 51 以上時\n最大生命值增加 13~16",
         level: 13,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "HP", min: 13, max: 16 },
         ],
@@ -2046,7 +2046,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 70 以上時\n最大生命值增加 17~20",
         level: 15,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "HP", min: 17, max: 20 },
         ],
@@ -2137,7 +2137,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,帽子類可以進行魔力賦予\n等級28以上時 \n最大魔法值增加12~16",
         level: 8,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備"],
         effect: [
             { id: "MP", min: 12, max: 16 },
         ],
@@ -2150,7 +2150,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 42 以上時\n最大魔法值增加 13~16",
         level: 11,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "MP", min: 13, max: 16 },
         ],
@@ -2163,7 +2163,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 68 以上時\n最大魔法值增加 17~20",
         level: 13,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "MP", min: 17, max: 20 },
         ],
@@ -2176,7 +2176,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 90 以上時\n最大魔法值增加 21~24",
         level: 15,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "MP", min: 21, max: 24 },
         ],
@@ -2254,7 +2254,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,帽子類可以進行魔力賦予\n等級38以上時 \n最大耐力值增加12~16",
         level: 8,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備"],
         effect: [
             { id: "SP", min: 12, max: 16 },
         ],
@@ -2267,7 +2267,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 52 以上時\n最大耐力值增加 13~16",
         level: 13,
         type: "suffix",
-        limit: ["盔甲", "頭部裝備", "飾品"],
+        limit: ["衣服", "衣物", "盔甲", "頭部裝備", "飾品"],
         effect: [
             { id: "SP", min: 13, max: 16 },
         ],
@@ -2409,7 +2409,7 @@ export const enchants: Enchant[] = [
         desc: "衣服和盔甲可以進行魔力賦予\n精通格鬥技能等級 F 以上時,暴擊率增加 1%\n[最大魔法值減少 1]",
         level: 1,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "critical", min: 1, max: 1 },
             { id: "MP", min: -1, max: -1 },
@@ -2622,7 +2622,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲可以進行魔力賦予\n暴擊率增加 4% \n[暴擊等級 E 以上時力量減少 2]\n[等級 13 以上時平衡性減少 5%]",
         level: 2,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "critical", min: 4, max: 4 },
             { id: "STR", min: -2, max: -2 },
@@ -2682,7 +2682,7 @@ export const enchants: Enchant[] = [
         desc: "衣服和盔甲可以進行魔力賦予\n精通格鬥技能等級 C 以上時,暴擊率增加 2%\n[最大魔法值減少 3]",
         level: 2,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "critical", min: 2, max: 2 },
             { id: "MP", min: -3, max: -3 },
@@ -2810,7 +2810,7 @@ export const enchants: Enchant[] = [
         desc: "衣服和盔甲可以進行魔力賦予\n精通格鬥技能等級 9 以上時,暴擊率增加 3%\n[最大魔法值減少 5]",
         level: 3,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "critical", min: 3, max: 3 },
             { id: "MP", min: -5, max: -5 },
@@ -3021,7 +3021,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予 \n最大傷害增加 6\n[等級 18 以下時,平衡性減少 6%]\n[等級 24 以上時,意志減少 10]",
         level: 4,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 6, max: 6 },
             { id: "balance", min: -6, max: -6 },
@@ -3331,7 +3331,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲可以進行魔力賦予\n旋風箭技能等級 B 以上時敏捷增加 5 \n重擊技能等級 B 以上時敏捷增加 5 \n雷矢技能等級B 以上時 敏捷增加 5",
         level: 5,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "DEX", min: 15, max: 15 },
         ],
@@ -4407,7 +4407,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n最大攻擊傷害值增加 7\n最小傷害增加 4\n[等級 30以上時意志減少10]",
         level: 7,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 7, max: 7 },
             { id: "attack_min", min: 4, max: 4 },
@@ -4677,7 +4677,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n最大傷害值增加8\n最小傷害值增加5\n箭系組合魔法等級6 以上時暴擊率增加4%",
         level: 7,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 8, max: 8 },
             { id: "attack_min", min: 5, max: 5 },
@@ -4751,7 +4751,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n最大傷害值增加8\n最小傷害值增加8\n[把魔力賦予的裝備變為專用裝備]",
         level: 7,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 8, max: 8 },
             { id: "attack_min", min: 8, max: 8 },
@@ -5442,7 +5442,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n鍊金術精通技能等級 6以上時耐力消耗減少 5% \n等級 16 以上時最大傷害值增加 10",
         level: 8,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 10, max: 10 },
         ],
@@ -6069,7 +6069,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲可魔力賦予\n人偶操縱術等級3以上時, 最大傷害5 增加\n人偶操縱術等級7以上時, 暴擊率 3~6% 增加\n人偶操縱術暴擊率 6~9% 增加\n人偶最大傷害5 增加\n[把魔力賦予的裝備變為專用裝備]",
         level: 9,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 5, max: 5 },
             { id: "critical", min: 3, max: 6 },
@@ -6099,7 +6099,7 @@ export const enchants: Enchant[] = [
         desc: "可魔力賦予衣服、盔甲、手套、鞋子\n拉近等級1 以上時\n力量增加8~15\n退遠等級3 以上時\n最大生命值增加20\n退遠等級1以上時\n最大耐力值增加20",
         level: 9,
         type: "prefix",
-        limit: ["盔甲", "腳部裝備", "手套"],
+        limit: ["衣服", "衣物", "盔甲", "腳部裝備", "手套"],
         effect: [
             { id: "STR", min: 8, max: 15 },
             { id: "HP", min: 20, max: 20 },
@@ -6114,7 +6114,7 @@ export const enchants: Enchant[] = [
         desc: "可魔力賦予衣服、盔甲、手套、鞋子\n彈雨等級1 以上時\n智力增加 8~15\n雙槍射擊等級3以上時\n最大生命力增加20\n雙槍射擊等級1以上時\n最大魔力增加20",
         level: 9,
         type: "prefix",
-        limit: ["盔甲", "腳部裝備", "手套"],
+        limit: ["衣服", "衣物", "盔甲", "腳部裝備", "手套"],
         effect: [
             { id: "INT", min: 8, max: 15 },
             { id: "HP", min: 20, max: 20 },
@@ -6473,7 +6473,7 @@ export const enchants: Enchant[] = [
         desc: "皮質盔甲可以進行魔力賦予\n休息技能等級8以上時,幸運增加 20\n休息技能等級7以上時,最大傷害增加 6~12",
         level: 11,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "LUK", min: 20, max: 20 },
             { id: "attack_max", min: 6, max: 12 },
@@ -6666,7 +6666,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n火焰噴射等級1以上時,火屬性攻擊傷害5~7增加\n水炮等級1以上時,水屬性攻擊傷害10~15增加\n沙暴等級1以上時,最大傷害13增加\n連鎖鋼瓶等級1以上時,暴擊率5%增加\n最大生命力20增加\n[修理費增加100%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "alchemy_fire", min: 5, max: 7 },
             { id: "alchemy_water", min: 10, max: 15 },
@@ -6683,7 +6683,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n魔力凝聚等級1以上時,鍊金術生產成功率2~4%增加\n鍊金術精通等級1以上時,最大傷害7~12增加\n最大生命力30增加\n最大耐力值30增加\n[修理費增加200%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "alchemist_product_success_rate", min: 2, max: 4 },
             { id: "attack_max", min: 7, max: 12 },
@@ -6837,7 +6837,7 @@ export const enchants: Enchant[] = [
         desc: "可在服裝,盔甲上魔力賦予\n戰場的序曲等級1以上時,最大傷害值15~18增加\n作曲等級1以上時,音樂增益效果4~6增加\n音樂知識等級1以上時,音樂增益持續時間10增加\n敏捷25增加\n力量25增加\n[修理費增加200%]",
         level: 11,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 15, max: 18 },
             { id: "music_buff_bonus", min: 4, max: 6 },
@@ -7635,7 +7635,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲上可進行強化\n手裏劍精通等級 7 以上時\n最小傷害 3~6 增加\n手裏劍突擊等級 5 以上時意志 10 增加\n影子束縛術等級 1 以上時力量 20 增加",
         level: 8,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_min", min: 3, max: 6 },
             { id: "WIL", min: 10, max: 10 },
@@ -7650,7 +7650,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲上可進行強化\n櫻花雨等級3以上時\n最大傷害18增加\n影子隱身術等級3以上時\n意志12增加\n影子束縛術1等級以上時\n力量15~20增加\n灰色煙幕術2等級以上時\n暴擊率7~12%增加\n[修理費增加100%]",
         level: 11,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 18, max: 18 },
             { id: "WIL", min: 12, max: 12 },
@@ -7666,7 +7666,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲上可魔力賦予\n審判之刃等級 1 以上時,最大傷害 14~23 增加\n聖光之錐等級 3 以上時,暴擊率10%增加\n聖盾庇護等級 3 以上時,防禦 10 增加\n聖盾庇護等級 1 以上時,保護 2~4 增加\n聖靈同步等級 1 以上時,最大生命力 50 增加\n[修理費 5倍 增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 12,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 14, max: 23 },
             { id: "critical", min: 10, max: 10 },
@@ -7683,7 +7683,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲上可魔力賦予\n戰爭的序曲等級 1 以上時,最大傷害 12~20 增加\n作曲等級 1 以上時,音樂增益效果 3~8 增加\n音樂知識等級 1 以上時,音樂增益持續時間 15 增加\n忍耐的音樂等級 1 以上時,最大魔法 30 增加\n[修理費 5倍 增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 12,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 12, max: 20 },
             { id: "music_buff_bonus", min: 3, max: 8 },
@@ -7992,7 +7992,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n打鐵3階段以上時生產品品質3增加\n稀原工學1階段以上時力量10增加\n藥水製作2階段以上時幸運15增加\n[修理費增加100%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 15,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "product_quality_bonus", min: 3, max: 3 },
             { id: "STR", min: 10, max: 10 },
@@ -8007,7 +8007,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n製作衣物3階段以上時生產品品質3增加\n魔法製造1階段以上時智力10增加\n藥水製作2階段以上時幸運15增加\n[修理費增加100%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 15,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "product_quality_bonus", min: 3, max: 3 },
             { id: "INT", min: 10, max: 10 },
@@ -8604,7 +8604,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n探險等級 20 以上時 最大傷害 10~20 增加\n[最小傷害 3 減少]\n暴擊率1~5%增加\n力量 20 增加\n[修理費3倍]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 10, max: 20 },
             { id: "attack_min", min: -3, max: -3 },
@@ -8620,7 +8620,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n探險等級 15 以上時 最大傷害 8~15 增加\n暴擊率3%增加\n最大生命力 20 增加\n[修理費 2倍]\n[把魔力賦予的裝備變為專用裝備]",
         level: 10,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 8, max: 15 },
             { id: "Critical", min: 3, max: 3 },
@@ -8635,7 +8635,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n累積等級 10000 以下時 最大傷害 10~15 增加\n累積等級 10000 以下時 暴擊率6~10%增加\n累積等級 10000 以下時 防禦 3 增加\n累積等級 10000 以下時 保護 1 增加\n修理費 30% 減少\n[把魔力賦予的裝備變為專用裝備]",
         level: 9,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 10, max: 15 },
             { id: "Critical", min: 6, max: 10 },
@@ -8651,7 +8651,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n累積等級 7000 以下時 最大傷害 15~20 增加\n累積等級 7000 以下時 生命力 100 增加\n累積等級 7000 以下時 力量 25 增加\n累積等級 7000 以下時 敏捷 25 增加\n修理費 50% 減少\n[把魔力賦予的裝備變為專用裝備]",
         level: 8,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 15, max: 20 },
             { id: "HP", min: 100, max: 100 },
@@ -8929,7 +8929,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可進行魔力賦予\n第六幕 : 誘惑的圈套在等級1以上時人偶最大傷害增加11~15\n第一幕 : 偶然的衝突在等級3以上時人偶操縱術暴擊率增加5~10%\n小丑人偶在等級3以上時人偶防禦增加5\n巨像人偶在等級3以上時人偶保護增加2\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "marionette_damage_max", min: 11, max: 15 },
             { id: "marionette_control_critical", min: 5, max: 10 },
@@ -9116,7 +9116,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可進行魔力賦予\n箭系組合魔法在等級1以上時魔法攻擊力增加4~8\n精通魔法在等級1以上時防禦增加2~5\n聚精凝魔在等級1以上時防護增加2\n[把魔力賦予的裝備變為專用裝備]",
         level: 10,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "magic_attack", min: 4, max: 8 },
             { id: "defense", min: 2, max: 5 },
@@ -9206,7 +9206,7 @@ export const enchants: Enchant[] = [
         desc: "可在衣服,鎧甲上進行魔力賦予.\n當治癒達到等級2以上時,魔法攻擊力增加17~28,\n當組隊治癒達到等級1以上時,治癒效果增加10%,\n當包紮達到等級3以上時,移動速度增加1~3%,\n當導電反應達到等級1以上時,魔法施展速度增加3%,\n最大魔法值增加50,\n保護增加6,\n[把魔力賦予的裝備變為專用裝備]",
         level: 12,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "magic_attack", min: 17, max: 28 },
             { id: "healing", min: 10, max: 10 },
@@ -9798,7 +9798,7 @@ export const enchants: Enchant[] = [
         desc: "可對衣服,盔甲進行魔力賦予\n最大傷害增加22\n魔法攻擊力增加6\n4大屬性鍊金術傷害增加5\n音樂增益效果增加4\n音樂增益效果技能持續時間增加8\n[把魔力賦予的裝備設定為專用]",
         level: 9,
         type: "prefix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 22, max: 22 },
             { id: "magic_attack", min: 6, max: 6 },
@@ -10051,7 +10051,7 @@ export const enchants: Enchant[] = [
         desc: "水晶球,魔導書可進行魔力賦予\n聚精凝魔為等級1以上時,魔法攻擊力增加10~20\n[把魔力賦予的裝備設定為專用]\n[修理費增加200%]",
         level: 10,
         type: "prefix",
-        limit: ["盾牌", "武器"],
+        limit: ["盾牌"],
         effect: [
             { id: "magic_attack", min: 10, max: 20 },
         ],
@@ -11071,7 +11071,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n平衡性增加 5% \n最大傷害值增加 5",
         level: 3,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "balance", min: 5, max: 5 },
             { id: "attack_max", min: 5, max: 5 },
@@ -11143,7 +11143,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n[等級 5 以上時,平衡性減少 20%]\n等級 10 以下時,防禦增加 1\n等級 10 以下時,保護增加 2",
         level: 4,
         type: "suffix",
-        limit: ["盔甲", "盾牌"],
+        limit: ["衣服", "衣物", "盔甲", "盾牌"],
         effect: [
             { id: "balance", min: -20, max: -20 },
             { id: "defense", min: 1, max: 1 },
@@ -11392,7 +11392,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲可魔力賦予\n人偶生命力20 增加\n人偶防禦2 增加\n人偶保護2 增加",
         level: 4,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "marionette_life", min: 20, max: 20 },
             { id: "marionette_defense", min: 2, max: 2 },
@@ -12143,7 +12143,7 @@ export const enchants: Enchant[] = [
         desc: "料理工具可以進行魔力賦予\n使用美食大會得獎人稱號時,暴擊率增加10%\n料理技能等級9以上時,平衡性增加5% \n[料理技能等級C以上時, 耐力值減少 20]",
         level: 6,
         type: "suffix",
-        limit: ["單手武器", "武器"],
+        limit: ["單手武器", "盾牌"],
         effect: [
             { id: "critical", min: 10, max: 10 },
             { id: "balance", min: 5, max: 5 },
@@ -12219,7 +12219,7 @@ export const enchants: Enchant[] = [
         desc: "料理工具可以進行魔力賦予\n料理等級 8 以上時智力增加 12\n料理等級 A 以上時敏捷增加 10\n平衡性增加 4\n[料理等級 D 以下時 暴擊率減少 8%]",
         level: 6,
         type: "suffix",
-        limit: ["單手武器", "武器"],
+        limit: ["單手武器", "盾牌"],
         effect: [
             { id: "INT", min: 12, max: 12 },
             { id: "DEX", min: 10, max: 10 },
@@ -12779,7 +12779,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲,盾牌可以進行魔力賦予\n等級 10 以下時,防禦增加 2\n等級 15 以下時,保護增加 5\n[等級 20 以上時,智力減少 20]",
         level: 7,
         type: "suffix",
-        limit: ["盔甲", "盾牌"],
+        limit: ["衣服", "衣物", "盔甲", "盾牌"],
         effect: [
             { id: "defense", min: 2, max: 2 },
             { id: "protection", min: 5, max: 5 },
@@ -13121,7 +13121,7 @@ export const enchants: Enchant[] = [
         desc: "料理工具可以進行魔力賦予\n料理等級 9 以上時力量增加 12 \n料理等級 C 以上時意志增加 8 \n暴擊率增加 5%\n[料理等級 E 以下時平衡性減少 10 ]",
         level: 7,
         type: "suffix",
-        limit: ["單手武器", "武器"],
+        limit: ["單手武器", "盾牌"],
         effect: [
             { id: "STR", min: 12, max: 12 },
             { id: "WIL", min: 8, max: 8 },
@@ -13504,7 +13504,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可魔力賦予\n進行貿易時最大傷害力增加15\n幸運增加15",
         level: 7,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 15, max: 15 },
             { id: "LUK", min: 15, max: 15 },
@@ -13533,7 +13533,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲可魔力賦予\n力量10~15 增加\n敏捷7~10 增加\n人偶 防禦2 增加",
         level: 7,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "STR", min: 10, max: 15 },
             { id: "DEX", min: 7, max: 10 },
@@ -13563,7 +13563,7 @@ export const enchants: Enchant[] = [
         desc: "可魔力賦予衣服、盔甲、手套、鞋子\n衝射等級3 以上時\n暴擊率增加8%",
         level: 7,
         type: "suffix",
-        limit: ["盔甲", "腳部裝備", "手套"],
+        limit: ["衣服", "衣物", "盔甲", "腳部裝備", "手套"],
         effect: [
             { id: "critical", min: 8, max: 8 },
         ],
@@ -13576,7 +13576,7 @@ export const enchants: Enchant[] = [
         desc: "可魔力賦予衣服、盔甲、布質手套、鞋子\n雙槍精通等級3以上時\n最大傷害增加3~9",
         level: 7,
         type: "suffix",
-        limit: ["盔甲", "腳部裝備", "手套"],
+        limit: ["衣服", "衣物", "盔甲", "腳部裝備", "手套"],
         effect: [
             { id: "attack_max", min: 3, max: 9 },
         ],
@@ -13616,7 +13616,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲可以進行魔力賦予\n發動衝擊相消時防禦 70 增加\n發動衝擊相消時魔法防禦 30 增加\n最大傷害 5 增加",
         level: 7,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "shockcancellation_def", min: 70, max: 70 },
             { id: "shockcancellation_magicdefence", min: 30, max: 30 },
@@ -13691,7 +13691,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n[力量減少 2]\n冥想技能等級 D 以上時,智力增加 3\n冥想技能等級 C 以上時,敏捷增加 3",
         level: 8,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "STR", min: -2, max: -2 },
             { id: "INT", min: 3, max: 3 },
@@ -14945,7 +14945,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可進行魔力賦予\n合成在等級1以上時4大屬性鍊金術傷害增加6~10\n防護壁在等級1以上時防禦增加7~12\n吸取生命在等級1以上時防護增加2\n發動衝擊相消時防禦增加20\n發動衝擊相消時魔法防禦增加10\n[把魔力賦予的裝備變為專用裝備]",
         level: 9,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "all_alchemy_damage", min: 6, max: 10 },
             { id: "defense", min: 7, max: 12 },
@@ -15085,7 +15085,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可進行魔力賦予\n雷氣鎖鏈在等級1以上時,魔法攻擊力增加3~7\n火石狂熱在等級3以上時最大傷害增加4~8\n爆裂術在等級1以上時智力增加20\n精通魔法在等級1以上時最大魔法值增加100\n[把魔力賦予的裝備變為專用裝備]",
         level: 10,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "magic_attack", min: 3, max: 7 },
             { id: "attack_max", min: 4, max: 8 },
@@ -15840,7 +15840,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n第二幕 : 激增的憤怒等級1以上時,人偶最大傷害15~20增加\n第七幕 : 狂亂的奔走等級1以上時,人偶防禦5增加\n人偶操縱術等級1以上時,最大傷害10~15增加\n最大生命力40增加\n[修理費增加200%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "marionette_damage_max", min: 15, max: 20 },
             { id: "marionette_defense", min: 5, max: 5 },
@@ -15856,7 +15856,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n打鐵技能等級1以上時,產物品質2增加\n冶煉等級1以上時,最大傷害7~15增加\n幸運15~25增加\n最大生命力50增加\n[修理費增加100%]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "product_quality_bonus", min: 2, max: 2 },
             { id: "attack_max", min: 7, max: 15 },
@@ -16669,7 +16669,7 @@ export const enchants: Enchant[] = [
         desc: "衣服, 盔甲上可進行強化\n手裏劍暴風等級 1 以上時意志 12~17 增加\n手裏劍爆破等級 1 以上時力量 20 增加\n手裏劍精通等級 1 以上時暴擊率15%增加",
         level: 9,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "WIL", min: 12, max: 17 },
             { id: "STR", min: 20, max: 20 },
@@ -16684,7 +16684,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n手裏劍精通等級1以上時\n最大傷害15~20增加\n手裏劍爆破等級1以上時意志15增加\n影子束縛術等級1以上時\n最大耐力15~20增加\n灰色煙幕術等級2以上時最大生命值20增加\n[修理費增加100%]",
         level: 12,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 15, max: 20 },
             { id: "WIL", min: 15, max: 15 },
@@ -16700,7 +16700,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲上可魔力賦予\n審判之刃等級 1 以上時,最大傷害 12~19 增加\n聖盾庇護等級 3 以上時,防禦 5 增加\n聖盾庇護等級 1 以上時,保護 1~4 增加\n聖靈同步等級 3 以上時,力量 20 增加\n聖靈同步等級 2 以上時,幸運 20 增加\n聖靈同步等級 1 以上時,最大生命力 50 增加\n[修理費 5倍 增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 13,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 12, max: 19 },
             { id: "defense", min: 5, max: 5 },
@@ -16718,7 +16718,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲上可魔力賦予\n活潑板等級 1 以上時,最大傷害 10~22 增加\n作曲等級 1 以上時,音樂增益效果 1~3增加\n豐年歌等級 1 以上時,最大耐力 50 增加\n[修理費 5倍 增加]\n[把魔力賦予的裝備變為專用裝備]",
         level: 13,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 10, max: 22 },
             { id: "music_buff_bonus", min: 1, max: 3 },
@@ -17533,7 +17533,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n探險等級 20 以上時 最大傷害 6~16 增加\n最小傷害值 1~5 增加\n[保護 3 減少]\n[修理費3倍]\n[把魔力賦予的裝備變為專用裝備]",
         level: 11,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 6, max: 16 },
             { id: "attack_min", min: 1, max: 5 },
@@ -17548,7 +17548,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n探險等級 15 以上時 最大傷害 5~13 增加\n暴擊率5%增加\n幸運 20 增加\n[修理費 2倍]\n[把魔力賦予的裝備變為專用裝備]",
         level: 10,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 5, max: 13 },
             { id: "Critical", min: 5, max: 5 },
@@ -17563,7 +17563,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n累積等級 10000 以下時 最大傷害 10~15 增加\n累積等級 10000 以下時 敏捷 15 增加\n累積等級 10000 以下時 幸運 15 增加\n累積等級 10000 以下時 防禦 2 增加\n累積等級 10000 以下時 保護 2 增加\n修理費 30% 減少\n[把魔力賦予的裝備變為專用裝備]",
         level: 9,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 10, max: 15 },
             { id: "DEX", min: 15, max: 15 },
@@ -17580,7 +17580,7 @@ export const enchants: Enchant[] = [
         desc: "衣服,盔甲可以進行魔力賦予\n累積等級 7000 以下時 最大傷害 15~18 增加\n累積等級 7000 以下時 最小傷害 5~10 增加\n累積等級 7000 以下時 敏捷 25 增加\n累積等級 7000 以下時 幸運 25 增加\n修理費 50% 減少\n[把魔力賦予的裝備變為專用裝備]",
         level: 8,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 15, max: 18 },
             { id: "attack_min", min: 5, max: 10 },
@@ -18105,7 +18105,7 @@ export const enchants: Enchant[] = [
         desc: "可在衣服,鎧甲上進行魔力賦予\n最大傷害增加16\n魔法攻擊力增加5\n4大屬性鍊金術傷害增加7\n人偶最大傷害增加16\n保護增加2\n魔法保護增加5\n[把魔力賦予的裝備變為專用裝備]",
         level: 3,
         type: "suffix",
-        limit: ["盔甲"],
+        limit: ["衣服", "衣物", "盔甲"],
         effect: [
             { id: "attack_max", min: 16, max: 16 },
             { id: "magic_attack", min: 5, max: 5 },
@@ -18891,7 +18891,7 @@ export const enchants: Enchant[] = [
         desc: "水晶球,魔導書可進行魔力賦予\n引力空間為等級1以上時,魔法攻擊力增加10~15\n[把魔力賦予的裝備設定為專用]\n[修理費增加200%]",
         level: 10,
         type: "suffix",
-        limit: ["盾牌", "武器"],
+        limit: ["盾牌"],
         effect: [
             { id: "magic_attack", min: 10, max: 15 },
         ],
