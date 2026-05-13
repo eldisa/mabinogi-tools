@@ -445,8 +445,8 @@ def convert(xml_path: Path, trans_path: Path, output_path: Path) -> None:
         except (KeyError, ValueError):
             continue
 
-        # 只保留正式賦予（ID 以 2 或 3 開頭；其餘為測試用途）
-        if not (str(eid).startswith("2") or str(eid).startswith("3")):
+        # 跳過測試用賦予（ID >= 40000）
+        if eid >= 40000:
             continue
 
         # 跳過技能強化類（AllowItem 是技能路徑，不是裝備路徑）
