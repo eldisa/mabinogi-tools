@@ -73,6 +73,12 @@ const pendingFeatures = [
         description: "資料待更新",
         path: "/enchant",
     },
+    {
+        icon: "Rank",
+        title: "頂裝差距",
+        description: "比較與頂裝之間的差距",
+        path: "/gear-gap",
+    },
 ];
 
 const abandonedFeatures = [
@@ -126,7 +132,7 @@ const navigateTo = (path: string) => {
         </section>
 
         <section class="features pending-section">
-            <h2 class="section-title pending-title">待更新</h2>
+            <h2 class="section-title pending-title">🚧 施工中</h2>
             <div class="feature-grid">
                 <div
                     v-for="feature in pendingFeatures"

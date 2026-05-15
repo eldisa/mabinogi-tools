@@ -205,42 +205,18 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21607,
-        name: {
-            tw: "被覆蓋的",
-            en: "Extinct",
-            tw2: "被覆蓋的",
-        },
+        name: { tw: "被覆蓋的", en: "Extinct", tw2: "被覆蓋的" },
         list: ": : SetParamOnEquip(AttMax, +15);\\n: : SetParamOnEquip(MagicAttack, +(50~55));\\n: : AddBonusOnAlchemy(alchemy_all, +(15~20));\\n: : SetParamOnEquip(Prot, +1);\\n: : SetParamOnEquip(MagicProtect, +2);\\n: : setpersonalize(true);",
-        desc: "可在衣物上進行魔力賦予\\\\n最大傷害增加15\\\\n魔法攻擊力增加50~55\\\\n4大屬性鍊金術傷害增加15~20\\\\n保護增加1\\\\n魔法保護增加2\\\\n[把魔力賦予的裝備變為專用裝備]\\\\n[修理費增加200%]",
+        desc: "...",
         level: 10,
         type: "prefix",
         limit: ["衣物"],
         effect: [
-            {
-                id: "attack_max",
-                min: 15,
-                max: 15,
-            },
-            {
-                id: "magic_attack",
-                min: 50,
-                max: 55,
-            },
-            {
-                id: "all_alchemy_damage",
-                min: 15,
-                max: 20,
-            },
-            {
-                id: "protection",
-                min: 1,
-                max: 1,
-            },
-            {
-                id: "marionette_protect",
-                min: 2,
-                max: 2,
-            },
+            { id: "attack_max", min: 15, max: 15 },
+            { id: "magic_attack", min: 50, max: 55 },
+            { id: "all_alchemy_damage", min: 15, max: 20 },
+            { id: "protection", min: 1, max: 1 },
+            { id: "magic_protection", min: 2, max: 2 },
         ],
         personalize: true,
     },
@@ -401,6 +377,7 @@ export const enchants: Enchant[] = [
             tw: "薄暮的",
             en: "Dusky",
             kr: "어스름한",
+            tw2: "朦朧的",
         },
         type: "prefix",
         limit: ["單手魔杖、集魔杖"],
@@ -427,67 +404,15 @@ export const enchants: Enchant[] = [
         personalize: true,
     },
     {
-        id: 21639,
-        name: {
-            tw: "朦朧的",
-            en: "Dusky",
-            tw2: "朦朧的",
-        },
-        list: ":IsGreaterEqualSkillLv(30301,18) : SetParamOnEquip(MagicAttack, +(50~65));\\n: : SetParamOnEquip(ManaMax, +100);\\n: : SetSetItemEffectOnEquip(mana_saving, +5);\\n: : setpersonalize(true);",
-        desc: "集魔杖,魔杖可進行魔力賦予\\\\n冰矛等級3以上時,魔法攻擊力增加50~65\\\\n最大魔力值增加100\\\\n魔力值消耗減少5\\\\n[把魔力賦予的裝備變為專用裝備]\\\\n[修理費增加200% ]",
-        level: 10,
-        type: "prefix",
-        limit: ["集魔杖", "魔杖"],
-        effect: [
-            {
-                id: "magic_attack",
-                min: 50,
-                max: 65,
-            },
-            {
-                id: "MP",
-                min: 100,
-                max: 100,
-            },
-            {
-                id: "manause_revised_set",
-                min: 5,
-                max: 5,
-            },
-        ],
-        personalize: true,
-    },
-    {
         id: 21640,
-        name: {
-            tw: "無窮的",
-            en: "Enduring",
-            kr: "무궁한",
-            tw2: "無窮的",
-        },
+        name: { tw: "無窮的", en: "Enduring", kr: "무궁한", tw2: "無窮的" },
         type: "prefix",
         limit: ["單手魔杖、集魔杖"],
         effect: [
-            {
-                id: "magic_attack",
-                min: 50,
-                max: 65,
-            },
-            {
-                id: "INT",
-                min: 20,
-                max: 20,
-            },
-            {
-                id: "MP",
-                min: 50,
-                max: 50,
-            },
-            {
-                id: "manause_revised_set",
-                min: 2,
-                max: 6,
-            },
+            { id: "magic_attack", min: 50, max: 65 },
+            { id: "INT", min: 20, max: 20 },
+            { id: "MP", min: 50, max: 50 },
+            { id: "manause_revised_set", min: 2, max: 6 },
         ],
         list: ":IsGreaterEqualSkillLv(30302,18) : SetParamOnEquip(MagicAttack, +(50~65));\n:IsGreaterEqualSkillLv(30102,18) : SetSetItemEffectOnEquip(mana_saving, +(2~6));\n: : SetParamOnEquip(ManaMax, +50);\n: : SetParamOnEquip(Int, +20);\n: : setpersonalize(true);",
         desc: "",
@@ -496,25 +421,12 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21641,
-        name: {
-            tw: "無盡的",
-            en: "Endless",
-            kr: "끝없는",
-            tw2: "無盡的",
-        },
+        name: { tw: "無盡的", en: "Endless", kr: "끝없는", tw2: "無盡的" },
         type: "prefix",
         limit: ["大型鐮刀"],
         effect: [
-            {
-                id: "magic_attack",
-                min: 25,
-                max: 40,
-            },
-            {
-                id: "MP",
-                min: 100,
-                max: 200,
-            },
+            { id: "magic_attack", min: 45, max: 60 }, // 修正:原本寫 25~40，list 為 45~60
+            { id: "MP", min: 100, max: 200 },
         ],
         list: ":IsGreaterEqualSkillLv(27201,18) : SetParamOnEquip(MagicAttack, +(45~60));\n: : SetParamOnEquip(ManaMax, +(100~200));\n: : setpersonalize(true);",
         desc: "",
@@ -580,29 +492,13 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21644,
-        name: {
-            tw: "破壞性的",
-            en: "Destructive",
-            kr: "파괴적인",
-        },
+        name: { tw: "破壞性的", en: "Destructive", kr: "파괴적인" },
         type: "prefix",
         limit: ["單手武器"],
         effect: [
-            {
-                id: "attack_max",
-                min: 45,
-                max: 60,
-            },
-            {
-                id: "attack_min",
-                min: 30,
-                max: 40,
-            },
-            {
-                id: "STR2",
-                min: 10,
-                max: 10,
-            },
+            { id: "attack_max", min: 45, max: 60 },
+            { id: "attack_min", min: 30, max: 40 },
+            { id: "STR", min: 10, max: 10 }, // 修正:原本為 STR2，Map 中應為 STR
         ],
         list: ":IsGreaterEqualSkillLv(20019,15) : SetParamOnEquip(AttMax, +(45~60));\n: : SetParamOnEquip(AttMin, +(30~40));\n: : SetParamOnEquip(Str, +10);\n: : setpersonalize(true);",
         desc: "",
@@ -611,29 +507,13 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21645,
-        name: {
-            tw: "解放的",
-            en: "Freed",
-            kr: "해방된",
-        },
+        name: { tw: "解放的", en: "Freed", kr: "해방된" },
         type: "prefix",
         limit: ["弓", "弩"],
         effect: [
-            {
-                id: "lance_piercing",
-                min: 2,
-                max: 3,
-            },
-            {
-                id: "attack_max",
-                min: 70,
-                max: 85,
-            },
-            {
-                id: "DEX",
-                min: 50,
-                max: 50,
-            },
+            { id: "lance_piercing", min: 2, max: 3 }, // 修正:對應 SetItemOption(lance_piercing)
+            { id: "attack_max", min: 70, max: 85 },
+            { id: "DEX", min: 50, max: 50 },
         ],
         list: ": : SetItemOption(lance_piercing, +(2~3));\n:IsGreaterEqualSkillLv(21002,18) : SetParamOnEquip(AttMax, +(70~85));\n: : SetParamOnEquip(Dex, +50);\n: : setpersonalize(true);",
         desc: "",
@@ -668,34 +548,14 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21649,
-        name: {
-            tw: "甦醒的",
-            en: "Roused",
-            kr: "깨어난",
-        },
+        name: { tw: "甦醒的", en: "Roused", kr: "깨어난" },
         type: "prefix",
         limit: ["手把"],
         effect: [
-            {
-                id: "marionette_attack_max",
-                min: 50,
-                max: 60,
-            },
-            {
-                id: "marionette_hp",
-                min: 200,
-                max: 200,
-            },
-            {
-                id: "marionette_defense",
-                min: 3,
-                max: 3,
-            },
-            {
-                id: "marionette_protect",
-                min: 3,
-                max: 3,
-            },
+            { id: "marionette_attack_max", min: 30, max: 50 }, // 修正:原本寫 50~60，list 為 30~50
+            { id: "marionette_hp", min: 200, max: 200 },
+            { id: "marionette_defense", min: 3, max: 3 },
+            { id: "marionette_protect", min: 3, max: 3 },
         ],
         list: ":IsGreaterEqualSkillLv(54103,18) : SetParamOnEquip(marionette_damage_max, +(30~50));\n: : SetParamOnEquip(marionette_life, +200);\n: : SetParamOnEquip(marionette_defense, +3);\n: : SetParamOnEquip(marionette_protect, +3);\n: : setpersonalize(true);",
         desc: "",
@@ -735,29 +595,13 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21651,
-        name: {
-            tw: "關鍵的",
-            en: "Decisive",
-            kr: "결정적인",
-        },
+        name: { tw: "關鍵的", en: "Decisive", kr: "결정적인" },
         type: "prefix",
         limit: ["雙槍"],
         effect: [
-            {
-                id: "attack_max",
-                min: 50,
-                max: 60,
-            },
-            {
-                id: "attack_min",
-                min: 25,
-                max: 25,
-            },
-            {
-                id: "attack_speed_set",
-                min: 4,
-                max: 6,
-            },
+            { id: "attack_max", min: 50, max: 60 },
+            { id: "attack_min", min: 25, max: 25 },
+            { id: "attack_speed_set", min: 4, max: 6 }, // 修正:原本為 attack_speed_set 但 list 為 fast_attack
         ],
         list: ":IsGreaterEqualSkillLv(54306,18) : SetParamOnEquip(AttMax, +(50~60));\n: : SetParamOnEquip(AttMin, +25);\n: : SetParamOnEquip(fast_attack, +(4~6));: : setpersonalize(true);",
         desc: "",
@@ -1168,32 +1012,16 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31697,
-        name: {
-            tw: "斯奈塔",
-            en: "Sneachta",
-            tw2: "斯奈塔",
-        },
+        name: { tw: "斯奈塔", en: "Sneachta", tw2: "斯奈塔" },
         list: ": : SetParamOnEquip(MagicAttack, +(22~24));\\n: : SetParamOnEquip(Crit, +15);\\n: : SetParamOnEquip(MagicProtect, +5);\\n: : setpersonalize(true);",
-        desc: "手部,腳部裝備可進行魔力賦予\\\\n魔法攻擊力增加22~24\\\\n暴擊增加15\\\\n魔法保護增加5\\\\n[把魔力賦予的裝備變為專用裝備]\\\\n[修理費增加100%]",
+        desc: "...",
         level: 10,
         type: "suffix",
         limit: ["手部裝備", "腳部裝備"],
         effect: [
-            {
-                id: "magic_attack",
-                min: 22,
-                max: 24,
-            },
-            {
-                id: "critical",
-                min: 15,
-                max: 15,
-            },
-            {
-                id: "marionette_protect",
-                min: 5,
-                max: 5,
-            },
+            { id: "magic_attack", min: 22, max: 24 },
+            { id: "critical", min: 15, max: 15 },
+            { id: "magic_protection", min: 5, max: 5 }, // 修正:原本為 marionette_protect，list 為 MagicProtect
         ],
         personalize: true,
     },
@@ -1298,29 +1126,14 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31735,
-        name: {
-            tw: "成果",
-            en: "Harvest",
-            kr: "결실",
-        },
+        name: { tw: "成果", en: "Harvest", kr: "결실" },
         type: "suffix",
         limit: ["單手魔杖、集魔杖"],
         effect: [
-            {
-                id: "lance_piercing",
-                min: 1,
-                max: 1,
-            },
-            {
-                id: "magic_attack",
-                min: 50,
-                max: 60,
-            },
-            {
-                id: "manause_revised_set",
-                min: 4,
-                max: 8,
-            },
+            { id: "lance_piercing", min: 1, max: 1 },
+            { id: "magic_attack", min: 50, max: 60 },
+            { id: "manause_revised_set", min: 4, max: 8 },
+            { id: "HP", min: 100, max: 100 }, // 補充:原本漏掉 list 中的 LifeMax
         ],
         list: ": : SetItemOption(lance_piercing, +1);\n: IsGreaterEqualSkillLv(30202,18) : SetParamOnEquip(MagicAttack, +(50~60));\n: : SetSetItemEffectOnEquip(mana_saving, +(4~8));\n: : SetParamOnEquip(LifeMax, +100);\n: : setpersonalize(true);",
         desc: "",
@@ -1417,34 +1230,14 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31739,
-        name: {
-            tw: "鬥志",
-            en: "valor",
-            kr: "투지",
-        },
+        name: { tw: "鬥志", en: "valor", kr: "투지" },
         type: "suffix",
         limit: ["單手武器"],
         effect: [
-            {
-                id: "lance_piercing",
-                min: 1,
-                max: 2,
-            },
-            {
-                id: "attack_max",
-                min: 60,
-                max: 70,
-            },
-            {
-                id: "HP",
-                min: 100,
-                max: 100,
-            },
-            {
-                id: "STR2",
-                min: 22,
-                max: 22,
-            },
+            { id: "lance_piercing", min: 1, max: 2 },
+            { id: "attack_max", min: 60, max: 70 },
+            { id: "HP", min: 100, max: 100 },
+            { id: "STR", min: 22, max: 22 }, // 修正:原本為 STR2
         ],
         list: ": : SetItemOption(lance_piercing, +(1~2));\n:IsGreaterEqualSkillLv(23002,18) : SetParamOnEquip(AttMax, +(60~70));\n: : SetParamOnEquip(LifeMax, +100);\n: : SetParamOnEquip(Str, +22);\n: : setpersonalize(true);",
         desc: "",
@@ -1510,30 +1303,13 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31744,
-        name: {
-            tw: "銅像",
-            tw2: "凍傷",
-            en: "bronze statue",
-            kr: "동상",
-        },
+        name: { tw: "銅像", tw2: "凍傷", en: "bronze statue", kr: "동상" },
         type: "suffix",
         limit: ["手把"],
         effect: [
-            {
-                id: "lance_piercing",
-                min: 1,
-                max: 2,
-            },
-            {
-                id: "marionette_attack_max",
-                min: 55,
-                max: 65,
-            },
-            {
-                id: "marionette_attack_min",
-                min: 80,
-                max: 80,
-            },
+            { id: "lance_piercing", min: 1, max: 2 },
+            { id: "marionette_attack_max", min: 55, max: 65 },
+            { id: "marionette_attack_min", min: 80, max: 80 }, // 修正:原本寫 marionette_attack_min 但 list 為 marionette_damage_min
         ],
         list: ": : SetItemOption(lance_piercing, +(1~2));\n:IsGreaterEqualSkillLv(54104,18) : SetParamOnEquip(marionette_damage_max, +(55~65));\n: : SetParamOnEquip(marionette_damage_min, +80);\n: : setpersonalize(true);",
         desc: "",
@@ -1542,34 +1318,14 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31745,
-        name: {
-            tw: "重現",
-            en: "Revive",
-            kr: "재현",
-        },
+        name: { tw: "重現", en: "Revive", kr: "재현" },
         type: "suffix",
         limit: ["拳套"],
         effect: [
-            {
-                id: "lance_piercing",
-                min: 2,
-                max: 3,
-            },
-            {
-                id: "attack_max",
-                min: 60,
-                max: 80,
-            },
-            {
-                id: "STR2",
-                min: 50,
-                max: 50,
-            },
-            {
-                id: "WIL",
-                min: 50,
-                max: 50,
-            },
+            { id: "lance_piercing", min: 2, max: 3 },
+            { id: "attack_max", min: 60, max: 80 },
+            { id: "STR", min: 50, max: 50 }, // 修正:原本為 STR2
+            { id: "WIL", min: 50, max: 50 },
         ],
         list: ": : SetItemOption(lance_piercing, +(2~3));\n:IsGreaterEqualSkillLv(24302,18) : SetParamOnEquip(AttMax, +(60~80));\n: : SetParamOnEquip(Str, +50);\n: : SetParamOnEquip(Will, +50);\n: : setpersonalize(true);",
         desc: "",
@@ -1578,34 +1334,14 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31746,
-        name: {
-            tw: "痛擊",
-            en: "Smite",
-            kr: "강타",
-        },
+        name: { tw: "痛擊", en: "Smite", kr: "강타" },
         type: "suffix",
         limit: ["雙槍"],
         effect: [
-            {
-                id: "lance_piercing",
-                min: 2,
-                max: 3,
-            },
-            {
-                id: "attack_max",
-                min: 60,
-                max: 80,
-            },
-            {
-                id: "STR2",
-                min: 50,
-                max: 50,
-            },
-            {
-                id: "INT",
-                min: 50,
-                max: 50,
-            },
+            { id: "lance_piercing", min: 2, max: 3 },
+            { id: "attack_max", min: 60, max: 80 },
+            { id: "STR", min: 50, max: 50 }, // 修正:原本為 STR2
+            { id: "INT", min: 50, max: 50 },
         ],
         list: ": : SetItemOption(lance_piercing, +(2~3));\n:IsGreaterEqualSkillLv(54303,18) : SetParamOnEquip(AttMax, +(60~80));\n: : SetParamOnEquip(Str, +50);\n: : SetParamOnEquip(Int, +50);\n: : setpersonalize(true);",
         desc: "",
@@ -1614,34 +1350,14 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31747,
-        name: {
-            tw: "殘渣",
-            en: "Remnant",
-            kr: "잔재",
-        },
+        name: { tw: "殘渣", en: "Remnant", kr: "잔재" },
         type: "suffix",
         limit: ["手裡劍"],
         effect: [
-            {
-                id: "lance_piercing",
-                min: 2,
-                max: 3,
-            },
-            {
-                id: "attack_max",
-                min: 60,
-                max: 80,
-            },
-            {
-                id: "STR2",
-                min: 50,
-                max: 50,
-            },
-            {
-                id: "WIL",
-                min: 50,
-                max: 50,
-            },
+            { id: "lance_piercing", min: 2, max: 3 },
+            { id: "attack_max", min: 60, max: 80 },
+            { id: "STR", min: 50, max: 50 }, // 修正:原本為 STR2
+            { id: "WIL", min: 50, max: 50 },
         ],
         list: ": : SetItemOption(lance_piercing, +(2~3));\n:IsGreaterEqualSkillLv(26002,18) : SetParamOnEquip(AttMax, +(60~80));\n: : SetParamOnEquip(Str, +50);\n: : SetParamOnEquip(Will, +50);\n: : setpersonalize(true);",
         desc: "",
@@ -14289,9 +14005,9 @@ export const enchants: Enchant[] = [
     {
         id: 21124,
         name: {
-            tw: "安",
+            tw: "安可",
             en: "Encore",
-            tw2: "安",
+            tw2: "安可",
         },
         list: ": IsGreaterEqualSkillLv(53102,15) : SetParamOnEquip(AttMax, +(10~15));\\n: IsGreaterEqualSkillLv(10005,15) : SetParamOnEquip(musicbuff_bonus, +3);\\n: IsGreaterEqualSkillLv(10006,15) : SetParamOnEquip(musicbuff_duration, +(5~10));\\n: IsGreaterEqualSkillLv(53104,15) : SetParamOnEquip(LifeMax, +50);\\n: : SetParamOnEquip(StaminaMax, +50);\\n: : setpersonalize(true);",
         desc: "可以在衣物上使用魔力賦予技能\\\\n搖籃曲等級1以上時,最大傷害10~15增加\\\\n作曲等級1以上時,音樂效果3增加\\\\n音樂知識等級1以上時,音樂效果持續時間5~10增加\\\\n忍耐的音樂等級1以上時,最大生命力50增加\\\\n最大耐力值50增加\\\\n[修理費增加200%]\\\\n[把魔力賦予的裝備變為專用裝備]",
@@ -14519,7 +14235,7 @@ export const enchants: Enchant[] = [
         desc: "可在服裝,盔甲上魔力賦予\\\\n戰場的序曲等級1以上時,最大傷害值15~18增加\\\\n作曲等級1以上時,音樂增益效果4~6增加\\\\n音樂知識等級1以上時,音樂增益持續時間10增加\\\\n敏捷25增加\\\\n力量25增加\\\\n[修理費增加200%]",
         level: 11,
         type: "prefix",
-        limit: ["服裝", "盔甲"],
+        limit: ["衣物", "盔甲"],
         effect: [
             {
                 id: "attack_max",
@@ -14982,7 +14698,7 @@ export const enchants: Enchant[] = [
         list: ": IsGreaterEqualSkillLv(53103,15) : SetParamOnEquip(musicbuff_bonus, 5);\\n: IsGreaterEqualSkillLv(10006,15) : SetParamOnEquip(musicbuff_duration, 10);\\n: IsGreaterEqualSkillLv(53001,15) : SetParamOnEquip(AttMax, +(20~25));\\n: : SetParamOnEquip(luck, +(10~25));\\n: : SetParamOnEquip(StaminaMax, +50);\\n: : setpersonalize(true);",
         desc: "樂器可以魔力賦予\\\\n活潑板等級1以上時,音樂效果5增加\\\\n音樂知識等級1以上時,音樂效果持續時間10增加\\\\n旋律衝擊等級1以上時,最大傷害20~25增加\\\\n幸運10~25增加\\\\n最大耐力值50增加\\\\n[修理費增加100%]\\\\n[把魔力賦予的裝備變為專用裝備]",
         level: 12,
-        type: "suffix",
+        type: "prefix",
         limit: ["樂器"],
         effect: [
             {

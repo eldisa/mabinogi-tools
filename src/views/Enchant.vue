@@ -1,9 +1,7 @@
 <template>
     <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
-        <div class="enchant-notice">
-            ⚠️ 作者沒動力更新，沒用的捲那麼多，反正大家也就用那些而已
-        </div>
-        <div class="max-w-6xl mx-auto space-y-8">
+        <div class="enchant-notice">🚧 施工中，資料待更新｜⚠️ 作者沒動力更新，沒用的捲那麼多，反正大家也就用那些而已</div>
+        <div class="max-w-6xl mx-auto">
             <header class="text-center pt-8 pb-4">
                 <h1 class="text-4xl sm:text-5xl font-bold mb-2 tracking-wide font-serif drop-shadow-lg">
                     <span class="inline-block relative text-gradient">
@@ -21,6 +19,10 @@
                 </h1>
                 <p class="text-lg text-gray-400 mt-4 font-sans">賦予裝備能力。數值要抽，上爛要抽，你的$$還夠嗎</p>
             </header>
+
+            <el-tabs v-model="activeTab" class="enchant-tabs mt-6">
+                <el-tab-pane label="查詢" name="search">
+                    <div class="space-y-6 pt-4">
 
             <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8">
                 <div class="mb-6 border-b border-gray-700 pb-4">
@@ -71,12 +73,7 @@
                                 <el-option label="小於等於" value="lte" />
                                 <el-option label="等於" value="eq" />
                             </el-select>
-                            <el-input-number
-                                v-model="searchValue"
-                                :min="-999"
-                                :max="999"
-                                style="width: 150px"
-                            />
+                            <el-input-number v-model="searchValue" :min="-999" :max="999" style="width: 150px" />
                         </div>
                     </el-form-item>
 
@@ -113,24 +110,25 @@
                                 <el-option label="大於等於" value="gte" />
                                 <el-option label="小於等於" value="lte" />
                             </el-select>
-                            <el-input-number
+                            <el-select
                                 v-model="searchRank"
-                                :min="1"
-                                :max="20"
+                                placeholder="選擇等級"
+                                clearable
                                 :disabled="!searchRankOperator"
                                 style="width: 150px"
-                            />
+                            >
+                                <el-option
+                                    v-for="opt in rankSelectOptions"
+                                    :key="opt.value"
+                                    :label="opt.label"
+                                    :value="opt.value"
+                                />
+                            </el-select>
                         </div>
                     </el-form-item>
 
                     <el-form-item label="裝備類型">
-                        <el-select
-                            v-model="searchLimit"
-                            placeholder="全部"
-                            clearable
-                            filterable
-                            style="width: 240px"
-                        >
+                        <el-select v-model="searchLimit" placeholder="全部" clearable filterable style="width: 240px">
                             <el-option
                                 v-for="limitType in limitTypes"
                                 :key="limitType"
@@ -140,17 +138,27 @@
                         </el-select>
                     </el-form-item>
 
+                    <el-form-item label="轉專用">
+                        <el-radio-group v-model="filterPersonalize">
+                            <el-radio label="全部" value="all" />
+                            <el-radio label="會轉專用" value="yes" />
+                            <el-radio label="不轉專用" value="no" />
+                        </el-radio-group>
+                    </el-form-item>
+
+                    <el-form-item label="排序">
+                        <el-radio-group v-model="sortBy">
+                            <el-radio label="預設" value="default" />
+                            <el-radio label="等級 ↑" value="rank_asc" />
+                            <el-radio label="等級 ↓" value="rank_desc" />
+                        </el-radio-group>
+                    </el-form-item>
+
                     <el-form-item>
-                        <div class="flex gap-3">
-                            <el-button type="primary" @click="handleSearch">
-                                <el-icon class="mr-1"><Search /></el-icon>
-                                搜尋
-                            </el-button>
-                            <el-button @click="handleReset">
-                                <el-icon class="mr-1"><RefreshLeft /></el-icon>
-                                重置
-                            </el-button>
-                        </div>
+                        <el-button @click="handleReset">
+                            <el-icon class="mr-1"><RefreshLeft /></el-icon>
+                            重置條件
+                        </el-button>
                     </el-form-item>
                 </el-form>
             </el-card>
@@ -159,15 +167,13 @@
                 <div class="mb-6 border-b border-gray-700 pb-4 flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-accent">搜尋結果</h2>
                     <span class="text-gray-400">
-                        找到 <span class="text-accent font-bold">{{ displayData.length }}</span> 個賦予
+                        找到
+                        <span class="text-accent font-bold">{{ displayData.length }}</span>
+                        個賦予
                     </span>
                 </div>
                 <div>
-                    <el-empty
-                        v-if="displayData.length === 0"
-                        description="沒有符合條件的賦予"
-                        :image-size="150"
-                    />
+                    <el-empty v-if="displayData.length === 0" description="沒有符合條件的賦予" :image-size="150" />
                     <el-table
                         v-else
                         :data="displayData"
@@ -179,10 +185,11 @@
                     >
                         <el-table-column prop="name" label="名稱" width="280" align="center">
                             <template #default="{ row }">
-                                <div class="flex flex-col items-center gap-1">
-                                    <div>
+                                <div class="flex flex-col items-center gap-1 w-full">
+                                    <div class="flex gap-1 flex-wrap justify-center">
                                         <el-tag v-if="row.type === 'prefix'" type="danger" size="small">接頭</el-tag>
                                         <el-tag v-else type="primary" size="small">接尾</el-tag>
+                                        <el-tag v-if="row.personalize" type="warning" size="small">轉專用</el-tag>
                                     </div>
                                     <span class="font-medium">{{ row.name.tw || row.name.en }}</span>
                                     <span class="text-xs text-gray-400">Rank {{ formatRank(row.level) }}</span>
@@ -192,12 +199,7 @@
                         <el-table-column prop="limit" label="賦予限制" width="200" align="center">
                             <template #default="{ row }">
                                 <div class="flex flex-wrap gap-1 justify-center">
-                                    <el-tag
-                                        v-for="(limit, idx) in row.limit"
-                                        :key="idx"
-                                        type="info"
-                                        size="small"
-                                    >
+                                    <el-tag v-for="(limit, idx) in row.limit" :key="idx" type="info" size="small">
                                         {{ limit }}
                                     </el-tag>
                                 </div>
@@ -208,9 +210,122 @@
                                 <div v-html="renderAbilities(row.effect)" class="text-left"></div>
                             </template>
                         </el-table-column>
+                        <el-table-column label="來源" width="200" align="center">
+                            <template #default="{ row }">
+                                <span v-if="getEnchantSource(row.id) !== '—'" class="text-yellow-400 text-sm">
+                                    {{ getEnchantSource(row.id) }}
+                                </span>
+                                <span v-else class="text-gray-600 text-sm">—</span>
+                            </template>
+                        </el-table-column>
                     </el-table>
                 </div>
             </el-card>
+
+                    </div>
+                </el-tab-pane>
+
+                <el-tab-pane label="快速檢視" name="quickview">
+                    <div class="space-y-6 pt-4">
+
+                        <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8">
+                            <div class="mb-4 border-b border-gray-700 pb-4">
+                                <h2 class="text-2xl font-bold text-accent">快速檢視</h2>
+                            </div>
+                            <el-form label-width="100px" label-position="left">
+                                <el-form-item label="武器類型">
+                                    <el-select v-model="quickWeaponType" style="width: 160px">
+                                        <el-option
+                                            v-for="w in QUICK_WEAPON_OPTIONS"
+                                            :key="w.label"
+                                            :label="w.label"
+                                            :value="w.label"
+                                        />
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label=" " class="!mb-0">
+                                    <div class="flex flex-wrap gap-4">
+                                        <el-checkbox v-model="filterNonPersonalize">
+                                            <span class="text-sm text-gray-300">不綁專</span>
+                                            <span class="text-xs text-gray-500 ml-1">（過濾轉專用）</span>
+                                        </el-checkbox>
+                                        <el-checkbox v-model="showSourceHighlight">
+                                            <span class="text-sm text-gray-300">標示 G27 / VH</span>
+                                            <span class="text-xs text-gray-500 ml-1">（標示出處）</span>
+                                        </el-checkbox>
+                                        <el-checkbox v-model="wearBrokenRobe">
+                                            <span class="text-sm text-gray-300">裝備破袍</span>
+                                            <span class="text-xs text-gray-500 ml-1">（隱藏袍/翅膀欄）</span>
+                                        </el-checkbox>
+                                    </div>
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+
+                        <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-6 sm:p-8">
+                            <el-table
+                                :data="quickViewData"
+                                border
+                                class="rounded-lg overflow-hidden"
+                                :header-cell-style="{ background: '#4a5568', color: '#cbd5e0' }"
+                                :row-style="{ background: '#2d3748', color: '#e2e8f0' }"
+                            >
+                                <el-table-column prop="label" label="部位" width="90" align="center" />
+                                <el-table-column label="接頭" min-width="240">
+                                    <template #default="{ row }">
+                                        <div class="enchant-cell">
+                                            <span v-if="!row.prefix.length" class="text-gray-600 text-xs">—</span>
+                                            <div
+                                                v-for="e in row.prefix"
+                                                :key="e.id"
+                                                class="qv-entry"
+                                                :class="{ 'qv-entry--source': showSourceHighlight && getSourceLabel(e.id) }"
+                                            >
+                                                <div class="flex items-center gap-1">
+                                                    <span class="qv-rank">{{ formatRank(e.level) }}</span>
+                                                    <span class="text-xs font-medium leading-tight">{{ e.name.tw || e.name.en }}</span>
+                                                    <el-tag v-if="e.personalize" type="warning" size="small" class="scale-75 origin-left !py-0">轉</el-tag>
+                                                    <template v-if="getSourceLabel(e.id)">
+                                                        <el-tag v-if="showSourceHighlight" type="success" size="small" class="scale-75 origin-left !py-0">{{ getSourceLabel(e.id) }}</el-tag>
+                                                        <span v-else class="text-yellow-400 text-xs">★</span>
+                                                    </template>
+                                                </div>
+                                                <div class="text-xs text-gray-500 pl-5 leading-tight">{{ formatEnchantEffects(e, quickWeaponType) }}</div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="接尾" min-width="240">
+                                    <template #default="{ row }">
+                                        <div class="enchant-cell">
+                                            <span v-if="!row.suffix.length" class="text-gray-600 text-xs">—</span>
+                                            <div
+                                                v-for="e in row.suffix"
+                                                :key="e.id"
+                                                class="qv-entry"
+                                                :class="{ 'qv-entry--source': showSourceHighlight && getSourceLabel(e.id) }"
+                                            >
+                                                <div class="flex items-center gap-1">
+                                                    <span class="qv-rank">{{ formatRank(e.level) }}</span>
+                                                    <span class="text-xs font-medium leading-tight">{{ e.name.tw || e.name.en }}</span>
+                                                    <el-tag v-if="e.personalize" type="warning" size="small" class="scale-75 origin-left !py-0">轉</el-tag>
+                                                    <template v-if="getSourceLabel(e.id)">
+                                                        <el-tag v-if="showSourceHighlight" type="success" size="small" class="scale-75 origin-left !py-0">{{ getSourceLabel(e.id) }}</el-tag>
+                                                        <span v-else class="text-yellow-400 text-xs">★</span>
+                                                    </template>
+                                                </div>
+                                                <div class="text-xs text-gray-500 pl-5 leading-tight">{{ formatEnchantEffects(e, quickWeaponType) }}</div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="mt-3 text-xs text-gray-500">★ / <span class="text-green-400">G27</span> <span class="text-green-400">VH</span> = 目前有已知副本來源</div>
+                        </el-card>
+
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
         </div>
     </div>
 </template>
@@ -295,14 +410,213 @@
 .bg-gray-800 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
     background-color: #1f2937 !important;
 }
+
+/* ── Tab 樣式 ──────────────────────────────────── */
+.enchant-tabs .el-tabs__nav-wrap::after {
+    background-color: #4a5568;
+}
+.enchant-tabs .el-tabs__item {
+    color: #9ca3af;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0 24px;
+}
+.enchant-tabs .el-tabs__item.is-active {
+    color: #fbd38d;
+}
+.enchant-tabs .el-tabs__active-bar {
+    background-color: #fbd38d;
+}
+.enchant-tabs .el-tabs__item:hover {
+    color: #e5c78b;
+}
+
+/* ── 快速檢視 - 格內捲動列表 ──────────────────────── */
+.enchant-cell {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 2px 0;
+}
+.qv-rank {
+    display: inline-block;
+    min-width: 18px;
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fcd34d;
+    border: 1px solid #92400e;
+    border-radius: 3px;
+    padding: 0 2px;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+.qv-entry {
+    padding: 3px 0;
+    border-bottom: 1px solid #374151;
+}
+.qv-entry:last-child {
+    border-bottom: none;
+}
+.qv-entry--source {
+    background: rgba(16, 185, 129, 0.06);
+    border-radius: 4px;
+    padding: 3px 4px;
+    margin: 1px 0;
+}
 </style>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Search, RefreshLeft } from '@element-plus/icons-vue';
+import { RefreshLeft } from "@element-plus/icons-vue";
 import { Enchant, EnchantAbility, EnchantSource } from "../types/Enchant";
 import { enchants, reward } from "../data/enchants";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
+
+// ── 自定義排序設定 ──────────────────────────────────────────────
+// 在陣列中列出的項目會優先顯示（依陣列順序），其餘依中文字母排序
+
+/** 裝備類型選單順序 */
+const LIMIT_ORDER: string[] = [
+    // 身體部位
+    "頭部裝備",
+    "衣服",
+    "衣物",
+    "布衣",
+    "皮質盔甲",
+    "輕甲",
+    "輕盔甲",
+    "重甲",
+    "重盔甲",
+    "盔甲",
+    "手套",
+    "金屬手套",
+    "重盔甲手套",
+    "鞋子",
+    "金屬靴",
+    "盾牌",
+    "飾品",
+    // 武器（通用）
+    "武器",
+    "近距離武器",
+    "單手武器",
+    "雙手武器",
+    // 武器（分類）
+    "弓",
+    "弩",
+    "拳套",
+    "鈍器",
+    "斧",
+    "斧頭",
+    "手把",
+    "鋼瓶",
+    "雙槍",
+    "魔杖",
+    "集魔杖",
+    "單手魔杖、集魔杖",
+    "魔導書、水晶球",
+    "騎槍",
+    "大型鐮刀",
+    "鎖鏈鐮刃",
+    "手裏劍",
+    "手裡劍",
+    // 樂器
+    "樂器",
+    "管樂器",
+    "絃樂器",
+    "電子吉他",
+];
+
+/** 能力選單順序 */
+const ABILITY_ORDER: string[] = [
+    "lance_piercing",
+    "attack_max",
+    "AttMax",
+    "Attmax",
+    "wAttMax",
+    "all_alchemy_damage",
+    "music_buff_bonus",
+    "magic_attack",
+    "casting_speed",
+    "critical_damage",
+    "criticaldamage",
+    "critical_cap_increase",
+    "bonus_damage",
+    "bonusdamage",
+    // 基礎數值
+    "HP",
+    "LifeMax",
+    "MP",
+    "ManaMax",
+    "SP",
+    "StaminaMax",
+    // 能力值
+    "STR",
+    "STR2",
+    "Str",
+    "DEX",
+    "Dex",
+    "dex",
+    "WIL",
+    "Will",
+    "LUK",
+    "Luck",
+    "INT",
+    "Int",
+    "int",
+    // 攻擊
+
+    "attack_min",
+    "AttMin",
+    "wAttMin",
+    "balance",
+    "critical",
+    "Crit",
+    // 防禦
+    "defense",
+    "Def",
+    "protection",
+    "Prot",
+    "prot",
+    "protect",
+    "magic_defense",
+    "magicdefence",
+    "magic_protection",
+    "magicprotect",
+    "damage_reduction_rate",
+    // 移動
+    "move_speed",
+    "Hurry",
+];
+
+/** 根據自定義順序陣列排序（順序內的靠前，其餘依中文字母） */
+const sortWithOrder = <T extends string>(items: T[], order: string[], nameGetter: (id: T) => string): T[] => {
+    const orderIndex = new Map(order.map((id, i) => [id, i]));
+    return [...items].sort((a, b) => {
+        const ai = orderIndex.get(a) ?? Infinity;
+        const bi = orderIndex.get(b) ?? Infinity;
+        if (ai !== bi) return ai - bi;
+        return nameGetter(a).localeCompare(nameGetter(b), "zh-TW");
+    });
+};
+
+// 賦予等級選項（F/E/D/C/B/A → 9/8/7/.../1）
+const rankSelectOptions = [
+    { label: "F", value: 1 },
+    { label: "E", value: 2 },
+    { label: "D", value: 3 },
+    { label: "C", value: 4 },
+    { label: "B", value: 5 },
+    { label: "A", value: 6 },
+    { label: "9", value: 7 },
+    { label: "8", value: 8 },
+    { label: "7", value: 9 },
+    { label: "6", value: 10 },
+    { label: "5", value: 11 },
+    { label: "4", value: 12 },
+    { label: "3", value: 13 },
+    { label: "2", value: 14 },
+    { label: "1", value: 15 },
+];
 
 // 搜尋條件
 const selectedCondition = ref<string>("search");
@@ -315,38 +629,195 @@ const selectedRaid = ref<string>("G27/布里萊赫");
 const searchRank = ref<number | null>(null);
 const searchRankOperator = ref("");
 const searchLimit = ref("");
+const filterPersonalize = ref<"all" | "yes" | "no">("all");
+const sortBy = ref<"default" | "rank_asc" | "rank_desc">("default");
 
-// 可選擇的能力列表
-const selectableAbility = [
-    "attack_max",
-    "attack_min",
-    "balance",
-    "critical",
-    "magic_attack",
-    "all_alchemy_damage",
-    "HP",
-    "MP",
-    "SP",
-    "STR",
-    "INT",
-    "DEX",
-    "WIL",
-    "LUK",
-    "defense",
-    "protection",
-    "magic_defense",
-    "magic_protection",
-    "marionette_defense",
-    "marionette_protect",
-    "marionette_attack_max",
-    "marionette_critical",
-    "marionette_magic_defense",
-    "wound_max",
-    "wound_min",
-    "musicbuff_bonus",
-    "move_speed",
-    "critical_damage",
+// 建立 enchant id → 副本名稱 的對照表（提前宣告供快速檢視使用）
+const enchantSourceMap = new Map<number, string>();
+reward.forEach((r) => r.list.forEach((id) => enchantSourceMap.set(id, r.raidName)));
+const getEnchantSource = (id: number): string => enchantSourceMap.get(id) ?? "—";
+
+// ── 快速檢視 ─────────────────────────────────────────────────────
+const activeTab = ref<"search" | "quickview">("search");
+const quickWeaponType = ref<string>("魔杖");
+const filterNonPersonalize = ref<boolean>(false);
+const showSourceHighlight = ref<boolean>(false);
+const wearBrokenRobe = ref<boolean>(false);
+
+interface WeaponOpt {
+    label: string;
+    limits: string[];
+    topN?: number;         // 每格最多顯示幾筆，預設 5
+    strictFilter?: boolean; // true = 只顯示有相關能力的賦予，不包含中性賦予
+}
+
+const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
+    { label: "魔杖",  limits: ["魔杖", "單手魔杖、集魔杖"],                                                                              strictFilter: true },
+    { label: "集魔杖", limits: ["集魔杖", "單手魔杖、集魔杖"],                                                                            strictFilter: true },
+    { label: "鐮刀",  limits: ["大型鐮刀", "鎖鏈鐮刃", "支援用鎖鏈鐮刃"],                                                                strictFilter: true },
+    { label: "鋼瓶",  limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"],                                                         strictFilter: true },
+    { label: "物理",  limits: ["武器", "近距離武器", "單手武器", "雙手武器", "弓", "弩", "拳套", "鈍器", "斧", "斧頭", "手把", "雙槍", "騎槍"], strictFilter: true },
+    { label: "音樂",  limits: ["樂器", "管樂器", "絃樂器", "電子吉他"], topN: 3,                                                         strictFilter: true },
 ];
+
+// 各武器類型「相關」能力 ID 集合
+const MAGIC_IDS    = new Set(["magic_attack", "MagicAttack", "magic_damage", "magicfastcasting", "casting_speed", "chain_casting", "magicice", "magicfire", "magiclightning", "intermediate_magic", "advanced_magic_damage", "bolt_compose", "bolt_magic_attack_range", "manause_revised", "mana_saving", "thunder_damage", "lightning_road_charging"]);
+const ALCHEMY_IDS  = new Set(["fire_alchemy_damage", "water_alchemy_damage", "earth_alchemy_damage", "wind_alchemy_damage", "all_alchemy_damage", "AlchemyElementalBonus", "elemental_wave_bonus"]);
+const PHYS_DMG_IDS = new Set(["attack_max", "AttMax", "Attmax", "wAttMax", "attack_min", "AttMin", "wAttMin", "balance"]);
+const CHAIN_IDS    = new Set(["chainblade_attack_max", "chainblade_attack_min"]);
+const MUSIC_IDS    = new Set(["music_buff_bonus", "musicbuff_bonus", "musicbuff_duration"]);
+
+// 所有武器專屬能力的聯集（用於判斷賦予是否「中性」）
+const ANY_EXCLUSIVE = new Set([...PHYS_DMG_IDS, ...MAGIC_IDS, ...ALCHEMY_IDS, ...CHAIN_IDS, ...MUSIC_IDS]);
+
+// 各武器類型「主要數值」ID（排序用）
+const PRIMARY_IDS: Record<string, string[]> = {
+    "物理":  ["attack_max", "AttMax", "Attmax", "wAttMax"],
+    "魔杖":  ["magic_attack", "MagicAttack", "magic_damage"],
+    "集魔杖": ["magic_attack", "MagicAttack", "magic_damage"],
+    "鋼瓶":  ["all_alchemy_damage", "fire_alchemy_damage", "water_alchemy_damage", "earth_alchemy_damage", "wind_alchemy_damage", "AlchemyElementalBonus"],
+    "鐮刀":  ["chainblade_attack_max", "attack_max", "AttMax", "Attmax"],
+    "音樂":  ["music_buff_bonus"],
+};
+
+// 各武器類型「顯示」能力 ID（效果摘要只顯示此集合內的屬性）
+const RELEVANT_IDS: Record<string, Set<string>> = {
+    "物理":  new Set([...PHYS_DMG_IDS, "critical", "Crit", "critical_damage", "criticaldamage", "critical_cap_increase", "lance_piercing", "bonus_damage", "bonusdamage", "ArcheryTalentAttMax", "CombatTalentAttMax"]),
+    "魔杖":  new Set([...MAGIC_IDS]),
+    "集魔杖": new Set([...MAGIC_IDS]),
+    "鋼瓶":  new Set([...ALCHEMY_IDS]),
+    "鐮刀":  new Set([...CHAIN_IDS, ...PHYS_DMG_IDS, "critical", "Crit", "critical_damage"]),
+    "音樂":  new Set(["music_buff_bonus"]),
+};
+
+/** 合併同 ID 的多個詞條（數值加總） */
+interface MergedEff { id: string; min: number; max: number; }
+const mergeEffects = (enchant: Enchant): MergedEff[] => {
+    const map = new Map<string, MergedEff>();
+    for (const eff of enchant.effect) {
+        const ex = map.get(eff.id);
+        if (ex) { ex.min += eff.min; ex.max += eff.max; }
+        else     { map.set(eff.id, { id: eff.id, min: eff.min, max: eff.max }); }
+    }
+    return Array.from(map.values());
+};
+
+const getPrimaryValue = (enchant: Enchant, weaponType: string): number => {
+    const ids = PRIMARY_IDS[weaponType] ?? [];
+    let best = 0;
+    for (const eff of mergeEffects(enchant)) {
+        if (ids.includes(eff.id)) best = Math.max(best, eff.max);
+    }
+    return best;
+};
+
+const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
+    const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
+    const relevant = RELEVANT_IDS[weaponType];
+    const merged = mergeEffects(enchant);
+    // 只顯示對應武器的相關屬性；若無符合就不強制顯示其他屬性
+    const toShow = relevant
+        ? merged.filter(e => relevant.has(e.id))
+        : merged;
+    return toShow
+        .map(eff => {
+            const name = abilitiesMap[eff.id] ?? eff.id;
+            const pct = abilitiesValueWithPercentArray.includes(eff.id) ? "%" : "";
+            return eff.min === eff.max
+                ? `${name} ${sign(eff.max)}${pct}`
+                : `${name} ${sign(eff.min)}~${sign(eff.max)}${pct}`;
+        })
+        .join("  ");
+};
+
+const getSourceLabel = (id: number): string => {
+    const src = getEnchantSource(id);
+    if (src === "—") return "";
+    if (src.includes("G27")) return "G27";
+    if (src.includes("VH") || src.includes("格倫")) return "VH";
+    return "★";
+};
+
+interface SlotDef {
+    label: string;
+    isWeapon?: boolean;
+    limits: string[];
+}
+
+const QUICK_VIEW_SLOTS: SlotDef[] = [
+    { label: "武器",    isWeapon: true, limits: [] },
+    { label: "飾品",    limits: ["飾品"] },
+    { label: "頭",      limits: ["頭部裝備", "頭", "頭部"] },
+    { label: "身",      limits: ["衣服", "衣物", "布衣", "皮質盔甲", "輕甲", "輕盔甲", "重甲", "重盔甲", "盔甲", "衣服、盔甲、手套、鞋子"] },
+    { label: "手",      limits: ["手套", "金屬手套", "重盔甲手套", "手部裝備", "手", "衣服、盔甲、手套、鞋子"] },
+    { label: "腳",      limits: ["鞋子", "金屬靴", "腳", "腳部裝備", "衣服、盔甲、手套、鞋子"] },
+    { label: "袍/翅膀", limits: ["特定的翅膀", "特定翅膀", "翅膀", "服裝"] },
+];
+
+interface QuickViewRow {
+    label: string;
+    prefix: Enchant[];
+    suffix: Enchant[];
+}
+
+const quickViewData = computed((): QuickViewRow[] => {
+    const wType      = quickWeaponType.value;
+    const weaponOpt  = QUICK_WEAPON_OPTIONS.find(w => w.label === wType);
+    const weaponLimits = weaponOpt?.limits ?? [];
+    const topN       = weaponOpt?.topN ?? 5;
+    const relevant   = RELEVANT_IDS[wType];
+    const noPersonalize = filterNonPersonalize.value;
+    const hideRobe = wearBrokenRobe.value;
+
+    return QUICK_VIEW_SLOTS.filter(slot => !(hideRobe && slot.label === "袍/翅膀")).map(slot => {
+        const limits = slot.isWeapon ? weaponLimits : slot.limits;
+
+        let applicable = enchants.filter(e => e.limit.some(l => limits.includes(l)));
+
+        // 篩選：strictFilter = 只顯示含相關能力的賦予；一般模式 = 有相關能力 OR 完全中性
+        if (relevant) {
+            const strict = weaponOpt?.strictFilter ?? false;
+            if (strict) {
+                applicable = applicable.filter(e =>
+                    e.effect.some(eff => relevant.has(eff.id))
+                );
+            } else {
+                applicable = applicable.filter(e =>
+                    e.effect.some(eff => relevant.has(eff.id)) ||
+                    !e.effect.some(eff => ANY_EXCLUSIVE.has(eff.id))
+                );
+            }
+        }
+
+        // 排除無法提取魔力賦予的項目
+        applicable = applicable.filter(e => !e.list.includes("no_enchant_extract(true)"));
+
+        // 不綁專 filter
+        if (noPersonalize) applicable = applicable.filter(e => !e.personalize);
+
+        // 排序：主要數值 desc，再 rank desc
+        const sorted = applicable.slice().sort((a, b) => {
+            const va = getPrimaryValue(a, wType);
+            const vb = getPrimaryValue(b, wType);
+            if (va !== vb) return vb - va;
+            return b.level - a.level;
+        });
+
+        return {
+            label: slot.label,
+            prefix: sorted.filter(e => e.type === "prefix").slice(0, topN),
+            suffix: sorted.filter(e => e.type === "suffix").slice(0, topN),
+        };
+    }).filter(row => row.prefix.length > 0 || row.suffix.length > 0);
+});
+
+// 從資料中動態推導所有出現過的能力（有中文名稱的才列出）
+const selectableAbility = computed(() => {
+    const seen = new Set<string>();
+    enchants.forEach((e) => e.effect.forEach((eff) => seen.add(eff.id)));
+    const ids = Array.from(seen).filter((id) => abilitiesMap[id]);
+    return sortWithOrder(ids, ABILITY_ORDER, (id) => abilitiesMap[id] ?? id);
+});
 
 // 副本選項
 const raidOptions: { label: string; value: string }[] = [
@@ -357,10 +828,10 @@ const raidOptions: { label: string; value: string }[] = [
 // 裝備類型列表（從資料中自動提取）
 const limitTypes = computed(() => {
     const types = new Set<string>();
-    enchants.forEach(enchant => {
-        enchant.limit.forEach(limit => types.add(limit));
+    enchants.forEach((enchant) => {
+        enchant.limit.forEach((limit) => types.add(limit));
     });
-    return Array.from(types).sort();
+    return sortWithOrder(Array.from(types), LIMIT_ORDER, (id) => id);
 });
 
 // 搜尋結果
@@ -381,24 +852,25 @@ const displayData = computed(() => {
     // 1. 主要搜尋邏輯
     if (condition === "search" && name) {
         // 依名稱搜尋（模糊搜尋）
-        filteredResult = enchants.filter(item =>
-            (item.name.tw && item.name.tw.includes(name)) ||
-            (item.name.en && item.name.en.toLowerCase().includes(name.toLowerCase()))
+        filteredResult = enchants.filter(
+            (item) =>
+                (item.name.tw && item.name.tw.includes(name)) ||
+                (item.name.en && item.name.en.toLowerCase().includes(name.toLowerCase())),
         );
     } else if (condition === "ability" && ability) {
         // 依能力搜尋
-        filteredResult = enchants.filter(item => {
-            const abilityEffect = item.effect.find(e => e.id === ability);
+        filteredResult = enchants.filter((item) => {
+            const abilityEffect = item.effect.find((e) => e.id === ability);
             if (!abilityEffect) return false;
 
             // 如果有設定數值條件
             if (value !== null) {
-                switch(valueOp) {
-                    case 'gte':
+                switch (valueOp) {
+                    case "gte":
                         return abilityEffect.max >= value;
-                    case 'lte':
+                    case "lte":
                         return abilityEffect.min <= value;
-                    case 'eq':
+                    case "eq":
                         return abilityEffect.min <= value && value <= abilityEffect.max;
                     default:
                         return true;
@@ -408,9 +880,9 @@ const displayData = computed(() => {
         });
     } else if (condition === "raid") {
         // 依副本搜尋
-        const foundReward = reward.find(r => r.raidName === raid);
+        const foundReward = reward.find((r) => r.raidName === raid);
         const list = foundReward ? foundReward.list : [];
-        filteredResult = enchants.filter(item => list.includes(item.id));
+        filteredResult = enchants.filter((item) => list.includes(item.id));
     } else {
         // 沒有主要搜尋條件
         // 名稱和能力搜尋模式需要輸入條件才顯示結果
@@ -425,18 +897,18 @@ const displayData = computed(() => {
 
     // 接頭/接尾篩選
     if (category !== "all") {
-        filteredResult = filteredResult.filter(item => item.type === category);
+        filteredResult = filteredResult.filter((item) => item.type === category);
     }
 
     // 等級篩選
     if (rankOp && rank !== null) {
-        filteredResult = filteredResult.filter(item => {
-            switch(rankOp) {
-                case 'eq':
+        filteredResult = filteredResult.filter((item) => {
+            switch (rankOp) {
+                case "eq":
                     return item.level === rank;
-                case 'gte':
+                case "gte":
                     return item.level >= rank;
-                case 'lte':
+                case "lte":
                     return item.level <= rank;
                 default:
                     return true;
@@ -446,21 +918,26 @@ const displayData = computed(() => {
 
     // 裝備類型篩選
     if (limit) {
-        filteredResult = filteredResult.filter(item =>
-            item.limit.includes(limit)
+        filteredResult = filteredResult.filter((item) => item.limit.includes(limit));
+    }
+
+    // 轉專用篩選
+    const personalize = filterPersonalize.value;
+    if (personalize !== "all") {
+        filteredResult = filteredResult.filter((item) =>
+            personalize === "yes" ? item.personalize : !item.personalize,
         );
     }
+
+    // 排序
+    const sort = sortBy.value;
+    if (sort === "rank_asc") filteredResult = [...filteredResult].sort((a, b) => a.level - b.level);
+    if (sort === "rank_desc") filteredResult = [...filteredResult].sort((a, b) => b.level - a.level);
 
     return filteredResult;
 });
 
-// 搜尋按鈕
-const handleSearch = () => {
-    // 觸發重新計算（computed 會自動執行）
-    // 可以在這裡添加搜尋統計或其他邏輯
-};
-
-// 重置按鈕
+// 重置
 const handleReset = () => {
     searchName.value = "";
     searchAbility.value = "";
@@ -472,13 +949,15 @@ const handleReset = () => {
     searchRankOperator.value = "";
     searchLimit.value = "";
     selectedCondition.value = "search";
+    filterPersonalize.value = "all";
+    sortBy.value = "default";
 };
 
 // 格式化賦予等級顯示 (1-6 => F-A, 7-15 => 9-1)
 const formatRank = (level: number): string => {
     if (level >= 1 && level <= 6) {
         // 1=>F, 2=>E, 3=>D, 4=>C, 5=>B, 6=>A
-        const ranks = ['F', 'E', 'D', 'C', 'B', 'A'];
+        const ranks = ["F", "E", "D", "C", "B", "A"];
         return ranks[level - 1];
     } else if (level >= 7 && level <= 15) {
         // 7=>9, 8=>8, ..., 15=>1

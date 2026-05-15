@@ -15,7 +15,10 @@ import DollBagSearch from '../views/DollBagSearch.vue';
 import MagicCalculator from '../views/MagicCalculator.vue';
 import ReforgeSimulator from '../views/ReforgeSimulator.vue';
 import BrilaherecSimulator from '../views/BrilaherecSimulator.vue';
+import GearGapChecker from '../views/GearGapChecker.vue';
 import HolyWaterSimulator from '../views/HolyWaterSimulator.vue';
+import RaidPetrakTraining from '../views/RaidPetrakTraining.vue';
+import RaidStage2Training from '../views/RaidStage2Training.vue';
 
 const routes = [
     {
@@ -96,6 +99,21 @@ const routes = [
             path: '/holy-water',
             name: '聖水模擬器',
             component: HolyWaterSimulator,
+        },
+        {
+            path: '/gear-gap',
+            name: '頂裝差距',
+            component: GearGapChecker,
+        },
+        {
+            path: '/raid-petrak',
+            name: '1王機制練習',
+            component: RaidPetrakTraining,
+        },
+        {
+            path: '/raid-stage2',
+            name: '2關機制練習',
+            component: RaidStage2Training,
         },]
     },
 
@@ -121,6 +139,8 @@ const pageTitles = {
     '布里萊赫硬幣模擬器': '布里萊赫硬幣模擬器 | 瑪奇小工具',
     '頂裝差距': '頂裝差距 | 瑪奇小工具',
     '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
+    '1王機制練習': '1王機制練習 | 瑪奇小工具',
+    '2關機制練習': '2關機制練習 | 瑪奇小工具',
     '關於': '關於 | 瑪奇小工具',
 };
 
