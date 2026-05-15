@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
-        <div class="enchant-notice">⚠️ 作者沒動力更新，沒用的捲那麼多，反正大家也就用那些而已</div>
+        <div class="enchant-notice">🚧 施工中，資料待更新｜⚠️ 作者沒動力更新，沒用的捲那麼多，反正大家也就用那些而已</div>
         <div class="max-w-6xl mx-auto">
             <header class="text-center pt-8 pb-4">
                 <h1 class="text-4xl sm:text-5xl font-bold mb-2 tracking-wide font-serif drop-shadow-lg">
