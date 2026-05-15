@@ -4363,18 +4363,18 @@ export const farmModel: FarmModel[] = [
             },
             {
                 id: "magic_attack",
-                value: 8,
+                value: 10,
             },
             {
                 id: "bonus_damage",
-                value: 2,
+                value: 3,
             },
             {
                 id: "move_speed",
-                value: 2,
+                value: 3,
             },
         ],
-        desc: "智力+0~7\n意志+0~7\n魔法攻擊+0~8\n額外傷害+0~2%\n移動速度+0~2%",
+        desc: "智力+0~7\n意志+0~7\n魔法攻擊+0~10\n額外傷害+0~3%\n移動速度+0~3%",
     },
     {
         id: "1217",
@@ -4412,17 +4412,17 @@ export const farmModel: FarmModel[] = [
             },
             {
                 id: "attack_max",
-                value: 8,
+                value: 10,
             },
             {
                 id: "critical_damage",
-                value: 4,
+                value: 6,
             },
             {
                 id: "move_speed",
-                value: 2,
+                value: 3,
             },
         ],
-        desc: "力量+0~7\n敏捷+0~7\n大傷+0~8\n暴擊傷害+0~4%\n移動速度+0~2%",
+        desc: "力量+0~7\n敏捷+0~7\n大傷+0~10\n暴擊傷害+0~6%\n移動速度+0~3%",
     },
 ];
