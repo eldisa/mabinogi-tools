@@ -20,7 +20,7 @@
                 <p class="text-lg text-gray-400 mt-4 font-sans">賦予裝備能力。數值要抽，上爛要抽，你的$$還夠嗎</p>
             </header>
 
-            <el-tabs v-model="activeTab" class="enchant-tabs mt-6">
+            <el-tabs v-model="activeTab" class="enchant-tabs mt-6" type="border-card">
                 <el-tab-pane label="查詢" name="search">
                     <div class="space-y-6 pt-4">
 
@@ -411,24 +411,11 @@
     background-color: #1f2937 !important;
 }
 
-/* ── Tab 樣式 ──────────────────────────────────── */
-.enchant-tabs .el-tabs__nav-wrap::after {
-    background-color: #4a5568;
-}
+/* ── Tab 樣式 (border-card) ────────────────────── */
 .enchant-tabs .el-tabs__item {
-    color: #9ca3af;
     font-size: 1rem;
     font-weight: 600;
-    padding: 0 24px;
-}
-.enchant-tabs .el-tabs__item.is-active {
-    color: #fbd38d;
-}
-.enchant-tabs .el-tabs__active-bar {
-    background-color: #fbd38d;
-}
-.enchant-tabs .el-tabs__item:hover {
-    color: #e5c78b;
+    padding: 0 28px;
 }
 
 /* ── 快速檢視 - 格內捲動列表 ──────────────────────── */
