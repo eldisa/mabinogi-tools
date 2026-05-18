@@ -416,7 +416,7 @@
                                                                 <span v-else class="text-yellow-400 text-xs">★</span>
                                                             </template>
                                                         </div>
-                                                        <div class="text-xs text-gray-500 pl-5 leading-tight">
+                                                        <div class="text-xs text-gray-300 pl-5 leading-tight">
                                                             {{ formatEnchantEffects(e, quickWeaponType) }}
                                                         </div>
                                                     </div>
@@ -438,11 +438,12 @@
                                                             class="mr-1 mb-1"
                                                         >{{ l }}</el-tag>
                                                     </div>
+                                                    <div class="qv-detail-effects" v-html="renderAbilities(e.effect)"></div>
                                                     <div class="qv-detail-desc">
                                                         <div
                                                             v-for="(line, i) in descLines(e.desc)"
                                                             :key="i"
-                                                            :class="line.startsWith('[') ? 'text-gray-400' : 'text-gray-200'"
+                                                            :class="line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'"
                                                         >{{ line }}</div>
                                                     </div>
                                                 </div>
@@ -496,7 +497,7 @@
                                                                 <span v-else class="text-yellow-400 text-xs">★</span>
                                                             </template>
                                                         </div>
-                                                        <div class="text-xs text-gray-500 pl-5 leading-tight">
+                                                        <div class="text-xs text-gray-300 pl-5 leading-tight">
                                                             {{ formatEnchantEffects(e, quickWeaponType) }}
                                                         </div>
                                                     </div>
@@ -518,11 +519,12 @@
                                                             class="mr-1 mb-1"
                                                         >{{ l }}</el-tag>
                                                     </div>
+                                                    <div class="qv-detail-effects" v-html="renderAbilities(e.effect)"></div>
                                                     <div class="qv-detail-desc">
                                                         <div
                                                             v-for="(line, i) in descLines(e.desc)"
                                                             :key="i"
-                                                            :class="line.startsWith('[') ? 'text-gray-400' : 'text-gray-200'"
+                                                            :class="line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'"
                                                         >{{ line }}</div>
                                                     </div>
                                                 </div>
@@ -690,11 +692,25 @@
     margin-bottom: 7px;
     line-height: 1.8;
 }
+.qv-detail-effects {
+    font-size: 0.78rem;
+    line-height: 1.7;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #374151;
+    color: #e2e8f0;
+}
 .qv-detail-desc {
-    max-height: 220px;
+    max-height: 160px;
     overflow-y: auto;
     font-size: 0.78rem;
     line-height: 1.7;
+}
+.qv-desc-pos {
+    color: #e2e8f0;
+}
+.qv-desc-neg {
+    color: #9ca3af;
 }
 .qv-detail-desc::-webkit-scrollbar {
     width: 4px;
@@ -1047,9 +1063,10 @@ const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
         .join("  ");
 };
 
-// desc 換行處理：相容舊格式（\n 兩字元）與新格式（真換行）
+// desc 換行處理：相容舊格式（\\n 兩個字元）與新格式（真換行 \n）
+// 舊格式 runtime 為 \\n（兩個 backslash + n），用 /\\+n/g 全部吃掉
 const descLines = (desc: string): string[] =>
-    desc.replace(/\\n/g, "\n").split("\n").filter((l) => l.trim() !== "");
+    desc.replace(/\\+n/g, "\n").split("\n").filter((l) => l.trim() !== "");
 
 const getSourceLabel = (id: number): string => {
     const src = getEnchantSource(id);
@@ -1108,7 +1125,10 @@ const quickViewData = computed((): QuickViewRow[] => {
         .map((slot) => {
             const limits = slot.isWeapon ? weaponLimits : slot.limits;
 
-            let applicable = enchants.filter((e) => e.limit.some((l) => limits.includes(l)));
+            // [""] 代表無裝備限制，應顯示於所有部位
+            const isNoRestriction = (e: Enchant) =>
+                e.limit.length === 0 || (e.limit.length === 1 && e.limit[0] === "");
+            let applicable = enchants.filter((e) => isNoRestriction(e) || e.limit.some((l) => limits.includes(l)));
 
             // 篩選：strictFilter = 只顯示含相關能力的賦予；一般模式 = 有相關能力 OR 完全中性
             if (relevant) {
