@@ -288,6 +288,19 @@
                                             <span class="text-sm text-gray-300">裝備破袍</span>
                                             <span class="text-xs text-gray-500 ml-1">（隱藏袍/翅膀欄）</span>
                                         </el-checkbox>
+                                        <div class="flex items-center gap-2">
+                                            <el-checkbox v-model="limitTopN">
+                                                <span class="text-sm text-gray-300">最多顯示</span>
+                                            </el-checkbox>
+                                            <el-select
+                                                v-model="quickViewTopN"
+                                                :disabled="!limitTopN"
+                                                style="width: 68px"
+                                                size="small"
+                                            >
+                                                <el-option v-for="n in 5" :key="n" :label="`${n} 筆`" :value="n" />
+                                            </el-select>
+                                        </div>
                                     </div>
                                 </el-form-item>
                                 <el-divider class="!my-4">
@@ -760,6 +773,8 @@ const quickWeaponType = ref<string>("魔杖");
 const filterNonPersonalize = ref<boolean>(false);
 const showSourceHighlight = ref<boolean>(false);
 const wearBrokenRobe = ref<boolean>(false);
+const limitTopN = ref<boolean>(false);
+const quickViewTopN = ref<number>(3);
 
 interface WeightSetting {
     abilityId: string;
@@ -970,7 +985,7 @@ const quickViewData = computed((): QuickViewRow[] => {
     const wType = quickWeaponType.value;
     const weaponOpt = QUICK_WEAPON_OPTIONS.find((w) => w.label === wType);
     const weaponLimits = weaponOpt?.limits ?? [];
-    const topN = weaponOpt?.topN ?? 5;
+    const topN = limitTopN.value ? quickViewTopN.value : (weaponOpt?.topN ?? 5);
     const relevant = RELEVANT_IDS[wType];
     const noPersonalize = filterNonPersonalize.value;
     const hideRobe = wearBrokenRobe.value;
