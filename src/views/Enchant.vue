@@ -374,43 +374,79 @@
                                     <template #default="{ row }">
                                         <div class="enchant-cell">
                                             <span v-if="!row.prefix.length" class="text-gray-600 text-xs">—</span>
-                                            <div
+                                            <el-popover
                                                 v-for="e in row.prefix"
                                                 :key="e.id"
-                                                class="qv-entry"
-                                                :class="{
-                                                    'qv-entry--source': showSourceHighlight && getSourceLabel(e.id),
-                                                }"
+                                                trigger="hover"
+                                                placement="right"
+                                                :width="300"
+                                                :show-after="150"
+                                                :hide-after="80"
+                                                popper-class="qv-popover"
                                             >
-                                                <div class="flex items-center gap-1">
-                                                    <span class="qv-rank">{{ formatRank(e.level) }}</span>
-                                                    <span class="text-xs font-medium leading-tight">
-                                                        {{ e.name.tw || e.name.en }}
-                                                    </span>
-                                                    <el-tag
-                                                        v-if="e.personalize"
-                                                        type="warning"
-                                                        size="small"
-                                                        class="scale-75 origin-left !py-0"
+                                                <template #reference>
+                                                    <div
+                                                        class="qv-entry"
+                                                        :class="{
+                                                            'qv-entry--source': showSourceHighlight && getSourceLabel(e.id),
+                                                        }"
                                                     >
-                                                        轉
-                                                    </el-tag>
-                                                    <template v-if="getSourceLabel(e.id)">
+                                                        <div class="flex items-center gap-1">
+                                                            <span class="qv-rank">{{ formatRank(e.level) }}</span>
+                                                            <span class="text-xs font-medium leading-tight">
+                                                                {{ e.name.tw || e.name.en }}
+                                                            </span>
+                                                            <el-tag
+                                                                v-if="e.personalize"
+                                                                type="warning"
+                                                                size="small"
+                                                                class="scale-75 origin-left !py-0"
+                                                            >
+                                                                轉
+                                                            </el-tag>
+                                                            <template v-if="getSourceLabel(e.id)">
+                                                                <el-tag
+                                                                    v-if="showSourceHighlight"
+                                                                    type="success"
+                                                                    size="small"
+                                                                    class="scale-75 origin-left !py-0"
+                                                                >
+                                                                    {{ getSourceLabel(e.id) }}
+                                                                </el-tag>
+                                                                <span v-else class="text-yellow-400 text-xs">★</span>
+                                                            </template>
+                                                        </div>
+                                                        <div class="text-xs text-gray-500 pl-5 leading-tight">
+                                                            {{ formatEnchantEffects(e, quickWeaponType) }}
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <!-- 詳細資訊 -->
+                                                <div class="qv-detail">
+                                                    <div class="qv-detail-header">
+                                                        <span class="qv-rank">{{ formatRank(e.level) }}</span>
+                                                        <span class="font-medium text-sm">{{ e.name.tw || e.name.en }}</span>
+                                                        <el-tag size="small" type="danger" class="ml-1 !py-0">接頭</el-tag>
+                                                        <el-tag v-if="e.personalize" size="small" type="warning" class="!py-0">轉</el-tag>
+                                                    </div>
+                                                    <div v-if="e.limit.some(l => l)" class="qv-detail-limit">
                                                         <el-tag
-                                                            v-if="showSourceHighlight"
-                                                            type="success"
+                                                            v-for="l in e.limit.filter(l => l)"
+                                                            :key="l"
+                                                            type="info"
                                                             size="small"
-                                                            class="scale-75 origin-left !py-0"
-                                                        >
-                                                            {{ getSourceLabel(e.id) }}
-                                                        </el-tag>
-                                                        <span v-else class="text-yellow-400 text-xs">★</span>
-                                                    </template>
+                                                            class="mr-1 mb-1"
+                                                        >{{ l }}</el-tag>
+                                                    </div>
+                                                    <div class="qv-detail-desc">
+                                                        <div
+                                                            v-for="(line, i) in descLines(e.desc)"
+                                                            :key="i"
+                                                            :class="line.startsWith('[') ? 'text-gray-400' : 'text-gray-200'"
+                                                        >{{ line }}</div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-xs text-gray-500 pl-5 leading-tight">
-                                                    {{ formatEnchantEffects(e, quickWeaponType) }}
-                                                </div>
-                                            </div>
+                                            </el-popover>
                                         </div>
                                     </template>
                                 </el-table-column>
@@ -418,43 +454,79 @@
                                     <template #default="{ row }">
                                         <div class="enchant-cell">
                                             <span v-if="!row.suffix.length" class="text-gray-600 text-xs">—</span>
-                                            <div
+                                            <el-popover
                                                 v-for="e in row.suffix"
                                                 :key="e.id"
-                                                class="qv-entry"
-                                                :class="{
-                                                    'qv-entry--source': showSourceHighlight && getSourceLabel(e.id),
-                                                }"
+                                                trigger="hover"
+                                                placement="left"
+                                                :width="300"
+                                                :show-after="150"
+                                                :hide-after="80"
+                                                popper-class="qv-popover"
                                             >
-                                                <div class="flex items-center gap-1">
-                                                    <span class="qv-rank">{{ formatRank(e.level) }}</span>
-                                                    <span class="text-xs font-medium leading-tight">
-                                                        {{ e.name.tw || e.name.en }}
-                                                    </span>
-                                                    <el-tag
-                                                        v-if="e.personalize"
-                                                        type="warning"
-                                                        size="small"
-                                                        class="scale-75 origin-left !py-0"
+                                                <template #reference>
+                                                    <div
+                                                        class="qv-entry"
+                                                        :class="{
+                                                            'qv-entry--source': showSourceHighlight && getSourceLabel(e.id),
+                                                        }"
                                                     >
-                                                        轉
-                                                    </el-tag>
-                                                    <template v-if="getSourceLabel(e.id)">
+                                                        <div class="flex items-center gap-1">
+                                                            <span class="qv-rank">{{ formatRank(e.level) }}</span>
+                                                            <span class="text-xs font-medium leading-tight">
+                                                                {{ e.name.tw || e.name.en }}
+                                                            </span>
+                                                            <el-tag
+                                                                v-if="e.personalize"
+                                                                type="warning"
+                                                                size="small"
+                                                                class="scale-75 origin-left !py-0"
+                                                            >
+                                                                轉
+                                                            </el-tag>
+                                                            <template v-if="getSourceLabel(e.id)">
+                                                                <el-tag
+                                                                    v-if="showSourceHighlight"
+                                                                    type="success"
+                                                                    size="small"
+                                                                    class="scale-75 origin-left !py-0"
+                                                                >
+                                                                    {{ getSourceLabel(e.id) }}
+                                                                </el-tag>
+                                                                <span v-else class="text-yellow-400 text-xs">★</span>
+                                                            </template>
+                                                        </div>
+                                                        <div class="text-xs text-gray-500 pl-5 leading-tight">
+                                                            {{ formatEnchantEffects(e, quickWeaponType) }}
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <!-- 詳細資訊 -->
+                                                <div class="qv-detail">
+                                                    <div class="qv-detail-header">
+                                                        <span class="qv-rank">{{ formatRank(e.level) }}</span>
+                                                        <span class="font-medium text-sm">{{ e.name.tw || e.name.en }}</span>
+                                                        <el-tag size="small" type="primary" class="ml-1 !py-0">接尾</el-tag>
+                                                        <el-tag v-if="e.personalize" size="small" type="warning" class="!py-0">轉</el-tag>
+                                                    </div>
+                                                    <div v-if="e.limit.some(l => l)" class="qv-detail-limit">
                                                         <el-tag
-                                                            v-if="showSourceHighlight"
-                                                            type="success"
+                                                            v-for="l in e.limit.filter(l => l)"
+                                                            :key="l"
+                                                            type="info"
                                                             size="small"
-                                                            class="scale-75 origin-left !py-0"
-                                                        >
-                                                            {{ getSourceLabel(e.id) }}
-                                                        </el-tag>
-                                                        <span v-else class="text-yellow-400 text-xs">★</span>
-                                                    </template>
+                                                            class="mr-1 mb-1"
+                                                        >{{ l }}</el-tag>
+                                                    </div>
+                                                    <div class="qv-detail-desc">
+                                                        <div
+                                                            v-for="(line, i) in descLines(e.desc)"
+                                                            :key="i"
+                                                            :class="line.startsWith('[') ? 'text-gray-400' : 'text-gray-200'"
+                                                        >{{ line }}</div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-xs text-gray-500 pl-5 leading-tight">
-                                                    {{ formatEnchantEffects(e, quickWeaponType) }}
-                                                </div>
-                                            </div>
+                                            </el-popover>
                                         </div>
                                     </template>
                                 </el-table-column>
@@ -592,6 +664,44 @@
     border-radius: 4px;
     padding: 3px 4px;
     margin: 1px 0;
+}
+
+/* ── 快速檢視 - hover 詳細 popover ──────────────────── */
+.qv-popover.el-popper {
+    background: #1a2535 !important;
+    border: 1px solid #4a5568 !important;
+    color: #e2e8f0 !important;
+    padding: 10px 12px !important;
+}
+.qv-popover .el-popper__arrow::before {
+    background: #1a2535 !important;
+    border-color: #4a5568 !important;
+}
+.qv-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-bottom: 7px;
+    margin-bottom: 7px;
+    border-bottom: 1px solid #374151;
+    font-size: 0.82rem;
+}
+.qv-detail-limit {
+    margin-bottom: 7px;
+    line-height: 1.8;
+}
+.qv-detail-desc {
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 0.78rem;
+    line-height: 1.7;
+}
+.qv-detail-desc::-webkit-scrollbar {
+    width: 4px;
+}
+.qv-detail-desc::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 2px;
 }
 </style>
 
@@ -936,6 +1046,10 @@ const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
         })
         .join("  ");
 };
+
+// desc 換行處理：相容舊格式（\n 兩字元）與新格式（真換行）
+const descLines = (desc: string): string[] =>
+    desc.replace(/\\n/g, "\n").split("\n").filter((l) => l.trim() !== "");
 
 const getSourceLabel = (id: number): string => {
     const src = getEnchantSource(id);
