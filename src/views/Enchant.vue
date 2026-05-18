@@ -623,7 +623,7 @@
 }
 
 .bg-gray-800 .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
-    background-color: #1f2937 !important;
+    background-color: #2d3748 !important;
 }
 
 /* ── Tab 樣式 (border-card) ────────────────────── */
