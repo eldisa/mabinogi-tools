@@ -429,9 +429,9 @@
                                                         <el-tag size="small" type="danger" class="ml-1 !py-0">接頭</el-tag>
                                                         <el-tag v-if="e.personalize" size="small" type="warning" class="!py-0">專</el-tag>
                                                     </div>
-                                                    <div v-if="e.limit.some(l => l)" class="qv-detail-limit">
+                                                    <div v-if="e.limit.some((l: string) => l)" class="qv-detail-limit">
                                                         <el-tag
-                                                            v-for="l in e.limit.filter(l => l)"
+                                                            v-for="l in e.limit.filter((l: string) => l)"
                                                             :key="l"
                                                             type="info"
                                                             size="small"
@@ -510,9 +510,9 @@
                                                         <el-tag size="small" type="primary" class="ml-1 !py-0">接尾</el-tag>
                                                         <el-tag v-if="e.personalize" size="small" type="warning" class="!py-0">專</el-tag>
                                                     </div>
-                                                    <div v-if="e.limit.some(l => l)" class="qv-detail-limit">
+                                                    <div v-if="e.limit.some((l: string) => l)" class="qv-detail-limit">
                                                         <el-tag
-                                                            v-for="l in e.limit.filter(l => l)"
+                                                            v-for="l in e.limit.filter((l: string) => l)"
                                                             :key="l"
                                                             type="info"
                                                             size="small"
@@ -734,7 +734,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { RefreshLeft, Plus, Close } from "@element-plus/icons-vue";
-import { Enchant, EnchantAbility, EnchantSource } from "../types/Enchant";
+import { Enchant, EnchantAbility } from "../types/Enchant";
 import { enchants, reward } from "../data/enchants";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
