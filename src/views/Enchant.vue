@@ -400,7 +400,7 @@
                                                                 v-if="e.personalize"
                                                                 type="warning"
                                                                 size="small"
-                                                                class="scale-75 origin-left !py-0"
+                                                                class="qv-small-tag"
                                                             >
                                                                 轉
                                                             </el-tag>
@@ -409,7 +409,7 @@
                                                                     v-if="showSourceHighlight"
                                                                     type="success"
                                                                     size="small"
-                                                                    class="scale-75 origin-left !py-0"
+                                                                    class="qv-small-tag"
                                                                 >
                                                                     {{ getSourceLabel(e.id) }}
                                                                 </el-tag>
@@ -481,7 +481,7 @@
                                                                 v-if="e.personalize"
                                                                 type="warning"
                                                                 size="small"
-                                                                class="scale-75 origin-left !py-0"
+                                                                class="qv-small-tag"
                                                             >
                                                                 轉
                                                             </el-tag>
@@ -490,7 +490,7 @@
                                                                     v-if="showSourceHighlight"
                                                                     type="success"
                                                                     size="small"
-                                                                    class="scale-75 origin-left !py-0"
+                                                                    class="qv-small-tag"
                                                                 >
                                                                     {{ getSourceLabel(e.id) }}
                                                                 </el-tag>
@@ -641,6 +641,16 @@
     overflow-y: auto;
     padding: 2px 0;
 }
+/* scale-75 會讓 tag 視覺縮小但佈局仍佔原始空間，造成對齊偏移 */
+/* 改用直接縮小字體與 padding 的方式 */
+.qv-small-tag.el-tag {
+    font-size: 10px;
+    padding: 0 4px;
+    height: auto;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
 .qv-rank {
     display: inline-block;
     min-width: 18px;
