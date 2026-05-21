@@ -1239,6 +1239,7 @@ const selectableAbility = computed(() => {
 // 副本選項
 const raidOptions: { label: string; value: string }[] = [
     { label: "G27/布里萊赫", value: "G27/布里萊赫" },
+    { label: "G27/信仰的崩壞", value: "G27/信仰的崩壞" },
     { label: "雪VH/格倫貝爾納-太古之冬", value: "雪VH/格倫貝爾納-太古之冬" },
 ];
 
