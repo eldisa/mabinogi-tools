@@ -153,11 +153,11 @@
                                     </el-select>
                                 </el-form-item>
 
-                                <el-form-item label="轉專用">
+                                <el-form-item label="會綁專?">
                                     <el-radio-group v-model="filterPersonalize">
                                         <el-radio label="全部" value="all" />
-                                        <el-radio label="會轉專用" value="yes" />
-                                        <el-radio label="不轉專用" value="no" />
+                                        <el-radio label="會綁專" value="yes" />
+                                        <el-radio label="不綁" value="no" />
                                     </el-radio-group>
                                 </el-form-item>
 
@@ -211,7 +211,7 @@
                                                     </el-tag>
                                                     <el-tag v-else type="primary" size="small">接尾</el-tag>
                                                     <el-tag v-if="row.personalize" type="warning" size="small">
-                                                        轉專用
+                                                        專用
                                                     </el-tag>
                                                 </div>
                                                 <span class="font-medium">{{ row.name.tw || row.name.en }}</span>
@@ -341,7 +341,8 @@
                                     </div>
                                     <div class="flex gap-2 mt-2">
                                         <el-button size="small" @click="addWeightRow">
-                                            <el-icon class="mr-1"><Plus /></el-icon>新增權重
+                                            <el-icon class="mr-1"><Plus /></el-icon>
+                                            新增權重
                                         </el-button>
                                         <el-button
                                             v-if="weightSettings.length > 0"
@@ -388,7 +389,8 @@
                                                     <div
                                                         class="qv-entry"
                                                         :class="{
-                                                            'qv-entry--source': showSourceHighlight && getSourceLabel(e.id),
+                                                            'qv-entry--source':
+                                                                showSourceHighlight && getSourceLabel(e.id),
                                                         }"
                                                     >
                                                         <div class="flex items-center gap-1">
@@ -425,9 +427,20 @@
                                                 <div class="qv-detail">
                                                     <div class="qv-detail-header">
                                                         <span class="qv-rank">{{ formatRank(e.level) }}</span>
-                                                        <span class="font-medium text-sm">{{ e.name.tw || e.name.en }}</span>
-                                                        <el-tag size="small" type="danger" class="ml-1 !py-0">接頭</el-tag>
-                                                        <el-tag v-if="e.personalize" size="small" type="warning" class="!py-0">專</el-tag>
+                                                        <span class="font-medium text-sm">
+                                                            {{ e.name.tw || e.name.en }}
+                                                        </span>
+                                                        <el-tag size="small" type="danger" class="ml-1 !py-0">
+                                                            接頭
+                                                        </el-tag>
+                                                        <el-tag
+                                                            v-if="e.personalize"
+                                                            size="small"
+                                                            type="warning"
+                                                            class="!py-0"
+                                                        >
+                                                            專
+                                                        </el-tag>
                                                     </div>
                                                     <div v-if="e.limit.some((l: string) => l)" class="qv-detail-limit">
                                                         <el-tag
@@ -436,15 +449,24 @@
                                                             type="info"
                                                             size="small"
                                                             class="mr-1 mb-1"
-                                                        >{{ l }}</el-tag>
+                                                        >
+                                                            {{ l }}
+                                                        </el-tag>
                                                     </div>
-                                                    <div class="qv-detail-effects" v-html="renderAbilities(e.effect)"></div>
+                                                    <div
+                                                        class="qv-detail-effects"
+                                                        v-html="renderAbilities(e.effect)"
+                                                    ></div>
                                                     <div class="qv-detail-desc">
                                                         <div
                                                             v-for="(line, i) in descLines(e.desc)"
                                                             :key="i"
-                                                            :class="line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'"
-                                                        >{{ line }}</div>
+                                                            :class="
+                                                                line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'
+                                                            "
+                                                        >
+                                                            {{ line }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </el-popover>
@@ -469,7 +491,8 @@
                                                     <div
                                                         class="qv-entry"
                                                         :class="{
-                                                            'qv-entry--source': showSourceHighlight && getSourceLabel(e.id),
+                                                            'qv-entry--source':
+                                                                showSourceHighlight && getSourceLabel(e.id),
                                                         }"
                                                     >
                                                         <div class="flex items-center gap-1">
@@ -506,9 +529,20 @@
                                                 <div class="qv-detail">
                                                     <div class="qv-detail-header">
                                                         <span class="qv-rank">{{ formatRank(e.level) }}</span>
-                                                        <span class="font-medium text-sm">{{ e.name.tw || e.name.en }}</span>
-                                                        <el-tag size="small" type="primary" class="ml-1 !py-0">接尾</el-tag>
-                                                        <el-tag v-if="e.personalize" size="small" type="warning" class="!py-0">專</el-tag>
+                                                        <span class="font-medium text-sm">
+                                                            {{ e.name.tw || e.name.en }}
+                                                        </span>
+                                                        <el-tag size="small" type="primary" class="ml-1 !py-0">
+                                                            接尾
+                                                        </el-tag>
+                                                        <el-tag
+                                                            v-if="e.personalize"
+                                                            size="small"
+                                                            type="warning"
+                                                            class="!py-0"
+                                                        >
+                                                            專
+                                                        </el-tag>
                                                     </div>
                                                     <div v-if="e.limit.some((l: string) => l)" class="qv-detail-limit">
                                                         <el-tag
@@ -517,15 +551,24 @@
                                                             type="info"
                                                             size="small"
                                                             class="mr-1 mb-1"
-                                                        >{{ l }}</el-tag>
+                                                        >
+                                                            {{ l }}
+                                                        </el-tag>
                                                     </div>
-                                                    <div class="qv-detail-effects" v-html="renderAbilities(e.effect)"></div>
+                                                    <div
+                                                        class="qv-detail-effects"
+                                                        v-html="renderAbilities(e.effect)"
+                                                    ></div>
                                                     <div class="qv-detail-desc">
                                                         <div
                                                             v-for="(line, i) in descLines(e.desc)"
                                                             :key="i"
-                                                            :class="line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'"
-                                                        >{{ line }}</div>
+                                                            :class="
+                                                                line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'
+                                                            "
+                                                        >
+                                                            {{ line }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </el-popover>
@@ -1076,7 +1119,10 @@ const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
 // desc 換行處理：相容舊格式（\\n 兩個字元）與新格式（真換行 \n）
 // 舊格式 runtime 為 \\n（兩個 backslash + n），用 /\\+n/g 全部吃掉
 const descLines = (desc: string): string[] =>
-    desc.replace(/\\+n/g, "\n").split("\n").filter((l) => l.trim() !== "");
+    desc
+        .replace(/\\+n/g, "\n")
+        .split("\n")
+        .filter((l) => l.trim() !== "");
 
 const getSourceLabel = (id: number): string => {
     const src = getEnchantSource(id);
@@ -1136,8 +1182,7 @@ const quickViewData = computed((): QuickViewRow[] => {
             const limits = slot.isWeapon ? weaponLimits : slot.limits;
 
             // [""] 代表無裝備限制，應顯示於所有部位
-            const isNoRestriction = (e: Enchant) =>
-                e.limit.length === 0 || (e.limit.length === 1 && e.limit[0] === "");
+            const isNoRestriction = (e: Enchant) => e.limit.length === 0 || (e.limit.length === 1 && e.limit[0] === "");
             let applicable = enchants.filter((e) => isNoRestriction(e) || e.limit.some((l) => limits.includes(l)));
 
             // 篩選：strictFilter = 只顯示含相關能力的賦予；一般模式 = 有相關能力 OR 完全中性
