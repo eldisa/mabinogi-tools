@@ -4425,4 +4425,18 @@ export const farmModel: FarmModel[] = [
         ],
         desc: "力量+0~7\n敏捷+0~7\n大傷+0~10\n暴擊傷害+0~6%\n移動速度+0~3%",
     },
+    {
+        id: "1371",
+        name: {
+            tw: "浪漫農場布里萊赫入口模型",
+            en: "Bri Leith Entrance Extra Miniature",
+        },
+        category: "extra",
+        abilities: [
+            {
+                id: "bonus_damage",
+                value: 2,
+            },
+        ],
+    },
 ];

@@ -5506,6 +5506,210 @@
       ]
     },
     {
+      "ID": "5037",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "立夏第3賽季挑戰者",
+      "MaleName": "立夏第3賽季挑戰者",
+      "FemaleName": "立夏第3賽季挑戰者",
+      "UniName": "立夏第3賽季挑戰者",
+      "Desc": "賦予達成貿易立夏第3賽季挑戰者等級之玩家的光榮第2稱號.可與其他一般稱號同時使用.",
+      "Hint": "賦予達成貿易立夏第3賽季挑戰者等級之玩家的光榮第2稱號.可與其他一般稱號同時使用.",
+      "Effect": ": : SetParamOnEquip(Hurry, +3);",
+      "EffectDescription": "移動速度增加3% ",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_relife_waterwave' giant_name='title_relife_waterwave' joint='stance' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_crown.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "move_speed",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "ID": "5038",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "古樹的佩塔克",
+      "MaleName": "古樹的佩塔克",
+      "FemaleName": "古樹的佩塔克",
+      "UniName": "古樹的佩塔克",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamonEquip(AttMax, +35);\n: : SetParamOnEquip(Crit, +12);\n: : SetParamonEquip(LifeMax, +100);\n: : SetParamOnEquip(StaminaMax, +100); ",
+      "EffectDescription": "最大傷害值增加35\\n暴擊率增加12% \\n最大生命值力增加100 \\n最大耐力增加100",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_Vertrag.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 35
+        },
+        {
+          "id": "critical",
+          "value": 12
+        },
+        {
+          "id": "HP",
+          "value": 100
+        },
+        {
+          "id": "SP",
+          "value": 100
+        }
+      ]
+    },
+    {
+      "ID": "5039",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "布倫塔納斯",
+      "MaleName": "布倫塔納斯",
+      "FemaleName": "布倫塔納斯",
+      "UniName": "布倫塔納斯",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : AddBonusOnAlchemy(alchemy_water, +25);\n: : AddBonusOnAlchemy(alchemy_fire, +25);\n: : AddBonusOnAlchemy(alchemy_wind, +25);\n: : AddBonusOnAlchemy(alchemy_earth, +25);\n: : SetParamOnEquip(Crit, +12);\n: : SetParamonEquip(LifeMax, +100);\n: : SetParamOnEquip(ManaMax, +100);",
+      "EffectDescription": "4大屬性鍊金術傷害增加25\\n暴擊率增加12% \\n最大生命值增加100 \\n最大魔法值增加100 ",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_Bronntanas.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "water_alchemy_damage",
+          "value": 25
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 25
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 25
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 25
+        },
+        {
+          "id": "critical",
+          "value": 12
+        },
+        {
+          "id": "HP",
+          "value": 100
+        },
+        {
+          "id": "MP",
+          "value": 100
+        }
+      ]
+    },
+    {
+      "ID": "5040",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "雷楠的米勒",
+      "MaleName": "雷楠的米勒",
+      "FemaleName": "雷楠的米勒",
+      "UniName": "雷楠的米勒",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(MagicAttack, +55);\n: : SetParamOnEquip(Crit, +12);\n: : SetParamonEquip(LifeMax, +100);\n: : SetParamOnEquip(ManaMax, +100);",
+      "EffectDescription": "魔法攻擊力增加55 \\n暴擊率增加12% \\n最大生命力增加100 \\n最大魔法力增加100",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_Leannan_midir.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "magic_attack",
+          "value": 55
+        },
+        {
+          "id": "critical",
+          "value": 12
+        },
+        {
+          "id": "HP",
+          "value": 100
+        },
+        {
+          "id": "MP",
+          "value": 100
+        }
+      ]
+    },
+    {
+      "ID": "5041",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "雷楠的米勒 : 悔恨",
+      "MaleName": "雷楠的米勒 : 悔恨",
+      "FemaleName": "雷楠的米勒 : 悔恨",
+      "UniName": "雷楠的米勒 : 悔恨",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(musicbuff_duration, 20);",
+      "EffectDescription": "音樂增益技能效果增加10\\n音樂技能效果持續時間增加20",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "\"<xml music_buff_bonus='10' >\n</xml>\"",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_Leannan_midir_Remorse.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "musicbuff_duration",
+          "value": 20
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 10
+        }
+      ]
+    },
+    {
       "ID": "8000",
       "Type": "7",
       "Exclusive": "0",
@@ -8276,7 +8480,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamOnEquip(heulwen_enhance, +10);\n: : SetParamOnEquip(magic_craft_enhance, +10);\n: : SetParamOnEquip(production_enhance, +5);",
-      "EffectDescription": "跟稀原工學大師稱號同時套用時,稀原工學完成度品質增加\\n跟魔法製造大師稱號同時時,魔法製造完成度品質增加\\n 生產製作技能成功率 5%增加",
+      "EffectDescription": "跟稀原工學大師稱號同時套用時,稀原工學完成度品質增加\\n跟魔法製造大師稱號同時套用時,魔法製造完成度品質增加\\n生產製作技能成功率 5%增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -8986,7 +9190,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(AttMax, +26);\n: : SetParamOnEquip(criticaldamage, +3);\n: : SetParamOnEquip(Hurry, +1);",
-      "EffectDescription": "最大傷害26增加\\n暴擊傷害3%增加\\n移動速度1% 增加",
+      "EffectDescription": "最大傷害26增加\\n暴擊傷害3%增加\\n移動速度1%增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml>\n <simple_visual_effect name='squirrel02' giant_name='squirrel02_g' joint='footsteps' scale='1.5' g_scale='1.5' offset_y='1' loop='true' /> \n</xml>",
@@ -9235,7 +9439,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamOnEquip(magic_craft_enhance, +10);\n: : SetParamOnEquip(production_enhance, +3);",
-      "EffectDescription": "跟魔法手工藝大師稱號同時套用時, 魔法製造完成度品質增加\\n生產製作技能成功率3%增加",
+      "EffectDescription": "跟魔法製造大師稱號同時套用時, 魔法製造完成度品質增加\\n生產製作技能成功率3%增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml>\n  <simple_visual_effect name='rest_time02' giant_name='rest_time02' joint='head' scale='1' g_scale='1' offset_y='60' rotate_z='-90' loop='true' />\n</xml>",
@@ -9363,7 +9567,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(AttMax, +15);\n: : SetParamOnEquip(chainblade_attack_max, +10);\n: : SetSkillVarOnEquip(title, 0.08, 27002, 3);",
-      "EffectDescription": "最大傷害15增加\\n鎖鏈鐮刃最大傷害 10 增加\\n使用鎖鏈攻擊時\\n黑闇值獲得量8%增加",
+      "EffectDescription": "最大傷害15增加\\n鎖鏈鐮刃最大傷害10增加\\n使用鎖鏈攻擊時\\n黑闇值獲得量8%增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml>\n  <simple_visual_effect name='judge_sword_01' giant_name='judge_sword_01' joint='footsteps' scale='1' g_scale='1' offset_y='-1' loop='true' />\n</xml>",
@@ -10464,7 +10668,7 @@
       "UniName": "特別的夢幻之蝶",
       "Desc": "透過稱號兌換券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
       "Hint": "透過稱號兌換券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
-      "Effect": ": : SetParamOnEquip(MagicAttack, +20);\n: : SetParamOnEquip(ManaMax, +50);\n: : SetParamOnEquip(magicfastcasting, +5);\n: : SetSkillVarOnEquip(title, 100, 30201, 2);\n: : SetSkillVarOnEquip(title, 5, 30453, 1); ",
+      "Effect": ": : SetParamOnEquip(MagicAttack, +20);\n: : SetParamOnEquip(ManaMax, +50);\n: : SetParamOnEquip(magicfastcasting, +5);\n: : SetParamOnEquip(firebolt, +100);\n: : SetSkillVarOnEquip(title, 5, 30453, 1); ",
       "EffectDescription": "火焰最大傷害1%\\n箭系魔法傷害15%\\n箭系組合魔法傷害5%\\n最大魔力50\\n魔法攻擊力20\\n魔法施展速度5%",
       "ExtraEffect": "MulMagicBoltMasteryBonusRate(15);",
       "ExpDungeonDisable": "false",
@@ -10492,6 +10696,10 @@
         {
           "id": "magicfastcasting",
           "value": 5
+        },
+        {
+          "id": "firebolt",
+          "value": 100
         },
         {
           "id": "MulMagicBoltMasteryBonusRate",
@@ -11895,6 +12103,564 @@
       ]
     },
     {
+      "ID": "8189",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "清澈的秩序賢者魔法陣",
+      "MaleName": "清澈的秩序賢者魔法陣",
+      "FemaleName": "清澈的秩序賢者魔法陣",
+      "UniName": "清澈的秩序賢者魔法陣",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n<simple_visual_effect name='title_om_magicCircle_blue' joint='stance' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magiccircle_blue.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8190",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "華麗的秩序賢者魔法陣",
+      "MaleName": "華麗的秩序賢者魔法陣",
+      "FemaleName": "華麗的秩序賢者魔法陣",
+      "UniName": "華麗的秩序賢者魔法陣",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n<simple_visual_effect name='title_om_magicCircle_red' joint='stance' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magiccircle_red.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8191",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "純潔的秩序賢者魔法陣",
+      "MaleName": "純潔的秩序賢者魔法陣",
+      "FemaleName": "純潔的秩序賢者魔法陣",
+      "UniName": "純潔的秩序賢者魔法陣",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n<simple_visual_effect name='title_om_magicCircle_white' joint='stance' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magiccircle_white.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8192",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "墮落的秩序賢者魔法陣",
+      "MaleName": "墮落的秩序賢者魔法陣",
+      "FemaleName": "墮落的秩序賢者魔法陣",
+      "UniName": "墮落的秩序賢者魔法陣",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n<simple_visual_effect name='title_om_magicCircle_black' joint='stance' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magiccircle_black.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8193",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "清澈的秩序賢者光弧",
+      "MaleName": "清澈的秩序賢者光弧",
+      "FemaleName": "清澈的秩序賢者光弧",
+      "UniName": "清澈的秩序賢者光弧",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_om_electricAura_blue' giant_name='title_om_electricAura_blue_g' joint='chest' scale='1' g_scale='1' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magicspirit_blue.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8194",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "華麗的秩序賢者光弧",
+      "MaleName": "華麗的秩序賢者光弧",
+      "FemaleName": "華麗的秩序賢者光弧",
+      "UniName": "華麗的秩序賢者光弧",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_om_electricAura_red' giant_name='title_om_electricAura_red_g' joint='chest' scale='1' g_scale='1' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magicspirit_red.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8195",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "純潔的秩序賢者光弧",
+      "MaleName": "純潔的秩序賢者光弧",
+      "FemaleName": "純潔的秩序賢者光弧",
+      "UniName": "純潔的秩序賢者光弧",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_om_electricAura_white' giant_name='title_om_electricAura_white_g' joint='chest' scale='1' g_scale='1' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magicspirit_white.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8196",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "墮落的秩序賢者光弧",
+      "MaleName": "墮落的秩序賢者光弧",
+      "FemaleName": "墮落的秩序賢者光弧",
+      "UniName": "墮落的秩序賢者光弧",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_om_electricAura_black' giant_name='title_om_electricAura_black_g' joint='chest' scale='1' g_scale='1' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_mb2_magicspirit_black.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8199",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "慌張的汗水",
+      "MaleName": "慌張的汗水",
+      "FemaleName": "慌張的汗水",
+      "UniName": "慌張的汗水",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_nonplus_blue' giant_name='title_nonplus_blue_g' joint='head' scale='1' g_scale='1' offset_y='1.2' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_nonplus_blue.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8200",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "焦慮的汗水",
+      "MaleName": "焦慮的汗水",
+      "FemaleName": "焦慮的汗水",
+      "UniName": "焦慮的汗水",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_nonplus_white' giant_name='title_nonplus_white_g' joint='head' scale='1' g_scale='1' offset_y='1.2' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_nonplus_white.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8201",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "忐忑的汗水",
+      "MaleName": "忐忑的汗水",
+      "FemaleName": "忐忑的汗水",
+      "UniName": "忐忑的汗水",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_nonplus_pink' giant_name='title_nonplus_pink_g' joint='head' scale='1' g_scale='1' offset_y='1.2' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_nonplus_pink.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8202",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "驚險的汗水",
+      "MaleName": "驚險的汗水",
+      "FemaleName": "驚險的汗水",
+      "UniName": "驚險的汗水",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_nonplus_yellow' giant_name='title_nonplus_yellow_g' joint='head' scale='1' g_scale='1' offset_y='1.2' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_nonplus_yellow.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8203",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "星域像素白",
+      "MaleName": "星域像素白",
+      "FemaleName": "星域像素白",
+      "UniName": "星域像素白",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_adv_pixel_white' giant_name='title_adv_pixel_white' joint='footsteps' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_adv_pixel_white.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8204",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "星域像素粉",
+      "MaleName": "星域像素粉",
+      "FemaleName": "星域像素粉",
+      "UniName": "星域像素粉",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_adv_pixel_pink' giant_name='title_adv_pixel_pink' joint='footsteps' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_adv_pixel_pink.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8205",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "星域像素綠",
+      "MaleName": "星域像素綠",
+      "FemaleName": "星域像素綠",
+      "UniName": "星域像素綠",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_adv_pixel_green' giant_name='title_adv_pixel_green' joint='footsteps' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_adv_pixel_green.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8206",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "星域像素藍",
+      "MaleName": "星域像素藍",
+      "FemaleName": "星域像素藍",
+      "UniName": "星域像素藍",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_adv_pixel_blue' giant_name='title_adv_pixel_blue' joint='footsteps' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_adv_pixel_blue.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8207",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "星域像素黃",
+      "MaleName": "星域像素黃",
+      "FemaleName": "星域像素黃",
+      "UniName": "星域像素黃",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_adv_pixel_yellow' giant_name='title_adv_pixel_yellow' joint='footsteps' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_adv_pixel_yellow.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "8208",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "星域像素黑",
+      "MaleName": "星域像素黑",
+      "FemaleName": "星域像素黑",
+      "UniName": "星域像素黑",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_adv_pixel_black' giant_name='title_adv_pixel_black' joint='footsteps' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_adv_pixel_black.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
       "ID": "9000",
       "Type": "7",
       "Exclusive": "0",
@@ -12865,14 +13631,14 @@
       "ID": "9022",
       "Type": "7",
       "Exclusive": "0",
-      "DefaultName": "스위트 로즈",
-      "MaleName": "스위트 로즈",
-      "FemaleName": "스위트 로즈",
-      "UniName": "스위트 로즈",
-      "Desc": "스위트 로즈 쿼츠 모음집을 완성하면 획득할 수 있는 특별한 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
-      "Hint": "스위트 로즈 쿼츠 모음집을 완성하면 획득할 수 있는 특별한 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
+      "DefaultName": "甜蜜玫瑰",
+      "MaleName": "甜蜜玫瑰",
+      "FemaleName": "甜蜜玫瑰",
+      "UniName": "甜蜜玫瑰",
+      "Desc": "完成甜蜜玫瑰石英收藏冊可獲得特別第2稱號.可與其他一般稱號一起使用.",
+      "Hint": "完成甜蜜玫瑰石英收藏冊可獲得特別第2稱號.可與其他一般稱號一起使用.",
       "Effect": ": : SetParamOnEquip(Luck, +35);",
-      "EffectDescription": "행운 35 증가",
+      "EffectDescription": "幸運增加35.",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml>\n <simple_visual_effect name='rose_foot_loop' joint='footsteps'  scale='2' g_scale='4' loop='true' />\n</xml>",
@@ -15585,7 +16351,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamOnEquip(MagicAttack, +44);\n: :SetParamOnEquip(magicfastcasting, +3);\n: : SetParamOnEquip(Int, +20);",
-      "EffectDescription": "魔法攻擊力 44 增加\\n 箭系魔法傷害值 3% 增加\\n 魔法施展速度 3% 增加\\n 智力 20 增加",
+      "EffectDescription": "魔法攻擊力 44 增加\\n 箭系魔法傷害力 3% 增加\\n 魔法施展速度 3% 增加\\n 智力 20 增加",
       "ExtraEffect": "MulMagicBoltMasteryBonusRate(3);",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -17141,7 +17907,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamOnEquip(MagicAttack, +43);\n: : SetParamOnEquip(criticaldamage, +3);",
-      "EffectDescription": "魔法攻擊力 43 增加\\n箭系魔法傷害值 5% 增加\\n暴擊傷害值 3% 增加",
+      "EffectDescription": "魔法攻擊力 43 增加\\n箭系魔法傷害力 5% 增加\\n暴擊傷害值 3% 增加",
       "ExtraEffect": "MulMagicBoltMasteryBonusRate(5);",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -17243,7 +18009,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamOnEquip(heulwen_enhance, +10);\n: : SetParamOnEquip(magic_craft_enhance, +10);\n: : SetParamOnEquip(production_enhance, +4); ",
-      "EffectDescription": "跟稀原工學大師稱號一起使用時, 稀原工學品質增加\\n跟魔法手工藝大師稱號一起使用時, 魔法手工藝品質增加\\n生產製作技能成功率 4% 增加",
+      "EffectDescription": "跟稀原工學大師稱號一起使用時, 稀原工學品質增加\\n跟魔法製造大師稱號一起使用時, 魔法製造品質增加\\n生產製作技能成功率 4% 增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -18901,7 +19667,7 @@
       "Desc": "這是頒發給開始愛爾琳通行證的跑者們的稱號.",
       "Hint": "這是頒發給開始愛爾琳通行證的跑者們的稱號.",
       "Effect": ": : SetParamOnEquip(Condition, 607);: : SetParamOnEquip(OverlapMoreExp, +10);: : SetParamOnEquip(production_enhance, +5);: : SetParamOnEquip(Hurry, +1);",
-      "EffectDescription": "所有技能修煉值2倍\\n戰鬥經驗值2倍\\n採集機率增加5%\\n採集速度提高5%\\n移動速度增加1%\\n自動釣魚成功率增加\\n貿易額外收益5%\\n生產製造技能成功率提高5%",
+      "EffectDescription": "所有技能修練值2倍\\n戰鬥經驗值2倍\\n採集機率增加5%\\n採集速度提高5%\\n移動速度增加1%\\n自動釣魚成功率增加\\n貿易額外收益5%\\n生產製造技能成功率提高5%",
       "ExtraEffect": "AddCollectingSuccessRate(500); AddCollectingDealyRate(-0.05); MulFisingAutoSuccessRate(150);",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -19383,7 +20149,7 @@
       "EffectDescription": "幸運30增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
-      "ExtraData": "<xml>\n  <simple_visual_effect name='title_wandering_step' giant_name='title_wandering_step_G' joint='stance' scale='1' g_scale='1' loop='true' />\n</xml>",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_wandering_step' giant_name='title_wandering_step_G' joint='footsteps' scale='1' g_scale='1' loop='true' />\n</xml>",
       "OptionUsage": "1",
       "Duration": "0",
       "OptionTitleImage": "/second_title/GUI_title_2023_halloween.dds",
@@ -20082,7 +20848,7 @@
       "Desc": "為紀念2025年青蛇之年,發放給米列希安的第2稱號.時間到期後能力效果會消失, 但仍可以持續穿著與收藏. (無法延長期間)",
       "Hint": "為紀念2025年青蛇之年,發放給米列希安的第2稱號.時間到期後能力效果會消失, 但仍可以持續穿著與收藏. (無法延長期間)",
       "Effect": ": : SetParamonEquip(AttMax, +25);\n: : SetParamonEquip(MagicAttack, +40);\n: : AddBonusOnAlchemy(alchemy_water, +15);\n: : AddBonusOnAlchemy(alchemy_fire, +15);\n: : AddBonusOnAlchemy(alchemy_wind, +15);\n: : AddBonusOnAlchemy(alchemy_earth, +15);",
-      "EffectDescription": "最大傷害增加25\\n魔法攻擊力增加40\\n水/火/風/土屬性煉金術傷害增加15",
+      "EffectDescription": "最大傷害增加25\\n魔法攻擊力增加40\\n水/火/風/土屬性鍊金術傷害增加15",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml time_limit_option='true'>\n  <simple_visual_effect name='title_bluesnake' giant_name='title_bluesnake' joint='footsteps' scale='1' g_scale='1.3' offset_y='1.2' loop='true' />\n</xml>",
@@ -20123,6 +20889,37 @@
       ]
     },
     {
+      "ID": "9195",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "新生夢想",
+      "MaleName": "新生夢想",
+      "FemaleName": "新生夢想",
+      "UniName": "新生夢想",
+      "Desc": "新生夢想第2稱號",
+      "Hint": "新生夢想第2稱號",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運30增加",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n  <simple_visual_effect name='title_freshDream' giant_name='title_freshDream_g' joint='head' scale='1' g_scale='1' offset_x='50' offset_y='0' offset_z='0' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_2025semipeakseason.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
       "ID": "9196",
       "Type": "7",
       "Exclusive": "0",
@@ -20133,7 +20930,7 @@
       "Desc": "에린 패스 시즌3의 모든 단계를 달성한 밀레시안에게 주어지는 타이틀.",
       "Hint": "에린 패스 시즌3의 모든 단계를 달성한 밀레시안에게 주어지는 타이틀.",
       "Effect": ": : SetParamonEquip(AttMax, +35);: : SetParamOnEquip(MagicAttack, +45);: : SetParamOnEquip(Crit, +8);: : SetParamOnEquip(Def, +10);: : SetParamOnEquip(Prot, +8);: :SetParamOnEquip(magicdefence, +10);\n: :SetParamOnEquip(magicprotect, 8);\n: :AddBonusOnAlchemy(alchemy_water, +14);\n: : AddBonusOnAlchemy(alchemy_fire, +14);\n: : AddBonusOnAlchemy(alchemy_wind, +14);\n: : AddBonusOnAlchemy(alchemy_earth, +14);",
-      "EffectDescription": "최대 대미지 35 증가\\n마법 공격력 45 증가\\n크리티컬 8% 증가\\n음악 버프 스킬 효과 5 증가\\n방어 10 증가\\n보호 8 증가\\n마법 방어 10 증가\\n마법 보호 8 증가\\n물 / 불 / 바람 / 흙 속성\\n연금술 대미지 14 증가",
+      "EffectDescription": "_LT[xml.title.17655]",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml time_limit_option='true' music_buff_bonus='5'></xml>",
@@ -20208,7 +21005,7 @@
       "Desc": "這是給再次來到愛爾琳的米列希安發放的特別稱號. 在米列希安信件活動期間內發放.",
       "Hint": "這是給再次來到愛爾琳的米列希安發放的特別稱號. 在米列希安信件活動期間內發放.",
       "Effect": ": : SetParamonEquip(AttMax, +20);\n: : SetParamOnEquip(Str, +20);\n: : SetParamOnEquip(Int, +20);\n: : SetParamOnEquip(Dex, +20);\n: : SetParamOnEquip(Will, +20);\n: : SetParamOnEquip(Luck, +20);: : SetParamOnEquip(LifeMax, +200);\n: : SetParamOnEquip(StaminaMax, +200);\n: :SetParamOnEquip(ManaMax, +200);\n: : SetParamOnEquip(Condition, 586);: : SetParamOnEquip(BeltaneEXP, +150);: : SetParamOnEquip(production_enhance, +5);\n: : SetParamOnEquip(Hurry, +2);",
-      "EffectDescription": "最大傷害增加20\\n力量增加20\\n智力增加20\\n敏捷增加20\\n意志增加20\\n幸運增加20\\n生命力值增加200\\n耐力值增加200\\n魔力值增加200\\n移動速度增加2%\\n烈焰見習騎士團任務戰鬥經驗值增加150%\\n採集機率增加10%\\n採集速度增加10%\\n生產製作技能成功率增加5%\\n所有技能修煉值2倍\\n組隊進行影子任務、劇場任務、地下城時, 自身經驗值2倍, 隊友經驗值1.5倍",
+      "EffectDescription": "最大傷害增加20\\n力量增加20\\n智力增加20\\n敏捷增加20\\n意志增加20\\n幸運增加20\\n生命力值增加200\\n耐力值增加200\\n魔力值增加200\\n移動速度增加2%\\n烈焰見習騎士團任務戰鬥經驗值增加150%\\n採集機率增加10%\\n採集速度增加10%\\n生產製作技能成功率增加5%\\n所有技能修練值2倍\\n組隊進行影子任務、劇場任務、地下城時, 自身經驗值2倍, 隊友經驗值1.5倍",
       "ExtraEffect": "AddCollectingDealyRate(-0.1); AddCollectingSuccessRate(1000);",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -20293,10 +21090,10 @@
       "MaleName": "與你同在的",
       "FemaleName": "與你同在的",
       "UniName": "與你同在的",
-      "Desc": "這是給與愛爾琳同在的米列希安發放的特別稱號. 在米列希安信件活動期間內發放.",
-      "Hint": "這是給與愛爾琳同在的米列希安發放的特別稱號. 在米列希安信件活動期間內發放.",
+      "Desc": "這是給予愛爾琳同在的米列希安發放的特別稱號. 在米列希安信件活動期間內發放.",
+      "Hint": "這是給予愛爾琳同在的米列希安發放的特別稱號. 在米列希安信件活動期間內發放.",
       "Effect": ": : SetParamonEquip(AttMax, +20);\n: : SetParamOnEquip(Str, +20);\n: : SetParamOnEquip(Int, +20);\n: : SetParamOnEquip(Dex, +20);\n: : SetParamOnEquip(Will, +20);\n: : SetParamOnEquip(Luck, +20);: : SetParamOnEquip(LifeMax, +200);\n: : SetParamOnEquip(StaminaMax, +200);\n: :SetParamOnEquip(ManaMax, +200);\n: : SetParamOnEquip(Condition, 586);: : SetParamOnEquip(BeltaneEXP, +150);: : SetParamOnEquip(production_enhance, +5);\n: : SetParamOnEquip(Hurry, +2);",
-      "EffectDescription": "最大傷害增加20\\n力量增加20\\n智力增加20\\n敏捷增加20\\n意志增加20\\n幸運增加20\\n生命力值增加200\\n耐力值增加200\\n魔力值增加200\\n移動速度增加2%\\n烈焰見習騎士團任務戰鬥經驗值增加150%\\n採集機率增加10%\\n採集速度增加10%\\n生產製作技能成功率增加5%\\n所有技能修煉值2倍\\n組隊進行影子任務、劇場任務、地下城時, 自身經驗值2倍, 隊友經驗值1.5倍",
+      "EffectDescription": "最大傷害增加20\\n力量增加20\\n智力增加20\\n敏捷增加20\\n意志增加20\\n幸運增加20\\n生命力值增加200\\n耐力值增加200\\n魔力值增加200\\n移動速度增加2%\\n烈焰見習騎士團任務戰鬥經驗值增加150%\\n採集機率增加10%\\n採集速度增加10%\\n生產製作技能成功率增加5%\\n所有技能修練值2倍\\n組隊進行影子任務、劇場任務、地下城時, 自身經驗值2倍, 隊友經驗值1.5倍",
       "ExtraEffect": "AddCollectingDealyRate(-0.1); AddCollectingSuccessRate(1000);",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -20436,6 +21233,68 @@
       ]
     },
     {
+      "ID": "9206",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "魔法師的符文",
+      "MaleName": "魔法師的符文",
+      "FemaleName": "魔法師的符文",
+      "UniName": "魔法師的符文",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml time_limit_option='true' >\n  <simple_visual_effect name='title_magicCircle_rune' giant_name='title_magicCircle_rune_g' joint='chest' scale='1' g_scale='1.4' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_21th_rune.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "9207",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "陽光明媚的窗戶",
+      "MaleName": "陽光明媚的窗戶",
+      "FemaleName": "陽光明媚的窗戶",
+      "UniName": "陽光明媚的窗戶",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml time_limit_option='true' >\n  <simple_visual_effect name='title_sunshine' giant_name='title_sunshine_g' joint='stance' scale='1' g_scale='1' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_21th_sunshine.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
       "ID": "9209",
       "Type": "7",
       "Exclusive": "0",
@@ -20496,7 +21355,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(AttMax, +24);: : SetParamOnEquip(LifeMax, +80);: : SetParamOnEquip(Prot, +12);: IsMultiClassUsing(6) : SetSkillVarOnEquip(title, 8, 23062, 2);: IsMultiClassUsing(6) : SetSkillVarOnEquip(title, 15, 20017, 3);: : SetSkillVarOnEquip(title, 100, 59104, 11);: IsMultiClassUsing(6) : SetParamOnEquip(bonusdamage, +1);",
-      "EffectDescription": "基本效果\\n傷害最大 24\\n保護增加 12\\n最大生命力增加 80\\n\\n爆裂槍兵Bonus效果\\n騎槍才能武器最大傷害增加8\\n騎槍衝擊傷害倍率增加 15%\\n衝鋒突擊攻擊範圍增加1m\\nBonus傷害增加1%",
+      "EffectDescription": "基本效果\\n最大傷害增加 24\\n保護增加 12\\n最大生命力增加 80\\n\\n爆裂槍兵獎勵效果\\n騎槍才能武器最大傷害增加8\\n騎槍衝擊傷害倍率增加15%\\n衝鋒突擊攻擊範圍增加1m\\n額外傷害值增加1%",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -20524,6 +21383,169 @@
         {
           "id": "bonus_damage",
           "value": 1
+        }
+      ]
+    },
+    {
+      "ID": "9213",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "仲夏氣泡波波",
+      "MaleName": "仲夏氣泡波波",
+      "FemaleName": "仲夏氣泡波波",
+      "UniName": "仲夏氣泡波波",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml time_limit_option='true' >\n  <simple_visual_effect name='title_waterpop_soda01' giant_name='title_waterpop_soda01' joint='head' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_water_pop.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": [
+          "korea"
+        ]
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "9213",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "仲夏氣泡波波",
+      "MaleName": "仲夏氣泡波波",
+      "FemaleName": "仲夏氣泡波波",
+      "UniName": "仲夏氣泡波波",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml time_limit_option='true' >\n  <simple_visual_effect name='title_waterpop_soda01' giant_name='title_waterpop_soda01' joint='head' scale='1' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_water_pop.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": [
+          "korea"
+        ],
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "9214",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "恐龍家長",
+      "MaleName": "恐龍家長",
+      "FemaleName": "恐龍家長",
+      "UniName": "恐龍家長",
+      "Desc": "養育小恐龍吧!活動中將小恐龍成年的米列希安的稱號.",
+      "Hint": "養育小恐龍吧!活動中將小恐龍成年的米列希安的稱號.",
+      "Effect": ": : SetParamOnEquip(Will, +15);\n: : SetParamOnEquip(Str, +15);\n: : SetParamOnEquip(StaminaMax, +80);",
+      "EffectDescription": "力量 15 增加\\n意志 15 增加\\n最大耐力 80 增加",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "WIL",
+          "value": 15
+        },
+        {
+          "id": "STR",
+          "value": 15
+        },
+        {
+          "id": "SP",
+          "value": 80
+        }
+      ]
+    },
+    {
+      "ID": "9230",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "學習中",
+      "MaleName": "學習中",
+      "FemaleName": "學習中",
+      "UniName": "學習中",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml time_limit_option='true'>\n  <simple_visual_effect name='title_ori_book' giant_name='title_ori_book_g' joint='head' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_book.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "9231",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "打瞌睡中",
+      "MaleName": "打瞌睡中",
+      "FemaleName": "打瞌睡中",
+      "UniName": "打瞌睡中",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml time_limit_option='true'>\n  <simple_visual_effect name='tilte_ori_sleep' giant_name='tilte_ori_sleep' joint='head' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_sleep.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
         }
       ]
     },
@@ -24036,7 +25058,7 @@
       "MaleName": "精通鍊金術大師",
       "FemaleName": "鍊金術大師",
       "UniName": "鍊金術大師",
-      "Desc": "給達到練金術精通最高等級的榮譽稱號",
+      "Desc": "給達到鍊金術精通最高等級的榮譽稱號",
       "Hint": "鍊金術 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "Effect": ": : AddBonusOnAlchemy(crystal_making, 3);\n: : AddBonusOnAlchemy(alchemy_water, +10);\n: : AddBonusOnAlchemy(alchemy_fire, +10);\n: : AddBonusOnAlchemy(alchemy_wind, +10);\n: : AddBonusOnAlchemy(alchemy_earth, +10);",
       "EffectDescription": "製作結晶成功率 3%增加\\n水/火/風 /土 屬性\\n鍊金術傷害值 10增加",
@@ -24623,12 +25645,12 @@
       "ID": "10103",
       "Type": "3",
       "Exclusive": "0",
-      "DefaultName": "金屬變換大師",
+      "DefaultName": "精通變換大師",
       "MaleName": "精通變換大師",
-      "FemaleName": "金屬變換大師",
-      "UniName": "金屬變換大師",
-      "Desc": "給達到精通金屬變換最高等級的榮譽稱號",
-      "Hint": "精通金屬變換 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
+      "FemaleName": "精通變換大師",
+      "UniName": "精通變換大師",
+      "Desc": "給達到精通變換最高等級的榮譽稱號",
+      "Hint": "精通變換 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "EffectDescription": "結晶生產成功率增加 3%",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -24819,7 +25841,7 @@
       "Desc": "給達到精通劍最高等級的榮譽稱號",
       "Hint": "精通劍 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "Effect": ": : SetParamOnEquip(LifeMax, +10);\n: : SetParamOnEquip(Int, -15);",
-      "EffectDescription": "最大生命值增加 10 \\n裝備劍時平衡增加 10 \\n[智力減少 15 ]",
+      "EffectDescription": "最大生命值增加 10 \\n裝備劍時平衡性增加 10% \\n[智力減少 15 ]",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "0",
@@ -25039,7 +26061,7 @@
       "Desc": "給達到箭系組合魔法最高等級的榮譽稱號",
       "Hint": "精通箭系組合魔法1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "Effect": ": : SetParamOnEquip(Int, +10);\n: : SetParamOnEquip(ManaMax, +5);\n: : SetParamOnEquip(LifeMax, -10);",
-      "EffectDescription": "智力增加 10 \\n最大魔法值增加 5 \\n箭系組合魔法傷害值增加 5% \\n[最大生命值減少 10 ]",
+      "EffectDescription": "智力增加 10 \\n最大魔法值增加 5 \\n箭系組合魔法傷害力增加 5% \\n[最大生命值減少 10 ]",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "0",
@@ -36922,8 +37944,8 @@
       "MaleName": "夢想成為武林高手的",
       "FemaleName": "夢想成為武林高手的",
       "UniName": "夢想成為武林高手的",
-      "Desc": "修練才能選擇格鬥術的米列希安可獲得的稱號.",
-      "Hint": "修練才能選擇格鬥術的米列希安可獲得的稱號.",
+      "Desc": "修練才能選擇武鬥術的米列希安可獲得的稱號.",
+      "Hint": "修練才能選擇武鬥術的米列希安可獲得的稱號.",
       "Effect": ": : SetParamOnEquip(Will, +20);\n: : SetParamOnEquip(Str, +10);\n: : SetParamOnEquip(StaminaMax, +10);",
       "EffectDescription": "意志20增加\\n力量10增加\\n最大耐力值 10增加",
       "ExpDungeonDisable": "false",
@@ -38551,8 +39573,8 @@
       "MaleName": "夢想成為命運仲裁者的",
       "FemaleName": "夢想成為命運仲裁者的",
       "UniName": "夢想成為命運仲裁者的",
-      "Desc": "以修煉才能選擇命運占星術的米列希安獲得的稱號.",
-      "Hint": "以修煉才能選擇命運占星術的米列希安獲得的稱號.",
+      "Desc": "以修練才能選擇命運占星術的米列希安獲得的稱號.",
+      "Hint": "以修練才能選擇命運占星術的米列希安獲得的稱號.",
       "Effect": ": : SetParamOnEquip(MagicAttack, +15);\n: : SetParamOnEquip(ManaMax, +20);\n: : SetParamOnEquip(LifeMax, +20);",
       "EffectDescription": "魔法攻擊力增加15\\n最大魔力值增加20\\n最大生命力增加20",
       "ExpDungeonDisable": "false",
@@ -38915,7 +39937,7 @@
       "Desc": "淘氣南瓜節節限定南瓜小惡魔服裝角色卡使用的話就可以使用稱號.可以和其他稱號一同使用.",
       "Hint": "2012 할로윈 한정 호박 박쥐 의상 캐릭터 카드를 사용하였을 경우 타이틀을 사용할 수 있다. 다른 타이틀과 함께 사용할 수 있는 타이틀이다.",
       "Effect": ": : SetParamonEquip(MagicAttack, 12);: : SetParamOnEquip(ManaMax, 15); ",
-      "EffectDescription": "魔法傷害值增加 12 \\n魔法增加 15 ",
+      "EffectDescription": "魔法傷害力增加 12 \\n魔法增加 15 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -39379,7 +40401,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, 24);: : SetParamOnEquip(ManaMax, +10); ",
-      "EffectDescription": "魔法傷害值增加 24 \\n最大魔力值增加 10 ",
+      "EffectDescription": "魔法傷害力增加 24 \\n最大魔力值增加 10 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -39414,7 +40436,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, 32);",
-      "EffectDescription": "魔法傷害值增加 32 \\n紡織/冶煉/ 衣物製作/\\n打鐵成功率上升 1% ",
+      "EffectDescription": "魔法傷害力增加 32 \\n紡織/冶煉/ 衣物製作/\\n打鐵成功率上升 1% ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml buff_bonus='1'/>",
@@ -39484,7 +40506,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, 32);: : SetParamOnEquip(ManaMax, +20);: : SetParamOnEquip(LifeMax, +10);",
-      "EffectDescription": "魔法傷害值增加 32 \\n最大魔力值增加 20 \\n最大生命值增加 10 ",
+      "EffectDescription": "魔法傷害力增加 32 \\n最大魔力值增加 20 \\n最大生命值增加 10 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -39561,7 +40583,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, 28);: : SetParamOnEquip(StaminaMax, +10);: : SetParamOnEquip(ManaMax, +20);",
-      "EffectDescription": "魔法傷害值增加 28 \\n最大耐力值增加 10 \\n最大魔力值增加 20 ",
+      "EffectDescription": "魔法傷害力增加 28 \\n最大耐力值增加 10 \\n最大魔力值增加 20 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -39832,7 +40854,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, 20);: : SetParamOnEquip(ManaMax, +40);",
-      "EffectDescription": "魔法傷害值增加 20 \\n最大魔力值增加 40 ",
+      "EffectDescription": "魔法傷害力增加 20 \\n最大魔力值增加 40 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -40119,7 +41141,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, 24);",
-      "EffectDescription": "魔法傷害值增加 24 \\n箭系魔法傷害值增加 5%",
+      "EffectDescription": "魔法傷害力增加 24 \\n箭系魔法傷害力增加 5%",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml buff_bonus='5'/>",
@@ -40155,7 +41177,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, 32);",
-      "EffectDescription": "魔法傷害值增加 32 \\n箭系魔法傷害值增加 2% ",
+      "EffectDescription": "魔法傷害力增加 32 \\n箭系魔法傷害力增加 2% ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml buff_bonus='2'/>",
@@ -40726,7 +41748,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "타이틀 쿠폰을 통해 획득할 수 있는 매력적인 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
       "Effect": ": : SetParamonEquip(MagicAttack, 12);: : SetParamOnEquip(LifeMax, +30);",
-      "EffectDescription": "魔法傷害值增加 12 \\n最大生命值增加30 ",
+      "EffectDescription": "魔法傷害力增加 12 \\n最大生命值增加30 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -40761,7 +41783,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "타이틀 쿠폰을 통해 획득할 수 있는 매력적인 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
       "Effect": ": : SetParamonEquip(MagicAttack, 28);: : SetParamOnEquip(Crit, +10);",
-      "EffectDescription": "魔法傷害值增加 28 \\n暴擊率增加 10% ",
+      "EffectDescription": "魔法傷害力增加 28 \\n暴擊率增加 10% ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -40865,7 +41887,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "타이틀 쿠폰을 통해 획득할 수 있는 매력적인 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
       "Effect": ": : SetParamOnEquip(MagicAttack, +40);",
-      "EffectDescription": "魔法傷害值增加 40 ",
+      "EffectDescription": "魔法傷害力增加 40 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -41029,7 +42051,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "타이틀 쿠폰을 통해 획득할 수 있는 매력적인 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
       "Effect": ": : SetParamOnEquip(MagicAttack, +28);: : SetParamOnEquip(Crit, +10);",
-      "EffectDescription": "魔法傷害值增加 28 \\n暴擊率 10% 增加",
+      "EffectDescription": "魔法傷害力增加 28 \\n暴擊率 10% 增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -41102,7 +42124,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "타이틀 쿠폰을 통해 획득할 수 있는 매력적인 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
       "Effect": ": : SetParamOnEquip(MagicAttack, +24);: : SetParamOnEquip(StaminaMax, +40);",
-      "EffectDescription": "魔法傷害值增加 24 \\n最大耐力值增加 40 ",
+      "EffectDescription": "魔法傷害力增加 24 \\n最大耐力值增加 40 ",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -41855,7 +42877,7 @@
       "UniName": "莉茲貝特的告白",
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
-      "EffectDescription": "治煉 成功率 2% 增加\\n打鐵成功率 3% 增加\\n採集速度 5% 增加",
+      "EffectDescription": "冶煉 成功率 2% 增加\\n打鐵成功率 3% 增加\\n採集速度 5% 增加",
       "ExtraEffect": "AddRefineSuccessRate(2);AddBlackSmithSuccessRate(3);AddCollectingDealyRate(-0.05);",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -42676,12 +43698,12 @@
       "ID": "10711",
       "Type": "3",
       "Exclusive": "0",
-      "DefaultName": "料理精通大師",
-      "MaleName": "料理精通大師",
-      "FemaleName": "料理精通大師",
-      "UniName": "料理精通大師",
-      "Desc": "到達料理精通者最高等級的玩家所提供的光榮的稱號",
-      "Hint": "料理精通 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
+      "DefaultName": "精通料理大師",
+      "MaleName": "精通料理大師",
+      "FemaleName": "精通料理大師",
+      "UniName": "精通料理大師",
+      "Desc": "到達精通料理者最高等級的玩家所提供的光榮的稱號",
+      "Hint": "精通料理 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "EffectDescription": "料理地下城完成時,\\n追加獲得王室料理納品書",
       "__feature": "gfGrowthTermReduce",
       "locale": {
@@ -46445,7 +47467,7 @@
       "MaleName": "擠牛奶大師",
       "FemaleName": "擠牛奶大師",
       "UniName": "擠牛奶大師",
-      "Desc": "這是給與擠牛奶達到最高等級玩家的榮譽稱號",
+      "Desc": "這是給予擠牛奶達到最高等級玩家的榮譽稱號",
       "Hint": "擠牛奶 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "Effect": ": : SetParamOnEquip(StaminaMax, +25);",
       "EffectDescription": "最大耐力25增加",
@@ -46537,7 +47559,7 @@
       "MaleName": "交易大師",
       "FemaleName": "交易大師",
       "UniName": "交易大師",
-      "Desc": "這昰給與達到最高等級交易大師玩家的榮譽稱號",
+      "Desc": "這是給予達到最高等級交易大師玩家的榮譽稱號",
       "Hint": "精通交易 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "Effect": ": : SetParamOnEquip(Prot, 5);\n: : SetParamOnEquip(Def, 15);\n: : SetParamOnEquip(Str, -30);\n: : SetParamOnEquip(Dex, -30);\n: : SetParamOnEquip(Int, -30);",
       "EffectDescription": "保護5增加\\n防護力15增加\\n[力量 30減少]\\n[敏捷30減少]\\n[智力30減少]",
@@ -46581,7 +47603,7 @@
       "MaleName": "變身大師",
       "FemaleName": "變身大師",
       "UniName": "變身大師",
-      "Desc": "給予到達精通金屬變換等級的人的光榮稱號",
+      "Desc": "這是給予達到最高等級精通變身大師玩家的榮譽稱號",
       "Hint": "精通變身 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "EffectDescription": "獲得稱號以後,會得到夏瑪拉的尊敬\\n獲得稱號以後,可變身為夏瑪拉",
       "ExpDungeonDisable": "false",
@@ -47969,7 +48991,7 @@
       "Desc": "第四幕 : 嫉妒的化身最高等級達到的玩家所可以獲得的光榮稱號",
       "Hint": "第四幕 : 嫉妒的化身 1等級的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "Effect": ": : SetParamOnEquip(Dex, +15);\n: : SetParamOnEquip(marionette_control_balance, 5);\n: : SetParamOnEquip(marionette_windmill_damage, 30);",
-      "EffectDescription": "敏捷增加15\\n人偶的平衡度5增加\\n第四幕 : 嫉妒的化身傷害值倍率30%增加",
+      "EffectDescription": "敏捷增加15\\n人偶的平衡性5增加\\n第四幕 : 嫉妒的化身傷害值倍率30%增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "0",
@@ -50272,7 +51294,7 @@
       "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(MagicAttack, +8);: : SetParamOnEquip(Int, +15);: : SetParamonEquip(ManaMax, +30);: : SetParamOnEquip(StaminaMax, +10);",
-      "EffectDescription": "魔法攻擊力 8 增加\\n智力 15 增加\\n最大魔法值 30 增加가\\n最大耐力值 10 增加",
+      "EffectDescription": "魔法攻擊力 8 增加\\n智力 15 增加\\n最大魔法值 30 增加\\n最大耐力值 10 增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml>\r\n <simple_visual_effect name='heart_spin' giant_name='heart_spin_g' joint='stance' loop='true' />\r\n <simple_visual_effect name='heart_buttom' giant_name='heart_buttom_g' joint='footsteps' loop='true' />\r\n</xml>",
@@ -51473,7 +52495,7 @@
       "Desc": "15주년을 축하하는 특별한 날을 함께한 사람에게 주어지는 매력적인 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
       "Hint": "15주년을 축하하는 특별한 날을 함께한 사람에게 주어지는 매력적인 2차 타이틀이다. 다른 일반 타이틀과 함께 사용할 수 있다.",
       "Effect": ": : SetParamonEquip(AttMax, +15);\n: : SetParamonEquip(MagicAttack, 15);\n: : AddBonusOnAlchemy(alchemy_water, +10);\n: : AddBonusOnAlchemy(alchemy_fire, +10);\n: : AddBonusOnAlchemy(alchemy_wind, +10);\n: : AddBonusOnAlchemy(alchemy_earth, +10);\n: : SetParamOnEquip(Str, +15);\n: :SetParamOnEquip(Int, +15);\n: :SetParamOnEquip(Dex, +15);\n: :SetParamOnEquip(Will, +15);\n: :SetParamOnEquip(Luck, +15);: : SetParamOnEquip(Hurry, +1);",
-      "EffectDescription": "최대 대미지 15 증가\\n마법 공격력 15 증가\\n물 / 불 / 바람 / 흙 속성\\n연금술 대미지 10 증가\\n체력 15 증가\\n지력 15 증가\\n솜씨 15 증가\\n의지 15 증가\\n행운 15 증가\\n이동 속도 1% 증가",
+      "EffectDescription": "_LT[xml.title.10879]",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -53338,7 +54360,7 @@
       "Desc": "只能在2022年萬聖節活動期間得到的特殊第2稱號.期限結束後,選項效果雖然會消失,但是可以持續擁有並收藏.(不能延長期間)",
       "Hint": "只能在2022年萬聖節活動期間得到的特殊第2稱號.期限結束後,選項效果雖然會消失,但是可以持續擁有並收藏.(不能延長期間)",
       "Effect": ": : SetParamonEquip(AttMax, +15);\n: : SetParamOnEquip(MagicAttack, +20);\n: : SetParamOnEquip(Def, +10);\n: : SetParamOnEquip(Prot, +10);\n: : SetParamOnEquip(magicdefence, +10);\n: : SetParamOnEquip(magicprotect, +10);\n: : SetParamOnEquip(Crit, +10);\n: : SetParamonEquip(Hurry, +2);",
-      "EffectDescription": "最大傷害增加15\\n魔法攻擊力增加20\\n暴擊率增加10％\\n防禦增加10\\n保護增加10\\n魔法防禦增加10\\n魔法保護增加10\\n音樂增益技能效果增加4\\n移動速度增加2％",
+      "EffectDescription": "最大傷害增加15\\n魔法攻擊力增加20\\n暴擊率增加10%\\n防禦增加10\\n保護增加10\\n魔法防禦增加10\\n魔法保護增加10\\n音樂增益技能效果增加4\\n移動速度增加2%",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "ExtraData": "<xml time_limit_option='true' music_buff_bonus='4'></xml>",
@@ -54709,6 +55731,99 @@
       "OptionUsage": "1",
       "Duration": "0",
       "OptionTitleImage": "/second_title/GUI_title_25knitc.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "11110",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "踏碎黑玫瑰之途",
+      "MaleName": "踏碎黑玫瑰之途",
+      "FemaleName": "踏碎黑玫瑰之途",
+      "UniName": "踏碎黑玫瑰之途",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用.",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用.",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n <simple_visual_effect name='heart_spin_redblack' giant_name='heart_spin_redblack' joint='stance' g_scale='1.3' loop='true' />\n <simple_visual_effect name='heart_buttom_redblack' giant_name='heart_buttom_redblack' joint='footsteps' g_scale='1.3' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_rose_blooming02.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "11111",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "灰燼中的信仰碎片",
+      "MaleName": "灰燼中的信仰碎片",
+      "FemaleName": "灰燼中的信仰碎片",
+      "UniName": "灰燼中的信仰碎片",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用.",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號. 可與其他一般稱號一起使用.",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n <simple_visual_effect name='circle_feather_redblack' giant_name='circle_feather_redblack' joint='footsteps' offset_y='2' loop='true' /> \n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_holyfeather03.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "LUK",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "ID": "11117",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "花之華爾滋",
+      "MaleName": "花之華爾滋",
+      "FemaleName": "花之華爾滋",
+      "UniName": "花之華爾滋",
+      "Desc": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使.用",
+      "Hint": "透過稱號取得券可獲得有魅力的第2稱號.可與其他一般稱號一起使用.",
+      "Effect": ": : SetParamOnEquip(Luck, +30);",
+      "EffectDescription": "幸運增加30",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml>\n <simple_visual_effect name='title_spflo_flower01' giant_name='title_spflo_flower01' joint='stance' g_scale='1.3' g_offset_y='20' loop='true' />\n <simple_visual_effect name='title_spflo_flower02' giant_name='title_spflo_flower02' joint='footsteps' g_scale='1.3' g_offset_y='20' loop='true' />\n</xml>",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_spflo_flower.dds",
       "ImagePosX": "0",
       "ImagePosY": "0",
       "locale": {
@@ -56128,7 +57243,7 @@
       "MaleName": "菲尼捕捉大師",
       "FemaleName": "菲尼捕捉大師",
       "UniName": "菲尼捕捉大師",
-      "Desc": "給與菲尼捕捉達到最高等級的人的榮譽稱號",
+      "Desc": "給予菲尼捕捉達到最高等級的人的榮譽稱號",
       "Hint": "菲尼捕捉的修練經驗值達到100時,可獲得最高等級證明的稱號.",
       "Effect": ": : SetParamOnEquip(Will, +10);\n: : SetParamOnEquip(Luck, +5);",
       "EffectDescription": "意志增加10\\n幸運增加5",
@@ -58209,8 +59324,8 @@
       "MaleName": "相伴11個年頭",
       "FemaleName": "相伴11個年頭",
       "UniName": "相伴11個年頭",
-      "Desc": "11週年紀念, 發放給與各個時期誕生在愛爾琳的鄰居打招呼的米列希安的特別稱號.",
-      "Hint": "11週年紀念, 發放給與各個時期誕生在愛爾琳的鄰居打招呼的米列希安的特別稱號.",
+      "Desc": "11週年紀念, 發放給予各個時期誕生在愛爾琳的鄰居打招呼的米列希安的特別稱號.",
+      "Hint": "11週年紀念, 發放給予各個時期誕生在愛爾琳的鄰居打招呼的米列希安的特別稱號.",
       "Effect": ": : SetParamOnEquip(Str, +11);\n: : SetParamOnEquip(Dex, +11);\n: : SetParamOnEquip(Int, +11);\n: : SetParamOnEquip(Will, +11);\n: : SetParamOnEquip(Luck, +11);\n: : SetParamOnEquip(LifeMax, +11);\n: : SetParamOnEquip(ManaMax, +11);\n: : SetParamOnEquip(StaminaMax, +11);",
       "EffectDescription": "力量 11 增加\\n敏捷 11 增加\\n智力 11 增加\\n意志 11 增加\\n幸運 11 增加\\n最大生命值 11 增加\\n最大魔力 11 增加\\n最大耐力 11 增加",
       "ExpDungeonDisable": "false",
@@ -60545,7 +61660,7 @@
       "FemaleName": "珍藏珍貴回憶的",
       "UniName": "珍藏珍貴回憶的",
       "Desc": "持續的參與夢幻回憶活動後, 分配給珍藏珍貴回憶的米列希安的稱號. 活動期間穿戴時, 可以獲得所有技能修練值 2倍增加等特別強化效果.",
-      "Hint": "持續的參與夢幻回憶活動後, 分配給珍藏珍貴回憶的米列希安的稱號. 活動期間穿戴時,, 可以獲得所有技能修練值 2倍增加等特別強化效果.",
+      "Hint": "持續的參與夢幻回憶活動後, 分配給珍藏珍貴回憶的米列希安的稱號. 活動期間穿戴時 , 可以獲得所有技能修練值 2倍增加等特別強化效果.",
       "Effect": ": : SetParamonEquip(AttMax, +15);\n: : SetParamonEquip(MagicAttack, 15);",
       "EffectDescription": "最大傷害 15 增加\\n魔法攻擊力 15 增加\\n\\n活動期間所有技能修練值 2倍\\n以隊伍進行影子任務, 劇場任務, 地下城時,自身的經驗值 2倍, 隊員經驗值 1.5倍\\n(與回歸的, 勤勉的米列希安效果無法疊加)",
       "ExpDungeonDisable": "false",
@@ -62879,6 +63994,42 @@
       ]
     },
     {
+      "ID": "15742",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "戰勝試煉的舞台",
+      "MaleName": "戰勝試煉的舞台",
+      "FemaleName": "戰勝試煉的舞台",
+      "UniName": "戰勝試煉的舞台",
+      "Desc": "為戰勝試煉的舞台米列希安準備的稱號.為成功完成21週年試煉的舞台最後階段的勇者準備的稱號.",
+      "Hint": "為戰勝試煉的舞台米列希安準備的稱號.為成功完成21週年試煉的舞台最後階段的勇者準備的稱號.",
+      "Effect": ": : SetParamonEquip(AttMax, +21);\n: : SetParamonEquip(MagicAttack, 21); ",
+      "EffectDescription": "最大傷害增加21\\n魔法攻擊力增加21",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_Mabinogi.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": [
+          "usa"
+        ]
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 21
+        },
+        {
+          "id": "magic_attack",
+          "value": 21
+        }
+      ]
+    },
+    {
       "ID": "16000",
       "Type": "3",
       "Exclusive": "0",
@@ -65026,6 +66177,210 @@
       ]
     },
     {
+      "ID": "16063",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "不被悔恨吞噬的意志",
+      "MaleName": "不被悔恨吞噬的意志",
+      "FemaleName": "不被悔恨吞噬的意志",
+      "UniName": "不被悔恨吞噬的意志",
+      "Desc": "阻止信任的裂痕並拯救布里萊赫者所獲得的稱號.",
+      "Hint": "在悔恨造成的裂痕吞食布里萊赫之前,守護那份信任.",
+      "Effect": ": : SetParamonEquip(AttMax, +38);: : SetParamOnEquip(MagicAttack, +60);\n: : AddBonusOnAlchemy(alchemy_water, +45);\n: : AddBonusOnAlchemy(alchemy_fire, +45);\n: : AddBonusOnAlchemy(alchemy_wind, +45);\n: : AddBonusOnAlchemy(alchemy_earth, +45);\n: : SetParamOnEquip(Hurry, +2);",
+      "EffectDescription": "最大傷害值增加38\\n魔法攻擊力增加60\\n4大屬性鍊金術傷害 增加45\\n移動速度增加2%",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 38
+        },
+        {
+          "id": "magic_attack",
+          "value": 60
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "move_speed",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "ID": "16069",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "聆聽悔恨的呢喃",
+      "MaleName": "聆聽悔恨的呢喃",
+      "FemaleName": "聆聽悔恨的呢喃",
+      "UniName": "聆聽悔恨的呢喃",
+      "Desc": "布里萊赫地下城信仰裂隙首通活動期間內,在雷楠的米勒：悔恨的戰鬥中勝利者獲得的榮譽稱號.",
+      "Hint": "布里萊赫地下城信仰裂隙首通活動期間內,在雷楠的米勒：悔恨的戰鬥中勝利者獲得的榮譽稱號.",
+      "Effect": ": : SetParamonEquip(AttMax, +38);: : SetParamOnEquip(MagicAttack, +60);\n: : AddBonusOnAlchemy(alchemy_water, +45);\n: : AddBonusOnAlchemy(alchemy_fire, +45);\n: : AddBonusOnAlchemy(alchemy_wind, +45);\n: : AddBonusOnAlchemy(alchemy_earth, +45);\n: : SetParamOnEquip(Hurry, +2);",
+      "EffectDescription": "最大傷害值增加38\\n魔法攻擊力增加60\\n4大屬性鍊金術傷害 增加45\\n移動速度增加2%",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 38
+        },
+        {
+          "id": "magic_attack",
+          "value": 60
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "move_speed",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "ID": "16070",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "靈魂解放者",
+      "MaleName": "靈魂解放者",
+      "FemaleName": "靈魂解放者",
+      "UniName": "靈魂解放者",
+      "Desc": "布里萊赫地下城信仰裂隙首通活動期間內,在雷楠的米勒：悔恨的戰鬥中勝利者獲得的榮譽稱號.",
+      "Hint": "布里萊赫地下城信仰裂隙首通活動期間內,在雷楠的米勒：悔恨的戰鬥中勝利者獲得的榮譽稱號.",
+      "Effect": ": : SetParamonEquip(AttMax, +38);: : SetParamOnEquip(MagicAttack, +60);\n: : AddBonusOnAlchemy(alchemy_water, +45);\n: : AddBonusOnAlchemy(alchemy_fire, +45);\n: : AddBonusOnAlchemy(alchemy_wind, +45);\n: : AddBonusOnAlchemy(alchemy_earth, +45);\n: : SetParamOnEquip(Hurry, +2);",
+      "EffectDescription": "最大傷害值增加38\\n魔法攻擊力增加60\\n4大屬性鍊金術傷害 增加45\\n移動速度增加2%",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 38
+        },
+        {
+          "id": "magic_attack",
+          "value": 60
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "move_speed",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "ID": "16071",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "支配信仰裂隙之人",
+      "MaleName": "支配信仰裂隙之人",
+      "FemaleName": "支配信仰裂隙之人",
+      "UniName": "支配信仰裂隙之人",
+      "Desc": "布里萊赫地下城信仰裂隙首通活動期間內,在雷楠的米勒：悔恨的戰鬥中勝利者獲得的榮譽稱號.",
+      "Hint": "布里萊赫地下城信仰裂隙首通活動期間內,在雷楠的米勒：悔恨的戰鬥中勝利者獲得的榮譽稱號.",
+      "Effect": ": : SetParamonEquip(AttMax, +38);: : SetParamOnEquip(MagicAttack, +60);\n: : AddBonusOnAlchemy(alchemy_water, +45);\n: : AddBonusOnAlchemy(alchemy_fire, +45);\n: : AddBonusOnAlchemy(alchemy_wind, +45);\n: : AddBonusOnAlchemy(alchemy_earth, +45);\n: : SetParamOnEquip(Hurry, +2);",
+      "EffectDescription": "最大傷害值增加38\\n魔法攻擊力增加60\\n4大屬性鍊金術傷害 增加45\\n移動速度增加2%",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 38
+        },
+        {
+          "id": "magic_attack",
+          "value": 60
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 45
+        },
+        {
+          "id": "move_speed",
+          "value": 2
+        }
+      ]
+    },
+    {
       "ID": "18000",
       "Type": "3",
       "Exclusive": "0",
@@ -65951,8 +67306,8 @@
       "MaleName": "窮舉攻擊手",
       "FemaleName": "窮舉攻擊手",
       "UniName": "窮舉攻擊手",
-      "Desc": "這是給與幾個人挑戰打開模模糊糊的箱子,足足獲得第一名的特別者的稱號.\\n在激烈的競爭中也有燦爛輝煌的時期...是愛爾琳.",
-      "Hint": "這是給與幾個人挑戰打開模模糊糊的箱子,足足獲得第一名的特別者的稱號.\\n在激烈的競爭中也有燦爛輝煌的時期...是愛爾琳.",
+      "Desc": "這是給予幾個人挑戰打開模模糊糊的箱子,足足獲得第一名的特別者的稱號.\\n在激烈的競爭中也有燦爛輝煌的時期...是愛爾琳.",
+      "Hint": "這是給予幾個人挑戰打開模模糊糊的箱子,足足獲得第一名的特別者的稱號.\\n在激烈的競爭中也有燦爛輝煌的時期...是愛爾琳.",
       "Effect": ": : SetParamOnEquip(Luck, +30);",
       "EffectDescription": "幸運30增加",
       "ExpDungeonDisable": "false",
@@ -66109,7 +67464,7 @@
       "Desc": "授予開始愛爾琳冒險日記第1季跑者的稱號",
       "Hint": "授予開始愛爾琳冒險日記第1季跑者的稱號",
       "Effect": ": : SetParamOnEquip(Condition, 607);: : SetParamOnEquip(OverlapMoreExp, +10);: : SetParamOnEquip(production_enhance, +5);: : SetParamOnEquip(Hurry, +1);",
-      "EffectDescription": "所有技能修練值2倍\\n戰鬥經驗值2倍\\n增加採集機率5％\\n增加採集速度5％\\增加移動速度1％\\n增加自動釣魚成功率\\n貿易額外利益5％\\n增加生產製作技能成功率5％",
+      "EffectDescription": "所有技能修練值2倍\\n戰鬥經驗值2倍\\n增加採集機率5%\\n增加採集速度5%\\增加移動速度1%\\n增加自動釣魚成功率\\n貿易額外利益5%\\n增加生產製作技能成功率5%",
       "ExtraEffect": "AddCollectingSuccessRate(500); AddCollectingDealyRate(-0.05); MulFisingAutoSuccessRate(150);",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
@@ -67373,8 +68728,8 @@
       "MaleName": "妖魔,小狗還有",
       "FemaleName": "妖魔,小狗還有",
       "UniName": "妖魔,小狗還有",
-      "Desc": "在散發著芬芳草香的菲歐納地區,給與精靈妖魔,小狗傑伊開始新緣分的米列希安頒發的特別稱號.",
-      "Hint": "在散發著芬芳草香的菲歐納地區,給與精靈妖魔,小狗傑伊開始新緣分的米列希安頒發的特別稱號.",
+      "Desc": "在散發著芬芳草香的菲歐納地區,給予精靈妖魔,小狗傑伊開始新緣分的米列希安頒發的特別稱號.",
+      "Hint": "在散發著芬芳草香的菲歐納地區,給予精靈妖魔,小狗傑伊開始新緣分的米列希安頒發的特別稱號.",
       "Effect": ": : SetParamOnEquip(Luck, +30);",
       "EffectDescription": "幸運30增加",
       "ExpDungeonDisable": "false",
@@ -68440,6 +69795,315 @@
       ]
     },
     {
+      "ID": "18131",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "21週年夢幻之星",
+      "MaleName": "21週年夢幻之星",
+      "FemaleName": "21週年夢幻之星",
+      "UniName": "21週年夢幻之星",
+      "Desc": "發放給一同慶祝21週年的人,獨具魅力的第2稱號. 可與其他一般稱號一起使用.",
+      "Hint": "發放給一同慶祝21週年的人,獨具魅力的第2稱號. 可與其他一般稱號一起使用.",
+      "Effect": ": : SetParamonEquip(AttMax, +21);\n: : SetParamonEquip(MagicAttack, +21);\n: : AddBonusOnAlchemy(alchemy_water, +15);\n: : AddBonusOnAlchemy(alchemy_fire, +15);\n: : AddBonusOnAlchemy(alchemy_wind, +15);\n: : AddBonusOnAlchemy(alchemy_earth, +15);\n: : SetParamOnEquip(Str, +21);\n: :SetParamOnEquip(Int, +21);\n: :SetParamOnEquip(Dex, +21);\n: :SetParamOnEquip(Will, +21);\n: :SetParamOnEquip(Luck, +21);: : SetParamOnEquip(Hurry, +1);",
+      "EffectDescription": "最大傷害增加21\\n魔法攻擊力增加21\\n水/火/風/土屬性\\n鍊金術傷害增加15\\n力量增加21\\n智力增加21\\n敏捷增加21\\n意志增加21\\n幸運增加21\\n移動速度增加1%",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_Mabinogi.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": null,
+        "exclude": [
+          "taiwan",
+          "usa"
+        ]
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 21
+        },
+        {
+          "id": "magic_attack",
+          "value": 21
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "STR",
+          "value": 21
+        },
+        {
+          "id": "INT",
+          "value": 21
+        },
+        {
+          "id": "DEX",
+          "value": 21
+        },
+        {
+          "id": "WIL",
+          "value": 21
+        },
+        {
+          "id": "LUK",
+          "value": 21
+        },
+        {
+          "id": "move_speed",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "ID": "18131",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "18週年夢幻之星",
+      "MaleName": "18週年夢幻之星",
+      "FemaleName": "18週年夢幻之星",
+      "UniName": "18週年夢幻之星",
+      "Desc": " 可與其他一般稱號一起使用",
+      "Hint": " 可與其他一般稱號一起使用",
+      "Effect": ": : SetParamonEquip(AttMax, +18);\n: : SetParamonEquip(MagicAttack, +18);\n: : AddBonusOnAlchemy(alchemy_water, +15);\n: : AddBonusOnAlchemy(alchemy_fire, +15);\n: : AddBonusOnAlchemy(alchemy_wind, +15);\n: : AddBonusOnAlchemy(alchemy_earth, +15);\n: : SetParamOnEquip(Str, +18);\n: :SetParamOnEquip(Int, +18);\n: :SetParamOnEquip(Dex, +18);\n: :SetParamOnEquip(Will, +18);\n: :SetParamOnEquip(Luck, +18);: : SetParamOnEquip(Hurry, +1);",
+      "EffectDescription": "最大傷害增加18\\n魔法攻擊力增加18\\n水/火/風/土屬性\\n鍊金術傷害增加15\\n力量增加18\\n智力增加18\\n敏捷增加18\\n意志增加18\\n幸運增加18\\n移動速度增加1%",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_Mabinogi.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": [
+          "usa"
+        ],
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 18
+        },
+        {
+          "id": "magic_attack",
+          "value": 18
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "STR",
+          "value": 18
+        },
+        {
+          "id": "INT",
+          "value": 18
+        },
+        {
+          "id": "DEX",
+          "value": 18
+        },
+        {
+          "id": "WIL",
+          "value": 18
+        },
+        {
+          "id": "LUK",
+          "value": 18
+        },
+        {
+          "id": "move_speed",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "ID": "18131",
+      "Type": "7",
+      "Exclusive": "0",
+      "DefaultName": "21週年夢幻之星",
+      "MaleName": "21週年夢幻之星",
+      "FemaleName": "21週年夢幻之星",
+      "UniName": "21週年夢幻之星",
+      "Desc": "發放給一同慶祝21週年的人獨具魅力的第2稱號.可與其他一般稱號一起使用.",
+      "Hint": "發放給一同慶祝21週年的人獨具魅力的第2稱號.可與其他一般稱號一起使用.",
+      "Effect": ": : SetParamonEquip(AttMax, +21);\n: : SetParamonEquip(MagicAttack, +21);\n: : AddBonusOnAlchemy(alchemy_water, +15);\n: : AddBonusOnAlchemy(alchemy_fire, +15);\n: : AddBonusOnAlchemy(alchemy_wind, +15);\n: : AddBonusOnAlchemy(alchemy_earth, +15);\n: : SetParamOnEquip(Str, +21);\n: :SetParamOnEquip(Int, +21);\n: :SetParamOnEquip(Dex, +21);\n: :SetParamOnEquip(Will, +21);\n: :SetParamOnEquip(Luck, +21);: : SetParamOnEquip(Hurry, +1);",
+      "EffectDescription": "最大傷害值增加21\\n魔法攻擊力增加21 \\n水 / 火 / 風 / 土屬性鍊金術傷害增加15\\n力量增加21\\n智力增加21\\n敏捷增加21\\n意志增加21 \\n幸運增加21 \\n移動速度增加1% ",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "1",
+      "Duration": "0",
+      "OptionTitleImage": "/second_title/GUI_title_tw_21st.dds",
+      "ImagePosX": "0",
+      "ImagePosY": "0",
+      "locale": {
+        "include": [
+          "taiwan"
+        ],
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 21
+        },
+        {
+          "id": "magic_attack",
+          "value": 21
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 15
+        },
+        {
+          "id": "STR",
+          "value": 21
+        },
+        {
+          "id": "INT",
+          "value": 21
+        },
+        {
+          "id": "DEX",
+          "value": 21
+        },
+        {
+          "id": "WIL",
+          "value": 21
+        },
+        {
+          "id": "LUK",
+          "value": 21
+        },
+        {
+          "id": "move_speed",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "ID": "18132",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "아름답게 피어난",
+      "MaleName": "아름답게 피어난",
+      "FemaleName": "아름답게 피어난",
+      "UniName": "아름답게 피어난",
+      "Desc": "아름답게 피어난 당신께 지급되는 타이틀. 마비노기 21주년 이벤트 기간에 착용 시, 모든 스킬 수련치가 2배로 증가하는 등의 특별한 부스터 효과를 추가로 받을 수 있다.",
+      "Hint": "아름답게 피어난 당신께 지급되는 타이틀. 마비노기 21주년 이벤트 기간에 착용 시, 모든 스킬 수련치가 2배로 증가하는 등의 특별한 부스터 효과를 추가로 받을 수 있다.",
+      "Effect": ": : SetParamonEquip(AttMax, +21);\n: : SetParamonEquip(MagicAttack, +21);\n: : AddBonusOnAlchemy(alchemy_water, +8);\n: : AddBonusOnAlchemy(alchemy_fire, +8);\n: : AddBonusOnAlchemy(alchemy_wind, +8);\n: : AddBonusOnAlchemy(alchemy_earth, +8);",
+      "EffectDescription": "최대 대미지 21 증가\\n마법 공격력 21 증가\\n물 / 불 / 바람 / 흙 속성\\n연금술 대미지 8 증가\\n\\n21주년 이벤트 기간 동안 모든 스킬 수련치 2배\\n파티로 그림자 미션, 연극 미션, 던전 플레이 시 자신은 경험치 3배, 파티원은 경험치 1.5배",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml EventName='21th_anniversary' Condition='1017' > </xml>",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 21
+        },
+        {
+          "id": "magic_attack",
+          "value": 21
+        },
+        {
+          "id": "water_alchemy_damage",
+          "value": 8
+        },
+        {
+          "id": "fire_alchemy_damage",
+          "value": 8
+        },
+        {
+          "id": "wind_alchemy_damage",
+          "value": 8
+        },
+        {
+          "id": "earth_alchemy_damage",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "ID": "18133",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "試煉的舞台完美通關",
+      "MaleName": "試煉的舞台完美通關",
+      "FemaleName": "試煉的舞台完美通關",
+      "UniName": "試煉的舞台完美通關",
+      "Desc": "完美地完成了試煉的舞台! 為成功通關21週年試煉的舞台老手模式的勇者準備的稱號.期限結束後,稱號能力值效果將自動消失,但仍可以裝備或收藏.",
+      "Hint": "完美地完成了試煉的舞台! 為成功通關21週年試煉的舞台老手模式的勇者準備的稱號.期限結束後,稱號能力值效果將自動消失,但仍可以裝備或收藏.",
+      "Effect": ": : SetParamonEquip(AttMax, +35);\n: : SetParamonEquip(MagicAttack, +50);",
+      "EffectDescription": "最大傷害增加35\\n魔法攻擊力增加50",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "ExtraData": "<xml time_limit_option='true'></xml>",
+      "OptionUsage": "0",
+      "Duration": "43200",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "attack_max",
+          "value": 35
+        },
+        {
+          "id": "magic_attack",
+          "value": 50
+        }
+      ]
+    },
+    {
       "ID": "18134",
       "Type": "3",
       "Exclusive": "0",
@@ -68574,7 +70238,7 @@
       "Desc": "透過稱號兌換券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
       "Hint": "透過稱號兌換券可獲得有魅力的第2稱號.可與其他一般稱號一起使用",
       "Effect": ": : SetParamonEquip(AttMax, +20);\n: : SetParamonEquip(MagicAttack, +20);\n: : AddBonusOnAlchemy(alchemy_water, +12);\n: : AddBonusOnAlchemy(alchemy_fire, +12);\n: : AddBonusOnAlchemy(alchemy_wind, +12);\n: : AddBonusOnAlchemy(alchemy_earth, +12);\n: : SetParamOnEquip(Hurry, +1);",
-      "EffectDescription": "最大傷害20增加\\n魔法攻擊力20增加\\n水/火/風/土屬性\\n煉金術傷害12增加\\n移動速度1% 增加",
+      "EffectDescription": "最大傷害20增加\\n魔法攻擊力20增加\\n水/火/風/土屬性\\n鍊金術傷害12增加\\n移動速度1% 增加",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",
       "OptionUsage": "1",
@@ -68951,6 +70615,181 @@
       "UniName": "懷抱燦爛歷史的",
       "Desc": "證明懷抱無數故事卻從未停歇的偉大旅程的稱號名.對開拓未知疆域者之高潔驕傲,致上最深切的敬意.",
       "Hint": "證明懷抱無數故事卻從未停歇的偉大旅程的稱號名.對開拓未知疆域者之高潔驕傲,致上最深切的敬意.",
+      "EffectDescription": "",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      }
+    },
+    {
+      "ID": "18163",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "2025年瑪奇之星",
+      "MaleName": "2025年瑪奇之星",
+      "FemaleName": "2025年瑪奇之星",
+      "UniName": "2025年瑪奇之星",
+      "Desc": "給予瑪奇之星光榮的稱號",
+      "Hint": "給予瑪奇之星光榮的稱號",
+      "EffectDescription": "",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      }
+    },
+    {
+      "ID": "18164",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "2026年瑪奇之星",
+      "MaleName": "2026年瑪奇之星",
+      "FemaleName": "2026年瑪奇之星",
+      "UniName": "2026年瑪奇之星",
+      "Desc": "給予瑪奇之星光榮的稱號",
+      "Hint": "給予瑪奇之星光榮的稱號",
+      "Effect": ": : SetParamonEquip(MagicAttack, 35);\n: :SetParamOnEquip(Int, +15);\n: :SetParamOnEquip(magicfastcasting, +5);",
+      "EffectDescription": "魔法攻擊力增加35\\n智力增加15\\n魔法施展增加速度5%",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      },
+      "abilities": [
+        {
+          "id": "magic_attack",
+          "value": 35
+        },
+        {
+          "id": "INT",
+          "value": 15
+        },
+        {
+          "id": "magicfastcasting",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "ID": "18165",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "2026年瑪奇之星",
+      "MaleName": "2026年瑪奇之星",
+      "FemaleName": "2026年瑪奇之星",
+      "UniName": "2026年瑪奇之星",
+      "Desc": "給予瑪奇之星光榮的稱號",
+      "Hint": "給予瑪奇之星光榮的稱號",
+      "EffectDescription": "",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      }
+    },
+    {
+      "ID": "18167",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "愛爾琳資深前輩",
+      "MaleName": "愛爾琳資深前輩",
+      "FemaleName": "愛爾琳資深前輩",
+      "UniName": "愛爾琳資深前輩",
+      "Desc": "這是給在愛爾琳開學季活動中,以資深前輩身分積極參與的米列希安人的第1稱號取得券.",
+      "Hint": "這是給在愛爾琳開學季活動中,以資深前輩身分積極參與的米列希安人的第1稱號取得券.",
+      "EffectDescription": "",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      }
+    },
+    {
+      "ID": "18168",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "剛入學的米列希安",
+      "MaleName": "剛入學的米列希安",
+      "FemaleName": "剛入學的米列希安",
+      "UniName": "剛入學的米列希安",
+      "Desc": "這是給在愛爾琳開學季活動中,以剛入學新生身分積極參與的米列希安人的第1稱號取得券.",
+      "Hint": "這是給在愛爾琳開學季活動中,以剛入學新生身分積極參與的米列希安人的第1稱號取得券.",
+      "EffectDescription": "",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      }
+    },
+    {
+      "ID": "18169",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "我是萌新",
+      "MaleName": "我是萌新",
+      "FemaleName": "我是萌新",
+      "UniName": "我是萌新",
+      "Desc": "這是給在愛爾琳開學季活動中,以資深前輩身分積極參與的米列希安人的第1稱號取得券.",
+      "Hint": "這是給在愛爾琳開學季活動中,以資深前輩身分積極參與的米列希安人的第1稱號取得券.",
+      "EffectDescription": "",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      }
+    },
+    {
+      "ID": "18170",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "我不想努力了",
+      "MaleName": "我不想努力了",
+      "FemaleName": "我不想努力了",
+      "UniName": "我不想努力了",
+      "Desc": "這是給在愛爾琳開學季活動中,以剛入學新生身分積極參與的米列希安人的第1稱號取得券.",
+      "Hint": "這是給在愛爾琳開學季活動中,以剛入學新生身分積極參與的米列希安人的第1稱號取得券.",
+      "EffectDescription": "",
+      "ExpDungeonDisable": "false",
+      "EnableSupportRace": "0",
+      "OptionUsage": "0",
+      "Duration": "0",
+      "locale": {
+        "include": null,
+        "exclude": []
+      }
+    },
+    {
+      "ID": "18171",
+      "Type": "3",
+      "Exclusive": "0",
+      "DefaultName": "愛爾琳吟遊詩人",
+      "MaleName": "愛爾琳吟遊詩人",
+      "FemaleName": "愛爾琳吟遊詩人",
+      "UniName": "愛爾琳吟遊詩人",
+      "Desc": "給參與21週年愛爾琳音樂會的米列希安的第1稱號取得券.",
+      "Hint": "給參與21週年愛爾琳音樂會的米列希安的第1稱號取得券.",
       "EffectDescription": "",
       "ExpDungeonDisable": "false",
       "EnableSupportRace": "0",

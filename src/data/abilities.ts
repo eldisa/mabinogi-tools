@@ -92,6 +92,7 @@ export const abilitiesMap: Record<string, string> = {
     frozen_blast_degree: "冰風暴效果範圍",
     music_buff_bonus: "音樂技能效果",
     musicbuff_bonus: "音樂技能效果",
+    music_buff_duration: "音樂技能持續時間",
     musicbuff_duration: "音樂技能持續時間",
     marionette_hp: "人偶生命力",
     marionette_life: "人偶生命力",
@@ -206,6 +207,9 @@ export const abilitiesMap: Record<string, string> = {
     chain_impale_damage: "鎖鏈刺擊的最終傷害增加",
     spinning_slash_damage: "闇夜掠擊的最終傷害增加",
     critical_chain_cooldown_reset: "暴擊發動時連續技冷卻時間初始化機率",
+    arcana_skill_bonus_damage_rate: "秘法技能額外傷害增加",
+    music_buff_bonus_rate: "戰場的序曲,活潑板攻擊力增加",
+    item_durability_loss_dec_rate: "套用魔力賦予的道具耐久度減少量減少",
 };
 
 export const reverseAbilitiesMap: Record<string, string> = {
@@ -462,6 +466,9 @@ export const abilitiesValueWithPercentArray: string[] = [
     "spinning_slash_damage",
     "windmill_attack_range",
     "critical_chain_cooldown_reset",
+    "arcana_skill_bonus_damage_rate",
+    "music_buff_bonus_rate",
+    "item_durability_loss_dec_rate",
 ];
 
 export const abilitiesValueWithRangeArray: string[] = [
