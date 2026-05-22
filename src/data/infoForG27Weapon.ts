@@ -434,8 +434,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "lance_piercing",
-                min: 2,
-                max: 2,
+                min: 4,
+                max: 4,
             },
             {
                 id: "marionette_attack_min",
