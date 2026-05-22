@@ -1104,8 +1104,8 @@ export const infoForG27Weapon = [
         status: [
             {
                 id: "defense",
-                min: 40,
-                max: 45,
+                min: 45,
+                max: 50,
             },
             {
                 id: "protection",
