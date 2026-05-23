@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
 // ============================================================
 // ★ 音效設定說明
@@ -119,15 +119,42 @@ const isAlertActive = computed(() =>
 );
 
 // ── Audio ─────────────────────────────────────────────────────
+// 單一共用 Audio 物件 — iOS/iPadOS 要求音訊必須由同一個元素重複播放，
+// 不能每次 new Audio() 否則第二次後會被瀏覽器攔截。
+let audioEl: HTMLAudioElement | null = null;
+
+function buildAudio(filename: string) {
+    if (!filename) { audioEl = null; return; }
+    const url = import.meta.env.BASE_URL + "sounds/" + encodeURIComponent(filename);
+    audioEl = new Audio(url);
+    audioEl.load();
+}
+
+// 在使用者手勢（點開始 / 試聽）時呼叫，解除 iOS 的自動播放封鎖
+function unlockAudio() {
+    if (!audioEl) return;
+    audioEl.play().then(() => {
+        audioEl!.pause();
+        audioEl!.currentTime = 0;
+    }).catch(() => {});
+}
+
 function playSound() {
-    if (!selectedSound.value) return;
-    const url = import.meta.env.BASE_URL + "sounds/" + selectedSound.value;
-    new Audio(url).play().catch(() => {});
+    if (!audioEl) return;
+    audioEl.currentTime = 0;
+    audioEl.play().catch(() => {});
 }
 
 function testSound() {
+    unlockAudio();   // 試聽本身就是手勢，解鎖後立刻播
     playSound();
 }
+
+// 音效檔切換時重建 Audio 物件
+watch(selectedSound, (val) => buildAudio(val));
+
+// 初始化預設音效
+onMounted(() => buildAudio(selectedSound.value));
 
 // ── Timer logic ───────────────────────────────────────────────
 function checkSound() {
@@ -154,6 +181,8 @@ function start() {
         timeLeft.value = INITIAL_TIME;
         playedFor.clear();
     }
+    // 利用使用者手勢解鎖 iOS 音訊，之後計時器自動觸發才能正常播放
+    unlockAudio();
     isRunning.value = true;
     timerId = setInterval(tick, 1000);
 }
