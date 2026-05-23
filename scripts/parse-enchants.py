@@ -63,10 +63,18 @@ ABILITY_ID_NORMALIZE_MAP: dict[str, str] = {
     # 移動速度
     "hurry":               "move_speed",
     # 音樂
-    "musicbuff_bonus":     "music_buff_bonus",
+    "musicbuff_bonus":                 "music_buff_bonus",
+    "musicbuff_duration":              "music_buff_duration",
+    "music_buff_bonus_rate":           "music_buff_bonus_rate",
     # 鐮刀鏈刃攻擊
-    "chainblade_attmax":   "chainblade_attack_max",
-    "chainblade_attmin":   "chainblade_attack_min",
+    "chainblade_attmax":               "chainblade_attack_max",
+    "chainblade_attmin":               "chainblade_attack_min",
+    # 回復/耐久
+    "healing":                         "healing",
+    "mana_saving":                     "mana_saving",
+    # 技能
+    "arcana_skill_bonus_damage_rate":  "arcana_skill_bonus_damage_rate",
+    "item_durability_loss_dec_rate":   "item_durability_loss_dec_rate",
 }
 
 # ============================================================
@@ -184,6 +192,8 @@ ALLOW_LIMIT_RULES: list[tuple[str, list[str]]] = [
     ("ferghusious_equip",                   ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"]),
     # ── weapon 通用（放在具體武器之後）────────────────────────
     ("weapon",                              ["武器"]),
+    # ── 穆里亞斯寶物（全裝備，放在 /equip/ 兜底前）────────────
+    ("murias_treasure",                     ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"]),
     # ── 全裝備（最後兜底）────────────────────────────────────
     ("/equip/",                             ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"]),
 ]
@@ -431,7 +441,8 @@ def convert(xml_path: Path, trans_path: Path, output_path: Path) -> None:
             usage = int(attrib.get("Usage", "-1"))
         except ValueError:
             continue
-        if usage not in (0, 1):
+        # Usage: 0=接頭, 1=接尾, 11=接頭（特殊副本），12=接尾（特殊副本）
+        if usage not in (0, 1, 11, 12):
             continue
 
         # 跳過舊版 feature
@@ -486,7 +497,7 @@ def convert(xml_path: Path, trans_path: Path, output_path: Path) -> None:
             unknown_allow_items.append(f"  ID={eid}  {allow_item_raw}")
             limits = [f"TODO:{allow_item_raw[:60]}"]
 
-        enchant_type = "prefix" if usage == 0 else "suffix"
+        enchant_type = "prefix" if usage in (0, 11) else "suffix"
 
         records.append({
             "id":          eid,

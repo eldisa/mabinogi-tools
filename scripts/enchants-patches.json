@@ -2,11 +2,21 @@
     "_comment": "手動修正檔。key 為 OptionSet ID（字串），value 為要覆蓋的欄位。重新執行 parse-enchants.py 後會自動套用。",
     "patches": {
         "__example__": {
-            "_note": "這是範例，不會被套用（ID 不是數字）",
-            "limit": ["弓"],
-            "name": { "tw": "範例", "en": "Example", "tw2": "範例" },
+            "_note": "這是範例，不會被套用（ID 不是數字， __example__換成ID）",
+            "limit": [
+                "弓"
+            ],
+            "name": {
+                "tw": "範例",
+                "en": "Example",
+                "tw2": "範例"
+            },
             "effect": [
-                { "id": "attack_max", "min": 10, "max": 20 }
+                {
+                    "id": "attack_max",
+                    "min": 10,
+                    "max": 20
+                }
             ]
         }
     }
