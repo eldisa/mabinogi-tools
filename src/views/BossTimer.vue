@@ -1,43 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
-// ── AudioContext 單例（解決 iOS 每次播完後重新失權的問題） ─
-let audioCtx: AudioContext | null = null;
-let audioBuffer: AudioBuffer | null = null;
-
-function getCtx(): AudioContext {
-    if (!audioCtx) audioCtx = new AudioContext();
-    return audioCtx;
-}
-
-async function loadAudioBuffer(filename: string) {
-    if (!filename) { audioBuffer = null; return; }
-    try {
-        const url = import.meta.env.BASE_URL + "sounds/" + encodeURIComponent(filename);
-        const res  = await fetch(url);
-        const arr  = await res.arrayBuffer();
-        audioBuffer = await getCtx().decodeAudioData(arr);
-    } catch {
-        audioBuffer = null;
-    }
-}
-
 // ============================================================
 // ★ 音效設定說明
 //
 // 1. 將音效檔案放入：  happy-jang/public/sounds/  資料夾
-//    （若資料夾不存在請自行建立）
-//
 // 2. 在下方 SOUND_OPTIONS 新增一筆：
 //    { label: '顯示名稱', value: '檔名.mp3' }
-//
-//    範例：
-//    { label: '警報音',   value: 'alert.mp3'     }
-//    { label: '鈴聲',     value: 'bell.mp3'      }
-//    { label: '語音倒數', value: 'countdown.mp3' }
-//
-//    → 對應檔案位置：public/sounds/alert.mp3
-//
 // ============================================================
 const SOUND_OPTIONS: { label: string; value: string }[] = [
     { label: "無音效", value: "" },
@@ -59,13 +28,17 @@ const SOUND_OPTIONS: { label: string; value: string }[] = [
     { label: "哩喜哩考哦", value: "哩喜哩考哦.mp3" },
 ];
 
-// ============================================================
-// 時間設定
-// ============================================================
-const INITIAL_TIME = 15 * 60; // 15 分鐘
+// ── 常數 ──────────────────────────────────────────────────────
+const INITIAL_TIME = 15 * 60;
+const ALERT_WINDOW = 3; // 安全屋出現後顯示警告的秒數區間
 
-// 安全屋出現時間點（倒數計時上的時間）
-const TARGET_TIME_STRINGS = [
+interface Target {
+    display: string;
+    seconds: number;
+}
+
+// 安全屋出現時間點（直接算成秒，省去中間字串陣列）
+const TARGETS: Target[] = [
     "14:53",
     "13:50",
     "12:47",
@@ -80,28 +53,52 @@ const TARGET_TIME_STRINGS = [
     "03:20",
     "02:17",
     "01:14",
-];
-
-// ── 內部資料 ──────────────────────────────────────────────────
-interface Target {
-    display: string;
-    seconds: number;
-}
-
-const targets: Target[] = TARGET_TIME_STRINGS.map((s) => {
+].map((s) => {
     const [m, sec] = s.split(":").map(Number);
     return { display: s, seconds: m * 60 + sec };
 });
+
+// ── Audio（component 作用域，避免多實例共用） ─────────────────
+let audioCtx: AudioContext | null = null;
+let audioBuffer: AudioBuffer | null = null;
+
+async function loadAudioBuffer(filename: string) {
+    if (!filename) {
+        audioBuffer = null;
+        return;
+    }
+    try {
+        if (!audioCtx) audioCtx = new AudioContext();
+        const url = import.meta.env.BASE_URL + "sounds/" + encodeURIComponent(filename);
+        const arr = await (await fetch(url)).arrayBuffer();
+        audioBuffer = await audioCtx.decodeAudioData(arr);
+    } catch {
+        audioBuffer = null;
+    }
+}
+
+function unlockAudio() {
+    if (!audioCtx) audioCtx = new AudioContext();
+    audioCtx.resume().catch(() => {});
+}
+
+function playSound() {
+    if (!audioCtx || !audioBuffer) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = audioBuffer;
+    src.connect(audioCtx.destination);
+    src.start(0);
+}
 
 // ── State ─────────────────────────────────────────────────────
 const timeLeft = ref(INITIAL_TIME);
 const isRunning = ref(false);
 const selectedSound = ref("時間快到囉.mp3");
-const alertBefore = ref(5); // 提前 N 秒播放
+const alertBefore = ref(5);
 const showSettings = ref(false);
 
 let timerId: ReturnType<typeof setInterval> | null = null;
-const playedFor = new Set<number>(); // 已播音效的 target.seconds
+const playedFor = new Set<number>();
 
 // ── Helpers ───────────────────────────────────────────────────
 function formatTime(secs: number): string {
@@ -113,7 +110,7 @@ function formatTime(secs: number): string {
 }
 
 // ── Computed ──────────────────────────────────────────────────
-const remainingTargets = computed<Target[]>(() => targets.filter((t) => timeLeft.value >= t.seconds));
+const remainingTargets = computed<Target[]>(() => TARGETS.filter((t) => timeLeft.value >= t.seconds));
 
 const nextTarget = computed<Target | null>(() => remainingTargets.value[0] ?? null);
 
@@ -134,44 +131,18 @@ const nextStatus = computed(() => {
     return "status-60";
 });
 
-// 進入警示區間（到達時間點前後 3 秒內顯示大字警告）
-const isAlertActive = computed(() =>
-    targets.some((t) => timeLeft.value > t.seconds && timeLeft.value <= t.seconds + 3),
-);
-
-// ── Audio ─────────────────────────────────────────────────────
-// 解除 iOS AudioContext 封鎖（必須在使用者手勢中呼叫一次）
-function unlockAudio() {
-    getCtx().resume().catch(() => {});
-}
-
-// 播放已載入的音效緩衝（不需要每次手勢授權）
-function playSound() {
-    if (!audioBuffer) return;
-    const ctx = getCtx();
-    const src = ctx.createBufferSource();
-    src.buffer = audioBuffer;
-    src.connect(ctx.destination);
-    src.start(0);
-}
-
-function testSound() {
-    unlockAudio();
-    playSound();
-}
-
-// 音效檔切換時重新載入緩衝
-watch(selectedSound, (val) => loadAudioBuffer(val));
-
-// 初始化預設音效
-onMounted(() => loadAudioBuffer(selectedSound.value));
+// 只需確認 nextTarget 就夠了：targets 間距 63 秒，不可能同時兩個在警示窗口內
+const isAlertActive = computed(() => {
+    const t = nextTarget.value;
+    return t !== null && timeLeft.value > t.seconds && timeLeft.value <= t.seconds + ALERT_WINDOW;
+});
 
 // ── Timer logic ───────────────────────────────────────────────
 function checkSound() {
-    if (!nextTarget.value || secondsToNext.value === null) return;
-    const key = nextTarget.value.seconds;
-    if (secondsToNext.value <= alertBefore.value && !playedFor.has(key)) {
-        playedFor.add(key);
+    const t = nextTarget.value;
+    if (!t || secondsToNext.value === null) return;
+    if (secondsToNext.value <= alertBefore.value && !playedFor.has(t.seconds)) {
+        playedFor.add(t.seconds);
         playSound();
     }
 }
@@ -191,8 +162,7 @@ function start() {
         timeLeft.value = INITIAL_TIME;
         playedFor.clear();
     }
-    // 利用使用者手勢解鎖 iOS 音訊，之後計時器自動觸發才能正常播放
-    unlockAudio();
+    unlockAudio(); // 利用使用者手勢解鎖 iOS 音訊
     isRunning.value = true;
     timerId = setInterval(tick, 1000);
 }
@@ -211,6 +181,14 @@ function reset() {
     playedFor.clear();
 }
 
+function testSound() {
+    unlockAudio();
+    playSound();
+}
+
+// ── Lifecycle ─────────────────────────────────────────────────
+watch(selectedSound, (val) => loadAudioBuffer(val));
+onMounted(() => loadAudioBuffer(selectedSound.value));
 onUnmounted(() => {
     if (timerId) clearInterval(timerId);
     audioCtx?.close();
@@ -245,7 +223,6 @@ onUnmounted(() => {
                 v-if="showSettings"
                 class="flex-shrink-0 flex flex-wrap items-start gap-x-6 gap-y-2 px-4 py-3 bg-gray-800/70 border-b border-gray-700"
             >
-                <!-- 音效選擇 -->
                 <div class="flex items-center gap-2">
                     <label class="text-xs text-gray-400 whitespace-nowrap">提示音效</label>
                     <select v-model="selectedSound" class="st-select">
@@ -261,24 +238,11 @@ onUnmounted(() => {
                         試聽
                     </button>
                 </div>
-
-                <!-- 提前秒數 -->
                 <div class="flex items-center gap-2">
                     <label class="text-xs text-gray-400 whitespace-nowrap">提前播放</label>
                     <input type="number" min="1" max="60" v-model.number="alertBefore" class="st-input w-16" />
                     <span class="text-xs text-gray-400">秒前</span>
                 </div>
-
-                <!-- 說明 -->
-                <!-- <p class="text-xs text-gray-500 w-full leading-relaxed">
-                    音效檔案請放於
-                    <code class="text-blue-400 bg-gray-900 px-1 rounded">public/sounds/</code>
-                    資料夾，並在
-                    <code class="text-blue-400 bg-gray-900 px-1 rounded">BossTimer.vue</code>
-                    頂端的
-                    <code class="text-blue-400 bg-gray-900 px-1 rounded">SOUND_OPTIONS</code>
-                    陣列新增對應項目。
-                </p> -->
             </div>
         </Transition>
 
@@ -288,22 +252,15 @@ onUnmounted(() => {
             <div
                 class="flex flex-col items-center justify-center flex-1 bg-gray-800/40 rounded-2xl border border-gray-700 p-6 gap-3 min-w-0"
             >
-                <!-- 主計時 -->
                 <div class="timer-main tabular-nums font-bold select-none">
                     {{ formatTime(timeLeft) }}
                 </div>
-
-                <!-- 下一個安全屋倒數 -->
                 <div :class="['next-countdown', nextStatus]">{{ nextText }}</div>
-
-                <!-- 警告訊息 -->
                 <div class="h-12 flex items-center justify-center">
                     <Transition name="alert-fade">
                         <div v-if="isAlertActive" class="alert-text">⚠ 安全屋即將出現</div>
                     </Transition>
                 </div>
-
-                <!-- 開始 / 暫停 / 重置 按鈕 -->
                 <div class="flex items-center gap-3 mt-2">
                     <button
                         v-if="!isRunning"
@@ -342,15 +299,12 @@ onUnmounted(() => {
                     <li
                         v-for="(t, idx) in remainingTargets"
                         :key="t.display"
-                        :class="[
-                            'schedule-item',
-                            idx === 0 && isAlertActive ? 'item-alerting' : '',
-                            idx === 0 && !isAlertActive ? 'item-next' : '',
-                        ]"
+                        :class="['schedule-item', idx === 0 && (isAlertActive ? 'item-alerting' : 'item-next')]"
                     >
                         <span>⏱ 安全屋 {{ t.display }}</span>
-                        <span v-if="idx === 0 && isAlertActive" class="item-badge badge-alert">⚠ 出現中</span>
-                        <span v-else-if="idx === 0" class="item-badge badge-next">NEXT</span>
+                        <span v-if="idx === 0" :class="['item-badge', isAlertActive ? 'badge-alert' : 'badge-next']">
+                            {{ isAlertActive ? "⚠ 出現中" : "NEXT" }}
+                        </span>
                     </li>
                 </ul>
             </div>
@@ -359,7 +313,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* ── 主計時器 ────────────────────────────────────────────── */
 .timer-main {
     font-size: clamp(3.5rem, 12vw, 5.5rem);
     line-height: 1;
@@ -369,7 +322,6 @@ onUnmounted(() => {
     filter: drop-shadow(0 0 12px rgba(79, 172, 254, 0.25));
 }
 
-/* ── 下一個安全屋倒數小字 ────────────────────────────────── */
 .next-countdown {
     font-size: 1rem;
     color: #888;
@@ -404,7 +356,6 @@ onUnmounted(() => {
     }
 }
 
-/* ── 警告大字 ────────────────────────────────────────────── */
 .alert-text {
     font-size: 1.5rem;
     font-weight: bold;
@@ -432,7 +383,6 @@ onUnmounted(() => {
     transform: scale(0.8);
 }
 
-/* ── 時間表 ──────────────────────────────────────────────── */
 .schedule-item {
     display: flex;
     justify-content: space-between;
@@ -492,7 +442,6 @@ onUnmounted(() => {
     }
 }
 
-/* ── 設定 ────────────────────────────────────────────────── */
 .st-select,
 .st-input {
     background: #1f2937;
@@ -509,7 +458,6 @@ onUnmounted(() => {
     border-color: #4facfe;
 }
 
-/* ── 設定列滑入動畫 ──────────────────────────────────────── */
 .slide-down-enter-active,
 .slide-down-leave-active {
     transition: all 0.25s ease;
