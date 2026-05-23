@@ -19,6 +19,7 @@ import GearGapChecker from '../views/GearGapChecker.vue';
 import HolyWaterSimulator from '../views/HolyWaterSimulator.vue';
 import RaidPetrakTraining from '../views/RaidPetrakTraining.vue';
 import RaidStage2Training from '../views/RaidStage2Training.vue';
+import BossTimer from '../views/BossTimer.vue';
 
 const routes = [
     {
@@ -114,6 +115,11 @@ const routes = [
             path: '/raid-stage2',
             name: '2關機制練習',
             component: RaidStage2Training,
+        },
+        {
+            path: '/boss-timer',
+            name: '4王安全屋計時',
+            component: BossTimer,
         },]
     },
 
@@ -141,6 +147,7 @@ const pageTitles = {
     '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
     '1王機制練習': '1王機制練習 | 瑪奇小工具',
     '2關機制練習': '2關機制練習 | 瑪奇小工具',
+    '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',
     '關於': '關於 | 瑪奇小工具',
 };
 
