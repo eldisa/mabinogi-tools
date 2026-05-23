@@ -1,6 +1,27 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
+// ── AudioContext 單例（解決 iOS 每次播完後重新失權的問題） ─
+let audioCtx: AudioContext | null = null;
+let audioBuffer: AudioBuffer | null = null;
+
+function getCtx(): AudioContext {
+    if (!audioCtx) audioCtx = new AudioContext();
+    return audioCtx;
+}
+
+async function loadAudioBuffer(filename: string) {
+    if (!filename) { audioBuffer = null; return; }
+    try {
+        const url = import.meta.env.BASE_URL + "sounds/" + encodeURIComponent(filename);
+        const res  = await fetch(url);
+        const arr  = await res.arrayBuffer();
+        audioBuffer = await getCtx().decodeAudioData(arr);
+    } catch {
+        audioBuffer = null;
+    }
+}
+
 // ============================================================
 // ★ 音效設定說明
 //
@@ -119,42 +140,31 @@ const isAlertActive = computed(() =>
 );
 
 // ── Audio ─────────────────────────────────────────────────────
-// 單一共用 Audio 物件 — iOS/iPadOS 要求音訊必須由同一個元素重複播放，
-// 不能每次 new Audio() 否則第二次後會被瀏覽器攔截。
-let audioEl: HTMLAudioElement | null = null;
-
-function buildAudio(filename: string) {
-    if (!filename) { audioEl = null; return; }
-    const url = import.meta.env.BASE_URL + "sounds/" + encodeURIComponent(filename);
-    audioEl = new Audio(url);
-    audioEl.load();
-}
-
-// 在使用者手勢（點開始 / 試聽）時呼叫，解除 iOS 的自動播放封鎖
+// 解除 iOS AudioContext 封鎖（必須在使用者手勢中呼叫一次）
 function unlockAudio() {
-    if (!audioEl) return;
-    audioEl.play().then(() => {
-        audioEl!.pause();
-        audioEl!.currentTime = 0;
-    }).catch(() => {});
+    getCtx().resume().catch(() => {});
 }
 
+// 播放已載入的音效緩衝（不需要每次手勢授權）
 function playSound() {
-    if (!audioEl) return;
-    audioEl.currentTime = 0;
-    audioEl.play().catch(() => {});
+    if (!audioBuffer) return;
+    const ctx = getCtx();
+    const src = ctx.createBufferSource();
+    src.buffer = audioBuffer;
+    src.connect(ctx.destination);
+    src.start(0);
 }
 
 function testSound() {
-    unlockAudio();   // 試聽本身就是手勢，解鎖後立刻播
+    unlockAudio();
     playSound();
 }
 
-// 音效檔切換時重建 Audio 物件
-watch(selectedSound, (val) => buildAudio(val));
+// 音效檔切換時重新載入緩衝
+watch(selectedSound, (val) => loadAudioBuffer(val));
 
 // 初始化預設音效
-onMounted(() => buildAudio(selectedSound.value));
+onMounted(() => loadAudioBuffer(selectedSound.value));
 
 // ── Timer logic ───────────────────────────────────────────────
 function checkSound() {
@@ -203,6 +213,9 @@ function reset() {
 
 onUnmounted(() => {
     if (timerId) clearInterval(timerId);
+    audioCtx?.close();
+    audioCtx = null;
+    audioBuffer = null;
 });
 </script>
 
