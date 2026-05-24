@@ -96,6 +96,7 @@ const isRunning = ref(false);
 const selectedSound = ref("時間快到囉.mp3");
 const alertBefore = ref(5);
 const showSettings = ref(false);
+const showAdjust = ref(true);
 
 let timerId: ReturnType<typeof setInterval> | null = null;
 const playedFor = new Set<number>();
@@ -278,6 +279,12 @@ onUnmounted(() => {
                     <input type="number" min="1" max="60" v-model.number="alertBefore" class="st-input w-16" />
                     <span class="text-xs text-gray-400">秒前</span>
                 </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs text-gray-400 whitespace-nowrap cursor-pointer select-none">
+                        <input type="checkbox" v-model="showAdjust" class="mr-1 accent-blue-400" />
+                        顯示倒退/快進
+                    </label>
+                </div>
             </div>
         </Transition>
 
@@ -307,7 +314,7 @@ onUnmounted(() => {
                 </div>
 
                 <!-- 時間微調按鈕 -->
-                <div class="flex flex-col gap-2 w-full max-w-xs">
+                <div v-if="showAdjust" class="flex flex-col gap-2 w-full max-w-xs">
                     <!-- 5 秒大按鈕（大熱區，適合盲按） -->
                     <div class="flex gap-2">
                         <button @click="adjust(5)"  class="adj-btn-main flex-1">⏪ 倒退 5秒</button>
