@@ -105,6 +105,7 @@ const player = ref<Point>({ x: DESKTOP_BOARD_SIZE / 2, y: DESKTOP_BOARD_SIZE / 2
 const warnings = ref<ActiveWarning[]>([]);
 const speedMultiplier = ref(1.0);
 const controlMode = ref<ControlMode>('mouse');
+const showSettings = ref(false);
 const arenaRef = ref<HTMLDivElement | null>(null);
 const containerRef = ref<HTMLDivElement | null>(null);
 const gameAreaRef = ref<HTMLDivElement | null>(null);
@@ -475,19 +476,40 @@ onMounted(() => {
         <!-- 控制欄 -->
         <div class="flex-shrink-0 flex items-center justify-between gap-3 w-full px-4 py-2 bg-gray-800 border-b border-gray-700">
             <span class="text-sm font-bold text-gray-100 whitespace-nowrap">2關機制練習</span>
+            <div class="flex items-center gap-2">
+                <button
+                    @click="showSettings = !showSettings"
+                    :class="[
+                        'px-3 py-1.5 rounded-xl text-sm border transition whitespace-nowrap',
+                        showSettings
+                            ? 'bg-blue-600 text-white border-blue-500'
+                            : 'bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600',
+                    ]"
+                >⚙ 設定</button>
+                <button
+                    @click="startGame"
+                    class="px-4 py-1.5 rounded-xl bg-accent text-gray-900 font-semibold hover:brightness-110 active:scale-[0.98] transition text-sm whitespace-nowrap"
+                >開始</button>
+            </div>
+        </div>
 
-            <div class="flex items-center gap-2 flex-wrap justify-end">
+        <!-- 設定列（可收合） -->
+        <Transition name="slide-down">
+            <div v-if="showSettings" class="flex-shrink-0 flex flex-col gap-2 px-4 py-2 bg-gray-800/70 border-b border-gray-700">
                 <!-- 控制模式 -->
-                <div class="flex items-center gap-1 rounded-xl bg-gray-700 border border-gray-600 px-2 py-1">
-                    <button
-                        v-for="mode in (Object.keys(CONTROL_LABELS) as ControlMode[])"
-                        :key="mode"
-                        @click="controlMode = mode"
-                        :class="[
-                            'px-2 py-1 rounded-lg text-xs font-medium transition',
-                            controlMode === mode ? 'bg-accent text-gray-900' : 'text-gray-300 hover:bg-gray-600',
-                        ]"
-                    >{{ CONTROL_LABELS[mode] }}</button>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xs text-gray-400 whitespace-nowrap">控制</span>
+                    <div class="flex items-center gap-1 rounded-xl bg-gray-700 border border-gray-600 px-2 py-1">
+                        <button
+                            v-for="mode in (Object.keys(CONTROL_LABELS) as ControlMode[])"
+                            :key="mode"
+                            @click="controlMode = mode"
+                            :class="[
+                                'px-2 py-0.5 rounded-lg text-xs font-medium transition',
+                                controlMode === mode ? 'bg-accent text-gray-900' : 'text-gray-300 hover:bg-gray-600',
+                            ]"
+                        >{{ CONTROL_LABELS[mode] }}</button>
+                    </div>
                 </div>
 
                 <!-- 速度滑條 -->
@@ -496,13 +518,8 @@ onMounted(() => {
                     <input type="range" min="0.4" max="1.5" step="0.05" v-model.number="speedMultiplier" class="speed-slider" />
                     <span class="text-xs text-gray-300 w-7 text-right">{{ speedMultiplier.toFixed(1) }}x</span>
                 </div>
-
-                <button
-                    @click="startGame"
-                    class="px-4 py-1.5 rounded-xl bg-accent text-gray-900 font-semibold hover:brightness-110 active:scale-[0.98] transition text-sm whitespace-nowrap"
-                >開始</button>
             </div>
-        </div>
+        </Transition>
 
         <!-- 遊戲區域（佔剩餘高度） -->
         <div
@@ -615,6 +632,23 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.slide-down-enter-active,
+.slide-down-leave-active {
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+.slide-down-enter-from,
+.slide-down-leave-to {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.slide-down-enter-to,
+.slide-down-leave-from {
+    max-height: 200px;
+}
+
 .speed-slider {
     -webkit-appearance: none;
     width: 80px;

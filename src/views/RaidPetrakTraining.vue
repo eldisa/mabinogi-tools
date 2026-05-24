@@ -7,6 +7,29 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 const currentModeRef = ref(1);
 const speedFactorRef = ref(1.5);
 
+const showSettings = ref(false);
+const showCheatSheet = ref(false);
+const cheatMode = ref<"number" | "arrow">("number");
+
+// 時鐘方向 → 箭頭符號（8 個主/斜方位）
+const CLOCK_TO_ARROW: Record<number, string> = {
+    12: "↑",
+    1:  "↗",
+    3:  "→",
+    5:  "↘",
+    6:  "↓",
+    7:  "↙",
+    9:  "←",
+    11: "↖",
+};
+
+const CHEAT_55 = [6, 6, 9, 12, 3, 6, 9, 11, 12];
+const CHEAT_15 = [12, 5, 7, 12, 6, 1, 12, 6, 9];
+
+function cheatDisplay(n: number): string {
+    return cheatMode.value === "arrow" ? (CLOCK_TO_ARROW[n] ?? String(n)) : String(n);
+}
+
 const startBtnText = ref("開始機制");
 const startBtnDisabled = ref(false);
 const statusTextContent = ref("");
@@ -501,8 +524,21 @@ onUnmounted(() => {
         <!-- 頂部控制欄 -->
         <div class="controls-bar">
             <span class="page-title">1王機制練習</span>
-
             <div class="controls-right">
+                <button
+                    class="settings-btn"
+                    :class="{ active: showSettings }"
+                    @click="showSettings = !showSettings"
+                >⚙ 設定</button>
+                <button class="start-btn" :disabled="startBtnDisabled" @click="onStartBtnClick">
+                    {{ startBtnText }}
+                </button>
+            </div>
+        </div>
+
+        <!-- 設定列（可收合） -->
+        <Transition name="slide-down">
+            <div v-if="showSettings" class="settings-panel">
                 <!-- 模式 -->
                 <div class="ctrl-group">
                     <label>模式</label>
@@ -520,12 +556,27 @@ onUnmounted(() => {
                     <span class="speed-val">{{ speedFactorRef.toFixed(1) }}x</span>
                 </div>
 
-                <!-- 開始 -->
-                <button class="start-btn" :disabled="startBtnDisabled" @click="onStartBtnClick">
-                    {{ startBtnText }}
-                </button>
+                <!-- 小抄 -->
+                <div class="cheat-controls">
+                    <label class="cheatsheet-toggle">
+                        <input type="checkbox" v-model="showCheatSheet" />
+                        顯示小抄
+                    </label>
+                    <Transition name="cheat-mode-slide">
+                        <div v-if="showCheatSheet" class="cheat-mode-group">
+                            <label class="cheat-mode-radio" :class="{ active: cheatMode === 'number' }">
+                                <input type="radio" v-model="cheatMode" value="number" />
+                                數字
+                            </label>
+                            <label class="cheat-mode-radio" :class="{ active: cheatMode === 'arrow' }">
+                                <input type="radio" v-model="cheatMode" value="arrow" />
+                                箭頭
+                            </label>
+                        </div>
+                    </Transition>
+                </div>
             </div>
-        </div>
+        </Transition>
 
         <!-- 畫布區域 -->
         <div class="canvas-area">
@@ -545,6 +596,33 @@ onUnmounted(() => {
             <div v-if="hintVisible" class="hint-text">
                 點擊場內移動 · 模式3下按 1 鍵模擬攻擊，攻擊5次獲得意志
             </div>
+
+            <!-- 小抄（pointer-events:none 不影響畫布操作） -->
+            <Transition name="cheat-fade">
+                <div v-if="showCheatSheet" class="cheat-sheet">
+                    <div class="cheat-title">安全區小抄</div>
+                    <table class="cheat-table">
+                        <thead>
+                            <tr>
+                                <th>模式</th>
+                                <th v-for="n in 9" :key="n">第{{ n }}次</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cheat-label">55%</td>
+                                <td v-for="(v, i) in CHEAT_55" :key="i"
+                                    :class="cheatMode === 'arrow' ? 'cheat-arrow' : ''">{{ cheatDisplay(v) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="cheat-label">15%</td>
+                                <td v-for="(v, i) in CHEAT_15" :key="i"
+                                    :class="cheatMode === 'arrow' ? 'cheat-arrow' : ''">{{ cheatDisplay(v) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
@@ -568,12 +646,17 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
     padding: 8px 16px;
     background: #1f2937;
     border-bottom: 1px solid #374151;
-    flex-wrap: wrap;
     z-index: 10;
+}
+
+.controls-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .page-title {
@@ -583,11 +666,50 @@ onUnmounted(() => {
     white-space: nowrap;
 }
 
-.controls-right {
+.settings-btn {
+    background: #374151;
+    border: 1px solid #4b5563;
+    border-radius: 10px;
+    color: #d1d5db;
+    padding: 4px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+}
+.settings-btn:hover { background: #4b5563; color: #f9fafb; }
+.settings-btn.active {
+    background: #2563eb;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+.settings-panel {
+    flex-shrink: 0;
     display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(31, 41, 55, 0.7);
+    border-bottom: 1px solid #374151;
+}
+
+/* slide-down 展開動畫 */
+.slide-down-enter-active,
+.slide-down-leave-active {
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+.slide-down-enter-from,
+.slide-down-leave-to {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.slide-down-enter-to,
+.slide-down-leave-from {
+    max-height: 200px;
 }
 
 .ctrl-group {
@@ -735,5 +857,137 @@ canvas {
     color: #9ca3af;
     white-space: nowrap;
     border: 1px solid #374151;
+}
+
+/* ── 小抄 toggle ─────────────────────────────────── */
+.cheat-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.cheatsheet-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #9ca3af;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+.cheatsheet-toggle input {
+    accent-color: #fbbf24;
+    cursor: pointer;
+}
+
+/* 數字/箭頭 切換 */
+.cheat-mode-group {
+    display: flex;
+    gap: 2px;
+}
+.cheat-mode-radio {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: #6b7280;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 7px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+.cheat-mode-radio input { display: none; }
+.cheat-mode-radio.active {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.08);
+}
+.cheat-mode-radio:not(.active):hover {
+    color: #d1d5db;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* 切換動畫 */
+.cheat-mode-slide-enter-active,
+.cheat-mode-slide-leave-active {
+    transition: opacity 0.15s, max-width 0.2s;
+    overflow: hidden;
+}
+.cheat-mode-slide-enter-from,
+.cheat-mode-slide-leave-to {
+    opacity: 0;
+    max-width: 0;
+}
+.cheat-mode-slide-enter-to,
+.cheat-mode-slide-leave-from {
+    max-width: 120px;
+}
+
+/* ── 小抄 overlay ────────────────────────────────── */
+.cheat-sheet {
+    position: absolute;
+    bottom: 52px;           /* hint-text 上方，避免重疊 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9;
+    pointer-events: none;   /* ← 不攔截點擊 / 觸控 */
+    background: rgba(17, 24, 39, 0.88);
+    border: 1px solid #4b5563;
+    border-radius: 12px;
+    padding: 10px 14px;
+    backdrop-filter: blur(6px);
+    min-width: 0;
+}
+.cheat-title {
+    font-size: 11px;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.cheat-table {
+    border-collapse: collapse;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: #e5e7eb;
+}
+.cheat-table th,
+.cheat-table td {
+    padding: 3px 6px;
+    text-align: center;
+    border: 1px solid rgba(75, 85, 99, 0.5);
+    white-space: nowrap;
+}
+.cheat-table th {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 600;
+    background: rgba(55, 65, 81, 0.6);
+}
+.cheat-label {
+    font-weight: 700;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+}
+
+/* 箭頭模式：字型放大並居中 */
+.cheat-arrow {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* ── 進場動畫 ─────────────────────────────────────── */
+.cheat-fade-enter-active,
+.cheat-fade-leave-active {
+    transition: opacity 0.2s, transform 0.2s;
+}
+.cheat-fade-enter-from,
+.cheat-fade-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px);
 }
 </style>

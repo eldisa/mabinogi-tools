@@ -96,6 +96,7 @@ const isRunning = ref(false);
 const selectedSound = ref("時間快到囉.mp3");
 const alertBefore = ref(5);
 const showSettings = ref(false);
+const showAdjust = ref(true);
 
 let timerId: ReturnType<typeof setInterval> | null = null;
 const playedFor = new Set<number>();
@@ -111,6 +112,9 @@ function formatTime(secs: number): string {
 
 // ── Computed ──────────────────────────────────────────────────
 const remainingTargets = computed<Target[]>(() => TARGETS.filter((t) => timeLeft.value >= t.seconds));
+
+// 左側面板快跳 chip（最多顯示 3 個，手機不用往下滑）
+const jumpTargets = computed<Target[]>(() => remainingTargets.value.slice(0, 3));
 
 const nextTarget = computed<Target | null>(() => remainingTargets.value[0] ?? null);
 
@@ -154,6 +158,38 @@ function tick() {
     }
     checkSound();
     timeLeft.value--;
+}
+
+/**
+ * 時間微調（正值 = 倒退/增加時間；負值 = 快進/減少時間）
+ *
+ * 快進跨過某時間點時，該時間點自然從 nextTarget 鏈脫落，
+ * checkSound 不會再嘗試播放，playedFor 不需額外清理。
+ *
+ * 倒退讓已播放的時間點重新回到未來時，從 playedFor 移除，
+ * 使其在下次倒數通過時可以再次觸發語音。
+ */
+// 跳至某時間點的 alertBefore 秒前，音效會自然在倒數過程觸發
+function jumpToTarget(t: Target) {
+    adjust(t.seconds + alertBefore.value - timeLeft.value);
+}
+
+function adjust(delta: number) {
+    const oldTime = timeLeft.value;
+    const newTime = Math.min(INITIAL_TIME, Math.max(0, oldTime + delta));
+    if (newTime === oldTime) return;
+
+    if (delta > 0) {
+        // 倒退：將重新進入「未來」的時間點從 playedFor 移除
+        for (const t of TARGETS) {
+            if (t.seconds > oldTime && t.seconds <= newTime) {
+                playedFor.delete(t.seconds);
+            }
+        }
+    }
+
+    timeLeft.value = newTime;
+    if (newTime <= 0) stop();
 }
 
 function start() {
@@ -221,7 +257,7 @@ onUnmounted(() => {
         <Transition name="slide-down">
             <div
                 v-if="showSettings"
-                class="flex-shrink-0 flex flex-wrap items-start gap-x-6 gap-y-2 px-4 py-3 bg-gray-800/70 border-b border-gray-700"
+                class="flex-shrink-0 flex flex-col gap-2 px-4 py-3 bg-gray-800/70 border-b border-gray-700"
             >
                 <div class="flex items-center gap-2">
                     <label class="text-xs text-gray-400 whitespace-nowrap">提示音效</label>
@@ -243,6 +279,12 @@ onUnmounted(() => {
                     <input type="number" min="1" max="60" v-model.number="alertBefore" class="st-input w-16" />
                     <span class="text-xs text-gray-400">秒前</span>
                 </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs text-gray-400 whitespace-nowrap cursor-pointer select-none">
+                        <input type="checkbox" v-model="showAdjust" class="mr-1 accent-blue-400" />
+                        顯示倒退/快進
+                    </label>
+                </div>
             </div>
         </Transition>
 
@@ -261,7 +303,31 @@ onUnmounted(() => {
                         <div v-if="isAlertActive" class="alert-text">⚠ 安全屋即將出現</div>
                     </Transition>
                 </div>
-                <div class="flex items-center gap-3 mt-2">
+                <!-- 快跳 chip（最近 3 個安全屋，手機不需往下滑） -->
+                <div v-if="jumpTargets.length" class="flex gap-2 flex-wrap justify-center">
+                    <button
+                        v-for="(t, idx) in jumpTargets"
+                        :key="t.display"
+                        @click="jumpToTarget(t)"
+                        :class="['jump-chip', idx === 0 ? 'jump-chip-next' : '']"
+                    >⏭ {{ t.display }}</button>
+                </div>
+
+                <!-- 時間微調按鈕 -->
+                <div v-if="showAdjust" class="flex flex-col gap-2 w-full max-w-xs">
+                    <!-- 5 秒大按鈕（大熱區，適合盲按） -->
+                    <div class="flex gap-2">
+                        <button @click="adjust(5)"  class="adj-btn-main flex-1">⏪ 倒退 5秒</button>
+                        <button @click="adjust(-5)" class="adj-btn-main flex-1">快進 5秒 ⏩</button>
+                    </div>
+                    <!-- 1 秒精細微調 -->
+                    <div class="flex gap-2">
+                        <button @click="adjust(1)"  class="adj-btn-minor flex-1">⏪ 1秒</button>
+                        <button @click="adjust(-1)" class="adj-btn-minor flex-1">1秒 ⏩</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
                     <button
                         v-if="!isRunning"
                         @click="start"
@@ -441,6 +507,64 @@ onUnmounted(() => {
         box-shadow: 0 0 20px rgba(255, 71, 87, 0.7);
     }
 }
+
+/* ── 快跳 chip ───────────────────────────────────────────── */
+.jump-chip {
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 22px;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #d1d5db;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.jump-chip:hover  { background: rgba(255, 255, 255, 0.12); }
+.jump-chip:active { transform: scale(0.94); }
+.jump-chip-next {
+    background: rgba(255, 165, 0, 0.15);
+    border-color: rgba(255, 165, 0, 0.45);
+    color: #fbbf24;
+}
+.jump-chip-next:hover { background: rgba(255, 165, 0, 0.25); }
+
+/* ── 時間微調按鈕 ────────────────────────────────────────── */
+.adj-btn-main {
+    min-height: 52px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.adj-btn-main:hover  { background: rgba(255, 255, 255, 0.13); }
+.adj-btn-main:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.18); }
+
+.adj-btn-minor {
+    min-height: 32px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: #9ca3af;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.adj-btn-minor:hover  { background: rgba(255, 255, 255, 0.09); color: #d1d5db; }
+.adj-btn-minor:active { transform: scale(0.96); }
 
 .st-select,
 .st-input {
