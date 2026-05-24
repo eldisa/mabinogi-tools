@@ -473,10 +473,18 @@ onMounted(() => {
         class="h-full overflow-hidden flex flex-col bg-gray-900 text-gray-100"
     >
         <!-- 控制欄 -->
-        <div class="flex-shrink-0 flex items-center justify-between gap-3 w-full px-4 py-2 bg-gray-800 border-b border-gray-700">
-            <span class="text-sm font-bold text-gray-100 whitespace-nowrap">2關機制練習</span>
+        <div class="flex-shrink-0 flex flex-col gap-1 w-full px-4 pt-1.5 pb-2 bg-gray-800 border-b border-gray-700">
+            <!-- 上排：標題 + 開始按鈕 -->
+            <div class="flex items-center justify-between gap-3">
+                <span class="text-sm font-bold text-gray-100 whitespace-nowrap">2關機制練習</span>
+                <button
+                    @click="startGame"
+                    class="px-4 py-1.5 rounded-xl bg-accent text-gray-900 font-semibold hover:brightness-110 active:scale-[0.98] transition text-sm whitespace-nowrap"
+                >開始</button>
+            </div>
 
-            <div class="flex items-center gap-2 flex-wrap justify-end">
+            <!-- 下排：控制項 -->
+            <div class="flex items-center gap-2 flex-wrap">
                 <!-- 控制模式 -->
                 <div class="flex items-center gap-1 rounded-xl bg-gray-700 border border-gray-600 px-2 py-1">
                     <button
@@ -496,11 +504,6 @@ onMounted(() => {
                     <input type="range" min="0.4" max="1.5" step="0.05" v-model.number="speedMultiplier" class="speed-slider" />
                     <span class="text-xs text-gray-300 w-7 text-right">{{ speedMultiplier.toFixed(1) }}x</span>
                 </div>
-
-                <button
-                    @click="startGame"
-                    class="px-4 py-1.5 rounded-xl bg-accent text-gray-900 font-semibold hover:brightness-110 active:scale-[0.98] transition text-sm whitespace-nowrap"
-                >開始</button>
             </div>
         </div>
 

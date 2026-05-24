@@ -522,9 +522,16 @@ onUnmounted(() => {
     <div class="petrak-wrapper">
         <!-- 頂部控制欄 -->
         <div class="controls-bar">
-            <span class="page-title">1王機制練習</span>
+            <!-- 上排：標題 + 開始按鈕 -->
+            <div class="controls-row1">
+                <span class="page-title">1王機制練習</span>
+                <button class="start-btn" :disabled="startBtnDisabled" @click="onStartBtnClick">
+                    {{ startBtnText }}
+                </button>
+            </div>
 
-            <div class="controls-right">
+            <!-- 下排：控制項 -->
+            <div class="controls-row2">
                 <!-- 模式 -->
                 <div class="ctrl-group">
                     <label>模式</label>
@@ -561,11 +568,6 @@ onUnmounted(() => {
                         </div>
                     </Transition>
                 </div>
-
-                <!-- 開始 -->
-                <button class="start-btn" :disabled="startBtnDisabled" @click="onStartBtnClick">
-                    {{ startBtnText }}
-                </button>
             </div>
         </div>
 
@@ -635,14 +637,28 @@ onUnmounted(() => {
 .controls-bar {
     flex-shrink: 0;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 16px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 16px 8px;
     background: #1f2937;
     border-bottom: 1px solid #374151;
-    flex-wrap: wrap;
     z-index: 10;
+}
+
+/* 上排：標題 + 開始按鈕 */
+.controls-row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* 下排：各控制項 */
+.controls-row2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .page-title {
@@ -650,13 +666,6 @@ onUnmounted(() => {
     font-weight: 700;
     color: #f9fafb;
     white-space: nowrap;
-}
-
-.controls-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
 }
 
 .ctrl-group {
