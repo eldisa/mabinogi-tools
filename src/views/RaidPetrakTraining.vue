@@ -687,9 +687,8 @@ onUnmounted(() => {
 .settings-panel {
     flex-shrink: 0;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 8px;
     padding: 8px 16px;
     background: rgba(31, 41, 55, 0.7);
     border-bottom: 1px solid #374151;

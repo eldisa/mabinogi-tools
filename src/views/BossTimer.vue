@@ -257,7 +257,7 @@ onUnmounted(() => {
         <Transition name="slide-down">
             <div
                 v-if="showSettings"
-                class="flex-shrink-0 flex flex-wrap items-start gap-x-6 gap-y-2 px-4 py-3 bg-gray-800/70 border-b border-gray-700"
+                class="flex-shrink-0 flex flex-col gap-2 px-4 py-3 bg-gray-800/70 border-b border-gray-700"
             >
                 <div class="flex items-center gap-2">
                     <label class="text-xs text-gray-400 whitespace-nowrap">提示音效</label>

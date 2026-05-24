@@ -495,7 +495,7 @@ onMounted(() => {
 
         <!-- 設定列（可收合） -->
         <Transition name="slide-down">
-            <div v-if="showSettings" class="flex-shrink-0 flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 bg-gray-800/70 border-b border-gray-700">
+            <div v-if="showSettings" class="flex-shrink-0 flex flex-col gap-2 px-4 py-2 bg-gray-800/70 border-b border-gray-700">
                 <!-- 控制模式 -->
                 <div class="flex items-center gap-1.5">
                     <span class="text-xs text-gray-400 whitespace-nowrap">控制</span>
@@ -646,7 +646,7 @@ onMounted(() => {
 }
 .slide-down-enter-to,
 .slide-down-leave-from {
-    max-height: 120px;
+    max-height: 200px;
 }
 
 .speed-slider {
