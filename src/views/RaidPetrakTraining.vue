@@ -7,6 +7,7 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 const currentModeRef = ref(1);
 const speedFactorRef = ref(1.5);
 
+const showSettings = ref(false);
 const showCheatSheet = ref(false);
 const cheatMode = ref<"number" | "arrow">("number");
 
@@ -522,16 +523,22 @@ onUnmounted(() => {
     <div class="petrak-wrapper">
         <!-- 頂部控制欄 -->
         <div class="controls-bar">
-            <!-- 上排：標題 + 開始按鈕 -->
-            <div class="controls-row1">
-                <span class="page-title">1王機制練習</span>
+            <span class="page-title">1王機制練習</span>
+            <div class="controls-right">
+                <button
+                    class="settings-btn"
+                    :class="{ active: showSettings }"
+                    @click="showSettings = !showSettings"
+                >⚙ 設定</button>
                 <button class="start-btn" :disabled="startBtnDisabled" @click="onStartBtnClick">
                     {{ startBtnText }}
                 </button>
             </div>
+        </div>
 
-            <!-- 下排：控制項 -->
-            <div class="controls-row2">
+        <!-- 設定列（可收合） -->
+        <Transition name="slide-down">
+            <div v-if="showSettings" class="settings-panel">
                 <!-- 模式 -->
                 <div class="ctrl-group">
                     <label>模式</label>
@@ -569,7 +576,7 @@ onUnmounted(() => {
                     </Transition>
                 </div>
             </div>
-        </div>
+        </Transition>
 
         <!-- 畫布區域 -->
         <div class="canvas-area">
@@ -637,28 +644,19 @@ onUnmounted(() => {
 .controls-bar {
     flex-shrink: 0;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 6px 16px 8px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 16px;
     background: #1f2937;
     border-bottom: 1px solid #374151;
     z-index: 10;
 }
 
-/* 上排：標題 + 開始按鈕 */
-.controls-row1 {
+.controls-right {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
-}
-
-/* 下排：各控制項 */
-.controls-row2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
 }
 
 .page-title {
@@ -666,6 +664,53 @@ onUnmounted(() => {
     font-weight: 700;
     color: #f9fafb;
     white-space: nowrap;
+}
+
+.settings-btn {
+    background: #374151;
+    border: 1px solid #4b5563;
+    border-radius: 10px;
+    color: #d1d5db;
+    padding: 4px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+}
+.settings-btn:hover { background: #4b5563; color: #f9fafb; }
+.settings-btn.active {
+    background: #2563eb;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+.settings-panel {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    background: rgba(31, 41, 55, 0.7);
+    border-bottom: 1px solid #374151;
+}
+
+/* slide-down 展開動畫 */
+.slide-down-enter-active,
+.slide-down-leave-active {
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+.slide-down-enter-from,
+.slide-down-leave-to {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.slide-down-enter-to,
+.slide-down-leave-from {
+    max-height: 200px;
 }
 
 .ctrl-group {
