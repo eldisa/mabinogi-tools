@@ -156,6 +156,33 @@ function tick() {
     timeLeft.value--;
 }
 
+/**
+ * 時間微調（正值 = 倒退/增加時間；負值 = 快進/減少時間）
+ *
+ * 快進跨過某時間點時，該時間點自然從 nextTarget 鏈脫落，
+ * checkSound 不會再嘗試播放，playedFor 不需額外清理。
+ *
+ * 倒退讓已播放的時間點重新回到未來時，從 playedFor 移除，
+ * 使其在下次倒數通過時可以再次觸發語音。
+ */
+function adjust(delta: number) {
+    const oldTime = timeLeft.value;
+    const newTime = Math.min(INITIAL_TIME, Math.max(0, oldTime + delta));
+    if (newTime === oldTime) return;
+
+    if (delta > 0) {
+        // 倒退：將重新進入「未來」的時間點從 playedFor 移除
+        for (const t of TARGETS) {
+            if (t.seconds > oldTime && t.seconds <= newTime) {
+                playedFor.delete(t.seconds);
+            }
+        }
+    }
+
+    timeLeft.value = newTime;
+    if (newTime <= 0) stop();
+}
+
 function start() {
     if (isRunning.value) return;
     if (timeLeft.value === 0) {
@@ -261,7 +288,21 @@ onUnmounted(() => {
                         <div v-if="isAlertActive" class="alert-text">⚠ 安全屋即將出現</div>
                     </Transition>
                 </div>
-                <div class="flex items-center gap-3 mt-2">
+                <!-- 時間微調按鈕 -->
+                <div class="flex flex-col gap-2 w-full max-w-xs">
+                    <!-- 5 秒大按鈕（大熱區，適合盲按） -->
+                    <div class="flex gap-2">
+                        <button @click="adjust(5)"  class="adj-btn-main flex-1">⏪ 倒退 5秒</button>
+                        <button @click="adjust(-5)" class="adj-btn-main flex-1">快進 5秒 ⏩</button>
+                    </div>
+                    <!-- 1 秒精細微調 -->
+                    <div class="flex gap-2">
+                        <button @click="adjust(1)"  class="adj-btn-minor flex-1">⏪ 1秒</button>
+                        <button @click="adjust(-1)" class="adj-btn-minor flex-1">1秒 ⏩</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
                     <button
                         v-if="!isRunning"
                         @click="start"
@@ -441,6 +482,39 @@ onUnmounted(() => {
         box-shadow: 0 0 20px rgba(255, 71, 87, 0.7);
     }
 }
+
+/* ── 時間微調按鈕 ────────────────────────────────────────── */
+.adj-btn-main {
+    min-height: 52px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.adj-btn-main:hover  { background: rgba(255, 255, 255, 0.13); }
+.adj-btn-main:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.18); }
+
+.adj-btn-minor {
+    min-height: 32px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: #9ca3af;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.adj-btn-minor:hover  { background: rgba(255, 255, 255, 0.09); color: #d1d5db; }
+.adj-btn-minor:active { transform: scale(0.96); }
 
 .st-select,
 .st-input {
