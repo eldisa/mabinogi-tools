@@ -112,6 +112,9 @@ function formatTime(secs: number): string {
 // ── Computed ──────────────────────────────────────────────────
 const remainingTargets = computed<Target[]>(() => TARGETS.filter((t) => timeLeft.value >= t.seconds));
 
+// 左側面板快跳 chip（最多顯示 3 個，手機不用往下滑）
+const jumpTargets = computed<Target[]>(() => remainingTargets.value.slice(0, 3));
+
 const nextTarget = computed<Target | null>(() => remainingTargets.value[0] ?? null);
 
 const secondsToNext = computed<number | null>(() =>
@@ -165,6 +168,11 @@ function tick() {
  * 倒退讓已播放的時間點重新回到未來時，從 playedFor 移除，
  * 使其在下次倒數通過時可以再次觸發語音。
  */
+// 跳至某時間點的 alertBefore 秒前，音效會自然在倒數過程觸發
+function jumpToTarget(t: Target) {
+    adjust(t.seconds + alertBefore.value - timeLeft.value);
+}
+
 function adjust(delta: number) {
     const oldTime = timeLeft.value;
     const newTime = Math.min(INITIAL_TIME, Math.max(0, oldTime + delta));
@@ -288,6 +296,16 @@ onUnmounted(() => {
                         <div v-if="isAlertActive" class="alert-text">⚠ 安全屋即將出現</div>
                     </Transition>
                 </div>
+                <!-- 快跳 chip（最近 3 個安全屋，手機不需往下滑） -->
+                <div v-if="jumpTargets.length" class="flex gap-2 flex-wrap justify-center">
+                    <button
+                        v-for="(t, idx) in jumpTargets"
+                        :key="t.display"
+                        @click="jumpToTarget(t)"
+                        :class="['jump-chip', idx === 0 ? 'jump-chip-next' : '']"
+                    >⏭ {{ t.display }}</button>
+                </div>
+
                 <!-- 時間微調按鈕 -->
                 <div class="flex flex-col gap-2 w-full max-w-xs">
                     <!-- 5 秒大按鈕（大熱區，適合盲按） -->
@@ -482,6 +500,31 @@ onUnmounted(() => {
         box-shadow: 0 0 20px rgba(255, 71, 87, 0.7);
     }
 }
+
+/* ── 快跳 chip ───────────────────────────────────────────── */
+.jump-chip {
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 22px;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #d1d5db;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.jump-chip:hover  { background: rgba(255, 255, 255, 0.12); }
+.jump-chip:active { transform: scale(0.94); }
+.jump-chip-next {
+    background: rgba(255, 165, 0, 0.15);
+    border-color: rgba(255, 165, 0, 0.45);
+    color: #fbbf24;
+}
+.jump-chip-next:hover { background: rgba(255, 165, 0, 0.25); }
 
 /* ── 時間微調按鈕 ────────────────────────────────────────── */
 .adj-btn-main {
