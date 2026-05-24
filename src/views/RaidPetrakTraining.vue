@@ -7,6 +7,8 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 const currentModeRef = ref(1);
 const speedFactorRef = ref(1.5);
 
+const showCheatSheet = ref(false);
+
 const startBtnText = ref("開始機制");
 const startBtnDisabled = ref(false);
 const statusTextContent = ref("");
@@ -520,6 +522,12 @@ onUnmounted(() => {
                     <span class="speed-val">{{ speedFactorRef.toFixed(1) }}x</span>
                 </div>
 
+                <!-- 小抄 -->
+                <label class="cheatsheet-toggle">
+                    <input type="checkbox" v-model="showCheatSheet" />
+                    顯示小抄
+                </label>
+
                 <!-- 開始 -->
                 <button class="start-btn" :disabled="startBtnDisabled" @click="onStartBtnClick">
                     {{ startBtnText }}
@@ -545,6 +553,31 @@ onUnmounted(() => {
             <div v-if="hintVisible" class="hint-text">
                 點擊場內移動 · 模式3下按 1 鍵模擬攻擊，攻擊5次獲得意志
             </div>
+
+            <!-- 小抄（pointer-events:none 不影響畫布操作） -->
+            <Transition name="cheat-fade">
+                <div v-if="showCheatSheet" class="cheat-sheet">
+                    <div class="cheat-title">安全區小抄</div>
+                    <table class="cheat-table">
+                        <thead>
+                            <tr>
+                                <th>模式</th>
+                                <th v-for="n in 9" :key="n">第{{ n }}次</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cheat-mode">55%</td>
+                                <td v-for="(v, i) in [6,6,9,12,3,6,9,11,12]" :key="i">{{ v }}</td>
+                            </tr>
+                            <tr>
+                                <td class="cheat-mode">15%</td>
+                                <td v-for="(v, i) in [12,5,7,12,6,1,12,6,9]" :key="i">{{ v }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
@@ -735,5 +768,79 @@ canvas {
     color: #9ca3af;
     white-space: nowrap;
     border: 1px solid #374151;
+}
+
+/* ── 小抄 toggle ─────────────────────────────────── */
+.cheatsheet-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #9ca3af;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+.cheatsheet-toggle input {
+    accent-color: #fbbf24;
+    cursor: pointer;
+}
+
+/* ── 小抄 overlay ────────────────────────────────── */
+.cheat-sheet {
+    position: absolute;
+    bottom: 52px;           /* hint-text 上方，避免重疊 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9;
+    pointer-events: none;   /* ← 不攔截點擊 / 觸控 */
+    background: rgba(17, 24, 39, 0.88);
+    border: 1px solid #4b5563;
+    border-radius: 12px;
+    padding: 10px 14px;
+    backdrop-filter: blur(6px);
+    min-width: 0;
+}
+.cheat-title {
+    font-size: 11px;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.cheat-table {
+    border-collapse: collapse;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: #e5e7eb;
+}
+.cheat-table th,
+.cheat-table td {
+    padding: 3px 8px;
+    text-align: center;
+    border: 1px solid rgba(75, 85, 99, 0.5);
+}
+.cheat-table th {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 600;
+    background: rgba(55, 65, 81, 0.6);
+}
+.cheat-mode {
+    font-weight: 700;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+}
+
+/* ── 進場動畫 ─────────────────────────────────────── */
+.cheat-fade-enter-active,
+.cheat-fade-leave-active {
+    transition: opacity 0.2s, transform 0.2s;
+}
+.cheat-fade-enter-from,
+.cheat-fade-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px);
 }
 </style>
