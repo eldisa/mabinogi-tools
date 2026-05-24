@@ -8,6 +8,26 @@ const currentModeRef = ref(1);
 const speedFactorRef = ref(1.5);
 
 const showCheatSheet = ref(false);
+const cheatMode = ref<"number" | "arrow">("number");
+
+// 時鐘方向 → 箭頭符號（8 個主/斜方位）
+const CLOCK_TO_ARROW: Record<number, string> = {
+    12: "↑",
+    1:  "↗",
+    3:  "→",
+    5:  "↘",
+    6:  "↓",
+    7:  "↙",
+    9:  "←",
+    11: "↖",
+};
+
+const CHEAT_55 = [6, 6, 9, 12, 3, 6, 9, 11, 12];
+const CHEAT_15 = [12, 5, 7, 12, 6, 1, 12, 6, 9];
+
+function cheatDisplay(n: number): string {
+    return cheatMode.value === "arrow" ? (CLOCK_TO_ARROW[n] ?? String(n)) : String(n);
+}
 
 const startBtnText = ref("開始機制");
 const startBtnDisabled = ref(false);
@@ -523,10 +543,24 @@ onUnmounted(() => {
                 </div>
 
                 <!-- 小抄 -->
-                <label class="cheatsheet-toggle">
-                    <input type="checkbox" v-model="showCheatSheet" />
-                    顯示小抄
-                </label>
+                <div class="cheat-controls">
+                    <label class="cheatsheet-toggle">
+                        <input type="checkbox" v-model="showCheatSheet" />
+                        顯示小抄
+                    </label>
+                    <Transition name="cheat-mode-slide">
+                        <div v-if="showCheatSheet" class="cheat-mode-group">
+                            <label class="cheat-mode-radio" :class="{ active: cheatMode === 'number' }">
+                                <input type="radio" v-model="cheatMode" value="number" />
+                                數字
+                            </label>
+                            <label class="cheat-mode-radio" :class="{ active: cheatMode === 'arrow' }">
+                                <input type="radio" v-model="cheatMode" value="arrow" />
+                                箭頭
+                            </label>
+                        </div>
+                    </Transition>
+                </div>
 
                 <!-- 開始 -->
                 <button class="start-btn" :disabled="startBtnDisabled" @click="onStartBtnClick">
@@ -567,12 +601,14 @@ onUnmounted(() => {
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="cheat-mode">55%</td>
-                                <td v-for="(v, i) in [6,6,9,12,3,6,9,11,12]" :key="i">{{ v }}</td>
+                                <td class="cheat-label">55%</td>
+                                <td v-for="(v, i) in CHEAT_55" :key="i"
+                                    :class="cheatMode === 'arrow' ? 'cheat-arrow' : ''">{{ cheatDisplay(v) }}</td>
                             </tr>
                             <tr>
-                                <td class="cheat-mode">15%</td>
-                                <td v-for="(v, i) in [12,5,7,12,6,1,12,6,9]" :key="i">{{ v }}</td>
+                                <td class="cheat-label">15%</td>
+                                <td v-for="(v, i) in CHEAT_15" :key="i"
+                                    :class="cheatMode === 'arrow' ? 'cheat-arrow' : ''">{{ cheatDisplay(v) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -771,6 +807,11 @@ canvas {
 }
 
 /* ── 小抄 toggle ─────────────────────────────────── */
+.cheat-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 .cheatsheet-toggle {
     display: flex;
     align-items: center;
@@ -784,6 +825,52 @@ canvas {
 .cheatsheet-toggle input {
     accent-color: #fbbf24;
     cursor: pointer;
+}
+
+/* 數字/箭頭 切換 */
+.cheat-mode-group {
+    display: flex;
+    gap: 2px;
+}
+.cheat-mode-radio {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: #6b7280;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 7px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+.cheat-mode-radio input { display: none; }
+.cheat-mode-radio.active {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.08);
+}
+.cheat-mode-radio:not(.active):hover {
+    color: #d1d5db;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* 切換動畫 */
+.cheat-mode-slide-enter-active,
+.cheat-mode-slide-leave-active {
+    transition: opacity 0.15s, max-width 0.2s;
+    overflow: hidden;
+}
+.cheat-mode-slide-enter-from,
+.cheat-mode-slide-leave-to {
+    opacity: 0;
+    max-width: 0;
+}
+.cheat-mode-slide-enter-to,
+.cheat-mode-slide-leave-from {
+    max-width: 120px;
 }
 
 /* ── 小抄 overlay ────────────────────────────────── */
@@ -827,10 +914,16 @@ canvas {
     font-weight: 600;
     background: rgba(55, 65, 81, 0.6);
 }
-.cheat-mode {
+.cheat-label {
     font-weight: 700;
     color: #fbbf24;
     background: rgba(251, 191, 36, 0.08);
+}
+
+/* 箭頭模式：字型放大並居中 */
+.cheat-arrow {
+    font-size: 16px;
+    line-height: 1;
 }
 
 /* ── 進場動畫 ─────────────────────────────────────── */
