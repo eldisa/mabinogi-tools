@@ -904,9 +904,10 @@ canvas {
 }
 .cheat-table th,
 .cheat-table td {
-    padding: 3px 8px;
+    padding: 3px 6px;
     text-align: center;
     border: 1px solid rgba(75, 85, 99, 0.5);
+    white-space: nowrap;
 }
 .cheat-table th {
     font-size: 11px;
