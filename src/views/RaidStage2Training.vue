@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { useLocalStorage } from '../composables/useLocalStorage';
 
 type WarningColor = 'red' | 'cyan' | 'yellow';
 type WarningKind = 'periodic' | 'random';
@@ -103,9 +104,9 @@ const messageVisible = ref(false);
 const screenDarkness = ref(0);
 const player = ref<Point>({ x: DESKTOP_BOARD_SIZE / 2, y: DESKTOP_BOARD_SIZE / 2 });
 const warnings = ref<ActiveWarning[]>([]);
-const speedMultiplier = ref(1.0);
-const controlMode = ref<ControlMode>('mouse');
-const showSettings = ref(false);
+const speedMultiplier = useLocalStorage('raid-stage2:speed', 1.0);
+const controlMode     = useLocalStorage<ControlMode>('raid-stage2:controlMode', 'mouse');
+const showSettings    = ref(false);
 const arenaRef = ref<HTMLDivElement | null>(null);
 const containerRef = ref<HTMLDivElement | null>(null);
 const gameAreaRef = ref<HTMLDivElement | null>(null);
