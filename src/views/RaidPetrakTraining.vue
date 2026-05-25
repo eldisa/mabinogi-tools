@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
+import { useLocalStorage } from "../composables/useLocalStorage";
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 
 // Reactive UI state
-const currentModeRef = ref(1);
-const speedFactorRef = ref(1.5);
-
-const showSettings = ref(false);
-const showCheatSheet = ref(false);
-const cheatMode = ref<"number" | "arrow">("number");
+const currentModeRef = useLocalStorage("raid-petrak:mode", 1);
+const speedFactorRef = useLocalStorage("raid-petrak:speed", 1.5);
+const showCheatSheet = useLocalStorage("raid-petrak:showCheatSheet", false);
+const cheatMode      = useLocalStorage<"number" | "arrow">("raid-petrak:cheatMode", "number");
+const showSettings   = ref(false);
 
 // 時鐘方向 → 箭頭符號（8 個主/斜方位）
 const CLOCK_TO_ARROW: Record<number, string> = {

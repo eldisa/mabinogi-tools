@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useLocalStorage } from "../composables/useLocalStorage";
 
 // ============================================================
 // ★ 音效設定說明
@@ -93,10 +94,10 @@ function playSound() {
 // ── State ─────────────────────────────────────────────────────
 const timeLeft = ref(INITIAL_TIME);
 const isRunning = ref(false);
-const selectedSound = ref("時間快到囉.mp3");
-const alertBefore = ref(5);
-const showSettings = ref(false);
-const showAdjust = ref(true);
+const selectedSound = useLocalStorage("boss-timer:selectedSound", "時間快到囉.mp3");
+const alertBefore   = useLocalStorage("boss-timer:alertBefore", 5);
+const showAdjust    = useLocalStorage("boss-timer:showAdjust", true);
+const showSettings  = ref(false);
 
 let timerId: ReturnType<typeof setInterval> | null = null;
 const playedFor = new Set<number>();

@@ -20,6 +20,7 @@ import HolyWaterSimulator from '../views/HolyWaterSimulator.vue';
 import RaidPetrakTraining from '../views/RaidPetrakTraining.vue';
 import RaidStage2Training from '../views/RaidStage2Training.vue';
 import BossTimer from '../views/BossTimer.vue';
+import RaidBoss4DodgeTraining from '../views/RaidBoss4DodgeTraining.vue';
 
 const routes = [
     {
@@ -120,6 +121,11 @@ const routes = [
             path: '/boss-timer',
             name: '4王安全屋計時',
             component: BossTimer,
+        },
+        {
+            path: '/raid-boss4-dodge',
+            name: '4王65%躲彈幕',
+            component: RaidBoss4DodgeTraining,
         },]
     },
 
