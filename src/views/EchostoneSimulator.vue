@@ -46,6 +46,7 @@ const lastPolish = ref<PolishLog | null>(null);
 // Pool / target state
 const targets        = ref<TargetEntry[]>([]);
 const filterText     = ref("");
+const showStoneCard  = ref(true);
 const showPoolCard   = ref(true);
 const showTargetCard = ref(true);
 
@@ -226,34 +227,54 @@ function selectColor(id: string) {
 
             <!-- ── 顏色選擇 ── -->
             <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
-                <div class="mb-4 border-b border-gray-700 pb-3">
+                <div
+                    class="flex items-center gap-2 cursor-pointer select-none"
+                    :class="showStoneCard ? 'mb-4 border-b border-gray-700 pb-3' : ''"
+                    @click="showStoneCard = !showStoneCard"
+                >
                     <h2 class="text-xl font-bold text-accent">選擇回音石</h2>
+                    <div class="flex items-center gap-2 ml-2" @click.stop>
+                        <img
+                            :src="STONE_COLORS.find(c => c.id === selectedColor)?.img"
+                            class="w-6 h-6"
+                            style="image-rendering:pixelated"
+                        />
+                        <span class="text-sm text-gray-300">
+                            {{ STONE_COLORS.find(c => c.id === selectedColor)?.label }}回音石
+                        </span>
+                    </div>
+                    <span
+                        class="ml-auto text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showStoneCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >▼</span>
                 </div>
-                <div class="flex items-center gap-4">
-                    <el-select
-                        :model-value="selectedColor"
-                        size="large"
-                        style="width: 180px"
-                        @change="selectColor"
-                    >
-                        <el-option
-                            v-for="c in STONE_COLORS"
-                            :key="c.id"
-                            :value="c.id"
-                            :label="c.label + '回音石'"
+                <template v-if="showStoneCard">
+                    <div class="flex items-center gap-4">
+                        <el-select
+                            :model-value="selectedColor"
+                            size="large"
+                            style="width: 180px"
+                            @change="selectColor"
                         >
-                            <div class="flex items-center gap-2">
-                                <img :src="c.img" class="w-6 h-6" style="image-rendering:pixelated" />
-                                <span>{{ c.label }}回音石</span>
-                            </div>
-                        </el-option>
-                    </el-select>
-                    <img
-                        :src="STONE_COLORS.find(c => c.id === selectedColor)?.img"
-                        class="w-12 h-12"
-                        style="image-rendering:pixelated"
-                    />
-                </div>
+                            <el-option
+                                v-for="c in STONE_COLORS"
+                                :key="c.id"
+                                :value="c.id"
+                                :label="c.label + '回音石'"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <img :src="c.img" class="w-6 h-6" style="image-rendering:pixelated" />
+                                    <span>{{ c.label }}回音石</span>
+                                </div>
+                            </el-option>
+                        </el-select>
+                        <img
+                            :src="STONE_COLORS.find(c => c.id === selectedColor)?.img"
+                            class="w-12 h-12"
+                            style="image-rendering:pixelated"
+                        />
+                    </div>
+                </template>
             </el-card>
 
             <!-- ── 覺醒結果 ── -->
@@ -267,6 +288,7 @@ function selectColor(id: string) {
                         <span v-if="autoCount > 0" class="text-sm text-green-400">
                             本次連續 <span class="font-bold">{{ autoCount.toLocaleString() }}</span> 次
                         </span>
+                        <el-button size="small" plain @click="resetAll">重置</el-button>
                     </template>
                 </div>
 
@@ -333,27 +355,24 @@ function selectColor(id: string) {
                 </div>
 
                 <!-- Actions -->
-                <div class="flex items-center gap-3 mt-4 flex-wrap">
+                <div class="flex items-center gap-2 mt-4">
                     <el-button
-                        size="large"
+                        size="default"
                         :disabled="!canPolish"
-                        :title="polishUsedThisTurn ? '需再次覺醒後才能使用' : '使用回音石打磨石'"
-                        class="polish-btn"
+                        :title="polishUsedThisTurn ? '需再次覺醒後才能使用' : '等級重新分配'"
+                        class="polish-btn flex-shrink-0"
                         @click="usePolish"
                     >
-                        <img :src="POLISH_IMG" alt="" class="w-5 h-5 mr-1" style="image-rendering:pixelated;vertical-align:middle" />
-                        回音石打磨石
-                        <span v-if="polishUsedThisTurn" class="text-xs opacity-60 ml-1">（本輪已用）</span>
+                        <img :src="POLISH_IMG" alt="" class="w-4 h-4 mr-1" style="image-rendering:pixelated;vertical-align:middle" />
+                        等級重新分配
+                        <span v-if="polishUsedThisTurn" class="text-xs opacity-60 ml-1">（已用）</span>
                     </el-button>
-                    <el-button type="primary" size="large" :disabled="autoRunning" @click="roll">
+                    <el-button type="primary" size="default" :disabled="autoRunning" class="flex-shrink-0" @click="roll">
                         ✦ 覺醒
                     </el-button>
-                    <el-checkbox v-model="autoMode" size="large" class="!ml-1 text-gray-300">
+                    <el-checkbox v-model="autoMode" class="!ml-1 text-gray-300 flex-shrink-0">
                         自動到達標
                     </el-checkbox>
-                    <el-button v-if="rollCount > 0" size="small" plain class="ml-auto" @click="resetAll">
-                        重置次數
-                    </el-button>
                 </div>
             </el-card>
 
