@@ -21,6 +21,7 @@ import RaidPetrakTraining from '../views/RaidPetrakTraining.vue';
 import RaidStage2Training from '../views/RaidStage2Training.vue';
 import BossTimer from '../views/BossTimer.vue';
 import RaidBoss4DodgeTraining from '../views/RaidBoss4DodgeTraining.vue';
+import EchostoneSimulator from '../views/EchostoneSimulator.vue';
 
 const routes = [
     {
@@ -126,6 +127,11 @@ const routes = [
             path: '/raid-boss4-dodge',
             name: '4王65%躲彈幕',
             component: RaidBoss4DodgeTraining,
+        },
+        {
+            path: '/echostone-simulator',
+            name: '回音石模擬器',
+            component: EchostoneSimulator,
         },]
     },
 
@@ -154,6 +160,7 @@ const pageTitles = {
     '1王機制練習': '1王機制練習 | 瑪奇小工具',
     '2關機制練習': '2關機制練習 | 瑪奇小工具',
     '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',
+    '回音石模擬器': '回音石模擬器 | 瑪奇小工具',
     '關於': '關於 | 瑪奇小工具',
 };
 
