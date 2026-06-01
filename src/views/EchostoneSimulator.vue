@@ -14,6 +14,7 @@ interface TargetEntry {
     name: string;
     minLevel: number;
     maxLevel: number;
+    anyLevel?: boolean;
 }
 
 const baseUrl = import.meta.env.BASE_URL;
@@ -37,6 +38,7 @@ const polishAvail        = ref(false);
 const polishUsedThisTurn = ref(false);
 const autoRunning        = ref(false);
 const autoCount          = ref(0);
+const autoMode           = ref(false);
 
 interface PolishLog { before: number; rolled: number; final: number; }
 const lastPolish = ref<PolishLog | null>(null);
@@ -148,6 +150,10 @@ function isMatch(result: AwakeningResult): boolean {
 // ===== Actions =====
 function roll() {
     if (autoRunning.value) return;
+    if (autoMode.value && targets.value.length > 0) {
+        autoRoll();
+        return;
+    }
     const result = doRoll();
     rollCount.value++;
     currentResult.value = result;
@@ -221,19 +227,32 @@ function selectColor(id: string) {
             <!-- ── 顏色選擇 ── -->
             <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl">
                 <div class="mb-4 border-b border-gray-700 pb-3">
-                    <h2 class="text-xl font-bold text-accent">選擇石頭顏色</h2>
+                    <h2 class="text-xl font-bold text-accent">選擇回音石</h2>
                 </div>
-                <div class="flex gap-4 flex-wrap">
-                    <button
-                        v-for="c in STONE_COLORS"
-                        :key="c.id"
-                        class="color-btn"
-                        :class="{ 'color-btn--active': selectedColor === c.id }"
-                        @click="selectColor(c.id)"
+                <div class="flex items-center gap-4">
+                    <el-select
+                        :model-value="selectedColor"
+                        size="large"
+                        style="width: 180px"
+                        @change="selectColor"
                     >
-                        <img :src="c.img" :alt="c.label" class="stone-img" />
-                        <span class="stone-label">{{ c.label }}</span>
-                    </button>
+                        <el-option
+                            v-for="c in STONE_COLORS"
+                            :key="c.id"
+                            :value="c.id"
+                            :label="c.label + '回音石'"
+                        >
+                            <div class="flex items-center gap-2">
+                                <img :src="c.img" class="w-6 h-6" style="image-rendering:pixelated" />
+                                <span>{{ c.label }}回音石</span>
+                            </div>
+                        </el-option>
+                    </el-select>
+                    <img
+                        :src="STONE_COLORS.find(c => c.id === selectedColor)?.img"
+                        class="w-12 h-12"
+                        style="image-rendering:pixelated"
+                    />
                 </div>
             </el-card>
 
@@ -315,9 +334,6 @@ function selectColor(id: string) {
 
                 <!-- Actions -->
                 <div class="flex items-center gap-3 mt-4 flex-wrap">
-                    <el-button type="primary" size="large" :disabled="autoRunning" @click="roll">
-                        ✦ 覺醒
-                    </el-button>
                     <el-button
                         size="large"
                         :disabled="!canPolish"
@@ -329,6 +345,12 @@ function selectColor(id: string) {
                         回音石打磨石
                         <span v-if="polishUsedThisTurn" class="text-xs opacity-60 ml-1">（本輪已用）</span>
                     </el-button>
+                    <el-button type="primary" size="large" :disabled="autoRunning" @click="roll">
+                        ✦ 覺醒
+                    </el-button>
+                    <el-checkbox v-model="autoMode" size="large" class="!ml-1 text-gray-300">
+                        自動到達標
+                    </el-checkbox>
                     <el-button v-if="rollCount > 0" size="small" plain class="ml-auto" @click="resetAll">
                         重置次數
                     </el-button>
@@ -450,11 +472,17 @@ function selectColor(id: string) {
                             <span class="text-xs text-gray-500 hidden sm:inline">
                                 (Lv.1 ～ {{ t.maxLevel }})
                             </span>
-                            <span class="text-xs text-gray-400 ml-auto">最低等級</span>
+                            <el-checkbox
+                                v-model="t.anyLevel"
+                                size="small"
+                                class="ml-auto"
+                                @change="(v: boolean) => { if (v) t.minLevel = 1; }"
+                            >有就好</el-checkbox>
                             <el-input-number
                                 v-model="t.minLevel"
                                 :min="1"
                                 :max="t.maxLevel"
+                                :disabled="t.anyLevel"
                                 size="small"
                                 controls-position="right"
                                 style="width: 90px"
@@ -480,16 +508,6 @@ function selectColor(id: string) {
                         </span>
                     </div>
 
-                    <!-- Auto roll button -->
-                    <el-button
-                        type="success"
-                        size="large"
-                        class="w-full mt-4"
-                        :loading="autoRunning"
-                        @click="autoRoll"
-                    >
-                        {{ autoRunning ? '停止' : '連續覺醒（最多 10,000 次）' }}
-                    </el-button>
                 </template>
             </el-card>
         </div>
