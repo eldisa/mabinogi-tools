@@ -21,7 +21,6 @@
                             <div class="flex flex-col gap-2">
                                 <el-checkbox v-model="filters.excludeObsolete">排除絕版稱號</el-checkbox>
                                 <el-checkbox v-model="filters.excludeRanking">排除排名稱號</el-checkbox>
-                                <el-checkbox v-model="filters.excludeHardcore">排除副本獎勵稱號</el-checkbox>
                                 <el-checkbox v-model="filters.excludeTimed">排除期限稱號</el-checkbox>
                                 <el-checkbox v-model="filters.excludeExclusive">排除封印碾碎相關稱號</el-checkbox>
                             </div>
@@ -278,7 +277,6 @@ const pageSize = 30;
 const filters = ref({
     excludeObsolete: false,
     excludeRanking: false,
-    excludeHardcore: false,
     excludeTimed: true,
     excludeExclusive: true,
 });
@@ -309,31 +307,19 @@ const customWeights = ref<Record<string, number>>({
 });
 
 // 排除列表
+// 絕版稱號：無法再獲得的活動/首殺稱號，需手動維護
 const obsoleteTitleIds = ["18153", "18154", "18155", "18158", "16028"];
 
-const rankingTitleIds = [
-    "5011",
-    "5012",
-    "5013",
-    "5014",
-    "5015",
-    "5016",
-    "5017",
-    "5018",
-    "5019",
-    "5020",
-    "5021",
-    "5022",
-    "11015",
-    "11016",
-    "11017",
-    "16032",
-    "16033",
-];
+// 期限稱號：Duration != "0" 或 Hint 中明確說明會消失的稱號
+function isTimedTitle(title: Title): boolean {
+    if (title.Duration !== "0") return true;
+    return /一定時間|一定期間|一段時間/.test(title.Hint);
+}
 
-const hardcoreTitleIds = ["5004", "5005", "5006"];
-
-const timedTitleIds = ["9053", "9054", "9055", "9056", "9057", "9058", "9088", "9089", "9090", "9150", "9151", "9152"];
+// 排名稱號：Hint 中標示排名名次的稱號
+function isRankingTitle(title: Title): boolean {
+    return /排名第\s*\d|每週排名|TOP\s*\d/.test(title.Hint);
+}
 
 // === 能力匹配邏輯 ===
 interface MatchResult {
@@ -565,17 +551,10 @@ const filteredTitles = computed(() => {
         result = result.filter((title) => !obsoleteTitleIds.includes(title.ID));
     }
     if (filters.value.excludeRanking) {
-        result = result.filter((title) => !rankingTitleIds.includes(title.ID));
-    }
-    if (filters.value.excludeHardcore) {
-        result = result.filter((title) => !hardcoreTitleIds.includes(title.ID));
+        result = result.filter((title) => !isRankingTitle(title));
     }
     if (filters.value.excludeTimed) {
-        result = result.filter((title) => {
-            if (title.Duration !== "0") return false;
-            if (timedTitleIds.includes(title.ID)) return false;
-            return true;
-        });
+        result = result.filter((title) => !isTimedTitle(title));
     }
     if (filters.value.excludeExclusive) {
         result = result.filter((title) => title.Exclusive !== "1");
