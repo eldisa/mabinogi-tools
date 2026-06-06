@@ -186,6 +186,7 @@ import { ref, computed, watch } from "vue";
 import { Setting, Search } from "@element-plus/icons-vue";
 import titleData from "../data/title.json";
 import { abilitiesMap, reverseAbilitiesMap } from "../data/abilities";
+import { obsoleteTitleIds, isTimedTitle, isRankingTitle } from "../utils/titleFilters";
 
 // 能力資料類型
 interface TitleAbility {
@@ -306,20 +307,7 @@ const customWeights = ref<Record<string, number>>({
     LUK: 0,
 });
 
-// 排除列表
-// 絕版稱號：無法再獲得的活動/首殺稱號，需手動維護
-const obsoleteTitleIds = ["18153", "18154", "18155", "18158", "16028"];
-
-// 期限稱號：Duration != "0" 或 Hint 中明確說明會消失的稱號
-function isTimedTitle(title: Title): boolean {
-    if (title.Duration !== "0") return true;
-    return /一定時間|一定期間|一段時間/.test(title.Hint);
-}
-
-// 排名稱號：Hint 中標示排名名次的稱號
-function isRankingTitle(title: Title): boolean {
-    return /排名第\s*\d|每週排名|TOP\s*\d/.test(title.Hint);
-}
+// obsoleteTitleIds / isTimedTitle / isRankingTitle 來自 ../utils/titleFilters
 
 // === 能力匹配邏輯 ===
 interface MatchResult {
@@ -548,7 +536,7 @@ const filteredTitles = computed(() => {
 
     // 篩選器
     if (filters.value.excludeObsolete) {
-        result = result.filter((title) => !obsoleteTitleIds.includes(title.ID));
+        result = result.filter((title) => !obsoleteTitleIds.has(title.ID));
     }
     if (filters.value.excludeRanking) {
         result = result.filter((title) => !isRankingTitle(title));

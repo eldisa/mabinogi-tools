@@ -4,6 +4,7 @@ import { enchants } from "../data/enchants";
 import { abilitiesMap } from "../data/abilities";
 import { stoneAbilities } from "../data/stoneData";
 import titleJsonData from "../data/title.json";
+import { obsoleteTitleIds, isTimedTitle, isRankingTitle } from "../utils/titleFilters";
 import dollBagsData from "../data/doll_bags.json";
 
 // ── Basic Settings ─────────────────────────────────────────
@@ -403,14 +404,6 @@ interface TitleData { id: string; name: string; effects: Record<string, number>;
 
 interface TitleData { id: string; name: string; type: number; effects: Record<string, number>; }
 
-const obsoleteTitleIds = new Set(["18153", "18154", "18155", "18158", "16028"]);
-function isTimedTitle(t: any): boolean {
-    if (t.Duration !== "0") return true;
-    return /一定時間|一定期間|一段時間/.test(t.Hint ?? "");
-}
-function isRankingTitle(t: any): boolean {
-    return /排名第\s*\d|每週排名|TOP\s*\d/.test(t.Hint ?? "");
-}
 
 const TITLE_LIST: TitleData[] = (titleJsonData.data as any[])
     .filter(t => t.EffectDescription?.trim() && !isTimedTitle(t) && !isRankingTitle(t) && !obsoleteTitleIds.has(t.ID))
