@@ -10,12 +10,11 @@ import {
     InfoFilled,
     Medal,
     Present,
-    DataAnalysis,
     Handbag,
-    Lightning,
     TrendCharts,
     Coin,
     Trophy,
+    Headset,
 } from "@element-plus/icons-vue";
 
 defineProps<{
@@ -37,6 +36,7 @@ const menuItems = ref([
     { name: "細工模擬器", path: "/reforge", icon: markRaw(MagicStick) },
     { name: "布里萊赫硬幣模擬器", path: "/brilaherec", icon: markRaw(Coin) },
     { name: "聖水模擬器", path: "/holy-water", icon: markRaw(MagicStick) },
+    { name: "音樂計算機", path: "/music-calculator", icon: markRaw(Headset) },
     { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
     { name: "賭石小遊戲", path: "/stone-gambling", icon: markRaw(Present) },
     { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
