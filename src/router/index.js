@@ -22,6 +22,7 @@ import RaidStage2Training from '../views/RaidStage2Training.vue';
 import BossTimer from '../views/BossTimer.vue';
 import RaidBoss4DodgeTraining from '../views/RaidBoss4DodgeTraining.vue';
 import EchostoneSimulator from '../views/EchostoneSimulator.vue';
+import MusicCalculator from '../views/MusicCalculator.vue';
 
 const routes = [
     {
@@ -87,6 +88,11 @@ const routes = [
             path: '/magic-calculator',
             name: '魔法傷害計算器',
             component: MagicCalculator,
+        },
+        {
+            path: '/music-calculator',
+            name: '音樂計算機',
+            component: MusicCalculator,
         },
         {
             path: '/reforge',
@@ -157,6 +163,7 @@ const pageTitles = {
     '布里萊赫硬幣模擬器': '布里萊赫硬幣模擬器 | 瑪奇小工具',
     '頂裝差距': '頂裝差距 | 瑪奇小工具',
     '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
+    '音樂計算機': '音樂計算機 | 瑪奇小工具',
     '1王機制練習': '1王機制練習 | 瑪奇小工具',
     '2關機制練習': '2關機制練習 | 瑪奇小工具',
     '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',

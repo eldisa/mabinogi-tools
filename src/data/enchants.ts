@@ -19398,7 +19398,7 @@ export const enchants: Enchant[] = [
     // 中間是佛格斯活動的
     {
         id: 21692,
-        name: { tw: "信任的", en: "faithful", tw2: "信任的" },
+        name: { tw: "信任的", en: "faithful", tw2: "信任的", kr: "신뢰하는" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(AttMax, +16);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(Prot, +3);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(Def, +10);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予.\n當啟用的秘法的專用選項時,效果發動\n最大傷害值增加16\n保護增加3\n防禦增加10.",
         level: 10,
@@ -19413,7 +19413,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21693,
-        name: { tw: "累積的", en: "accumulating", tw2: "累積的" },
+        name: { tw: "累積的", en: "accumulating", tw2: "累積的", kr: "쌓여가는" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(AttMax, +16);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(LifeMax, +30);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(StaminaMax, +30);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予\n當啟用的秘法的專用選項時,效果發動\n最大傷害值增加16\n最大生命力增加30\n最大耐力增加30.",
         level: 10,
@@ -19428,7 +19428,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21694,
-        name: { tw: "記憶的", en: "memorial", tw2: "記憶的" },
+        name: { tw: "記憶的", en: "memorial", tw2: "記憶的", kr: "기억의" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(MagicAttack, +15);\n: IsRelicOfMuriasEnabled(0) : SetSetItemEffectOnEquip(mana_saving, +2);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(ManaMax, +30);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予\n當啟用的秘法的專用選項時,效果發動\n魔法攻擊力增加15\n減少魔法值消耗增加2 \n最大魔力增加30.",
         level: 10,
@@ -19443,7 +19443,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21695,
-        name: { tw: "侵蝕的", en: "overwhelmed", tw2: "侵蝕的" },
+        name: { tw: "侵蝕的", en: "overwhelmed", tw2: "侵蝕的", kr: "잠식된" },
         list: ": IsRelicOfMuriasEnabled(0) : AddBonusOnAlchemy(alchemy_all, +(16));\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(LifeMax, +30);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(ManaMax, +30);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予\n當啟用的秘法的專用選項時,效果發動\n所有屬性鍊金術傷害增加16\n最大生命力增加30\n最大魔法增加30.",
         level: 10,
@@ -19457,7 +19457,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21696,
-        name: { tw: "單純的", en: "genuine ", tw2: "單純的" },
+        name: { tw: "單純的", en: "genuine ", tw2: "單純的", kr: "순수한" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(musicbuff_bonus, 1);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(musicbuff_duration, 10);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予\n當啟用的秘法的專用選項時,效果發動\n音樂增益效果增加1\n音樂增益技能持續時間增加10.",
         level: 10,
@@ -35038,7 +35038,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31788,
-        name: { tw: "管理者", en: "Administrator", tw2: "管理者" },
+        name: { tw: "管理者", en: "Administrator", tw2: "管理者", kr: "관리자" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(arcana_skill_bonus_damage_rate, +1);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(AttMax, +16);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(MagicProtect, +2);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(item_durability_loss_dec_rate, +30);",
         desc: "穆利亞斯的遺物能進行魔法賦予\n發動的祕法專用能力值發動效果\n秘法技能額外傷害增加1%\n最大傷害值增加16\n魔法保護增加2\n套用魔力賦予的道具耐久度減少量減少30%",
         level: 10,
@@ -35054,7 +35054,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31789,
-        name: { tw: "後悔", en: "Regret", tw2: "後悔" },
+        name: { tw: "後悔", en: "Regret", tw2: "後悔", kr: "후회" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(arcana_skill_bonus_damage_rate, +1);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(AttMax, +16);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(LifeMax, +20);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(item_durability_loss_dec_rate, +30);",
         desc: "穆利亞斯的遺物能進行魔法賦予\n發動的祕法專用能力值發動效果\n秘法技能額外傷害增加1%\n最大傷害值增加16\n最大生命力增加20\n套用魔力賦予的道具耐久度減少量減少30%",
         level: 10,
@@ -35070,7 +35070,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31790,
-        name: { tw: "片段", en: "Fragment", tw2: "片段" },
+        name: { tw: "片段", en: "Fragment", tw2: "片段", kr: "편린" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(arcana_skill_bonus_damage_rate, +1);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(MagicAttack, +15);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(ManaMax, +20);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(item_durability_loss_dec_rate, +30);",
         desc: "穆利亞斯的遺物能進行魔法賦予\n發動的祕法專用能力值發動效果\n秘法技能額外傷害增加1%\n魔法攻擊力增加15 \n最大魔法增加20\n套用魔力賦予的道具耐久度減少量減少30%",
         level: 10,
@@ -35086,7 +35086,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31791,
-        name: { tw: "自我", en: "Ego", tw2: "自我" },
+        name: { tw: "自我", en: "Ego", tw2: "自我", kr: "자아" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(arcana_skill_bonus_damage_rate, +1);\n: IsRelicOfMuriasEnabled(0) : AddBonusOnAlchemy(alchemy_all, +(16));\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(StaminaMax, +20);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(item_durability_loss_dec_rate, +30);",
         desc: "穆利亞斯的遺物能進行魔法賦予\n發動的祕法專用能力值發動效果\n秘法技能額外傷害增加1%\n所有屬性鍊金術傷害增加16\n最大耐力值增加20\n套用魔力賦予的道具耐久度減少量減少30%",
         level: 10,
@@ -35101,14 +35101,14 @@ export const enchants: Enchant[] = [
     },
     {
         id: 31792,
-        name: { tw: "禮物", en: "Present", tw2: "禮物" },
+        name: { tw: "禮物", en: "Present", tw2: "禮物", kr: "선물" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(music_buff_bonus_rate, +3);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(healing, +5);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(ManaMax, +20);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(item_durability_loss_dec_rate, +30);",
         desc: "穆利亞斯的遺物能進行魔法賦予\n發動的祕法專用能力值發動效果\n戰場的序曲,活潑板攻擊力增加0.3%\n治癒效果增加5%\n最大魔法值增加20\n套用魔力賦予的道具耐久度減少量減少30%",
         level: 10,
         type: "suffix",
         limit: ["穆利亞斯的遺物"],
         effect: [
-            { id: "music_buff_bonus_rate", min: 3, max: 3 },
+            { id: "music_buff_bonus_rate", min: 0.3, max: 0.3 },
             { id: "healing", min: 5, max: 5 },
             { id: "MP", min: 20, max: 20 },
             { id: "item_durability_loss_dec_rate", min: 30, max: 30 },

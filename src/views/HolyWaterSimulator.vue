@@ -4,12 +4,16 @@ import { ref, computed, watch } from "vue";
 const baseUrl = import.meta.env.BASE_URL;
 
 // ===== Stat Definitions =====
+// Algorithm: pick 1 entry uniformly from the full pool (103 entries total).
+// If the entry has a range (min < max), pick a uniform random value within [min, max].
+
+interface StatTier { min: number; max: number; }
+
 interface StatDef {
     key: string;
     label: string;
-    max: number; // max === 1 → fixed value, no range input needed
+    tiers: StatTier[]; // each tier = one slot in the pool (equal weight)
     unit: string;
-    prob: number; // raw probability (e.g. 0.065 = 6.5%)
 }
 
 interface StatGroup {
@@ -17,93 +21,91 @@ interface StatGroup {
     stats: StatDef[];
 }
 
-// Probabilities verified from JP data:
-//   6.5% : 生命力 / 魔力 / 體力
-//   5.0% : 防禦力 / 魔法防禦力 / 生命力自然回復量 / 魔力自然回復量 / 體力自然回復量
-//   4.5% : 最大傷害 / 魔法攻擊力 / 四大屬性煉金術傷害 / 魁儡最大傷害
-//   2.5% : STR / INT / DEX / WILL / LUCK
-//   2.0% : 治療效果 / 暴擊傷害
-//   1.0% : (remaining 21 stats)
 const STAT_GROUPS: StatGroup[] = [
     {
         label: "戰鬥",
         stats: [
-            { key: "maxDmg", label: "最大傷害", max: 30, unit: "", prob: 0.045 },
-            { key: "magicAtk", label: "魔法攻擊力", max: 30, unit: "", prob: 0.045 },
-            { key: "alchDmg", label: "四大屬性煉金術傷害", max: 50, unit: "", prob: 0.045 },
-            { key: "dollDmg", label: "人偶最大傷害", max: 50, unit: "", prob: 0.045 },
-            { key: "heal", label: "治療效果", max: 10, unit: "%", prob: 0.02 },
-            { key: "critRate", label: "暴擊率", max: 5, unit: "%", prob: 0.01 },
-            { key: "critDmg", label: "暴擊傷害", max: 4, unit: "%", prob: 0.02 },
-            { key: "balance", label: "平衡", max: 5, unit: "%", prob: 0.01 },
+            { key: "maxDmg",   label: "最大傷害",           unit: "",  tiers: [{min:1,max:6},{min:7,max:12},{min:13,max:18},{min:19,max:24},{min:25,max:30}] },
+            { key: "magicAtk", label: "魔法攻擊力",          unit: "",  tiers: [{min:1,max:6},{min:7,max:12},{min:13,max:18},{min:19,max:24},{min:25,max:30}] },
+            { key: "alchDmg",  label: "4大屬性鍊金術傷害",    unit: "",  tiers: [{min:1,max:10},{min:11,max:20},{min:21,max:30},{min:31,max:40},{min:41,max:50}] },
+            { key: "dollDmg",  label: "人偶最大傷害",         unit: "",  tiers: [{min:1,max:10},{min:11,max:20},{min:21,max:30},{min:31,max:40},{min:41,max:50}] },
+            { key: "heal",     label: "治癒效果",             unit: "%", tiers: [{min:1,max:5},{min:6,max:10}] },
+            { key: "critRate", label: "暴擊率",               unit: "%", tiers: [{min:1,max:5}] },
+            { key: "critDmg",  label: "暴擊傷害值",           unit: "%", tiers: [{min:1,max:2},{min:3,max:4}] },
+            { key: "balance",  label: "平衡性",               unit: "%", tiers: [{min:1,max:5}] },
         ],
     },
     {
         label: "基本屬性",
         stats: [
-            { key: "hp", label: "生命值", max: 300, unit: "", prob: 0.065 },
-            { key: "mp", label: "魔力值", max: 300, unit: "", prob: 0.065 },
-            { key: "sp", label: "耐力值", max: 300, unit: "", prob: 0.065 },
-            { key: "str", label: "力量", max: 30, unit: "", prob: 0.025 },
-            { key: "int", label: "智力", max: 30, unit: "", prob: 0.025 },
-            { key: "dex", label: "敏捷", max: 30, unit: "", prob: 0.025 },
-            { key: "will", label: "意志", max: 30, unit: "", prob: 0.025 },
-            { key: "luck", label: "幸運", max: 30, unit: "", prob: 0.025 },
+            { key: "hp",   label: "生命值", unit: "", tiers: [{min:1,max:50},{min:51,max:100},{min:101,max:150},{min:151,max:200},{min:201,max:250},{min:251,max:300}] },
+            { key: "mp",   label: "魔法值", unit: "", tiers: [{min:1,max:50},{min:51,max:100},{min:101,max:150},{min:151,max:200},{min:201,max:250},{min:251,max:300}] },
+            { key: "sp",   label: "耐力值", unit: "", tiers: [{min:1,max:50},{min:51,max:100},{min:101,max:150},{min:151,max:200},{min:201,max:250},{min:251,max:300}] },
+            { key: "str",  label: "力量",   unit: "", tiers: [{min:1,max:10},{min:11,max:20},{min:21,max:30}] },
+            { key: "int",  label: "智力",   unit: "", tiers: [{min:1,max:10},{min:11,max:20},{min:21,max:30}] },
+            { key: "dex",  label: "敏捷",   unit: "", tiers: [{min:1,max:10},{min:11,max:20},{min:21,max:30}] },
+            { key: "will", label: "意志",   unit: "", tiers: [{min:1,max:10},{min:11,max:20},{min:21,max:30}] },
+            { key: "luck", label: "幸運",   unit: "", tiers: [{min:1,max:10},{min:11,max:20},{min:21,max:30}] },
         ],
     },
     {
         label: "防禦",
         stats: [
-            { key: "def", label: "防禦", max: 100, unit: "", prob: 0.05 },
-            { key: "magicDef", label: "魔法防禦", max: 100, unit: "", prob: 0.05 },
-            { key: "prot", label: "保護", max: 3, unit: "", prob: 0.01 },
-            { key: "magicProt", label: "魔法保護", max: 3, unit: "", prob: 0.01 },
+            { key: "def",       label: "防禦",     unit: "", tiers: [{min:1,max:20},{min:21,max:40},{min:41,max:60},{min:61,max:80},{min:81,max:100}] },
+            { key: "magicDef",  label: "魔法防禦",  unit: "", tiers: [{min:1,max:20},{min:21,max:40},{min:41,max:60},{min:61,max:80},{min:81,max:100}] },
+            { key: "prot",      label: "保護",     unit: "", tiers: [{min:1,max:3}] },
+            { key: "magicProt", label: "魔法保護",  unit: "", tiers: [{min:1,max:3}] },
         ],
     },
     {
         label: "自然回復速度",
         stats: [
-            { key: "hpRegen", label: "生命力自然回復量", max: 500, unit: "%", prob: 0.05 },
-            { key: "mpRegen", label: "魔力自然回復量", max: 500, unit: "%", prob: 0.05 },
-            { key: "spRegen", label: "體力自然回復量", max: 500, unit: "%", prob: 0.05 },
+            { key: "hpRegen", label: "生命值自然恢復量", unit: "%", tiers: [{min:1,max:100},{min:101,max:200},{min:201,max:300},{min:301,max:400},{min:401,max:500}] },
+            { key: "mpRegen", label: "魔法值自然恢復量", unit: "%", tiers: [{min:1,max:100},{min:101,max:200},{min:201,max:300},{min:301,max:400},{min:401,max:500}] },
+            { key: "spRegen", label: "耐力值自然恢復量", unit: "%", tiers: [{min:1,max:100},{min:101,max:200},{min:201,max:300},{min:301,max:400},{min:401,max:500}] },
         ],
     },
     {
         label: "特殊",
         stats: [
-            { key: "pierceRes", label: "銳利抵抗", max: 1, unit: "", prob: 0.01 },
-            { key: "music", label: "音樂演奏效果", max: 1, unit: "", prob: 0.01 },
+            { key: "pierceRes", label: "銳利抵抗",    unit: "", tiers: [{min:1,max:1}] },
+            { key: "music",     label: "音樂增益效果", unit: "", tiers: [{min:1,max:1}] },
         ],
     },
     {
-        label: "套裝效果強化",
+        label: "組合效果強化",
         stats: [
-            { key: "iceBolt", label: "冰矛套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "fireBolt", label: "火焰套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "flamer", label: "火焰噴射套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "waterCannon", label: "水砲套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "lifeDrain", label: "生命吸收套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "atkSpeed", label: "攻擊速度套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "magnumShot", label: "穿心箭套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "bash", label: "猛擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "supportShot", label: "支援箭套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "shockAbsorb", label: "衝擊吸收套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "smash", label: "重擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "windmill", label: "旋風擺蓮腿套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "rush", label: "突擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "healingEnh", label: "治癒套裝效果強化", max: 1, unit: "", prob: 0.01 },
-            { key: "downAtk", label: "躍擊套裝效果強化", max: 1, unit: "", prob: 0.01 },
+            { key: "iceBolt",     label: "冰矛組合效果",         unit: "", tiers: [{min:1,max:1}] },
+            { key: "fireBolt",    label: "火焰組合效果",          unit: "", tiers: [{min:1,max:1}] },
+            { key: "flamer",      label: "火焰噴射組合效果",      unit: "", tiers: [{min:1,max:1}] },
+            { key: "waterCannon", label: "水炮組合效果",          unit: "", tiers: [{min:1,max:1}] },
+            { key: "lifeDrain",   label: "吸取生命組合效果",      unit: "", tiers: [{min:1,max:1}] },
+            { key: "atkSpeed",    label: "攻擊速度組合效果",      unit: "", tiers: [{min:1,max:1}] },
+            { key: "magnumShot",  label: "穿心箭強化組合效果",    unit: "", tiers: [{min:1,max:1}] },
+            { key: "bash",        label: "猛擊強化組合效果",      unit: "", tiers: [{min:1,max:1}] },
+            { key: "supportShot", label: "支援箭強化組合效果",    unit: "", tiers: [{min:1,max:1}] },
+            { key: "shockAbsorb", label: "衝擊吸收強化組合效果",  unit: "", tiers: [{min:1,max:1}] },
+            { key: "smash",       label: "重擊強化組合效果",      unit: "", tiers: [{min:1,max:1}] },
+            { key: "windmill",    label: "旋風擺蓮腿強化組合效果", unit: "", tiers: [{min:1,max:1}] },
+            { key: "rush",        label: "突擊強化組合效果",      unit: "", tiers: [{min:1,max:1}] },
+            { key: "healingEnh",  label: "治癒強化組合效果",      unit: "", tiers: [{min:1,max:1}] },
+            { key: "downAtk",     label: "躍擊強化組合效果",      unit: "", tiers: [{min:1,max:1}] },
         ],
     },
 ];
 
-// Flat list for weighted random
-const ALL_STATS: StatDef[] = STAT_GROUPS.flatMap((g) => g.stats);
+// Flat pool: each (stat, tier) pair is one entry with equal probability
+interface PoolEntry { stat: StatDef; tier: StatTier; }
+const POOL: PoolEntry[] = STAT_GROUPS.flatMap(g => g.stats.flatMap(s => s.tiers.map(t => ({ stat: s, tier: t }))));
+const POOL_SIZE = POOL.length; // 103
+
+const ALL_STATS: StatDef[] = STAT_GROUPS.flatMap(g => g.stats);
 
 // ===== State =====
 interface UseResult {
     useId: number;
     stat: StatDef;
+    tier: StatTier;
     value: number;
     isSuccess: boolean;
     thisRunCount: number;
@@ -121,18 +123,25 @@ const showHistory = ref(false);
 
 // ===== Derived =====
 const targetStat = computed(() =>
-    targetStatKey.value ? (ALL_STATS.find((s) => s.key === targetStatKey.value) ?? null) : null,
+    targetStatKey.value ? (ALL_STATS.find(s => s.key === targetStatKey.value) ?? null) : null,
 );
-const isFixed = (s: StatDef) => s.max === 1;
+const isFixed = (s: StatDef) => s.tiers.length === 1 && s.tiers[0].min === s.tiers[0].max;
+const statAbsMax = (s: StatDef) => s.tiers[s.tiers.length - 1].max;
+const targetStatMax = computed(() => targetStat.value ? statAbsMax(targetStat.value) : 1);
 const hasTarget = computed(() => targetStat.value !== null);
 
-// P(success per use) = P(draw this stat) × P(value >= min)
+// P(success per use) = sum over tiers: (1/POOL_SIZE) × P(value in tier >= minVal)
 const successProb = computed((): number => {
     if (!targetStat.value) return 0;
-    const s = targetStat.value;
-    if (s.max === 1) return s.prob;
-    const pVal = Math.max(0, s.max - targetMinValue.value + 1) / s.max;
-    return s.prob * pVal;
+    const v = targetMinValue.value;
+    let sum = 0;
+    for (const tier of targetStat.value.tiers) {
+        if (tier.max < v) continue;
+        const satisfying = tier.max - Math.max(tier.min, v) + 1;
+        const total = tier.max - tier.min + 1;
+        sum += satisfying / total / POOL_SIZE;
+    }
+    return sum;
 });
 
 const fmtPct = (p: number): string =>
@@ -141,18 +150,12 @@ const fmtPct = (p: number): string =>
 const fmtVal = (s: StatDef, v: number): string => `${v}${s.unit}`;
 
 // ===== Roll helpers =====
-const rollStat = (): StatDef => {
-    const r = Math.random();
-    let cum = 0;
-    for (const s of ALL_STATS) {
-        cum += s.prob;
-        if (r < cum) return s;
-    }
-    return ALL_STATS[ALL_STATS.length - 1];
-};
+const rollEntry = (): PoolEntry => POOL[Math.floor(Math.random() * POOL_SIZE)];
 
-const rollValue = (s: StatDef, minVal = 1): number =>
-    s.max === 1 ? 1 : minVal + Math.floor(Math.random() * (s.max - minVal + 1));
+const rollValueInTier = (tier: StatTier, minVal?: number): number => {
+    const lo = minVal !== undefined ? Math.max(tier.min, minVal) : tier.min;
+    return lo + Math.floor(Math.random() * (tier.max - lo + 1));
+};
 
 const checkSuccess = (s: StatDef, v: number): boolean => {
     if (!targetStat.value) return false;
@@ -163,27 +166,33 @@ const checkSuccess = (s: StatDef, v: number): boolean => {
 const doUse = () => {
     let count = 1;
     let stat: StatDef;
+    let tier: StatTier;
     let value: number;
     let isSuccess: boolean;
 
     if (autoMode.value && hasTarget.value && successProb.value > 0) {
-        // Geometric sampling: count = ceil(log(U) / log(1-p))
+        // Geometric sampling
         const p = successProb.value;
         count = Math.ceil(Math.log(Math.max(Number.EPSILON, Math.random())) / Math.log(1 - p));
         stat = targetStat.value!;
-        value = rollValue(stat, isFixed(stat) ? 1 : targetMinValue.value);
+        // Pick a tier that can satisfy the condition, weighted by satisfying fraction
+        const validTiers = stat.tiers.filter(t => t.max >= targetMinValue.value);
+        tier = validTiers[Math.floor(Math.random() * validTiers.length)];
+        value = rollValueInTier(tier, targetMinValue.value);
         isSuccess = true;
         successCount.value++;
     } else {
-        stat = rollStat();
-        value = rollValue(stat);
+        const entry = rollEntry();
+        stat = entry.stat;
+        tier = entry.tier;
+        value = rollValueInTier(tier);
         isSuccess = checkSuccess(stat, value);
         if (isSuccess) successCount.value++;
     }
 
     totalUses.value += count;
 
-    const result: UseResult = { useId: totalUses.value, stat, value, isSuccess, thisRunCount: count };
+    const result: UseResult = { useId: totalUses.value, stat, tier, value, isSuccess, thisRunCount: count };
     lastResult.value = result;
     history.value.unshift(result);
     if (history.value.length > 100) history.value.pop();
@@ -244,7 +253,7 @@ watch(targetStatKey, () => {
                                 v-for="s in group.stats"
                                 :key="s.key"
                                 :value="s.key"
-                                :label="s.label + (s.max === 1 ? '' : `（1～${s.max}${s.unit}）`)"
+                                :label="s.label + (isFixed(s) ? '' : `（最高 ${statAbsMax(s)}${s.unit}）`)"
                             />
                         </el-option-group>
                     </el-select>
@@ -256,7 +265,7 @@ watch(targetStatKey, () => {
                     <el-input-number
                         v-model="targetMinValue"
                         :min="1"
-                        :max="targetStat.max"
+                        :max="targetStatMax"
                         :step="1"
                         :precision="0"
                         size="small"
@@ -265,7 +274,7 @@ watch(targetStatKey, () => {
                     />
                     <span class="text-sm text-gray-500">{{ targetStat.unit }}</span>
                     <span class="text-xs text-gray-500 ml-1">
-                        （範圍 1 ～ {{ targetStat.max }}{{ targetStat.unit }}）
+                        （範圍 1 ～ {{ targetStatMax }}{{ targetStat!.unit }}）
                     </span>
                 </div>
 
@@ -274,10 +283,7 @@ watch(targetStatKey, () => {
                     <span class="text-gray-400">每次成功率：</span>
                     <span class="text-yellow-400 font-bold text-base">{{ fmtPct(successProb) }}</span>
                     <span class="text-gray-500 ml-auto">
-                        = {{ parseFloat((targetStat!.prob * 100).toFixed(1)) }}%
-                        <template v-if="targetStat && !isFixed(targetStat)">
-                            × {{ targetStat.max - targetMinValue + 1 }}/{{ targetStat.max }}
-                        </template>
+                        {{ targetStat!.tiers.length }} 段 / {{ POOL_SIZE }} 條目
                     </span>
                 </div>
             </el-card>
@@ -402,7 +408,7 @@ watch(targetStatKey, () => {
                                 +{{ fmtVal(lastResult.stat, lastResult.value) }}
                             </div>
                             <div v-if="!isFixed(lastResult.stat)" class="text-xs text-gray-600 mt-1">
-                                範圍 1 ～ {{ lastResult.stat.max }}{{ lastResult.stat.unit }}
+                                此段範圍 {{ lastResult.tier.min }} ～ {{ lastResult.tier.max }}{{ lastResult.stat.unit }}
                             </div>
                         </div>
                     </div>

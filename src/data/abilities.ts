@@ -45,6 +45,7 @@ export const abilitiesMap: Record<string, string> = {
     INT: "智力",
     Int: "智力",
     int: "智力",
+    healing: "治癒效果",
     healing_skill: "治癒效果",
     HealingUp: "治癒效果",
     party_healing_skill: "隊伍治癒效果",
