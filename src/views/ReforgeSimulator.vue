@@ -187,7 +187,17 @@ const REROLL_TOOLS: RerollTool[] = [
             15: { normal: 6, activity: 7 },
             20: { normal: 8, activity: 9 },
         },
-        excludeKeywords: ["神聖之心", "渾沌之心", "闇影操控", "克諾斯", "菲西斯"],
+        excludeKeywords: [
+            "神聖之心",
+            "渾沌之心",
+            "闇影操控",
+            "克諾斯",
+            "菲西斯",
+            "光之覺醒",
+            "光之矛",
+            "光之狂怒",
+            "翼之蝕",
+        ],
     },
     {
         id: 5050020,
@@ -206,7 +216,18 @@ const REROLL_TOOLS: RerollTool[] = [
             15: { normal: 7, activity: 8 },
             20: { normal: 9, activity: 10 },
         },
-        excludeKeywords: ["神聖之心", "渾沌之心", "闇影操控", "克諾斯", "菲西斯", "修練"],
+        excludeKeywords: [
+            "神聖之心",
+            "渾沌之心",
+            "闇影操控",
+            "克諾斯",
+            "菲西斯",
+            "光之覺醒",
+            "光之矛",
+            "光之狂怒",
+            "翼之蝕",
+            "修練",
+        ],
     },
 ];
 
