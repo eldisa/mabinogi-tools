@@ -170,6 +170,23 @@ onMounted(() => {
         ctx.lineWidth = 2;
         ctx.stroke();
 
+        // 八等分分割線（起始 22.5°，每隔 45°）
+        ctx.save();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+        ctx.lineWidth = 1;
+        const SECTOR_START = 22.5 * Math.PI / 180;
+        for (let i = 0; i < 8; i++) {
+            const angle = SECTOR_START + i * (Math.PI / 4);
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + fieldRadius * Math.cos(angle),
+                centerY + fieldRadius * Math.sin(angle)
+            );
+            ctx.stroke();
+        }
+        ctx.restore();
+
         ctx.beginPath();
         ctx.arc(centerX, centerY, bossRadius, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(180, 70, 70, 0.7)";
