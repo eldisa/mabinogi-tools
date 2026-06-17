@@ -10,6 +10,7 @@ import {
     InfoFilled,
     Medal,
     Present,
+    DataAnalysis,
     Handbag,
     TrendCharts,
     Coin,
@@ -45,6 +46,7 @@ const menuItems = ref([
     { name: "2關機制練習", path: "/raid-stage2", icon: markRaw(Trophy) },
     { name: "4王安全屋計時", path: "/boss-timer", icon: markRaw(Trophy) },
     { name: "4王65%躲彈幕", path: "/raid-boss4-dodge", icon: markRaw(Trophy) },
+    { name: "傷害計算分析", path: "/dmg-analyzer", icon: markRaw(DataAnalysis) },
     { name: "About", path: "/about", icon: markRaw(InfoFilled) },
 ]);
 </script>
