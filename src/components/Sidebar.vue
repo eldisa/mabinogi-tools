@@ -117,22 +117,24 @@ const menuGroups = ref([
                     </el-icon>
                 </button>
                 <div class="items-wrapper" :class="{ collapsed: group.collapsed }">
-                    <div
-                        v-for="item in group.items"
-                        :key="item.name"
-                        class="px-3 py-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors"
-                        @click="
-                            router.push(item.path);
-                            emit('close');
-                        "
-                    >
-                        <div class="flex items-center gap-3">
-                            <el-icon :size="18" class="text-accent flex-shrink-0">
-                                <component :is="item.icon" />
-                            </el-icon>
-                            <p class="text-sm font-medium text-gray-200 truncate">
-                                {{ item.name }}
-                            </p>
+                    <div class="items-inner">
+                        <div
+                            v-for="item in group.items"
+                            :key="item.name"
+                            class="px-3 py-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors"
+                            @click="
+                                router.push(item.path);
+                                emit('close');
+                            "
+                        >
+                            <div class="flex items-center gap-3">
+                                <el-icon :size="18" class="text-accent flex-shrink-0">
+                                    <component :is="item.icon" />
+                                </el-icon>
+                                <p class="text-sm font-medium text-gray-200 truncate">
+                                    {{ item.name }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -186,8 +188,9 @@ const menuGroups = ref([
     grid-template-rows: 0fr;
 }
 
-.items-wrapper > * {
+.items-inner {
     min-height: 0;
+    overflow: hidden;
 }
 
 @media (min-width: 1024px) {
