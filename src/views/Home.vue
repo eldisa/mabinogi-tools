@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { announcements } from "../data/changelog";
 
 const router = useRouter();
+
+const latestAnnouncements = announcements.slice(0, 3);
+
+const typeLabel: Record<string, string> = { new: "新功能", fix: "修正", update: "更新" };
+const typeClass: Record<string, string> = { new: "badge-new", fix: "badge-fix", update: "badge-update" };
 
 const groups = [
     {
@@ -70,6 +76,20 @@ const navigateTo = (path: string) => {
             <p class="description">為瑪奇玩家打造的實用工具集合，幫助你更好地規劃裝備與資源</p>
         </section>
 
+        <section class="announcements">
+            <div class="announcements-header">
+                <h2 class="section-title">最新公告</h2>
+                <button class="view-all" @click="router.push('/changelog')">查看全部 →</button>
+            </div>
+            <ul class="announcement-list">
+                <li v-for="(item, i) in latestAnnouncements" :key="i" class="announcement-item">
+                    <span class="ann-date">{{ item.date }}</span>
+                    <span :class="['badge', typeClass[item.type]]">{{ typeLabel[item.type] }}</span>
+                    <span class="ann-text">{{ item.text }}</span>
+                </li>
+            </ul>
+        </section>
+
         <section v-for="group in groups" :key="group.label" class="features">
             <h2 class="section-title">{{ group.label }}</h2>
             <div class="feature-grid">
@@ -116,7 +136,10 @@ const navigateTo = (path: string) => {
                     本工具所使用的資料皆來自玩家社群的觀察與實測，力求接近實際數值，但仍可能有誤差。
                     如有發現錯誤或建議，歡迎回報。
                 </p>
-                <el-button type="primary" plain @click="navigateTo('/about')">了解更多</el-button>
+                <div class="info-actions">
+                    <el-button type="primary" plain @click="navigateTo('/about')">了解更多</el-button>
+                    <el-button plain @click="navigateTo('/changelog')">更新紀錄</el-button>
+                </div>
             </div>
         </section>
     </div>
@@ -158,6 +181,72 @@ const navigateTo = (path: string) => {
     color: var(--color-text-secondary, #9ca3af);
     max-width: 600px;
     margin: 0 auto;
+}
+
+/* 公告區 */
+.announcements {
+    margin-top: 2rem;
+}
+
+.announcements-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.view-all {
+    background: none;
+    border: none;
+    color: #fbbf24;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+
+.announcement-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.announcement-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    background: var(--color-surface, #1f2937);
+    border: 1px solid var(--color-border, #374151);
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.ann-date {
+    color: #6b7280;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.badge {
+    flex-shrink: 0;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-new    { background: #14532d; color: #4ade80; }
+.badge-fix    { background: #450a0a; color: #f87171; }
+.badge-update { background: #422006; color: #fbbf24; }
+
+.ann-text {
+    color: #e5e7eb;
 }
 
 .features {
@@ -265,6 +354,12 @@ const navigateTo = (path: string) => {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.info-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
 }
 
 @media (max-width: 768px) {
