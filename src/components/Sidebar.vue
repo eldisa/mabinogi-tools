@@ -16,6 +16,7 @@ import {
     Coin,
     Trophy,
     Headset,
+    ArrowDown,
 } from "@element-plus/icons-vue";
 
 defineProps<{
@@ -31,6 +32,7 @@ const router = useRouter();
 const menuGroups = ref([
     {
         label: "裝備",
+        collapsed: false,
         items: [
             { name: "裝備改造模擬器", path: "/weapon-upgrade-simulator", icon: markRaw(Setting) },
             { name: "材料計算機", path: "/material-simulator", icon: markRaw(Box) },
@@ -39,6 +41,7 @@ const menuGroups = ref([
     },
     {
         label: "資料查詢",
+        collapsed: false,
         items: [
             { name: "賦予查詢", path: "enchant", icon: markRaw(MagicStick) },
             { name: "稱號查詢", path: "/title", icon: markRaw(Medal) },
@@ -48,6 +51,7 @@ const menuGroups = ref([
     },
     {
         label: "機率模擬(要拚)",
+        collapsed: false,
         items: [
             { name: "布里萊赫硬幣模擬器", path: "/brilaherec", icon: markRaw(Coin) },
             { name: "賭石小遊戲", path: "/stone-gambling", icon: markRaw(Present) },
@@ -58,6 +62,7 @@ const menuGroups = ref([
     },
     {
         label: "戰鬥 / 分析",
+        collapsed: false,
         items: [
             { name: "頂裝差距", path: "/gear-gap", icon: markRaw(TrendCharts) },
             { name: "音樂計算機", path: "/music-calculator", icon: markRaw(Headset) },
@@ -66,6 +71,7 @@ const menuGroups = ref([
     },
     {
         label: "副本練習",
+        collapsed: false,
         items: [
             { name: "1王機制練習", path: "/raid-petrak", icon: markRaw(Trophy) },
             { name: "2關機制練習", path: "/raid-stage2", icon: markRaw(Trophy) },
@@ -75,6 +81,7 @@ const menuGroups = ref([
     },
     {
         label: "其他",
+        collapsed: false,
         items: [
             { name: "About", path: "/about", icon: markRaw(InfoFilled) },
         ],
@@ -94,27 +101,35 @@ const menuGroups = ref([
         style="top: var(--header-height, 57px)"
         @click.stop
     >
-        <div class="flex-1 overflow-y-auto p-3 space-y-4">
+        <div class="flex-1 overflow-y-auto p-3 space-y-1">
             <div v-for="group in menuGroups" :key="group.label">
-                <p class="px-3 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {{ group.label }}
-                </p>
-                <div
-                    v-for="item in group.items"
-                    :key="item.name"
-                    class="px-3 py-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors group"
+                <button
+                    class="group-header"
+                    @click="group.collapsed = !group.collapsed"
                 >
+                    <span>{{ group.label }}</span>
+                    <el-icon
+                        :size="12"
+                        class="arrow-icon"
+                        :class="{ collapsed: group.collapsed }"
+                    >
+                        <ArrowDown />
+                    </el-icon>
+                </button>
+                <div class="items-wrapper" :class="{ collapsed: group.collapsed }">
                     <div
-                        class="flex items-center gap-3"
+                        v-for="item in group.items"
+                        :key="item.name"
+                        class="px-3 py-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors"
                         @click="
                             router.push(item.path);
                             emit('close');
                         "
                     >
-                        <el-icon :size="18" class="text-accent flex-shrink-0">
-                            <component :is="item.icon" />
-                        </el-icon>
-                        <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3">
+                            <el-icon :size="18" class="text-accent flex-shrink-0">
+                                <component :is="item.icon" />
+                            </el-icon>
                             <p class="text-sm font-medium text-gray-200 truncate">
                                 {{ item.name }}
                             </p>
@@ -127,6 +142,54 @@ const menuGroups = ref([
 </template>
 
 <style scoped>
+.group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: 0.125rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.075em;
+    border-radius: 0.375rem;
+    transition: background-color 0.15s;
+}
+
+.group-header:hover {
+    background-color: rgb(55 65 81 / 0.5);
+    color: #d1d5db;
+}
+
+.arrow-icon {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.arrow-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+.items-wrapper {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.2s ease;
+}
+
+.items-wrapper.collapsed {
+    grid-template-rows: 0fr;
+}
+
+.items-wrapper > * {
+    min-height: 0;
+}
+
 @media (min-width: 1024px) {
     .sidebar-container {
         position: fixed;
