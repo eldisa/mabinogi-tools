@@ -229,7 +229,7 @@ function computeScores(s: CalcState): PerformanceScores {
         if (key.startsWith("relicSuffix")) return;
         data[key] = valOf(key);
     });
-    data.totem = s.noCoin ? 0 : Number(s.totem) || 0;
+    // 布里萊赫硬幣是「戰場攻擊力 %」最終加成，只進最終倍率，不計入一般音樂加成總和（與遺物接尾「禮物」一致）
     data.otherBonus = Number(s.otherBonus) || 0;
     for (const key of Object.keys(switchConst)) {
         data[key] = s.switches[key as keyof Switches] ? "on" : "off";
@@ -266,7 +266,7 @@ function computeScores(s: CalcState): PerformanceScores {
     const excellentPlay = excellentBase + (data.reforgingExcellent as number);
     const inspiringPlay = inspiringBase + (data.reforgingInspiring as number);
 
-    const totemValue = Number(data.totem) / 100;
+    const totemValue = (s.noCoin ? 0 : Number(s.totem) || 0) / 100;
     const relicRate = (numOf("relicSuffix1") + numOf("relicSuffix2") + numOf("relicSuffix3")) / 1000;
     const finalRate = totemValue + relicRate;
 
@@ -340,6 +340,8 @@ const DEBUG_GROUPS: { name: string; keys: SelectKey[] }[] = [
     },
     // 宗師/稱號 與 農場合併為同一分類。
     { name: "才能/稱號/農場", keys: ["title", "secondTitle", "farmModel", "extraFarmModel"] },
+    // 穆里亞斯聖水：音樂增益效果，計入加成總和（先前漏列，導致 debug playBuff 少算）。
+    { name: "聖水", keys: ["muliasHolyWater"] },
     // 「套裝/寵物」改為很貴的項目；遺物接尾仍由最終倍率公式處理，不放入一般加成總和。
     { name: "很貴的項目", keys: ["setEffect", "fluaCrown", "relicPrefix1", "relicPrefix2", "relicPrefix3"] },
     { name: "娃娃背包 / 喇叭 / 寵物", keys: ["doll", "bugle", "fairyDragon"] },
@@ -356,11 +358,8 @@ const debug = computed(() => {
         return { name: g.name, total: items.reduce((s, i) => s + i.value, 0), items };
     });
 
-    // 布里萊赫硬幣移至「很貴的項目」分類。
+    // 布里萊赫硬幣為「戰場攻擊力 %」最終加成，只計入最終倍率（不放入一般加成總和），與遺物接尾「禮物」一致。
     const coin = noCoin.value ? 0 : Number(totem.value) || 0;
-    if (coin >= 1) {
-        groups.push({ name: "布里萊赫硬幣（整數部分）", total: coin, items: [{ label: `硬幣 ${coin}`, value: coin }] });
-    }
     // 其他項目維持在分類明細最下方。
     const ob = Number(otherBonus.value) || 0;
     if (ob >= 1) {
@@ -1380,6 +1379,43 @@ function fmtDate(ts: number): string {
                             %
                         </div>
                         <div class="debug-line">basePlay = {{ debug.basePlay.toFixed(3) }}</div>
+
+                        <!-- 戰場攻擊力倍率（20% + 樂器評級效果）= battle × extra -->
+                        <div class="debug-section">戰場攻擊力倍率（20% + 樂器評級效果）</div>
+                        <table class="debug-table">
+                            <tbody>
+                                <tr>
+                                    <td class="dbg-cat">戰場序曲 (base)</td>
+                                    <td class="dbg-total">{{ debug.battle.toFixed(2) }}</td>
+                                    <td class="dbg-items">20%</td>
+                                </tr>
+                                <tr>
+                                    <td class="dbg-cat">里拉</td>
+                                    <td class="dbg-total">+{{ (debug.battle * debug.rating).toFixed(2) }}</td>
+                                    <td class="dbg-items">battle × {{ (debug.rating * 100).toFixed(1) }}%</td>
+                                </tr>
+                                <tr>
+                                    <td class="dbg-cat">SR 特改</td>
+                                    <td class="dbg-total">+{{ (debug.battle * debug.su).toFixed(2) }}</td>
+                                    <td class="dbg-items">battle × {{ (debug.su * 100).toFixed(1) }}%</td>
+                                </tr>
+                                <tr>
+                                    <td class="dbg-cat">硬幣</td>
+                                    <td class="dbg-total">+{{ (debug.battle * debug.totemValue).toFixed(2) }}</td>
+                                    <td class="dbg-items">battle × {{ (debug.totemValue * 100).toFixed(2) }}%</td>
+                                </tr>
+                                <tr>
+                                    <td class="dbg-cat">禮物</td>
+                                    <td class="dbg-total">+{{ (debug.battle * debug.relicRate).toFixed(2) }}</td>
+                                    <td class="dbg-items">battle × {{ (debug.relicRate * 100).toFixed(2) }}%</td>
+                                </tr>
+                                <tr>
+                                    <td class="dbg-cat"><b>合計 (20%+評級)</b></td>
+                                    <td class="dbg-total"><b>{{ (debug.battle * debug.extra).toFixed(2) }}</b></td>
+                                    <td class="dbg-items">= battle × extra ({{ debug.extra }})</td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <!-- 細工倍率 -->
                         <div class="debug-section">細工倍率（演奏）</div>
