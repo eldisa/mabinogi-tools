@@ -53,6 +53,7 @@ const menuGroups = ref([
             { name: "賭石小遊戲", path: "/stone-gambling", icon: markRaw(Present) },
             { name: "細工模擬器", path: "/reforge", icon: markRaw(MagicStick) },
             { name: "聖水模擬器", path: "/holy-water", icon: markRaw(MagicStick) },
+            { name: "回音石模擬器", path: "/echostone-simulator", icon: markRaw(MagicStick) },
         ],
     },
     {
