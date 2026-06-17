@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, reactive, watch } from "vue";
+import { ref, computed, reactive, watch, onMounted } from "vue";
 import { enchants } from "../data/enchants";
 import { abilitiesMap } from "../data/abilities";
 import { stoneAbilities } from "../data/stoneData";
+import type { AbilityOption } from "../data/stoneData";
 import titleJsonData from "../data/title.json";
 import { obsoleteTitleIds, isTimedTitle, isRankingTitle } from "../utils/titleFilters";
 import dollBagsData from "../data/doll_bags.json";
+import { farmModel as farmModelData } from "../data/farmModel";
 
 // ── Basic Settings ─────────────────────────────────────────
 const arcana = ref("");
@@ -296,7 +298,7 @@ const arcanaSkillOptions = computed(() => {
 });
 
 // Auto-assign one skill per mooncake slot (read-only)
-const mooncakeSlotSkill = computed(() => ({
+const mooncakeSlotSkill = computed<Record<string, AbilityOption | undefined>>(() => ({
     mooncake1: arcanaSkillOptions.value[0],
     mooncake2: arcanaSkillOptions.value[1],
     mooncake3: arcanaSkillOptions.value[2],
@@ -497,8 +499,6 @@ function buildTitleOptions(list: TitleData[]): { value: string; label: string }[
 const title1Options = computed(() => buildTitleOptions(TITLE_LIST_TYPE1));
 const title2Options = computed(() => buildTitleOptions(TITLE_LIST_TYPE7));
 
-// Keep titleOptions for backward compat (unused after template update)
-const titleOptions = title1Options;
 
 // ── Doll Bags ──────────────────────────────────────────────
 const dollBag1 = ref("");
@@ -706,34 +706,72 @@ const equipmentSlots = computed(() => {
 // ── Farm Model ─────────────────────────────────────────────
 const farmNormal  = reactive({ dmg: "", magicAtk: "", critDmg: "", extra: "", music: "" });
 const farmSpecial = reactive({ dmg: "", magicAtk: "", critDmg: "", extra: "", music: "" });
+// MAX 模型（額外欄位）的 input 值，當選了 "MAX:n" 時生效
+const farmSpecialMaxInputs = reactive({ dmg: 0, magicAtk: 0, critDmg: 0, extra: 0, music: 0 });
 const farmModelBarrier = ref(false);
 
-const farmDmgLabel = "傷害";
+function isMaxOpt(v: string) { return v.startsWith("MAX:"); }
+function maxValOf(v: string) { return Number(v.slice(4)); }
+function parseFarmVal(v: string, maxInput: number): number {
+    if (!v) return 0;
+    if (isMaxOpt(v)) return maxInput;
+    return Number(v) || 0;
+}
 
-const FARM_DMG_OPTIONS = [
-    { value: "", label: "無" },
-    ...Array.from({ length: 12 }, (_, i) => ({ value: String((i + 1) * 5), label: `+${(i + 1) * 5}` })),
+function buildFarmOpts(abilityId: string, isExtra: boolean) {
+    const models = farmModelData
+        .filter(m =>
+            (isExtra ? m.category === "extra" : m.category !== "extra") &&
+            m.abilities.some(a => a.id === abilityId)
+        )
+        .sort((a, b) => {
+            const av = a.abilities.find(x => x.id === abilityId)?.value ?? 0;
+            const bv = b.abilities.find(x => x.id === abilityId)?.value ?? 0;
+            return bv - av;
+        });
+    return [
+        { value: "", label: "無" },
+        ...models.map(m => {
+            const val = m.abilities.find(x => x.id === abilityId)!.value;
+            const isMax = m.id.endsWith("-MAX");
+            return {
+                value: isMax ? `MAX:${val}` : String(val),
+                label: isMax ? `${m.name.tw} (+0~${val})` : `${m.name.tw} (+${val})`,
+            };
+        }),
+    ];
+}
+
+const FARM_ABILITIES = ["attack_max", "magic_attack", "critical_damage", "bonus_damage", "music_buff_bonus"] as const;
+type FarmAbilityKey = typeof FARM_ABILITIES[number];
+
+const FARM_NORMAL_OPTS = Object.fromEntries(
+    FARM_ABILITIES.map(id => [id, buildFarmOpts(id, false)])
+) as Record<FarmAbilityKey, { value: string; label: string }[]>;
+
+const FARM_EXTRA_OPTS = Object.fromEntries(
+    FARM_ABILITIES.map(id => [id, buildFarmOpts(id, true)])
+) as Record<FarmAbilityKey, { value: string; label: string }[]>;
+
+// 全部最頂：一般 + 額外各取最高選項，MAX 模型填最大值
+const FARM_FIELD_ABILITY: Array<{ f: keyof typeof farmNormal; key: FarmAbilityKey }> = [
+    { f: "dmg",      key: "attack_max" },
+    { f: "magicAtk", key: "magic_attack" },
+    { f: "critDmg",  key: "critical_damage" },
+    { f: "extra",    key: "bonus_damage" },
+    { f: "music",    key: "music_buff_bonus" },
 ];
-const FARM_MAGIC_ATK_OPTIONS = [
-    { value: "", label: "無" },
-    ...Array.from({ length: 12 }, (_, i) => ({ value: String((i + 1) * 5), label: `+${(i + 1) * 5}` })),
-];
-const FARM_CRIT_OPTIONS = [
-    { value: "", label: "無" },
-    { value: "5", label: "+5%" },
-    { value: "7", label: "+7%" },
-    { value: "10", label: "+10%" },
-];
-const FARM_EXTRA_OPTIONS = [
-    { value: "", label: "無" },
-    { value: "3", label: "+3%" },
-    { value: "5", label: "+5%" },
-    { value: "7", label: "+7%" },
-];
-const FARM_MUSIC_OPTIONS = [
-    { value: "", label: "無" },
-    ...Array.from({ length: 12 }, (_, i) => ({ value: String((i + 1) * 5), label: `+${(i + 1) * 5}` })),
-];
+function setAllFarmTop() {
+    for (const { f, key } of FARM_FIELD_ABILITY) {
+        const nTop = FARM_NORMAL_OPTS[key]?.[1];
+        if (nTop) farmNormal[f] = nTop.value;
+        const eTop = FARM_EXTRA_OPTS[key]?.[1];
+        if (eTop) {
+            farmSpecial[f] = eTop.value;
+            if (isMaxOpt(eTop.value)) farmSpecialMaxInputs[f] = maxValOf(eTop.value);
+        }
+    }
+}
 
 // ── Coin Totem ─────────────────────────────────────────────
 const normalTotem = ref(35);
@@ -1056,7 +1094,6 @@ const STAT_ROWS: StatRow[] = [
     { key: "music_buff_bonus",    label: "音樂效果",          unit: "",  category: "特殊" },
     { key: "healing_skill",       label: "治癒效果",          unit: "%", category: "特殊" },
 ];
-const STAT_ROW_MAP = new Map(STAT_ROWS.map(r => [r.key, r]));
 
 const ARCANA_BONUSES_MAP: Record<string, [string, number][]> = {
     elemental_knight:    [["attack_max", 200]],
@@ -1117,13 +1154,23 @@ const totalStats = computed(() => {
     // 農場模型
     const farmDmgKey = arcanaIsAlchemy.value ? "all_alchemy_damage" :
         (arcanaIsMagic.value || arcana.value === "bard_sacred") ? "magic_attack" : "attack_max";
-    for (const farm of [farmNormal, farmSpecial]) {
-        if (farm.dmg)      add(farmDmgKey,     Number(farm.dmg));
-        if (farm.magicAtk) add("magic_attack", Number(farm.magicAtk));
-        if (farm.critDmg)  add("critical_damage", Number(farm.critDmg));
-        if (farm.extra)    add("bonus_damage",  Number(farm.extra));
-        if (farm.music)    add("music_buff_bonus", Number(farm.music));
-    }
+    // 一般（無 MAX 模型，直接取數值）
+    if (farmNormal.dmg)      add(farmDmgKey,          Number(farmNormal.dmg));
+    if (farmNormal.magicAtk) add("magic_attack",      Number(farmNormal.magicAtk));
+    if (farmNormal.critDmg)  add("critical_damage",   Number(farmNormal.critDmg));
+    if (farmNormal.extra)    add("bonus_damage",       Number(farmNormal.extra));
+    if (farmNormal.music)    add("music_buff_bonus",   Number(farmNormal.music));
+    // 額外（可能是 MAX 模型，需解析）
+    const spDmg = parseFarmVal(farmSpecial.dmg,      farmSpecialMaxInputs.dmg);
+    const spMag = parseFarmVal(farmSpecial.magicAtk,  farmSpecialMaxInputs.magicAtk);
+    const spCrt = parseFarmVal(farmSpecial.critDmg,   farmSpecialMaxInputs.critDmg);
+    const spExt = parseFarmVal(farmSpecial.extra,     farmSpecialMaxInputs.extra);
+    const spMus = parseFarmVal(farmSpecial.music,     farmSpecialMaxInputs.music);
+    if (spDmg) add(farmDmgKey,        spDmg);
+    if (spMag) add("magic_attack",    spMag);
+    if (spCrt) add("critical_damage", spCrt);
+    if (spExt) add("bonus_damage",    spExt);
+    if (spMus) add("music_buff_bonus", spMus);
 
     // 訓練所徽章
     for (const [k, v] of BADGE_EFF[badgeType.value] ?? []) add(k, v);
@@ -1199,6 +1246,11 @@ function persistPresets() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(presets.value));
 }
 
+// 若有存檔，頁面載入時自動讀取第一筆
+onMounted(() => {
+    if (presets.value.length > 0) loadPreset(0);
+});
+
 function snapshot(): Record<string, unknown> {
     return {
         arcana: arcana.value, weaponType: weaponType.value, armorType: armorType.value,
@@ -1213,6 +1265,7 @@ function snapshot(): Record<string, unknown> {
         dollBag1: dollBag1.value, dollBag2: dollBag2.value, dollBag3: dollBag3.value,
         farmNormal:  JSON.parse(JSON.stringify(farmNormal)),
         farmSpecial: JSON.parse(JSON.stringify(farmSpecial)),
+        farmSpecialMaxInputs: JSON.parse(JSON.stringify(farmSpecialMaxInputs)),
         farmModelBarrier: farmModelBarrier.value,
         normalTotem: normalTotem.value, badgeType: badgeType.value,
         talisman: talisman.value, learnCoin: learnCoin.value,
@@ -1269,6 +1322,7 @@ function loadPreset(idx: number) {
 
     Object.assign(farmNormal,  d.farmNormal  ?? {});
     Object.assign(farmSpecial, d.farmSpecial ?? {});
+    Object.assign(farmSpecialMaxInputs, d.farmSpecialMaxInputs ?? {});
     farmModelBarrier.value = s("farmModelBarrier", false) as boolean;
     normalTotem.value = s("normalTotem", 35)  as number;
     badgeType.value   = s("badgeType", "")    as string;
@@ -1584,7 +1638,7 @@ function fmtDate(ts: number): string {
                                         <!-- 技能名稱（固定，不可更動）+ 等級 同一 row -->
                                         <div class="flex items-center gap-1 min-w-0">
                                             <span class="text-xs text-gray-300 truncate flex-1">
-                                                {{ mooncakeSlotSkill[slot.key].skillLocalName }}
+                                                {{ mooncakeSlotSkill[slot.key]?.skillLocalName }}
                                             </span>
                                             <span class="text-xs text-gray-500 flex-shrink-0">Lv.</span>
                                             <el-select
@@ -1877,33 +1931,33 @@ function fmtDate(ts: number): string {
                             <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-2">一般</p>
                             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                                 <div>
-                                    <p class="text-xs text-gray-400 mb-1">傷害</p>
+                                    <p class="text-xs text-gray-400 mb-1">最大傷害</p>
                                     <el-select v-model="farmNormal.dmg" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_DMG_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_NORMAL_OPTS.attack_max" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-400 mb-1">魔法攻擊力</p>
                                     <el-select v-model="farmNormal.magicAtk" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_MAGIC_ATK_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_NORMAL_OPTS.magic_attack" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-400 mb-1">暴擊傷害</p>
                                     <el-select v-model="farmNormal.critDmg" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_CRIT_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_NORMAL_OPTS.critical_damage" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-400 mb-1">額外傷害</p>
                                     <el-select v-model="farmNormal.extra" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_EXTRA_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_NORMAL_OPTS.bonus_damage" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-400 mb-1">音樂</p>
+                                    <p class="text-xs text-gray-400 mb-1">音樂效果</p>
                                     <el-select v-model="farmNormal.music" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_MUSIC_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_NORMAL_OPTS.music_buff_bonus" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
                                 </div>
                             </div>
@@ -1911,45 +1965,56 @@ function fmtDate(ts: number): string {
 
                         <div class="border-t border-gray-700" />
 
-                        <!-- 特殊 -->
+                        <!-- 額外 -->
                         <div>
-                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-2">特殊</p>
+                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-2">額外</p>
                             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                                 <div>
-                                    <p class="text-xs text-gray-400 mb-1">傷害</p>
+                                    <p class="text-xs text-gray-400 mb-1">最大傷害</p>
                                     <el-select v-model="farmSpecial.dmg" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_DMG_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_EXTRA_OPTS.attack_max" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
+                                    <el-input-number v-if="isMaxOpt(farmSpecial.dmg)" v-model="farmSpecialMaxInputs.dmg"
+                                        :min="0" :max="maxValOf(farmSpecial.dmg)" class="w-full mt-1" size="small" />
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-400 mb-1">魔法攻擊力</p>
                                     <el-select v-model="farmSpecial.magicAtk" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_MAGIC_ATK_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_EXTRA_OPTS.magic_attack" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
+                                    <el-input-number v-if="isMaxOpt(farmSpecial.magicAtk)" v-model="farmSpecialMaxInputs.magicAtk"
+                                        :min="0" :max="maxValOf(farmSpecial.magicAtk)" class="w-full mt-1" size="small" />
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-400 mb-1">暴擊傷害</p>
                                     <el-select v-model="farmSpecial.critDmg" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_CRIT_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_EXTRA_OPTS.critical_damage" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
+                                    <el-input-number v-if="isMaxOpt(farmSpecial.critDmg)" v-model="farmSpecialMaxInputs.critDmg"
+                                        :min="0" :max="maxValOf(farmSpecial.critDmg)" class="w-full mt-1" size="small" />
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-400 mb-1">額外傷害</p>
                                     <el-select v-model="farmSpecial.extra" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_EXTRA_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_EXTRA_OPTS.bonus_damage" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
+                                    <el-input-number v-if="isMaxOpt(farmSpecial.extra)" v-model="farmSpecialMaxInputs.extra"
+                                        :min="0" :max="maxValOf(farmSpecial.extra)" class="w-full mt-1" size="small" />
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-400 mb-1">音樂</p>
+                                    <p class="text-xs text-gray-400 mb-1">音樂效果</p>
                                     <el-select v-model="farmSpecial.music" placeholder="請選擇" clearable class="w-full">
-                                        <el-option v-for="opt in FARM_MUSIC_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
+                                        <el-option v-for="opt in FARM_EXTRA_OPTS.music_buff_bonus" :key="opt.label" :label="opt.label" :value="opt.value" />
                                     </el-select>
+                                    <el-input-number v-if="isMaxOpt(farmSpecial.music)" v-model="farmSpecialMaxInputs.music"
+                                        :min="0" :max="maxValOf(farmSpecial.music)" class="w-full mt-1" size="small" />
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-3 pt-1 border-t border-gray-700">
                             <el-checkbox v-model="farmModelBarrier" label="結界" />
+                            <el-button size="small" @click="setAllFarmTop">全部最頂</el-button>
                         </div>
                     </div>
                 </el-tab-pane>

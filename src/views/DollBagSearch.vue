@@ -263,6 +263,17 @@ const formatEffectShort = (effect: Effect) => {
     return `${sign}${effect.value}${suffix}`;
 };
 
+// 是否顯示效果/重量標示
+const showEffectPerWeightBadge = computed(() =>
+    sortField.value === "effect_per_weight" && selectedEffects.value.length > 0
+);
+
+const getEffectPerWeight = (bag: DollBag): string => {
+    const sum = getEffectSum(bag, selectedEffects.value);
+    if (!bag.summon_cost) return "-";
+    return (sum / bag.summon_cost).toFixed(2);
+};
+
 // 清空效果篩選時，重置依賴篩選的排序選項
 watch(selectedEffects, (effects) => {
     if (effects.length === 0 && ["selected_effects", "effect_per_weight"].includes(sortField.value)) {
@@ -331,6 +342,8 @@ const getEffectClass = (effectKey: string) => {
                 </div>
 
                 <!-- 排序 -->
+                <div class="sort-controls-wrapper">
+                <label class="sort-label">排序</label>
                 <div class="sort-controls">
                     <el-select v-model="sortField" placeholder="排序方式" size="large" @change="initCustomWeights">
                         <el-option label="最近實裝" value="id" />
@@ -374,6 +387,7 @@ const getEffectClass = (effectKey: string) => {
                             <component :is="sortOrder === 'asc' ? 'SortUp' : 'SortDown'" />
                         </el-icon>
                     </el-button>
+                </div>
                 </div>
             </div>
 
@@ -462,6 +476,11 @@ const getEffectClass = (effectKey: string) => {
                 :class="{ expanded: expandedCardId === bag.id }"
                 @click="toggleCard(bag.id)"
             >
+                <!-- 效果/重量 badge -->
+                <div v-if="showEffectPerWeightBadge" class="effect-weight-badge">
+                    效果/重量 {{ getEffectPerWeight(bag) }}
+                </div>
+
                 <!-- 卡片頭部：圖片與名稱 -->
                 <div class="bag-header">
                     <div class="bag-image">
@@ -588,9 +607,32 @@ const getEffectClass = (effectKey: string) => {
     flex: 1;
 }
 
+.sort-controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sort-label {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary, #9ca3af);
+}
+
 .sort-controls {
     display: flex;
     gap: 0.5rem;
+}
+
+.effect-weight-badge {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fbbf24;
 }
 
 .sort-controls .el-select {
