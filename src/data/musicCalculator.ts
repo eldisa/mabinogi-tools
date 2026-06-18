@@ -328,5 +328,5 @@ export const switchConst: Record<string, number> = {
     farmTool: 1, // 寵物小屋雲朵坐墊
     couple: 1, // 玫瑰情侶手鍊 / 水晶婚戒
     silkWing: 1, // 特別的優雅絲緞翅膀
-    potion: 1, // 音樂強化藥水
+    potion: 2, // 音樂強化藥水
 };
