@@ -20,4 +20,10 @@ export const announcements: Announcement[] = [
     { date: "2026-05-23", type: "update", text: "更新4王相關資料" },
 ];
 
-export const todoItems: TodoItem[] = [{ title: "公告與 Todo 頁面", status: "in_progress" }];
+export const todoItems: TodoItem[] = [
+    { title: "頂裝差距", status: "in_progress" },
+    { title: "更新與校正賦予資料", status: "in_progress" },
+    { title: "普洛貓計算機整合", status: "planned" },
+    { title: "跑商計算", status: "planned" },
+    { title: "名片系統", status: "planned" },
+];
