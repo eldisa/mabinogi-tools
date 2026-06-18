@@ -1,105 +1,64 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { announcements } from "../data/changelog";
 
 const router = useRouter();
 
-const features = [
-    {
-        icon: "SetUp",
-        title: "裝備改造模擬器",
-        description: "規劃最佳改造路線，預覽改造後的能力數值",
-        path: "/weapon-upgrade-simulator",
-    },
-    {
-        icon: "Box",
-        title: "材料計算機",
-        description: "精確計算製作所需材料數量與來源",
-        path: "/material-simulator",
-    },
-    {
-        icon: "Money",
-        title: "裝備繼承費用估算",
-        description: "估算能力轉移所需的金幣成本",
-        path: "/transfer-simulator",
-    },
-    {
-        icon: "House",
-        title: "農場模型查詢",
-        description: "查詢農場模型資料與相關資訊",
-        path: "/farmModel",
-    },
-    {
-        icon: "Medal",
-        title: "稱號查詢",
-        description: "查詢稱號能力加成與獲取方式",
-        path: "/title",
-    },
-    {
-        icon: "Coin",
-        title: "賭石小遊戲",
-        description: "模擬賭石體驗，試試你的手氣",
-        path: "/stone-gambling",
-    },
-    {
-        icon: "Handbag",
-        title: "娃娃背包查詢",
-        description: "查詢娃娃背包效果、召喚重量與自動拾取分類",
-        path: "/doll-bag",
-    },
-    {
-        icon: "MagicStick",
-        title: "細工模擬器",
-        description: "模擬細工洗詞條所需次數與費用，支援前綴後綴分別設定目標",
-        path: "/reforge",
-    },
-    {
-        icon: "Coin",
-        title: "布里萊赫硬幣模擬器",
-        description: "模擬製作布里萊赫硬幣的素質分布，支援目標設定與自動製作",
-        path: "/brilaherec",
-    },
-    {
-        icon: "MagicStick",
-        title: "聖水模擬器",
-        description: "模擬聖水洗屬性所需次數，支援目標屬性設定與自動模擬",
-        path: "/holy-water",
-    },
-    {
-        icon: "Star",
-        title: "回音石模擬器",
-        description: "模擬回音石覺醒詞條，支援目標設定與連續覺醒，含打磨石機制",
-        path: "/echostone-simulator",
-    },
-];
+const latestAnnouncements = announcements.slice(0, 3);
 
-const pendingFeatures = [
+const typeLabel: Record<string, string> = { new: "新功能", fix: "修正", update: "更新" };
+const typeClass: Record<string, string> = { new: "badge-new", fix: "badge-fix", update: "badge-update" };
+
+const groups = [
     {
-        icon: "MagicStick",
-        title: "賦予查詢",
-        description: "資料待更新",
-        path: "/enchant",
+        label: "裝備",
+        items: [
+            { icon: "SetUp",    title: "裝備改造模擬器",   description: "規劃最佳改造路線，預覽改造後的能力數值",               path: "/weapon-upgrade-simulator" },
+            { icon: "Box",      title: "材料計算機",       description: "精確計算製作所需材料數量與來源",                       path: "/material-simulator" },
+            { icon: "Money",    title: "裝備繼承費用估算", description: "估算能力轉移所需的金幣成本",                           path: "/transfer-simulator" },
+        ],
     },
     {
-        icon: "Rank",
-        title: "頂裝差距",
-        description: "比較與頂裝之間的差距",
-        path: "/gear-gap",
+        label: "資料查詢",
+        items: [
+            { icon: "MagicStick", title: "賦予查詢",     description: "查詢賦予詞條資料",                                     path: "/enchant" },
+            { icon: "Medal",      title: "稱號查詢",     description: "查詢稱號能力加成與獲取方式",                           path: "/title" },
+            { icon: "Handbag",    title: "娃娃背包查詢", description: "查詢娃娃背包效果、召喚重量與自動拾取分類",             path: "/doll-bag" },
+            { icon: "House",      title: "農場模型查詢", description: "查詢農場模型資料與相關資訊",                           path: "/farmModel" },
+        ],
+    },
+    {
+        label: "機率模擬(要拚)",
+        items: [
+            { icon: "Coin",       title: "布里萊赫硬幣模擬器", description: "模擬製作布里萊赫硬幣的素質分布，支援目標設定與自動製作", path: "/brilaherec" },
+            { icon: "Coin",       title: "賭石小遊戲",         description: "模擬賭石體驗，試試你的手氣",                           path: "/stone-gambling" },
+            { icon: "MagicStick", title: "細工模擬器",         description: "模擬細工洗詞條所需次數與費用，支援前綴後綴分別設定目標", path: "/reforge" },
+            { icon: "MagicStick", title: "聖水模擬器",         description: "模擬聖水洗屬性所需次數，支援目標屬性設定與自動模擬",   path: "/holy-water" },
+            { icon: "Star",       title: "回音石模擬器",       description: "模擬回音石覺醒詞條，支援目標設定與連續覺醒，含打磨石機制", path: "/echostone-simulator" },
+        ],
+    },
+    {
+        label: "戰鬥 / 分析",
+        items: [
+            { icon: "TrendCharts",  title: "頂裝差距",     description: "比較與頂裝之間的差距",                   path: "/gear-gap" },
+            { icon: "Headset",      title: "音樂計算機",   description: "計算音樂技能的傷害加成與樂器配置",       path: "/music-calculator" },
+            { icon: "DataAnalysis", title: "傷害計算分析", description: "解析戰鬥紀錄，分析各技能傷害來源分布",   path: "/dmg-analyzer" },
+        ],
+    },
+    {
+        label: "副本練習",
+        items: [
+            { icon: "Trophy", title: "1王機制練習",   description: "練習 G27 第一王 Petrak 的機制與走位", path: "/raid-petrak" },
+            { icon: "Trophy", title: "2關機制練習",   description: "練習 G27 第二關的機制",               path: "/raid-stage2" },
+            { icon: "Trophy", title: "4王安全屋計時", description: "計時 G27 四王安全屋的輪轉節奏",       path: "/boss-timer" },
+            { icon: "Trophy", title: "4王65%躲彈幕", description: "練習 G27 四王 65% 階段的彈幕走位",    path: "/raid-boss4-dodge" },
+        ],
     },
 ];
 
 const abandonedFeatures = [
-    {
-        icon: "DataAnalysis",
-        title: "煉金術傷害計算器",
-        description: "等待大佬提供公式和資料",
-        path: "/alchemy-calculator",
-    },
-    {
-        icon: "Lightning",
-        title: "魔法傷害計算器",
-        description: "等待大佬提供公式和資料",
-        path: "/magic-calculator",
-    },
+    { icon: "DataAnalysis", title: "煉金術傷害計算器", description: "等待大佬提供公式和資料", path: "/alchemy-calculator" },
+    { icon: "Lightning",    title: "魔法傷害計算器",   description: "等待大佬提供公式和資料", path: "/magic-calculator" },
 ];
 
 const navigateTo = (path: string) => {
@@ -117,11 +76,25 @@ const navigateTo = (path: string) => {
             <p class="description">為瑪奇玩家打造的實用工具集合，幫助你更好地規劃裝備與資源</p>
         </section>
 
-        <section class="features">
-            <h2 class="section-title">功能模組</h2>
+        <section class="announcements">
+            <div class="announcements-header">
+                <h2 class="section-title">最新公告</h2>
+                <button class="view-all" @click="router.push('/changelog')">查看全部 →</button>
+            </div>
+            <ul class="announcement-list">
+                <li v-for="(item, i) in latestAnnouncements" :key="i" class="announcement-item">
+                    <span class="ann-date">{{ item.date }}</span>
+                    <span :class="['badge', typeClass[item.type]]">{{ typeLabel[item.type] }}</span>
+                    <span class="ann-text">{{ item.text }}</span>
+                </li>
+            </ul>
+        </section>
+
+        <section v-for="group in groups" :key="group.label" class="features">
+            <h2 class="section-title">{{ group.label }}</h2>
             <div class="feature-grid">
                 <div
-                    v-for="feature in features"
+                    v-for="feature in group.items"
                     :key="feature.path"
                     class="feature-card"
                     @click="navigateTo(feature.path)"
@@ -137,26 +110,6 @@ const navigateTo = (path: string) => {
             </div>
         </section>
 
-        <section class="features pending-section">
-            <h2 class="section-title pending-title">🚧 施工中</h2>
-            <div class="feature-grid">
-                <div
-                    v-for="feature in pendingFeatures"
-                    :key="feature.path"
-                    class="feature-card pending-card"
-                    @click="navigateTo(feature.path)"
-                >
-                    <div class="feature-icon pending-icon">
-                        <el-icon :size="32">
-                            <component :is="feature.icon" />
-                        </el-icon>
-                    </div>
-                    <h3 class="feature-title">{{ feature.title }}</h3>
-                    <p class="feature-description pending-desc">{{ feature.description }}</p>
-                </div>
-            </div>
-        </section>
-
         <section class="features abandoned-section">
             <h2 class="section-title abandoned-title">棄坑中 💤</h2>
             <div class="feature-grid">
@@ -164,7 +117,6 @@ const navigateTo = (path: string) => {
                     v-for="feature in abandonedFeatures"
                     :key="feature.path"
                     class="feature-card abandoned-card"
-                    @click="navigateTo(feature.path)"
                 >
                     <div class="feature-icon abandoned-icon">
                         <el-icon :size="32">
@@ -184,7 +136,10 @@ const navigateTo = (path: string) => {
                     本工具所使用的資料皆來自玩家社群的觀察與實測，力求接近實際數值，但仍可能有誤差。
                     如有發現錯誤或建議，歡迎回報。
                 </p>
-                <el-button type="primary" plain @click="navigateTo('/about')">了解更多</el-button>
+                <div class="info-actions">
+                    <el-button type="primary" plain @click="navigateTo('/about')">了解更多</el-button>
+                    <el-button plain @click="navigateTo('/changelog')">更新紀錄</el-button>
+                </div>
             </div>
         </section>
     </div>
@@ -226,6 +181,72 @@ const navigateTo = (path: string) => {
     color: var(--color-text-secondary, #9ca3af);
     max-width: 600px;
     margin: 0 auto;
+}
+
+/* 公告區 */
+.announcements {
+    margin-top: 2rem;
+}
+
+.announcements-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.view-all {
+    background: none;
+    border: none;
+    color: #fbbf24;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+
+.announcement-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.announcement-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    background: var(--color-surface, #1f2937);
+    border: 1px solid var(--color-border, #374151);
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.ann-date {
+    color: #6b7280;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.badge {
+    flex-shrink: 0;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-new    { background: #14532d; color: #4ade80; }
+.badge-fix    { background: #450a0a; color: #f87171; }
+.badge-update { background: #422006; color: #fbbf24; }
+
+.ann-text {
+    color: #e5e7eb;
 }
 
 .features {
@@ -279,32 +300,6 @@ const navigateTo = (path: string) => {
     line-height: 1.5;
 }
 
-/* 待更新 */
-.pending-section {
-    margin-top: 2.5rem;
-    opacity: 0.8;
-}
-
-.pending-title {
-    border-bottom-color: #78716c;
-    color: #a8a29e;
-}
-
-.pending-card {
-    border-style: dashed;
-    border-color: #78716c;
-}
-
-.pending-icon {
-    color: #a8a29e;
-}
-
-.pending-desc {
-    color: #a8a29e;
-    font-style: italic;
-}
-
-/* 棄坑中 */
 .abandoned-section {
     margin-top: 2.5rem;
     opacity: 0.65;
@@ -317,6 +312,13 @@ const navigateTo = (path: string) => {
 
 .abandoned-card {
     border-style: dashed;
+    cursor: default;
+}
+
+.abandoned-card:hover {
+    border-color: #4b5563;
+    transform: none;
+    box-shadow: none;
 }
 
 .abandoned-icon {
@@ -352,6 +354,12 @@ const navigateTo = (path: string) => {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.info-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
 }
 
 @media (max-width: 768px) {

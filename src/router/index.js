@@ -23,6 +23,7 @@ import BossTimer from '../views/BossTimer.vue';
 import RaidBoss4DodgeTraining from '../views/RaidBoss4DodgeTraining.vue';
 import EchostoneSimulator from '../views/EchostoneSimulator.vue';
 import MusicCalculator from '../views/MusicCalculator.vue';
+import Changelog from '../views/Changelog.vue';
 
 const routes = [
     {
@@ -38,6 +39,11 @@ const routes = [
             path: '/about',
             name: '關於',
             component: About
+        },
+        {
+            path: '/changelog',
+            name: '更新紀錄',
+            component: Changelog
         },
         {
             path: '/material-simulator',
