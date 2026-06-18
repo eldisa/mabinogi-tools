@@ -12,14 +12,12 @@ export interface TodoItem {
 }
 
 export const announcements: Announcement[] = [
-    { date: "2026-06-18", type: "new",    text: "新增 Sidebar 分類群組，支援折疊" },
-    { date: "2026-06-18", type: "update", text: "首頁重整，依分類顯示功能模組" },
-    { date: "2026-06-18", type: "new",    text: "新增 4王65%躲彈幕練習" },
-    { date: "2026-06-18", type: "fix",    text: "材料計算機新增價格匯出/匯入功能" },
-    { date: "2026-06-18", type: "update", text: "頂裝差距：新增種族與變身、祕法武器限制、聖水欄位" },
-    { date: "2026-06-18", type: "update", text: "娃娃背包查詢：新增排序 label 及效果/重量徽章" },
+    { date: "2026-06-18", type: "update", text: "首頁與側邊欄重整，依分類顯示功能模組" },
+    { date: "2026-06-17", type: "new", text: "新增 音樂計算機" },
+    { date: "2026-06-01", type: "new", text: "新增 回音石模擬器" },
+    { date: "2026-05-26", type: "new", text: "新增 4王65%躲彈幕練習" },
+    { date: "2026-05-23", type: "new", text: "新增 4王安全屋計時" },
+    { date: "2026-05-23", type: "update", text: "更新4王相關資料" },
 ];
 
-export const todoItems: TodoItem[] = [
-    { title: "公告與 Todo 頁面", status: "in_progress" },
-];
+export const todoItems: TodoItem[] = [{ title: "公告與 Todo 頁面", status: "in_progress" }];
