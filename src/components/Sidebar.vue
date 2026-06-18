@@ -155,7 +155,7 @@ const menuGroups = ref([
     border: none;
     cursor: pointer;
     color: #9ca3af;
-    font-size: 0.7rem;
+    font-size: 0.875rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.075em;
