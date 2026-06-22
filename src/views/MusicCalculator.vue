@@ -208,6 +208,37 @@ interface PerformanceScores {
     playInspiring: number;
 }
 
+// 單一詞條的三段演奏值
+interface GradeValues {
+    normal: number;
+    excellent: number;
+    inspiring: number;
+}
+
+// 一首歌的「輸出詞條」設定（戰場序曲只有一條；活潑板等會有多條）
+interface BuffOutput {
+    name: string;
+    base: number | "skill"; // 固定數值 %，或 "skill"=取該歌技能等級值（戰場序曲）
+    appliesExtra: boolean; // 是否吃「額外」(里拉/SR/硬幣/禮物 評級倍率)
+    appliesDragon: boolean; // 是否吃紅炎精靈龍攻擊加成 (base*0.02)
+    defaultShow?: boolean;
+}
+
+interface SongConfig {
+    id: string;
+    name: string;
+    skillKey: SelectKey; // 該歌技能：等級值=倍率 base，且自音樂效果總和扣除
+    outputs: BuffOutput[];
+}
+
+// 戰場的序曲：單一輸出（戰場數值），base 取技能等級值、吃額外與精靈龍
+const BATTLEFIELD_SONG: SongConfig = {
+    id: "battlefield",
+    name: "戰場的序曲",
+    skillKey: "battleSkill",
+    outputs: [{ name: "戰場數值", base: "skill", appliesExtra: true, appliesDragon: true, defaultShow: true }],
+};
+
 interface CalcState {
     selects: Record<SelectKey, number>;
     switches: Switches;
@@ -216,8 +247,16 @@ interface CalcState {
     otherBonus: number;
 }
 
-// 純函式：給定一份狀態快照，算出三種演奏 %（供主結果與「提升效益分析」共用）
-function computeScores(s: CalcState): PerformanceScores {
+// 共用計算上下文（音樂效果 / 細工倍率 / 額外 / 精靈龍），所有輸出詞條共享
+interface BuffContext {
+    musicEffect: number; // 音樂效果總和 (playBuff)
+    gradeMults: GradeValues; // 普通 / 優秀 / 天籟 細工倍率
+    extra: number; // 1 + 里拉 + SR + finalRate(硬幣+禮物)
+    dragonRed: boolean; // 紅炎精靈龍在場（提供 base*0.02 攻擊加成）
+}
+
+// 由狀態快照算出共用上下文 + 該歌技能等級值
+function buildContext(s: CalcState, song: SongConfig): { ctx: BuffContext; skillBase: number } {
     const valOf = (key: SelectKey): number | string => OPTIONS[key][s.selects[key]]?.value ?? 0;
     const numOf = (key: SelectKey): number => {
         const v = valOf(key);
@@ -226,19 +265,17 @@ function computeScores(s: CalcState): PerformanceScores {
 
     const data: Record<string, number | string> = {};
     (Object.keys(OPTIONS) as SelectKey[]).forEach((key) => {
-        if (key.startsWith("relicSuffix")) return;
+        if (key.startsWith("relicSuffix")) return; // 禮物為最終 % 加成，不計入音樂效果總和
         data[key] = valOf(key);
     });
-    // 布里萊赫硬幣是「戰場攻擊力 %」最終加成，只進最終倍率，不計入一般音樂加成總和（與遺物接尾「禮物」一致）
     data.otherBonus = Number(s.otherBonus) || 0;
     for (const key of Object.keys(switchConst)) {
         data[key] = s.switches[key as keyof Switches] ? "on" : "off";
     }
 
-    const battle = data.battleSkill as number;
-    const fairyDragonChoice = data.fairyDragon;
-    const fairyDragonBase = fairyDragonChoice !== 0 ? 3 : 0;
-    const fairyDragonBuff = fairyDragonChoice === "A" ? battle * 0.02 : 0;
+    const skillBase = numOf(song.skillKey);
+    const dragonRed = data.fairyDragon === "A";
+    const fairyDragonBase = data.fairyDragon !== 0 ? 3 : 0;
 
     let switchBuff = 0;
     for (const key in data) {
@@ -246,15 +283,12 @@ function computeScores(s: CalcState): PerformanceScores {
         if (data[key] === "on") switchBuff += switchConst[key] ?? 0;
     }
 
-    const playBuff =
-        Object.values(data).reduce<number>((acc, v) => {
-            return typeof v === "number" && v >= 1 ? acc + v : acc;
-        }, 0) +
+    // 音樂效果總和：所有 >= 1 的數值 + 精靈龍基礎 + 開關，再扣除該歌技能本身（技能值是倍率 base）
+    const musicEffect =
+        Object.values(data).reduce<number>((acc, v) => (typeof v === "number" && v >= 1 ? acc + v : acc), 0) +
         fairyDragonBase +
         switchBuff -
-        battle;
-
-    const basePlay = battle * (1 + playBuff * 0.01);
+        skillBase;
 
     const normalBase = 1 + (data.accessory1ReforgingNormal as number) + (data.accessory2ReforgingNormal as number);
     const excellentBase =
@@ -262,23 +296,46 @@ function computeScores(s: CalcState): PerformanceScores {
     const inspiringBase =
         1.3 + (data.accessory1ReforgingInspiring as number) + (data.accessory2ReforgingInspiring as number);
 
-    const normalPlay = normalBase + (data.reforgingNormal as number);
-    const excellentPlay = excellentBase + (data.reforgingExcellent as number);
-    const inspiringPlay = inspiringBase + (data.reforgingInspiring as number);
-
     const totemValue = (s.noCoin ? 0 : Number(s.totem) || 0) / 100;
     const relicRate = (numOf("relicSuffix1") + numOf("relicSuffix2") + numOf("relicSuffix3")) / 1000;
     const finalRate = totemValue + relicRate;
-
     const isLiraV = numOf("instrument") === 25 || numOf("instrument") === 22;
     const rating = isLiraV ? 0.07 : 0; // 靈魂解放者里拉：戰場/活潑版攻擊力 +7.0%
     const extra = +(1 + rating + (data.specialUpgrade as number) + finalRate).toFixed(6);
 
     return {
-        playNormal: (basePlay * normalPlay + fairyDragonBuff) * extra,
-        playExcellent: (basePlay * excellentPlay + fairyDragonBuff) * extra,
-        playInspiring: (basePlay * inspiringPlay + fairyDragonBuff) * extra,
+        ctx: {
+            musicEffect,
+            gradeMults: {
+                normal: normalBase + (data.reforgingNormal as number),
+                excellent: excellentBase + (data.reforgingExcellent as number),
+                inspiring: inspiringBase + (data.reforgingInspiring as number),
+            },
+            extra,
+            dragonRed,
+        },
+        skillBase,
     };
+}
+
+// 算單一詞條的三段演奏值
+function computeBuff(output: BuffOutput, ctx: BuffContext, skillBase: number): GradeValues {
+    const base = output.base === "skill" ? skillBase : output.base;
+    const basePlay = base * (1 + ctx.musicEffect * 0.01);
+    const fd = output.appliesDragon && ctx.dragonRed ? base * 0.02 : 0;
+    const ex = output.appliesExtra ? ctx.extra : 1;
+    return {
+        normal: (basePlay * ctx.gradeMults.normal + fd) * ex,
+        excellent: (basePlay * ctx.gradeMults.excellent + fd) * ex,
+        inspiring: (basePlay * ctx.gradeMults.inspiring + fd) * ex,
+    };
+}
+
+// 純函式：目前對應戰場序曲單一輸出（供主結果與「提升效益分析」共用）
+function computeScores(s: CalcState): PerformanceScores {
+    const { ctx, skillBase } = buildContext(s, BATTLEFIELD_SONG);
+    const out = computeBuff(BATTLEFIELD_SONG.outputs[0], ctx, skillBase);
+    return { playNormal: out.normal, playExcellent: out.excellent, playInspiring: out.inspiring };
 }
 
 // 目前狀態快照
