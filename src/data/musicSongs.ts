@@ -118,7 +118,9 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         id: "march",
         name: "進行曲",
         ranks: RANKS,
-        // 進行曲無對應精靈龍。速度細工：2 條各自一條，上限待確認
+        enhanceLabel: "進行曲強化(吟遊詩人鞋子)",
+        enhanceBase: 3,
+        // 進行曲無對應精靈龍。速度細工：2 條各自一條，上限待確認（暫 9/12）
         reforgeLines: [
             { id: "marchWalkSpeed", label: "徒步移動速度細工", normalMax: 9, breakMax: 12 },
             { id: "marchRideSpeed", label: "寵物搭乘移動速度細工", normalMax: 9, breakMax: 12 },
@@ -143,6 +145,9 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         name: "豐年歌",
         ranks: RANKS,
         dragonColor: "green", // 綠龍：加成豐年（待確認加成哪一條詞條）
+        enhanceLabel: "豐年歌強化(吟遊詩人手套)",
+        enhanceBase: 3,
+        reforgeLines: [{ id: "harvestGatherSpeed", label: "採集速度細工", normalMax: 9, breakMax: 12 }],
         outputs: [
             {
                 name: "採集成功率",
@@ -159,6 +164,7 @@ export const MUSIC_SONGS: MusicSongDef[] = [
                 baseByRank: [25, 22, 20, 18, 16, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5],
                 appliesExtra: false,
                 appliesDragon: true, // 綠龍加成
+                reforgeLine: "harvestGatherSpeed",
             },
         ],
     },
@@ -166,26 +172,38 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         id: "endurance",
         name: "忍耐的音樂",
         ranks: RANKS,
+        enhanceLabel: "忍耐之歌強化(吟遊詩人衣服)",
+        enhanceBase: 3,
+        reforgeLines: [
+            { id: "enduranceDef", label: "防禦/魔法防禦細工", normalMax: 9, breakMax: 12 },
+            { id: "enduranceProtect", label: "保護/魔法保護細工", normalMax: 9, breakMax: 12 },
+            { id: "enduranceMana", label: "魔力恢復速度細工", normalMax: 16, breakMax: 21 },
+            { id: "enduranceStamina", label: "耐力恢復速度細工", normalMax: 16, breakMax: 21 },
+        ],
         outputs: [
             {
                 name: "防禦 / 魔法防禦",
                 baseByRank: [11, 10, 9, 9, 8, 7, 7, 6, 5, 4, 3, 2, 2, 1, 1],
                 appliesExtra: false,
+                reforgeLine: "enduranceDef",
             },
             {
                 name: "保護 / 魔法保護",
                 baseByRank: [5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1],
                 appliesExtra: false,
+                reforgeLine: "enduranceProtect",
             },
             {
                 name: "魔法恢復速度",
                 baseByRank: [410, 395, 380, 365, 350, 335, 320, 305, 290, 275, 260, 260, 230, 230, 200],
                 appliesExtra: false,
+                reforgeLine: "enduranceMana",
             },
             {
                 name: "耐力恢復速度",
                 baseByRank: [410, 395, 380, 365, 350, 335, 320, 305, 290, 275, 260, 260, 230, 230, 200],
                 appliesExtra: false,
+                reforgeLine: "enduranceStamina",
             },
         ],
     },
