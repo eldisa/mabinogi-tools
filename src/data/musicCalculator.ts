@@ -16,60 +16,60 @@ export interface Option {
 }
 
 export const battleSkillOptions: Option[] = [
-    { value: 20, label: "Rank 1" },
-    { value: 19, label: "Rank 2" },
-    { value: 18, label: "Rank 3" },
-    { value: 17, label: "Rank 4" },
-    { value: 16, label: "Rank 5" },
-    { value: 16, label: "Rank 6" },
-    { value: 15, label: "Rank 7" },
-    { value: 15, label: "Rank 8" },
-    { value: 14, label: "Rank 9" },
-    { value: 14, label: "Rank A" },
-    { value: 13, label: "Rank B" },
-    { value: 13, label: "Rank C" },
-    { value: 12, label: "Rank D" },
-    { value: 12, label: "Rank E" },
-    { value: 11, label: "Rank F" },
-    { value: 10, label: "Rank 練習" },
+    { value: 20, label: "戰場的序曲 Rank 1" },
+    { value: 19, label: "戰場的序曲 Rank 2" },
+    { value: 18, label: "戰場的序曲 Rank 3" },
+    { value: 17, label: "戰場的序曲 Rank 4" },
+    { value: 16, label: "戰場的序曲 Rank 5" },
+    { value: 15, label: "戰場的序曲 Rank 6" },
+    { value: 15, label: "戰場的序曲 Rank 7" },
+    { value: 14, label: "戰場的序曲 Rank 8" },
+    { value: 14, label: "戰場的序曲 Rank 9" },
+    { value: 13, label: "戰場的序曲 Rank A" },
+    { value: 12, label: "戰場的序曲 Rank B" },
+    { value: 12, label: "戰場的序曲 Rank C" },
+    { value: 11, label: "戰場的序曲 Rank D" },
+    { value: 11, label: "戰場的序曲 Rank E" },
+    { value: 10, label: "戰場的序曲 Rank F" },
+    { value: 10, label: "戰場的序曲 Rank 練習" },
 ];
 
 export const playSkillOptions: Option[] = [
-    { value: 15, label: "Rank 1" },
-    { value: 14, label: "Rank 2" },
-    { value: 13, label: "Rank 3" },
-    { value: 12, label: "Rank 4" },
-    { value: 11, label: "Rank 5" },
-    { value: 10, label: "Rank 6" },
-    { value: 9, label: "Rank 7" },
-    { value: 8, label: "Rank 8" },
-    { value: 7, label: "Rank 9" },
-    { value: 6, label: "Rank A" },
-    { value: 5, label: "Rank B" },
-    { value: 4, label: "Rank C" },
-    { value: 3, label: "Rank D" },
-    { value: 2, label: "Rank E" },
-    { value: 1, label: "Rank F" },
-    { value: 0, label: "Rank 練習" },
+    { value: 15, label: "樂器演奏 Rank 1" },
+    { value: 14, label: "樂器演奏 Rank 2" },
+    { value: 13, label: "樂器演奏 Rank 3" },
+    { value: 12, label: "樂器演奏 Rank 4" },
+    { value: 11, label: "樂器演奏 Rank 5" },
+    { value: 10, label: "樂器演奏 Rank 6" },
+    { value: 9, label: "樂器演奏 Rank 7" },
+    { value: 8, label: "樂器演奏 Rank 8" },
+    { value: 7, label: "樂器演奏 Rank 9" },
+    { value: 6, label: "樂器演奏 Rank A" },
+    { value: 5, label: "樂器演奏 Rank B" },
+    { value: 4, label: "樂器演奏 Rank C" },
+    { value: 3, label: "樂器演奏 Rank D" },
+    { value: 2, label: "樂器演奏 Rank E" },
+    { value: 1, label: "樂器演奏 Rank F" },
+    { value: 0, label: "樂器演奏 Rank 練習" },
 ];
 
 export const singSkillOptions: Option[] = [
-    { value: 15, label: "Rank 1" },
-    { value: 14, label: "Rank 2" },
-    { value: 13, label: "Rank 3" },
-    { value: 12, label: "Rank 4" },
-    { value: 11, label: "Rank 5" },
-    { value: 10, label: "Rank 6" },
-    { value: 9, label: "Rank 7" },
-    { value: 8, label: "Rank 8" },
-    { value: 7, label: "Rank 9" },
-    { value: 6, label: "Rank A" },
-    { value: 5, label: "Rank B" },
-    { value: 4, label: "Rank C" },
-    { value: 3, label: "Rank D" },
-    { value: 2, label: "Rank E" },
-    { value: 1, label: "Rank F" },
-    { value: 0, label: "Rank 練習" },
+    { value: 15, label: "歌唱 Rank 1" },
+    { value: 14, label: "歌唱 Rank 2" },
+    { value: 13, label: "歌唱 Rank 3" },
+    { value: 12, label: "歌唱 Rank 4" },
+    { value: 11, label: "歌唱 Rank 5" },
+    { value: 10, label: "歌唱 Rank 6" },
+    { value: 9, label: "歌唱 Rank 7" },
+    { value: 8, label: "歌唱 Rank 8" },
+    { value: 7, label: "歌唱 Rank 9" },
+    { value: 6, label: "歌唱 Rank A" },
+    { value: 5, label: "歌唱 Rank B" },
+    { value: 4, label: "歌唱 Rank C" },
+    { value: 3, label: "歌唱 Rank D" },
+    { value: 2, label: "歌唱 Rank E" },
+    { value: 1, label: "歌唱 Rank F" },
+    { value: 0, label: "歌唱 Rank 練習" },
 ];
 
 export const instrumentBaseOptions: Option[] = [
@@ -103,7 +103,7 @@ export const instrumentSuffixOptions: Option[] = [
     { value: 1, label: "和音 (+1)" },
 ];
 
-const BREAKTHROUGH = "（樂器突破限定）";
+const BREAKTHROUGH = "（突破限定）";
 
 // 樂器演奏效果：1~25 等級，超過 21 為樂器突破限定
 export const reforgingPlayEffectOptions: Option[] = [
@@ -302,10 +302,11 @@ export const setEffectOptions: Option[] = [
     { value: 3, label: "特別的吟遊詩人浪漫服裝 (+3)" },
 ];
 
+// 精靈龍改以「是否對應當前歌曲」呈現：對應龍給 base×2% 色加成；任一龍皆給音樂效果 +3
 export const fairyDragonOptions: Option[] = [
-    { value: 0, label: "寵物精靈龍在場：無" },
-    { value: "A", label: "精靈龍：紅炎的精靈龍" },
-    { value: "B", label: "精靈龍：翠草/蒼冰/原初的精靈龍" },
+    { value: "match", label: "對應的精靈龍" },
+    { value: "other", label: "非對應的精靈龍" },
+    { value: 0, label: "無" },
 ];
 
 export const dollOptions: Option[] = [
