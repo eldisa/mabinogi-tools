@@ -12,6 +12,7 @@ export interface TodoItem {
 }
 
 export const announcements: Announcement[] = [
+    { date: "2026-06-25", type: "update", text: "音樂計算機 新增其他音樂的計算" },
     { date: "2026-06-18", type: "update", text: "修正 音樂計算機 錯誤" },
     { date: "2026-06-18", type: "update", text: "首頁與側邊欄重整，依分類顯示功能模組" },
     { date: "2026-06-17", type: "new", text: "新增 音樂計算機" },
