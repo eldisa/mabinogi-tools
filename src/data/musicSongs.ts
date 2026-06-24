@@ -18,14 +18,20 @@ export interface SongOutputDef {
     appliesDragon?: boolean;
     reforgeLine?: string;
     defaultShow?: boolean;
+    raw?: boolean; // 固定值：直接取 base，不吃任何演奏/細工/buff 效果（如豐年成功率）
 }
 
-// 技能細工（自由點輸入）：常規上限 / 突破上限
+// 技能細工：以「部位 × 效果」grid 呈現，每格一個 select(0~breakMax，超過 normalMax 標突破限定)
 export interface SongReforgeLineDef {
     id: string;
-    label: string;
-    normalMax: number;
+    label: string; // 效果名（grid 的欄標題）
+    normalMax: number; // 每格上限（同一 group 的所有部位一致）
     breakMax: number;
+}
+// 一個 grid 群組：列=部位、欄=效果，組內每格皆存在；效果總和 = 該組各部位該欄相加
+export interface SongReforgeGroup {
+    parts: string[];
+    lines: SongReforgeLineDef[];
 }
 
 export interface MusicSongDef {
@@ -33,10 +39,12 @@ export interface MusicSongDef {
     name: string;
     ranks: string[]; // 由高到低
     outputs: SongOutputDef[];
-    reforgeLines?: SongReforgeLineDef[];
-    /** 該歌專屬「強化」(很貴項目)，加進音樂效果總和 */
-    enhanceLabel?: string;
-    enhanceBase?: number;
+    // 一首歌可有多個 grid 群組（如忍耐：防禦/保護一組、魔恢/耐恢一組）
+    reforge?: SongReforgeGroup[];
+    /** 套裝強化項目（加進音樂效果總和）；戰場 2 件、其餘各 1 件 */
+    enhanceItems?: { id: string; label: string; value: number; default?: boolean }[];
+    /** 套裝強化是否互斥（只取最高 → 用 select 單選）；省略 = 各件獨立開關 */
+    enhanceExclusive?: boolean;
     /** 對應的精靈龍顏色：吃到對應色才給該歌主詞條 base*0.02；無 = 該歌無對應龍（忍耐/進行） */
     dragonColor?: "red" | "blue" | "green";
 }
@@ -50,6 +58,12 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         name: "戰場的序曲",
         ranks: RANKS,
         dragonColor: "red", // 紅炎：加成最大/最小傷害
+        // 套裝強化（戰場 2 件，互斥只取最高）：熾天使預設選（與舊 setEffect 預設一致，維持 baseline）
+        enhanceItems: [
+            { id: "bfSeraphHand", label: "熾天使歌唱手部裝飾 (+5)", value: 5, default: true },
+            { id: "bfRomanceBody", label: "特別的吟遊詩人浪漫服裝 (+3)", value: 3 },
+        ],
+        enhanceExclusive: true,
         outputs: [
             {
                 name: "最大傷害",
@@ -78,14 +92,18 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         name: "活潑板",
         ranks: RANKS,
         dragonColor: "blue", // 藍龍：加成魔法攻擊力
-        // 活潑板強化：吟遊詩人頭 +3（進音樂效果總和）
-        enhanceLabel: "活潑板強化(吟遊詩人頭)",
-        enhanceBase: 3,
-        // 速度細工：每條速度各自一條（腳 + 兩顆飾品）。上限待確認（暫 9/12，加在 base 上、自由點）
-        reforgeLines: [
-            { id: "livelyMagicSpeed", label: "魔法施展速度細工", normalMax: 9, breakMax: 12 },
-            { id: "livelyAlchSpeed", label: "煉金術施展速度細工", normalMax: 9, breakMax: 12 },
-            { id: "livelyAtkSpeed", label: "攻擊速度細工", normalMax: 9, breakMax: 12 },
+        // 套裝強化（活潑板）：吟遊詩人頭 +3
+        enhanceItems: [{ id: "livelyHead", label: "吟遊詩人頭 (+3)", value: 3 }],
+        // 速度細工：飾品1/飾品2/鞋子 各 0~4（4 為突破限定）
+        reforge: [
+            {
+                parts: ["飾品1", "飾品2", "鞋子"],
+                lines: [
+                    { id: "livelyMagicSpeed", label: "魔法施展速度", normalMax: 3, breakMax: 4 },
+                    { id: "livelyAlchSpeed", label: "煉金術施展速度", normalMax: 3, breakMax: 4 },
+                    { id: "livelyAtkSpeed", label: "攻擊速度", normalMax: 3, breakMax: 4 },
+                ],
+            },
         ],
         outputs: [
             {
@@ -118,12 +136,17 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         id: "march",
         name: "進行曲",
         ranks: RANKS,
-        enhanceLabel: "進行曲強化(吟遊詩人鞋子)",
-        enhanceBase: 3,
-        // 進行曲無對應精靈龍。速度細工：2 條各自一條，上限待確認（暫 9/12）
-        reforgeLines: [
-            { id: "marchWalkSpeed", label: "徒步移動速度細工", normalMax: 9, breakMax: 12 },
-            { id: "marchRideSpeed", label: "寵物搭乘移動速度細工", normalMax: 9, breakMax: 12 },
+        // 套裝強化（進行曲）：吟遊詩人鞋子 +3
+        enhanceItems: [{ id: "marchShoe", label: "吟遊詩人鞋子 (+3)", value: 3 }],
+        // 進行曲無對應精靈龍。速度細工：飾品1/飾品2/鞋子 各 0~4（4 為突破限定）
+        reforge: [
+            {
+                parts: ["飾品1", "飾品2", "鞋子"],
+                lines: [
+                    { id: "marchWalkSpeed", label: "徒步移動速度", normalMax: 3, breakMax: 4 },
+                    { id: "marchRideSpeed", label: "寵物搭乘移動速度", normalMax: 3, breakMax: 4 },
+                ],
+            },
         ],
         outputs: [
             {
@@ -145,19 +168,27 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         name: "豐年歌",
         ranks: RANKS,
         dragonColor: "green", // 綠龍：加成豐年（待確認加成哪一條詞條）
-        enhanceLabel: "豐年歌強化(吟遊詩人手套)",
-        enhanceBase: 3,
-        reforgeLines: [{ id: "harvestGatherSpeed", label: "採集速度細工", normalMax: 9, breakMax: 12 }],
+        // 套裝強化（豐年歌）：吟遊詩人手套 +3
+        enhanceItems: [{ id: "harvestGlove", label: "吟遊詩人手套 (+3)", value: 3 }],
+        // 採集速度細工：飾品1/飾品2/手套 各 0~4（4 為突破限定）
+        reforge: [
+            {
+                parts: ["飾品1", "飾品2", "手套"],
+                lines: [{ id: "harvestGatherSpeed", label: "採集速度", normalMax: 3, breakMax: 4 }],
+            },
+        ],
         outputs: [
             {
                 name: "採集成功率",
                 baseByRank: [5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1],
                 appliesExtra: false,
+                raw: true, // 固定值，不吃任何效果
             },
             {
                 name: "生產成功率",
                 baseByRank: [5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 0],
                 appliesExtra: false,
+                raw: true, // 固定值，不吃任何效果
             },
             {
                 name: "採集速度",
@@ -172,13 +203,24 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         id: "endurance",
         name: "忍耐的音樂",
         ranks: RANKS,
-        enhanceLabel: "忍耐之歌強化(吟遊詩人衣服)",
-        enhanceBase: 3,
-        reforgeLines: [
-            { id: "enduranceDef", label: "防禦/魔法防禦細工", normalMax: 9, breakMax: 12 },
-            { id: "enduranceProtect", label: "保護/魔法保護細工", normalMax: 9, breakMax: 12 },
-            { id: "enduranceMana", label: "魔力恢復速度細工", normalMax: 16, breakMax: 21 },
-            { id: "enduranceStamina", label: "耐力恢復速度細工", normalMax: 16, breakMax: 21 },
+        // 套裝強化（忍耐）：吟遊詩人衣服 +3
+        enhanceItems: [{ id: "enduranceBody", label: "吟遊詩人衣服 (+3)", value: 3 }],
+        // 防禦/保護：飾品1/飾品2/手套 各 0~4（4 突破）；魔力/耐力恢復：鞋子 0~13（10~13 突破）→ 拆成兩個 grid
+        reforge: [
+            {
+                parts: ["飾品1", "飾品2", "手套"],
+                lines: [
+                    { id: "enduranceDef", label: "防禦", normalMax: 3, breakMax: 4 },
+                    { id: "enduranceProtect", label: "保護", normalMax: 3, breakMax: 4 },
+                ],
+            },
+            {
+                parts: ["鞋子"],
+                lines: [
+                    { id: "enduranceMana", label: "魔力恢復速度", normalMax: 9, breakMax: 13 },
+                    { id: "enduranceStamina", label: "耐力恢復速度", normalMax: 9, breakMax: 13 },
+                ],
+            },
         ],
         outputs: [
             {

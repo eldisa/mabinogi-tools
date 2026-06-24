@@ -36,7 +36,6 @@ import {
     muliasHolyWaterOptions,
     fluaCrownOptions,
     specialUpgradeOptions,
-    setEffectOptions,
     fairyDragonOptions,
     dollOptions,
     bugleOptions,
@@ -90,7 +89,6 @@ const OPTIONS: Record<string, Option[]> = {
     extraFarmModel: extraFarmModelOptions,
     muliasHolyWater: muliasHolyWaterOptions,
     fluaCrown: fluaCrownOptions,
-    setEffect: setEffectOptions,
     fairyDragon: fairyDragonOptions,
     specialUpgrade: specialUpgradeOptions,
     doll: dollOptions,
@@ -143,7 +141,6 @@ const DEFAULT_INDEX: Record<SelectKey, number> = {
     extraFarmModel: 2,
     muliasHolyWater: 0,
     fluaCrown: 0,
-    setEffect: 1,
     fairyDragon: 0,
     specialUpgrade: 0,
     doll: 0,
@@ -223,18 +220,30 @@ const activeSong = computed<MusicSongDef>(
 );
 const songRankIdx = ref(0); // 0 = Rank 1（最高）
 const songReforge = reactive<Record<string, number>>({}); // 技能細工自由點：reforgeLine id -> 數值
-const songEnhance = ref(false); // 該歌專屬「強化」（如活潑板強化-吟遊詩人頭 +3）
-// 各詞條的「音樂buff 微調」(±20)，key = `${songId}:${outputName}`
-const songOutputAdjust = reactive<Record<string, number>>({});
-const adjustKey = (o: SongOutputDef) => `${activeSongId.value}:${o.name}`;
-// 切換歌曲時重置等級與技能細工（讀取配置時以 restoringPreset 跳過，避免覆蓋還原值）
+const songEnhance = reactive<Record<string, boolean>>({}); // 套裝強化各件開關（key = item.id）
+// 套用某歌曲的套裝強化預設（清空後把 default 件設為開）
+function applyEnhanceDefaults(song: MusicSongDef) {
+    for (const k of Object.keys(songEnhance)) delete songEnhance[k];
+    for (const it of song.enhanceItems ?? []) if (it.default) songEnhance[it.id] = true;
+}
+applyEnhanceDefaults(MUSIC_SONGS[0]); // 初始：戰場（熾天使預設開，維持 baseline）
+// 切換歌曲時重置等級/細工/套裝強化（讀取配置時以 restoringPreset 跳過，避免覆蓋還原值）
 let restoringPreset = false;
 watch(activeSongId, () => {
     if (restoringPreset) return;
     songRankIdx.value = 0;
-    songEnhance.value = false;
+    applyEnhanceDefaults(activeSong.value);
     for (const k of Object.keys(songReforge)) delete songReforge[k];
 });
+
+// 互斥套裝強化（戰場）：目前選中的 item id（"none" = 無），切換時清掉其它件
+const enhanceSelectedId = computed(() => {
+    for (const it of activeSong.value.enhanceItems ?? []) if (songEnhance[it.id]) return it.id;
+    return "none";
+});
+function setEnhanceExclusive(id: string) {
+    for (const it of activeSong.value.enhanceItems ?? []) songEnhance[it.id] = it.id === id;
+}
 
 interface CalcState {
     selects: Record<SelectKey, number>;
@@ -270,7 +279,6 @@ function buildContext(s: CalcState): BuffContext {
     (Object.keys(OPTIONS) as SelectKey[]).forEach((key) => {
         if (key.startsWith("relicSuffix")) return; // 禮物為最終 % 加成，不計入音樂效果總和
         if (key === "battleSkill") return; // 歌曲技能等級值改由 musicSongs base 提供，不計入音樂效果
-        if (key === "setEffect" && activeSong.value.id !== "battlefield") return; // 戰場序曲強化僅戰場適用
         data[key] = valOf(key);
     });
     data.otherBonus = Number(s.otherBonus) || 0;
@@ -289,11 +297,11 @@ function buildContext(s: CalcState): BuffContext {
         if (data[key] === "on") switchBuff += switchConst[key] ?? 0;
     }
 
-    // 該歌專屬「強化」（如活潑板強化 +3），併入音樂效果總和
+    // 該歌專屬「套裝強化」各件（開啟者相加），併入音樂效果總和
     const song = activeSong.value;
-    const enhanceAdd = song.enhanceBase && songEnhance.value ? song.enhanceBase : 0;
+    const enhanceAdd = (song.enhanceItems ?? []).reduce((sum, it) => sum + (songEnhance[it.id] ? it.value : 0), 0);
 
-    // 音樂效果總和：所有 >= 1 的數值 + 精靈龍基礎 + 開關 + 歌曲強化（歌曲技能 base 已排除）
+    // 音樂效果總和：所有 >= 1 的數值 + 精靈龍基礎 + 開關 + 套裝強化（歌曲技能 base 已排除）
     const musicEffect =
         Object.values(data).reduce<number>((acc, v) => (typeof v === "number" && v >= 1 ? acc + v : acc), 0) +
         fairyDragonBase +
@@ -325,22 +333,29 @@ function buildContext(s: CalcState): BuffContext {
     };
 }
 
-// 解析詞條在目前 rank 的 base（含技能細工自由點）
+// 某條效果的技能細工總和 = 所屬 group 各部位格子相加（key = `${lineId}:${part}`）
+function reforgeLineTotal(lineId: string): number {
+    for (const group of activeSong.value.reforge ?? []) {
+        if (group.lines.some((l) => l.id === lineId)) {
+            return group.parts.reduce((s, part) => s + (Number(songReforge[`${lineId}:${part}`]) || 0), 0);
+        }
+    }
+    return 0;
+}
+
+// 解析詞條在目前 rank 的 base（含技能細工 grid 總和）
 function outputBase(o: SongOutputDef): number {
     const b = o.baseByRank[songRankIdx.value] ?? 0;
-    const r = o.reforgeLine ? Number(songReforge[o.reforgeLine]) || 0 : 0;
+    const r = o.reforgeLine ? reforgeLineTotal(o.reforgeLine) : 0;
     return b + r;
 }
 
-// 算單一詞條的三段演奏值（adjust = 該詞條音樂buff微調 ±20）
-function computeBuff(
-    o: SongOutputDef,
-    ctx: BuffContext,
-    songColor: MusicSongDef["dragonColor"],
-    adjust = 0,
-): GradeValues {
+// 算單一詞條的三段演奏值
+function computeBuff(o: SongOutputDef, ctx: BuffContext, songColor: MusicSongDef["dragonColor"]): GradeValues {
     const base = outputBase(o);
-    const basePlay = base * (1 + (ctx.musicEffect + adjust) * 0.01);
+    // 固定值詞條（如豐年成功率）：三段皆為 base，不吃任何效果
+    if (o.raw) return { normal: base, excellent: base, inspiring: base };
+    const basePlay = base * (1 + ctx.musicEffect * 0.01);
     const fd = o.appliesDragon && dragonMatches(ctx.dragonCode, songColor) ? base * 0.02 : 0;
     const ex = o.appliesExtra ? ctx.extra : 1;
     return {
@@ -358,8 +373,7 @@ function primaryOutput(song: MusicSongDef): SongOutputDef {
 // 主詞條三段值（提升分析 / Debug 共用）
 function computeScores(s: CalcState): PerformanceScores {
     const song = activeSong.value;
-    const o = primaryOutput(song);
-    const out = computeBuff(o, buildContext(s), song.dragonColor, Number(songOutputAdjust[adjustKey(o)]) || 0);
+    const out = computeBuff(primaryOutput(song), buildContext(s), song.dragonColor);
     return { playNormal: out.normal, playExcellent: out.excellent, playInspiring: out.inspiring };
 }
 
@@ -370,7 +384,7 @@ function computeOutputs(s: CalcState) {
     return song.outputs.map((o) => ({
         name: o.name,
         defaultShow: o.defaultShow !== false,
-        ...computeBuff(o, ctx, song.dragonColor, Number(songOutputAdjust[adjustKey(o)]) || 0),
+        ...computeBuff(o, ctx, song.dragonColor),
     }));
 }
 
@@ -431,7 +445,7 @@ const DEBUG_GROUPS: { name: string; keys: SelectKey[] }[] = [
     // 穆里亞斯聖水：音樂增益效果，計入加成總和（先前漏列，導致 debug playBuff 少算）。
     { name: "聖水", keys: ["muliasHolyWater"] },
     // 「套裝/寵物」改為很貴的項目；遺物接尾仍由最終倍率公式處理，不放入一般加成總和。
-    { name: "很貴的項目", keys: ["setEffect", "fluaCrown", "relicPrefix1", "relicPrefix2", "relicPrefix3"] },
+    { name: "很貴的項目", keys: ["fluaCrown", "relicPrefix1", "relicPrefix2", "relicPrefix3"] },
     { name: "娃娃背包 / 喇叭 / 寵物", keys: ["doll", "bugle", "fairyDragon"] },
 ];
 
@@ -543,6 +557,20 @@ const reforgeKeys: SelectKey[] = [
     ...reforgeRows.flatMap((r) => [r.normal as SelectKey, r.excellent as SelectKey, r.inspiring as SelectKey]),
 ];
 
+// 技能細工每格以「等級 select」呈現（與演奏效果一致）；無在最上，其餘由大至小，超過常規上限標（突破限定）
+function reforgeLevelOptions(cap: { normalMax: number; breakMax: number }) {
+    const opts: { value: number; label: string }[] = [{ value: 0, label: "無" }];
+    for (let v = cap.breakMax; v >= 1; v--) {
+        opts.push({ value: v, label: `+${v}${v > cap.normalMax ? "（突破限定）" : ""}` });
+    }
+    return opts;
+}
+
+// 技能細工 grid 欄數動態（部位欄 + 各效果欄），依該 group 的效果數
+function reforgeGridStyle(lineCount: number) {
+    return { gridTemplateColumns: `72px repeat(${lineCount}, minmax(0, 1fr))` };
+}
+
 const talentTitleFarmFields = [
     { label: "第一稱號", key: "title" },
     { label: "第二稱號", key: "secondTitle" },
@@ -550,10 +578,7 @@ const talentTitleFarmFields = [
     { label: "特別農場模型", key: "extraFarmModel" },
 ] as const;
 
-const expensiveItemFields = [
-    { label: "戰場序曲強化", key: "setEffect" },
-    { label: "草冠", key: "fluaCrown" },
-] as const;
+const expensiveItemFields = [{ label: "草冠", key: "fluaCrown" }] as const;
 
 // 裝備分頁：每列一個部位（接頭 / 接尾），含樂器、飾品賦予；排版參考頂裝差距
 const gearRows = [
@@ -613,7 +638,7 @@ const SELECTS_BY_TAB: Record<string, SelectKey[]> = {
         "muliasHolyWater",
     ],
     title: ["title", "secondTitle", "farmModel", "extraFarmModel"],
-    set: ["setEffect", "fluaCrown", ...relicRows.flatMap((r) => [r.prefix as SelectKey, r.suffix as SelectKey])],
+    set: ["fluaCrown", ...relicRows.flatMap((r) => [r.prefix as SelectKey, r.suffix as SelectKey])],
     misc: ["fairyDragon", "doll", "bugle"],
     skill: [...skillKeys],
 };
@@ -650,9 +675,32 @@ function topTab(name: string) {
     if (name === "set") {
         noCoin.value = false;
         totem.value = 1.0;
+        topEnhance(); // 套裝強化也拉到最高
     }
-    if (name === "misc") {
-        otherBonus.value = 20;
+    if (name === "reforge") {
+        topReforge(); // 技能相關細工每格拉到突破上限
+    }
+    // 其他項目（活動加成用）不在「最頂」範圍，維持 0
+}
+
+// 技能相關細工：每格設為突破上限
+function topReforge() {
+    for (const group of activeSong.value.reforge ?? []) {
+        for (const line of group.lines) {
+            for (const part of group.parts) songReforge[`${line.id}:${part}`] = line.breakMax;
+        }
+    }
+}
+
+// 套裝強化最頂：互斥取最高 value 的件，非互斥則全部開
+function topEnhance() {
+    const items = activeSong.value.enhanceItems ?? [];
+    if (!items.length) return;
+    if (activeSong.value.enhanceExclusive) {
+        const best = items.reduce((a, b) => (b.value > a.value ? b : a));
+        for (const it of items) songEnhance[it.id] = it.id === best.id;
+    } else {
+        for (const it of items) songEnhance[it.id] = true;
     }
 }
 
@@ -674,7 +722,6 @@ const SELECT_LABELS: Partial<Record<SelectKey, string>> = {
     secondTitle: "第二稱號",
     farmModel: "一般農場模型",
     extraFarmModel: "特別農場模型",
-    setEffect: "戰場序曲強化",
     fluaCrown: "草冠",
     muliasHolyWater: "聖水",
     specialUpgrade: "樂器特殊改造",
@@ -897,9 +944,10 @@ function applySelected() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  配置儲存 (localStorage) — 風格參考頂裝差距
+//  配置儲存 (localStorage) — 依歌曲分別儲存（類配裝器）
 // ═══════════════════════════════════════════════════════
-const STORAGE_KEY = "music_calc_presets_v1";
+const STORAGE_KEY = "music_calc_presets_v2"; // v2：依歌曲分組 { [songId]: build[] }
+const LEGACY_KEY = "music_calc_presets_v1"; // v1：單一清單，載入時依各筆 songId 遷移
 
 interface MusicPreset {
     name: string;
@@ -913,23 +961,59 @@ interface MusicPreset {
         // 歌曲專屬狀態（舊存檔可能沒有，讀取時以預設補上）
         songId?: string;
         songRankIdx?: number;
-        songEnhance?: boolean;
+        songEnhance?: Record<string, boolean>;
         songReforge?: Record<string, number>;
-        songOutputAdjust?: Record<string, number>;
     };
 }
 
-const presets = ref<MusicPreset[]>(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"));
+// 讀取所有存檔（v2 直接讀；否則由 v1 單一清單依 songId 遷移）
+function loadAllPresets(): Record<string, MusicPreset[]> {
+    try {
+        const v2 = localStorage.getItem(STORAGE_KEY);
+        if (v2) return JSON.parse(v2) || {};
+        const v1 = localStorage.getItem(LEGACY_KEY);
+        if (v1) {
+            const map: Record<string, MusicPreset[]> = {};
+            for (const p of (JSON.parse(v1) as MusicPreset[]) || []) {
+                const sid = (p.data?.songId as string) || "battlefield";
+                (map[sid] ??= []).push(p);
+            }
+            return map;
+        }
+    } catch {
+        /* 損毀則回空 */
+    }
+    return {};
+}
+
+const allPresets = ref<Record<string, MusicPreset[]>>(loadAllPresets());
+// 攤平所有歌曲的存檔（面板直接顯示全部，每筆標註所屬歌曲）
+interface PresetEntry {
+    songId: string;
+    songName: string;
+    idx: number; // 在該歌曲清單中的 index
+    preset: MusicPreset;
+}
+const presetEntries = computed<PresetEntry[]>(() => {
+    const out: PresetEntry[] = [];
+    for (const song of MUSIC_SONGS) {
+        (allPresets.value[song.id] ?? []).forEach((preset, idx) =>
+            out.push({ songId: song.id, songName: song.name, idx, preset }),
+        );
+    }
+    return out;
+});
 const newPresetName = ref("");
 const showPresetPanel = ref(false);
 
 function persistPresets() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(presets.value));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allPresets.value));
 }
 
-// 若有存檔，頁面載入時自動讀取第一筆
+// 若當前歌曲有存檔，頁面載入時自動讀取第一筆
 onMounted(() => {
-    if (presets.value.length > 0) loadPreset(0);
+    const list = allPresets.value[activeSongId.value];
+    if (list && list.length > 0) loadPreset(activeSongId.value, 0);
 });
 
 function snapshot(): MusicPreset["data"] {
@@ -941,21 +1025,21 @@ function snapshot(): MusicPreset["data"] {
         otherBonus: otherBonus.value,
         songId: activeSongId.value,
         songRankIdx: songRankIdx.value,
-        songEnhance: songEnhance.value,
+        songEnhance: JSON.parse(JSON.stringify(songEnhance)),
         songReforge: JSON.parse(JSON.stringify(songReforge)),
-        songOutputAdjust: JSON.parse(JSON.stringify(songOutputAdjust)),
     };
 }
 
 function savePreset() {
-    const name = newPresetName.value.trim() || `配置 ${presets.value.length + 1}`;
-    presets.value.push({ name, timestamp: Date.now(), data: snapshot() });
+    const list = (allPresets.value[activeSongId.value] ??= []);
+    const name = newPresetName.value.trim() || `配置 ${list.length + 1}`;
+    list.push({ name, timestamp: Date.now(), data: snapshot() });
     persistPresets();
     newPresetName.value = "";
 }
 
-function loadPreset(idx: number) {
-    const d = presets.value[idx]?.data;
+function loadPreset(songId: string, idx: number) {
+    const d = allPresets.value[songId]?.[idx]?.data;
     if (!d) return;
     if (d.selects) {
         (Object.keys(selects) as SelectKey[]).forEach((k) => {
@@ -971,26 +1055,33 @@ function loadPreset(idx: number) {
     totem.value = Number(d.totem) || 0.1;
     otherBonus.value = Number(d.otherBonus) || 0;
 
-    // 歌曲專屬狀態：先設歌曲（restoringPreset 跳過 watch 重置），再還原等級/細工/強化/微調
+    // 歌曲專屬狀態：先設歌曲（restoringPreset 跳過 watch 重置），再還原等級/細工/套裝強化
     restoringPreset = true;
-    activeSongId.value = MUSIC_SONGS.some((s) => s.id === d.songId) ? (d.songId as string) : "battlefield";
+    const targetSong = MUSIC_SONGS.find((s) => s.id === d.songId) ?? MUSIC_SONGS[0];
+    activeSongId.value = targetSong.id;
     songRankIdx.value = Number(d.songRankIdx) || 0;
-    songEnhance.value = !!d.songEnhance;
+    if (d.songEnhance && typeof d.songEnhance === "object") {
+        for (const k of Object.keys(songEnhance)) delete songEnhance[k];
+        Object.assign(songEnhance, d.songEnhance);
+    } else {
+        applyEnhanceDefaults(targetSong);
+    }
     Object.keys(songReforge).forEach((k) => delete songReforge[k]);
     Object.assign(songReforge, d.songReforge ?? {});
-    Object.keys(songOutputAdjust).forEach((k) => delete songOutputAdjust[k]);
-    Object.assign(songOutputAdjust, d.songOutputAdjust ?? {});
     nextTick(() => (restoringPreset = false));
 }
 
-function deletePreset(idx: number) {
-    presets.value.splice(idx, 1);
+function deletePreset(songId: string, idx: number) {
+    const list = allPresets.value[songId];
+    if (!list) return;
+    list.splice(idx, 1);
     persistPresets();
 }
 
-function renamePreset(idx: number, name: string) {
-    if (presets.value[idx]) {
-        presets.value[idx].name = name;
+function renamePreset(songId: string, idx: number, name: string) {
+    const item = allPresets.value[songId]?.[idx];
+    if (item) {
+        item.name = name;
         persistPresets();
     }
 }
@@ -1003,9 +1094,8 @@ function resetAll() {
     otherBonus.value = 0;
     activeSongId.value = "battlefield";
     songRankIdx.value = 0;
-    songEnhance.value = false;
+    applyEnhanceDefaults(MUSIC_SONGS[0]);
     Object.keys(songReforge).forEach((k) => delete songReforge[k]);
-    Object.keys(songOutputAdjust).forEach((k) => delete songOutputAdjust[k]);
 }
 
 function fmtDate(ts: number): string {
@@ -1036,7 +1126,7 @@ function fmtDate(ts: number): string {
                         @click="showPresetPanel = !showPresetPanel"
                     >
                         <span class="preset-head-title">💾 儲存 / 讀取</span>
-                        <span class="preset-head-count">{{ presets.length }} 套</span>
+                        <span class="preset-head-count">{{ presetEntries.length }} 套</span>
                         <span
                             class="preset-head-chevron"
                             :style="{ transform: showPresetPanel ? 'rotate(180deg)' : 'rotate(0deg)' }"
@@ -1054,28 +1144,47 @@ function fmtDate(ts: number): string {
                                 clearable
                                 @keyup.enter="savePreset"
                             />
-                            <el-button type="primary" size="small" @click="savePreset">儲存目前</el-button>
+                            <el-button type="primary" size="small" @click="savePreset">
+                                儲存目前（{{ activeSong.name }}）
+                            </el-button>
                             <el-button size="small" plain @click="resetAll">重設</el-button>
                         </div>
 
-                        <div v-if="presets.length === 0" class="preset-empty">尚無儲存配置</div>
+                        <div v-if="presetEntries.length === 0" class="preset-empty">尚無儲存配置</div>
                         <div v-else class="preset-list">
-                            <div v-for="(preset, idx) in presets" :key="idx" class="preset-item">
+                            <div
+                                v-for="entry in presetEntries"
+                                :key="entry.songId + ':' + entry.idx"
+                                class="preset-item"
+                            >
+                                <span
+                                    class="preset-song-badge"
+                                    :class="{ 'is-current': entry.songId === activeSongId }"
+                                >
+                                    {{ entry.songName }}
+                                </span>
                                 <el-input
-                                    :model-value="preset.name"
+                                    :model-value="entry.preset.name"
                                     size="small"
                                     class="preset-name-input"
-                                    @change="(v: string) => renamePreset(idx, v)"
+                                    @change="(v: string) => renamePreset(entry.songId, entry.idx, v)"
                                 />
-                                <span class="preset-date">{{ fmtDate(preset.timestamp) }}</span>
-                                <el-button size="small" plain @click="loadPreset(idx)">讀取</el-button>
-                                <el-button size="small" type="danger" plain @click="deletePreset(idx)">✕</el-button>
+                                <span class="preset-date">{{ fmtDate(entry.preset.timestamp) }}</span>
+                                <el-button size="small" plain @click="loadPreset(entry.songId, entry.idx)">讀取</el-button>
+                                <el-button
+                                    size="small"
+                                    type="danger"
+                                    plain
+                                    @click="deletePreset(entry.songId, entry.idx)"
+                                >
+                                    ✕
+                                </el-button>
                             </div>
                         </div>
                     </template>
                 </el-card>
 
-                <!-- ── 歌曲 / 等級 / 技能細工 ── -->
+                <!-- ── 歌曲選擇（情境切換；保留裝備）── -->
                 <div class="song-selector">
                     <div class="field-row">
                         <label class="field-label">歌曲</label>
@@ -1087,60 +1196,6 @@ function fmtDate(ts: number): string {
                                 :value="song.id"
                             />
                         </el-select>
-                    </div>
-                    <div class="field-row">
-                        <label class="field-label">技能等級</label>
-                        <el-select v-model="songRankIdx" size="small" class="field-select">
-                            <el-option
-                                v-for="(rank, idx) in activeSong.ranks"
-                                :key="idx"
-                                :label="`Rank ${rank}`"
-                                :value="idx"
-                            />
-                        </el-select>
-                    </div>
-                    <!-- 各詞條音樂buff 微調（±20）；只列結果面板有顯示的詞條 -->
-                    <div
-                        v-for="o in activeSong.outputs.filter((x) => x.defaultShow !== false)"
-                        :key="o.name"
-                        class="field-row"
-                    >
-                        <label class="field-label">{{ o.name }} 微調</label>
-                        <el-input-number
-                            :model-value="songOutputAdjust[activeSongId + ':' + o.name] ?? 0"
-                            :min="-20"
-                            :max="20"
-                            :step="1"
-                            :precision="0"
-                            size="small"
-                            style="width: 130px"
-                            @update:model-value="
-                                (v: number) => (songOutputAdjust[activeSongId + ':' + o.name] = Number(v) || 0)
-                            "
-                        />
-                        <span class="field-hint">音樂buff ±20</span>
-                    </div>
-                    <div v-if="activeSong.enhanceLabel" class="field-row">
-                        <el-switch v-model="songEnhance" />
-                        <span class="switch-label">{{ activeSong.enhanceLabel }} (+{{ activeSong.enhanceBase }})</span>
-                    </div>
-                    <div
-                        v-for="line in activeSong.reforgeLines ?? []"
-                        :key="line.id"
-                        class="field-row"
-                    >
-                        <label class="field-label">{{ line.label }}</label>
-                        <el-input-number
-                            :model-value="songReforge[line.id] ?? 0"
-                            :min="0"
-                            :max="line.breakMax"
-                            :step="1"
-                            :precision="0"
-                            size="small"
-                            style="width: 130px"
-                            @update:model-value="(v: number) => (songReforge[line.id] = Number(v) || 0)"
-                        />
-                        <span class="field-hint">常規 {{ line.normalMax }} / 突破 {{ line.breakMax }}</span>
                     </div>
                 </div>
 
@@ -1155,6 +1210,7 @@ function fmtDate(ts: number): string {
                     <!-- 細工（順序最前）-->
                     <el-tab-pane label="細工" name="reforge">
                         <div class="tab-body">
+                            <div class="field-section-label">演奏相關</div>
                             <!-- 樂器演奏效果（獨立一條）-->
                             <div class="field-row">
                                 <label class="field-label">樂器演奏效果</label>
@@ -1191,6 +1247,44 @@ function fmtDate(ts: number): string {
                                     />
                                 </el-select>
                             </div>
+
+                            <!-- 當前歌曲：技能相關（每個 group 一個 部位 × 效果 grid，每格 select）-->
+                            <template v-if="(activeSong.reforge ?? []).length">
+                                <div class="field-section-label">技能相關（{{ activeSong.name }}）</div>
+                                <template v-for="(group, gi) in activeSong.reforge" :key="gi">
+                                    <div class="reforge-grid reforge-head" :style="reforgeGridStyle(group.lines.length)">
+                                        <span class="reforge-corner">部位＼效果</span>
+                                        <span v-for="line in group.lines" :key="line.id" class="reforge-col-label">
+                                            {{ line.label }}
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="reforge-grid"
+                                        v-for="part in group.parts"
+                                        :key="part"
+                                        :style="reforgeGridStyle(group.lines.length)"
+                                    >
+                                        <span class="gear-slot-label">{{ part }}</span>
+                                        <el-select
+                                            v-for="line in group.lines"
+                                            :key="line.id"
+                                            :model-value="songReforge[line.id + ':' + part] ?? 0"
+                                            size="small"
+                                            class="gear-select"
+                                            @update:model-value="
+                                                (v: number) => (songReforge[line.id + ':' + part] = Number(v) || 0)
+                                            "
+                                        >
+                                            <el-option
+                                                v-for="opt in reforgeLevelOptions(line)"
+                                                :key="opt.value"
+                                                :label="opt.label"
+                                                :value="opt.value"
+                                            />
+                                        </el-select>
+                                    </div>
+                                </template>
+                            </template>
                         </div>
                     </el-tab-pane>
 
@@ -1295,12 +1389,37 @@ function fmtDate(ts: number): string {
                                 <el-switch v-model="switches.silkWing" />
                                 <span class="switch-label">特別的優雅絲緞翅膀</span>
                             </div>
+                            <!-- 套裝強化（放在草冠上面）：互斥（戰場只取最高）→ select；其餘 → 開關 -->
                             <div
+                                v-if="activeSong.enhanceExclusive && (activeSong.enhanceItems ?? []).length"
                                 class="field-row"
-                                v-for="field in expensiveItemFields"
-                                :key="field.key"
-                                v-show="field.key !== 'setEffect' || activeSongId === 'battlefield'"
                             >
+                                <label class="field-label">套裝強化-{{ activeSong.name }}</label>
+                                <el-select
+                                    :model-value="enhanceSelectedId"
+                                    size="small"
+                                    class="field-select"
+                                    @update:model-value="setEnhanceExclusive"
+                                >
+                                    <el-option label="無" value="none" />
+                                    <el-option
+                                        v-for="item in activeSong.enhanceItems"
+                                        :key="item.id"
+                                        :label="item.label"
+                                        :value="item.id"
+                                    />
+                                </el-select>
+                            </div>
+                            <template v-else>
+                                <div v-for="item in activeSong.enhanceItems ?? []" :key="item.id" class="field-row">
+                                    <el-switch
+                                        :model-value="songEnhance[item.id] ?? false"
+                                        @update:model-value="(v: boolean) => (songEnhance[item.id] = !!v)"
+                                    />
+                                    <span class="switch-label">套裝強化：{{ item.label }}</span>
+                                </div>
+                            </template>
+                            <div class="field-row" v-for="field in expensiveItemFields" :key="field.key">
                                 <label class="field-label">{{ field.label }}</label>
                                 <el-select v-model="selects[field.key as SelectKey]" size="small" class="field-select">
                                     <el-option
@@ -1310,6 +1429,9 @@ function fmtDate(ts: number): string {
                                         :value="idx"
                                     />
                                 </el-select>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="noCoin">無硬幣</el-checkbox>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">布里萊赫硬幣</label>
@@ -1413,6 +1535,21 @@ function fmtDate(ts: number): string {
                     <!-- 技能（移到最後）-->
                     <el-tab-pane label="技能" name="skill">
                         <div class="tab-body">
+                            <!-- 當前歌曲：技能等級 -->
+                            <div class="field-section-label">{{ activeSong.name }}（當前歌曲）</div>
+                            <div class="field-row">
+                                <label class="field-label">技能等級</label>
+                                <el-select v-model="songRankIdx" size="small" class="field-select">
+                                    <el-option
+                                        v-for="(rank, idx) in activeSong.ranks"
+                                        :key="idx"
+                                        :label="`Rank ${rank}`"
+                                        :value="idx"
+                                    />
+                                </el-select>
+                            </div>
+
+                            <div class="field-section-label">通用音樂技能</div>
                             <div class="field-row" v-for="field in skillFields" :key="field.key">
                                 <label class="field-label">{{ field.label }}</label>
                                 <el-select v-model="selects[field.key as SelectKey]" size="small" class="field-select">
@@ -1793,6 +1930,20 @@ function fmtDate(ts: number): string {
     flex: 1;
     min-width: 80px;
 }
+.preset-song-badge {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text-secondary, #9ca3af);
+    white-space: nowrap;
+}
+.preset-song-badge.is-current {
+    background: var(--color-accent-primary, #fbbf24);
+    color: #1f2937;
+    font-weight: 600;
+}
 .preset-date {
     font-size: 0.7rem;
     color: var(--color-text-disabled, #6b7280);
@@ -1809,6 +1960,19 @@ function fmtDate(ts: number): string {
     background: var(--color-bg-secondary, #1f2937);
     border: 1px solid var(--color-accent-primary, #fbbf24);
     border-radius: 10px;
+}
+
+/* 分頁內的小節標題（區隔當前歌曲專屬 vs 通用欄位）*/
+.field-section-label {
+    margin: 0.5rem 0 0.1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-accent-hover, #fcd34d);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+    padding-bottom: 0.2rem;
+}
+.field-section-label:first-child {
+    margin-top: 0;
 }
 
 /* ── 快捷操作 ── */
@@ -1944,6 +2108,13 @@ function fmtDate(ts: number): string {
     font-weight: 700;
     text-align: center;
     letter-spacing: 0.03em;
+    line-height: 1.15;
+    word-break: break-word;
+}
+.reforge-corner {
+    font-size: 0.7rem;
+    color: var(--color-text-disabled, #6b7280);
+    white-space: nowrap;
 }
 .col-normal {
     color: #e5e7eb;
