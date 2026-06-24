@@ -141,7 +141,7 @@ const DEFAULT_INDEX: Record<SelectKey, number> = {
     extraFarmModel: 2,
     muliasHolyWater: 0,
     fluaCrown: 0,
-    fairyDragon: 0,
+    fairyDragon: 2,
     specialUpgrade: 0,
     doll: 0,
     bugle: 0,
@@ -234,6 +234,10 @@ watch(activeSongId, () => {
     songRankIdx.value = 0;
     applyEnhanceDefaults(activeSong.value);
     for (const k of Object.keys(songReforge)) delete songReforge[k];
+    // 進行/忍耐無對應龍：若仍選著「對應的精靈龍」(已 disable)，退回「非對應的精靈龍」(仍給 +3)
+    if (!activeSong.value.dragonColor && OPTIONS.fairyDragon[selects.fairyDragon]?.value === "match") {
+        selects.fairyDragon = OPTIONS.fairyDragon.findIndex((o) => o.value === "other");
+    }
 });
 
 // 互斥套裝強化（戰場）：目前選中的 item id（"none" = 無），切換時清掉其它件
@@ -253,18 +257,12 @@ interface CalcState {
     otherBonus: number;
 }
 
-// 共用計算上下文（音樂效果 / 細工倍率 / 額外 / 在場精靈龍顏色），所有輸出詞條共享
+// 共用計算上下文（音樂效果 / 細工倍率 / 額外 / 精靈龍是否對應），所有輸出詞條共享
 interface BuffContext {
     musicEffect: number; // 音樂效果總和 (playBuff)
     gradeMults: GradeValues; // 普通 / 優秀 / 天籟 細工倍率
     extra: number; // 1 + 里拉 + SR + finalRate(硬幣+禮物)
-    dragonCode: "A" | "B" | null; // 在場精靈龍：A=紅炎；B=翠草/蒼冰/原初（藍或綠）
-}
-
-// 精靈龍是否吃到對應色：A→紅(戰場)；B→藍/綠(活潑/豐年)
-function dragonMatches(code: "A" | "B" | null, songColor: MusicSongDef["dragonColor"]): boolean {
-    if (!code || !songColor) return false;
-    return code === "A" ? songColor === "red" : songColor === "blue" || songColor === "green";
+    dragonMatch: boolean; // 是否為「對應的精靈龍」(給 appliesDragon 詞條 base×0.02)
 }
 
 // 由狀態快照算出共用上下文
@@ -286,9 +284,8 @@ function buildContext(s: CalcState): BuffContext {
         data[key] = s.switches[key as keyof Switches] ? "on" : "off";
     }
 
-    // 精靈龍：A=紅炎(戰場)；B=翠草/蒼冰/原初(活潑藍/豐年綠)。兩者皆給音樂效果 +3
-    const dragonCode: BuffContext["dragonCode"] =
-        data.fairyDragon === "A" ? "A" : data.fairyDragon === "B" ? "B" : null;
+    // 精靈龍：對應龍(match)給色加成；任一龍(match/other)皆給音樂效果 +3；無=0
+    const dragonMatch = data.fairyDragon === "match";
     const fairyDragonBase = data.fairyDragon !== 0 ? 3 : 0;
 
     let switchBuff = 0;
@@ -329,7 +326,7 @@ function buildContext(s: CalcState): BuffContext {
             inspiring: inspiringBase + (data.reforgingInspiring as number),
         },
         extra,
-        dragonCode,
+        dragonMatch,
     };
 }
 
@@ -351,12 +348,12 @@ function outputBase(o: SongOutputDef): number {
 }
 
 // 算單一詞條的三段演奏值
-function computeBuff(o: SongOutputDef, ctx: BuffContext, songColor: MusicSongDef["dragonColor"]): GradeValues {
+function computeBuff(o: SongOutputDef, ctx: BuffContext): GradeValues {
     const base = outputBase(o);
     // 固定值詞條（如豐年成功率）：三段皆為 base，不吃任何效果
     if (o.raw) return { normal: base, excellent: base, inspiring: base };
     const basePlay = base * (1 + ctx.musicEffect * 0.01);
-    const fd = o.appliesDragon && dragonMatches(ctx.dragonCode, songColor) ? base * 0.02 : 0;
+    const fd = o.appliesDragon && ctx.dragonMatch ? base * 0.02 : 0;
     const ex = o.appliesExtra ? ctx.extra : 1;
     return {
         normal: (basePlay * ctx.gradeMults.normal + fd) * ex,
@@ -373,7 +370,7 @@ function primaryOutput(song: MusicSongDef): SongOutputDef {
 // 主詞條三段值（提升分析 / Debug 共用）
 function computeScores(s: CalcState): PerformanceScores {
     const song = activeSong.value;
-    const out = computeBuff(primaryOutput(song), buildContext(s), song.dragonColor);
+    const out = computeBuff(primaryOutput(song), buildContext(s));
     return { playNormal: out.normal, playExcellent: out.excellent, playInspiring: out.inspiring };
 }
 
@@ -384,7 +381,7 @@ function computeOutputs(s: CalcState) {
     return song.outputs.map((o) => ({
         name: o.name,
         defaultShow: o.defaultShow !== false,
-        ...computeBuff(o, ctx, song.dragonColor),
+        ...computeBuff(o, ctx),
     }));
 }
 
@@ -453,6 +450,8 @@ const debug = computed(() => {
     const song = activeSong.value;
     const primary = primaryOutput(song);
     const battle = outputBase(primary); // 主詞條目前 rank 的 base（含技能細工）
+    const rankBase = primary.baseByRank[songRankIdx.value] ?? 0; // 純 rank base
+    const reforgeAdd = battle - rankBase; // 技能細工對主詞條 base 的加成
 
     // 加成分類（只列出有貢獻的詞條）
     const groups = DEBUG_GROUPS.map((g) => {
@@ -462,7 +461,18 @@ const debug = computed(() => {
         return { name: g.name, total: items.reduce((s, i) => s + i.value, 0), items };
     });
 
-    // 布里萊赫硬幣為「戰場攻擊力 %」最終加成，只計入最終倍率（不放入一般加成總和），與遺物接尾「禮物」一致。
+    // 套裝強化（開啟者）：計入演奏加成總和
+    const enhanceItemsOn = (song.enhanceItems ?? []).filter((it) => songEnhance[it.id]);
+    const enhanceAdd = enhanceItemsOn.reduce((s, it) => s + it.value, 0);
+    if (enhanceAdd >= 1) {
+        groups.push({
+            name: "套裝強化",
+            total: enhanceAdd,
+            items: enhanceItemsOn.map((it) => ({ label: it.label, value: it.value })),
+        });
+    }
+
+    // 布里萊赫硬幣為最終 % 加成，只計入最終倍率（不放入一般加成總和），與遺物接尾「禮物」一致。
     const coin = noCoin.value ? 0 : Number(totem.value) || 0;
     // 其他項目維持在分類明細最下方。
     const ob = Number(otherBonus.value) || 0;
@@ -476,11 +486,10 @@ const debug = computed(() => {
         .map((k) => ({ label: SWITCH_LABELS[k], value: switchConst[k] }));
     const switchBuff = switchItems.reduce((s, i) => s + i.value, 0);
 
-    // 精靈龍
+    // 精靈龍：任一龍 +3；對應龍(match) 再給主詞條 base×0.02
     const fd = val("fairyDragon");
     const fairyDragonBase = fd !== 0 ? 3 : 0;
-    const fdCode = fd === "A" ? "A" : fd === "B" ? "B" : null;
-    const fairyDragonBuff = primary.appliesDragon && dragonMatches(fdCode, song.dragonColor) ? battle * 0.02 : 0;
+    const fairyDragonBuff = primary.appliesDragon && fd === "match" ? battle * 0.02 : 0;
 
     const additiveTotal = groups.reduce((s, g) => s + g.total, 0);
     const playBuff = additiveTotal + switchBuff + fairyDragonBase;
@@ -505,6 +514,12 @@ const debug = computed(() => {
     const extra = +(1 + rating + su + finalRate).toFixed(6);
 
     return {
+        songName: song.name,
+        primaryName: primary.name,
+        primaryAppliesExtra: !!primary.appliesExtra,
+        rankLabel: song.ranks[songRankIdx.value] ?? "",
+        rankBase,
+        reforgeAdd,
         battle,
         groups,
         switchItems,
@@ -654,7 +669,10 @@ const SWITCHES_BY_TAB: Record<string, (keyof Switches)[]> = {
 
 // 取得某欄位「最高加成」的選項索引
 function bestIndex(key: SelectKey): number {
-    if (key === "fairyDragon") return 1; // 紅炎的精靈龍（提供 battle*0.02）
+    if (key === "fairyDragon") {
+        // 有對應龍的歌挑「對應的精靈龍」(index 0)；進行/忍耐無對應龍 → 挑「非對應的精靈龍」(index 1，仍給 +3)
+        return activeSong.value.dragonColor ? 0 : 1;
+    }
     const opts = OPTIONS[key];
     let bi = 0;
     let bv = -Infinity;
@@ -692,7 +710,8 @@ function topReforge() {
     }
 }
 
-// 套裝強化最頂：互斥取最高 value 的件，非互斥則全部開
+// 套裝強化最頂：互斥取最高 value 的件，非互斥則全部開。
+// 例外：slot==="head" 的套裝與草冠同部位（草冠在 set 分頁已拉到最高且 ≥ 該套裝），最頂時不開、由草冠勝出。
 function topEnhance() {
     const items = activeSong.value.enhanceItems ?? [];
     if (!items.length) return;
@@ -700,7 +719,7 @@ function topEnhance() {
         const best = items.reduce((a, b) => (b.value > a.value ? b : a));
         for (const it of items) songEnhance[it.id] = it.id === best.id;
     } else {
-        for (const it of items) songEnhance[it.id] = true;
+        for (const it of items) songEnhance[it.id] = it.slot !== "head";
     }
 }
 
@@ -804,6 +823,13 @@ const improveItems = computed<ImproveRow[]>(() => {
 
     // 下拉（未選到頂；以 value 比較，避免相同 value 的選項被誤判）
     (Object.keys(SELECT_LABELS) as SelectKey[]).forEach((k) => {
+        // 細工分普通/優秀/天籟：對應演奏未勾選就不列該細工（reforgingPlayEffect 非分級，照列）
+        const lk = k.toLowerCase();
+        if (lk.includes("reforging")) {
+            if (lk.endsWith("normal") && !analysisGrades.normal) return;
+            if (lk.endsWith("excellent") && !analysisGrades.excellent) return;
+            if (lk.endsWith("inspiring") && !analysisGrades.inspiring) return;
+        }
         const bi = bestIndex(k);
         const curVal = OPTIONS[k][selects[k]]?.value;
         const bestVal = OPTIONS[k][bi]?.value;
@@ -1253,7 +1279,7 @@ function fmtDate(ts: number): string {
                                 <div class="field-section-label">技能相關（{{ activeSong.name }}）</div>
                                 <template v-for="(group, gi) in activeSong.reforge" :key="gi">
                                     <div class="reforge-grid reforge-head" :style="reforgeGridStyle(group.lines.length)">
-                                        <span class="reforge-corner">部位＼效果</span>
+                                        <span class="reforge-corner"></span>
                                         <span v-for="line in group.lines" :key="line.id" class="reforge-col-label">
                                             {{ line.label }}
                                         </span>
@@ -1417,6 +1443,7 @@ function fmtDate(ts: number): string {
                                         @update:model-value="(v: boolean) => (songEnhance[item.id] = !!v)"
                                     />
                                     <span class="switch-label">套裝強化：{{ item.label }}</span>
+                                    <span v-if="item.slot === 'head'" class="field-hint">與草冠同部位（頭），擇一</span>
                                 </div>
                             </template>
                             <div class="field-row" v-for="field in expensiveItemFields" :key="field.key">
@@ -1474,6 +1501,11 @@ function fmtDate(ts: number): string {
                     <!-- 雜項 -->
                     <el-tab-pane label="雜項" name="misc">
                         <div class="tab-body">
+                            <div class="field-desc">
+                                各色精靈龍對應音樂：紅炎→戰場的序曲、蒼冰→活潑板、翠草→豐年歌（進行・忍耐無對應龍）。
+                                <br />
+                                對應龍：該歌主詞條 +base×2% 且音樂效果 +3；非對應龍：只 +3 音樂效果；無：無加成。
+                            </div>
                             <div class="field-row">
                                 <label class="field-label">寵物</label>
                                 <el-select v-model="selects.fairyDragon" size="small" class="field-select">
@@ -1482,6 +1514,7 @@ function fmtDate(ts: number): string {
                                         :key="idx"
                                         :label="opt.label"
                                         :value="idx"
+                                        :disabled="OPTIONS.fairyDragon[idx].value === 'match' && !activeSong.dragonColor"
                                     />
                                 </el-select>
                             </div>
@@ -1677,6 +1710,13 @@ function fmtDate(ts: number): string {
                     </div>
 
                     <template v-if="showDebug">
+                        <div class="debug-line muted">
+                            歌曲：
+                            <b>{{ debug.songName }}</b>
+                            　主詞條：
+                            <b>{{ debug.primaryName }}</b>
+                            　Rank {{ debug.rankLabel }}
+                        </div>
                         <!-- 音樂加成總和 -->
                         <div class="debug-section">演奏加成總和（%）</div>
                         <table class="debug-table">
@@ -1707,42 +1747,67 @@ function fmtDate(ts: number): string {
                         </div>
                         <div class="debug-line">basePlay = {{ debug.basePlay.toFixed(3) }}</div>
 
-                        <!-- 戰場攻擊力倍率（20% + 樂器評級效果）= battle × extra -->
-                        <div class="debug-section">戰場攻擊力倍率（20% + 樂器評級效果）</div>
+                        <!-- 主詞條 base（rank base + 技能細工）-->
+                        <div class="debug-section">主詞條 base — {{ debug.primaryName }}</div>
                         <table class="debug-table">
                             <tbody>
                                 <tr>
-                                    <td class="dbg-cat">戰場序曲 (base)</td>
+                                    <td class="dbg-cat">rank base（Rank {{ debug.rankLabel }}）</td>
+                                    <td class="dbg-total">{{ debug.rankBase }}</td>
+                                    <td class="dbg-items">{{ debug.primaryName }} 基礎值</td>
+                                </tr>
+                                <tr v-if="debug.reforgeAdd > 0">
+                                    <td class="dbg-cat">技能細工</td>
+                                    <td class="dbg-total">+{{ debug.reforgeAdd }}</td>
+                                    <td class="dbg-items">部位 × 效果加總</td>
+                                </tr>
+                                <tr>
+                                    <td class="dbg-cat"><b>base 合計</b></td>
+                                    <td class="dbg-total"><b>{{ debug.battle.toFixed(2) }}</b></td>
+                                    <td class="dbg-items">rank base + 技能細工</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 評級倍率：只有吃額外的攻擊詞條才套用 = battle × extra -->
+                        <div class="debug-section">評級倍率（里拉 / SR / 硬幣 / 禮物）</div>
+                        <table v-if="debug.primaryAppliesExtra" class="debug-table">
+                            <tbody>
+                                <tr>
+                                    <td class="dbg-cat">{{ debug.primaryName }} (base)</td>
                                     <td class="dbg-total">{{ debug.battle.toFixed(2) }}</td>
-                                    <td class="dbg-items">20%</td>
+                                    <td class="dbg-items">×1.0</td>
                                 </tr>
                                 <tr>
                                     <td class="dbg-cat">里拉</td>
                                     <td class="dbg-total">+{{ (debug.battle * debug.rating).toFixed(2) }}</td>
-                                    <td class="dbg-items">battle × {{ (debug.rating * 100).toFixed(1) }}%</td>
+                                    <td class="dbg-items">base × {{ (debug.rating * 100).toFixed(1) }}%</td>
                                 </tr>
                                 <tr>
                                     <td class="dbg-cat">SR 特改</td>
                                     <td class="dbg-total">+{{ (debug.battle * debug.su).toFixed(2) }}</td>
-                                    <td class="dbg-items">battle × {{ (debug.su * 100).toFixed(1) }}%</td>
+                                    <td class="dbg-items">base × {{ (debug.su * 100).toFixed(1) }}%</td>
                                 </tr>
                                 <tr>
                                     <td class="dbg-cat">硬幣</td>
                                     <td class="dbg-total">+{{ (debug.battle * debug.totemValue).toFixed(2) }}</td>
-                                    <td class="dbg-items">battle × {{ (debug.totemValue * 100).toFixed(2) }}%</td>
+                                    <td class="dbg-items">base × {{ (debug.totemValue * 100).toFixed(2) }}%</td>
                                 </tr>
                                 <tr>
                                     <td class="dbg-cat">禮物</td>
                                     <td class="dbg-total">+{{ (debug.battle * debug.relicRate).toFixed(2) }}</td>
-                                    <td class="dbg-items">battle × {{ (debug.relicRate * 100).toFixed(2) }}%</td>
+                                    <td class="dbg-items">base × {{ (debug.relicRate * 100).toFixed(2) }}%</td>
                                 </tr>
                                 <tr>
-                                    <td class="dbg-cat"><b>合計 (20%+評級)</b></td>
+                                    <td class="dbg-cat"><b>合計 (base + 評級)</b></td>
                                     <td class="dbg-total"><b>{{ (debug.battle * debug.extra).toFixed(2) }}</b></td>
-                                    <td class="dbg-items">= battle × extra ({{ debug.extra }})</td>
+                                    <td class="dbg-items">= base × extra ({{ debug.extra }})</td>
                                 </tr>
                             </tbody>
                         </table>
+                        <div v-else class="debug-line muted">
+                            {{ debug.primaryName }} 不吃評級效果（extra = 1）；最終值 = basePlay × 細工倍率。
+                        </div>
 
                         <!-- 細工倍率 -->
                         <div class="debug-section">細工倍率（演奏）</div>
@@ -2080,6 +2145,16 @@ function fmtDate(ts: number): string {
 .field-hint {
     font-size: 0.78rem;
     color: var(--color-text-muted, #9ca3af);
+}
+.field-desc {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--color-text-muted, #9ca3af);
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 2px solid var(--color-accent-primary, #fbbf24);
+    border-radius: 4px;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.5rem;
 }
 .switch-label {
     font-size: 0.83rem;

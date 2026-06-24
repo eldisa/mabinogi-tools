@@ -41,8 +41,8 @@ export interface MusicSongDef {
     outputs: SongOutputDef[];
     // 一首歌可有多個 grid 群組（如忍耐：防禦/保護一組、魔恢/耐恢一組）
     reforge?: SongReforgeGroup[];
-    /** 套裝強化項目（加進音樂效果總和）；戰場 2 件、其餘各 1 件 */
-    enhanceItems?: { id: string; label: string; value: number; default?: boolean }[];
+    /** 套裝強化項目（加進音樂效果總和）；戰場 2 件、其餘各 1 件。slot：與草冠等同部位時的衝突標記 */
+    enhanceItems?: { id: string; label: string; value: number; default?: boolean; slot?: string }[];
     /** 套裝強化是否互斥（只取最高 → 用 select 單選）；省略 = 各件獨立開關 */
     enhanceExclusive?: boolean;
     /** 對應的精靈龍顏色：吃到對應色才給該歌主詞條 base*0.02；無 = 該歌無對應龍（忍耐/進行） */
@@ -92,8 +92,8 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         name: "活潑板",
         ranks: RANKS,
         dragonColor: "blue", // 藍龍：加成魔法攻擊力
-        // 套裝強化（活潑板）：吟遊詩人頭 +3
-        enhanceItems: [{ id: "livelyHead", label: "吟遊詩人頭 (+3)", value: 3 }],
+        // 套裝強化（活潑板）：吟遊詩人頭 +3（頭部，與草冠同部位）
+        enhanceItems: [{ id: "livelyHead", label: "吟遊詩人頭 (+3)", value: 3, slot: "head" }],
         // 速度細工：飾品1/飾品2/鞋子 各 0~4（4 為突破限定）
         reforge: [
             {
@@ -116,18 +116,21 @@ export const MUSIC_SONGS: MusicSongDef[] = [
                 name: "魔法施展速度",
                 baseByRank: [11, 10, 9, 8, 7, 7, 6, 6, 5, 4, 4, 3, 2, 2, 2],
                 appliesExtra: false,
+                appliesDragon: true, // 藍龍也加成速度（base×0.02）
                 reforgeLine: "livelyMagicSpeed",
             },
             {
                 name: "煉金術施展速度",
                 baseByRank: [11, 10, 9, 8, 7, 6, 6, 5, 5, 4, 3, 3, 2, 2, 2],
                 appliesExtra: false,
+                appliesDragon: true, // 藍龍也加成速度（base×0.02）
                 reforgeLine: "livelyAlchSpeed",
             },
             {
                 name: "攻擊速度",
                 baseByRank: [11, 10, 9, 8, 7, 6, 5, 4, 4, 3, 3, 2, 2, 1, 1],
                 appliesExtra: false,
+                appliesDragon: true, // 藍龍也加成速度（base×0.02）
                 reforgeLine: "livelyAtkSpeed",
             },
         ],
@@ -167,7 +170,7 @@ export const MUSIC_SONGS: MusicSongDef[] = [
         id: "harvest",
         name: "豐年歌",
         ranks: RANKS,
-        dragonColor: "green", // 綠龍：加成豐年（待確認加成哪一條詞條）
+        dragonColor: "green", // 綠龍：加成採集速度
         // 套裝強化（豐年歌）：吟遊詩人手套 +3
         enhanceItems: [{ id: "harvestGlove", label: "吟遊詩人手套 (+3)", value: 3 }],
         // 採集速度細工：飾品1/飾品2/手套 各 0~4（4 為突破限定）
@@ -217,8 +220,8 @@ export const MUSIC_SONGS: MusicSongDef[] = [
             {
                 parts: ["鞋子"],
                 lines: [
-                    { id: "enduranceMana", label: "魔力恢復速度", normalMax: 9, breakMax: 13 },
-                    { id: "enduranceStamina", label: "耐力恢復速度", normalMax: 9, breakMax: 13 },
+                    { id: "enduranceMana", label: "魔力恢復速度", normalMax: 10, breakMax: 13 },
+                    { id: "enduranceStamina", label: "耐力恢復速度", normalMax: 10, breakMax: 13 },
                 ],
             },
         ],

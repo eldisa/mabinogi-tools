@@ -302,10 +302,11 @@ export const setEffectOptions: Option[] = [
     { value: 3, label: "特別的吟遊詩人浪漫服裝 (+3)" },
 ];
 
+// 精靈龍改以「是否對應當前歌曲」呈現：對應龍給 base×2% 色加成；任一龍皆給音樂效果 +3
 export const fairyDragonOptions: Option[] = [
-    { value: 0, label: "寵物精靈龍在場：無" },
-    { value: "A", label: "精靈龍：紅炎的精靈龍" },
-    { value: "B", label: "精靈龍：翠草/蒼冰/原初的精靈龍" },
+    { value: "match", label: "對應的精靈龍" },
+    { value: "other", label: "非對應的精靈龍" },
+    { value: 0, label: "無" },
 ];
 
 export const dollOptions: Option[] = [
