@@ -1135,12 +1135,23 @@ const getSourceLabel = (id: number): string => {
 interface SlotDef {
     label: string;
     isWeapon?: boolean;
+    isOffhand?: boolean;
     limits: string[];
 }
 
+// 各武器類型對應的副手裝備限制（無此 key = 該武器無副手，不顯示副手列）
+const OFFHAND_LIMITS: Record<string, string[]> = {
+    魔杖: ["魔導書、水晶球"],
+    鐮刀: ["魔導書、水晶球"],
+    鋼瓶: ["盾牌", "神聖盾牌", "鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"],
+    物理: ["盾牌", "神聖盾牌"],
+};
+
 const QUICK_VIEW_SLOTS: SlotDef[] = [
     { label: "武器", isWeapon: true, limits: [] },
+    { label: "副手", isOffhand: true, limits: [] },
     { label: "飾品", limits: ["飾品"] },
+    { label: "月餅", limits: ["穆利亞斯的遺物"] },
     { label: "頭", limits: ["頭部裝備", "頭", "頭部"] },
     {
         label: "身",
@@ -1178,8 +1189,13 @@ const quickViewData = computed((): QuickViewRow[] => {
     const hideRobe = wearBrokenRobe.value;
 
     return QUICK_VIEW_SLOTS.filter((slot) => !(hideRobe && slot.label === "袍/翅膀"))
+        .filter((slot) => !(slot.isOffhand && !OFFHAND_LIMITS[wType]))
         .map((slot) => {
-            const limits = slot.isWeapon ? weaponLimits : slot.limits;
+            const limits = slot.isWeapon
+                ? weaponLimits
+                : slot.isOffhand
+                  ? (OFFHAND_LIMITS[wType] ?? [])
+                  : slot.limits;
 
             // [""] 代表無裝備限制，應顯示於所有部位
             const isNoRestriction = (e: Enchant) => e.limit.length === 0 || (e.limit.length === 1 && e.limit[0] === "");
