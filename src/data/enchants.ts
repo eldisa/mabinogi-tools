@@ -19450,6 +19450,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["穆利亞斯的遺物"],
         effect: [
+            { id: "all_alchemy_damage", min: 16, max: 16 },
             { id: "HP", min: 30, max: 30 },
             { id: "MP", min: 30, max: 30 },
         ],
@@ -35094,6 +35095,7 @@ export const enchants: Enchant[] = [
         limit: ["穆利亞斯的遺物"],
         effect: [
             { id: "arcana_skill_bonus_damage_rate", min: 1, max: 1 },
+            { id: "all_alchemy_damage", min: 16, max: 16 },
             { id: "SP", min: 20, max: 20 },
             { id: "item_durability_loss_dec_rate", min: 30, max: 30 },
         ],
