@@ -983,25 +983,17 @@ const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
     { label: "集魔杖", limits: ["集魔杖", "單手魔杖、集魔杖"], strictFilter: true },
     { label: "鐮刀", limits: ["大型鐮刀"], strictFilter: true },
     { label: "鋼瓶", limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"], strictFilter: true },
-    {
-        label: "物理",
-        limits: [
-            "武器",
-            "近距離武器",
-            "單手武器",
-            "雙手武器",
-            "弓",
-            "弩",
-            "拳套",
-            "鈍器",
-            "斧",
-            "斧頭",
-            "手把",
-            "雙槍",
-            "騎槍",
-        ],
-        strictFilter: true,
-    },
+    { label: "雙持單手武器", limits: ["武器", "近距離武器", "單手武器", "鈍器", "斧", "斧頭"], strictFilter: true },
+    { label: "單手武器+盾", limits: ["武器", "近距離武器", "單手武器", "鈍器", "斧", "斧頭"], strictFilter: true },
+    { label: "雙手武器", limits: ["武器", "近距離武器", "雙手武器", "雙手斧武器"], strictFilter: true },
+    { label: "雙手武器+盾", limits: ["武器", "近距離武器", "雙手武器", "雙手斧武器"], strictFilter: true },
+    { label: "拳套", limits: ["武器", "近距離武器", "雙手武器", "拳套"], strictFilter: true },
+    { label: "騎槍", limits: ["武器", "近距離武器", "雙手武器", "騎槍"], strictFilter: true },
+    { label: "手把", limits: ["武器", "手把"], strictFilter: true },
+    { label: "鎖鏈", limits: ["武器", "近距離武器", "雙手武器", "鎖鏈鐮刃", "支援用鎖鏈鐮刃"], strictFilter: true },
+    { label: "弓/弩", limits: ["武器", "弓", "弩"], strictFilter: true },
+    { label: "雙槍", limits: ["武器", "雙槍"], strictFilter: true },
+    { label: "手裏劍", limits: ["武器", "手裏劍", "手裡劍"], strictFilter: true },
     { label: "音樂", limits: ["樂器"], topN: 3, strictFilter: true },
 ];
 
@@ -1031,9 +1023,47 @@ const MUSIC_IDS = new Set(["music_buff_bonus", "musicbuff_bonus", "musicbuff_dur
 // 所有武器專屬能力的聯集（用於判斷賦予是否「中性」）
 const ANY_EXCLUSIVE = new Set([...PHYS_DMG_IDS, ...MAGIC_IDS, ...ALCHEMY_IDS, ...CHAIN_IDS, ...MUSIC_IDS]);
 
+// 物理系武器共用的攻擊/傀儡能力
+const PHYS_PRIMARY = ["attack_max", "AttMax", "Attmax", "wAttMax"];
+const PHYS_RELEVANT = [
+    ...PHYS_DMG_IDS,
+    "critical",
+    "Crit",
+    "critical_damage",
+    "criticaldamage",
+    "critical_cap_increase",
+    "lance_piercing",
+    "bonus_damage",
+    "bonusdamage",
+    "ArcheryTalentAttMax",
+    "CombatTalentAttMax",
+];
+const MARIONETTE_PRIMARY = ["marionette_attack_max"];
+const MARIONETTE_RELEVANT = [
+    "marionette_attack_max",
+    "marionette_attack_min",
+    "marionette_critical",
+    "marionette_hp",
+    "marionette_defense",
+    "marionette_protect",
+    ...PHYS_DMG_IDS,
+];
+// 共用 PHYS 設定的物理武器（手把為傀儡，單獨處理）
+const PHYS_WEAPON_LABELS = [
+    "雙持單手武器",
+    "單手武器+盾",
+    "雙手武器",
+    "雙手武器+盾",
+    "拳套",
+    "騎槍",
+    "鎖鏈",
+    "弓/弩",
+    "雙槍",
+    "手裏劍",
+];
+
 // 各武器類型「主要數值」ID（排序用）
 const PRIMARY_IDS: Record<string, string[]> = {
-    物理: ["attack_max", "AttMax", "Attmax", "wAttMax"],
     魔杖: ["magic_attack", "MagicAttack", "magic_damage"],
     集魔杖: ["magic_attack", "MagicAttack", "magic_damage"],
     鋼瓶: [
@@ -1046,29 +1076,20 @@ const PRIMARY_IDS: Record<string, string[]> = {
     ],
     鐮刀: ["magic_attack", "MagicAttack", "magic_damage"],
     音樂: ["music_buff_bonus"],
+    手把: MARIONETTE_PRIMARY,
 };
+PHYS_WEAPON_LABELS.forEach((l) => (PRIMARY_IDS[l] = PHYS_PRIMARY));
 
 // 各武器類型「顯示」能力 ID（效果摘要只顯示此集合內的屬性）
 const RELEVANT_IDS: Record<string, Set<string>> = {
-    物理: new Set([
-        ...PHYS_DMG_IDS,
-        "critical",
-        "Crit",
-        "critical_damage",
-        "criticaldamage",
-        "critical_cap_increase",
-        "lance_piercing",
-        "bonus_damage",
-        "bonusdamage",
-        "ArcheryTalentAttMax",
-        "CombatTalentAttMax",
-    ]),
     魔杖: new Set([...MAGIC_IDS]),
     集魔杖: new Set([...MAGIC_IDS]),
     鋼瓶: new Set([...ALCHEMY_IDS]),
     鐮刀: new Set(["magic_attack", "MagicAttack", "magic_damage", "lance_piercing"]),
     音樂: new Set(["music_buff_bonus"]),
+    手把: new Set(MARIONETTE_RELEVANT),
 };
+PHYS_WEAPON_LABELS.forEach((l) => (RELEVANT_IDS[l] = new Set(PHYS_RELEVANT)));
 
 /** 合併同 ID 的多個詞條（數值加總） */
 interface MergedEff {
@@ -1145,7 +1166,8 @@ const OFFHAND_LIMITS: Record<string, string[]> = {
     魔杖: ["魔導書、水晶球"],
     鐮刀: ["魔導書、水晶球"],
     鋼瓶: ["盾牌", "神聖盾牌", "鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"],
-    物理: ["盾牌", "神聖盾牌"],
+    "單手武器+盾": ["盾牌", "神聖盾牌"],
+    "雙手武器+盾": ["盾牌", "神聖盾牌"],
 };
 
 const QUICK_VIEW_SLOTS: SlotDef[] = [
