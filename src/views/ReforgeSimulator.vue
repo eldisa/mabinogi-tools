@@ -479,6 +479,14 @@ const thisRunPR = computed<number | null>(() => {
     return (1 - cdf) * 100;
 });
 
+// 本次次數相對平均的倍數（直觀對照）
+const thisRunRatio = computed<number | null>(() => {
+    const lr = lastRoll.value;
+    if (!lr?.isSuccess || lr.thisRunCount < 1 || !simResult.value || simResult.value.mean <= 0) return null;
+    return lr.thisRunCount / simResult.value.mean;
+});
+const fmtRatio = (r: number): string => (r >= 1 ? r.toFixed(1) : r.toFixed(2));
+
 const isItemHit = (item: RollResultItem): boolean =>
     selectedTargets.value.some((t) => t.name === item.entry.name && item.level >= t.minLevel);
 
@@ -1198,14 +1206,13 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                                 <span class="text-gray-400">金</span>
                             </template>
                             <span
-                                v-if="thisRunPR !== null"
+                                v-if="thisRunPR !== null && thisRunRatio !== null"
                                 class="font-semibold ml-1"
-                                :class="thisRunPR >= 50 ? 'text-green-400' : 'text-orange-400'"
+                                :class="thisRunRatio < 1 ? 'text-green-400' : 'text-orange-400'"
                             >
-                                {{ thisRunPR >= 50 ? "🍀" : "💸" }} PR {{ thisRunPR.toFixed(1) }}
-                                <span class="text-xs text-gray-500 font-normal">
-                                    （比 {{ thisRunPR.toFixed(1) }}% 的嘗試更快達標）
-                                </span>
+                                {{ thisRunRatio < 1 ? "🍀" : "💸" }} 平均的 {{ fmtRatio(thisRunRatio) }} 倍
+                                <span class="text-gray-600 font-normal mx-0.5">·</span>
+                                PR {{ thisRunPR.toFixed(1) }}
                             </span>
                         </div>
 
