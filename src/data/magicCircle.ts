@@ -27,17 +27,6 @@ export const magicCircleCategories: MagicCircleCategory[] = [
         ],
     },
     {
-        label: "非戰鬥",
-        buffs: [
-            { name: "耳語", effect: "偶爾聽到可疑的悄悄話", type: "自身" },
-            { name: "飽食度恢復", effect: "半徑 3m 範圍內的隊伍成員 飽食度每秒 [100] 恢復", type: "地面" },
-            { name: "肌肉增加", effect: "半徑 3m 範圍內的隊伍成員 每10秒增加一次肌肉", type: "地面" },
-            { name: "肌肉減少", effect: "半徑 3m 範圍內的隊伍成員 每10秒減少一次肌肉", type: "地面" },
-            { name: "脂肪增加", effect: "半徑 3m 範圍內的隊伍成員 每10秒增加一次體重", type: "地面" },
-            { name: "脂肪減少", effect: "半徑 3m 範圍內的隊伍成員 每10秒減少一次體重", type: "地面" },
-        ],
-    },
-    {
         label: "近距離",
         buffs: [
             { name: "防禦", effect: "防禦成功時防禦能力 [10] 增加", type: "自身" },
@@ -212,6 +201,17 @@ export const magicCircleCategories: MagicCircleCategory[] = [
             { name: "黃道蔓延", effect: "黃道蔓延Debuff持續時間 [2.0] 秒增加", type: "自身" },
             { name: "引力空間", effect: "引力空間每秒蓄力範圍 [1.0] m增加", type: "自身" },
             { name: "星魂卡陣", effect: "星魂卡陣傷害 [100] %增加", type: "自身" },
+        ],
+    },
+    {
+        label: "非戰鬥",
+        buffs: [
+            { name: "耳語", effect: "偶爾聽到可疑的悄悄話", type: "自身" },
+            { name: "飽食度恢復", effect: "半徑 3m 範圍內的隊伍成員 飽食度每秒 [100] 恢復", type: "地面" },
+            { name: "肌肉增加", effect: "半徑 3m 範圍內的隊伍成員 每10秒增加一次肌肉", type: "地面" },
+            { name: "肌肉減少", effect: "半徑 3m 範圍內的隊伍成員 每10秒減少一次肌肉", type: "地面" },
+            { name: "脂肪增加", effect: "半徑 3m 範圍內的隊伍成員 每10秒增加一次體重", type: "地面" },
+            { name: "脂肪減少", effect: "半徑 3m 範圍內的隊伍成員 每10秒減少一次體重", type: "地面" },
         ],
     },
 ];

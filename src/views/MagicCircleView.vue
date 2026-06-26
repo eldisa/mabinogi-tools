@@ -65,16 +65,25 @@ const effectSegments = (effect: string) =>
                     </span>
                 </div>
 
-                <!-- 分類 tab（搜尋時停用，改為跨分類結果） -->
-                <el-tabs v-model="activeTab" type="border-card" class="mc-tabs">
-                    <el-tab-pane label="全部" name="全部" />
-                    <el-tab-pane
+                <!-- 分類按鈕（一次全部顯示；搜尋時改為跨分類結果） -->
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        class="cat-btn"
+                        :class="{ 'cat-btn--active': activeTab === '全部' }"
+                        @click="activeTab = '全部'"
+                    >
+                        全部
+                    </button>
+                    <button
                         v-for="cat in magicCircleCategories"
                         :key="cat.label"
-                        :label="cat.label"
-                        :name="cat.label"
-                    />
-                </el-tabs>
+                        class="cat-btn"
+                        :class="{ 'cat-btn--active': activeTab === cat.label }"
+                        @click="activeTab = cat.label"
+                    >
+                        {{ cat.label }}
+                    </button>
+                </div>
 
                 <el-table
                     :key="showCategoryCol ? 'with-cat' : 'no-cat'"
@@ -130,7 +139,27 @@ const effectSegments = (effect: string) =>
 </template>
 
 <style scoped>
-.mc-tabs :deep(.el-tabs__content) {
-    display: none;
+.cat-btn {
+    padding: 5px 14px;
+    font-size: 0.85rem;
+    border-radius: 9999px;
+    border: 1.5px solid #374151;
+    background: #1f2937;
+    color: #d1d5db;
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        background 0.15s,
+        color 0.15s;
+}
+.cat-btn:hover {
+    border-color: #6b7280;
+    background: #263548;
+}
+.cat-btn--active {
+    border-color: #f59e0b;
+    background: #2d2207;
+    color: #fbbf24;
+    font-weight: 600;
 }
 </style>
