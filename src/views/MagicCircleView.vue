@@ -77,6 +77,7 @@ const effectSegments = (effect: string) =>
                 </el-tabs>
 
                 <el-table
+                    :key="showCategoryCol ? 'with-cat' : 'no-cat'"
                     :data="filteredRows"
                     border
                     class="rounded-lg overflow-hidden mt-3"
