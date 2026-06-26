@@ -23,6 +23,7 @@ import BossTimer from '../views/BossTimer.vue';
 import RaidBoss4DodgeTraining from '../views/RaidBoss4DodgeTraining.vue';
 import EchostoneSimulator from '../views/EchostoneSimulator.vue';
 import MusicCalculator from '../views/MusicCalculator.vue';
+import MagicCircleView from '../views/MagicCircleView.vue';
 import Changelog from '../views/Changelog.vue';
 
 const routes = [
@@ -144,6 +145,11 @@ const routes = [
             path: '/echostone-simulator',
             name: '回音石模擬器',
             component: EchostoneSimulator,
+        },
+        {
+            path: '/magic-circle',
+            name: '魔法陣查詢',
+            component: MagicCircleView,
         },]
     },
 
@@ -170,6 +176,7 @@ const pageTitles = {
     '頂裝差距': '頂裝差距 | 瑪奇小工具',
     '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
     '音樂計算機': '音樂計算機 | 瑪奇小工具',
+    '魔法陣查詢': '魔法陣查詢 | 瑪奇小工具',
     '1王機制練習': '1王機制練習 | 瑪奇小工具',
     '2關機制練習': '2關機制練習 | 瑪奇小工具',
     '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',
