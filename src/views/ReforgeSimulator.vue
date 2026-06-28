@@ -469,6 +469,24 @@ const rollCount = ref<number>(0);
 const successCount = ref<number>(0);
 const autoMode = ref<boolean>(false);
 
+// 本次達標次數的百分位（PR）— 相對整體機率分布
+// 幾何分布精確 CDF：P(N ≤ n) = 1 - (1-p)^n
+// PR = 比多少比例的嘗試更快達標 = (1 - CDF) × 100；越高代表手氣越好
+const thisRunPR = computed<number | null>(() => {
+    const lr = lastRoll.value;
+    if (!lr?.isSuccess || lr.thisRunCount < 1 || !simResult.value || simResult.value.p <= 0) return null;
+    const cdf = 1 - Math.pow(1 - simResult.value.p, lr.thisRunCount);
+    return (1 - cdf) * 100;
+});
+
+// 本次次數相對平均的倍數（直觀對照）
+const thisRunRatio = computed<number | null>(() => {
+    const lr = lastRoll.value;
+    if (!lr?.isSuccess || lr.thisRunCount < 1 || !simResult.value || simResult.value.mean <= 0) return null;
+    return lr.thisRunCount / simResult.value.mean;
+});
+const fmtRatio = (r: number): string => (r >= 1 ? r.toFixed(1) : r.toFixed(2));
+
 const isItemHit = (item: RollResultItem): boolean =>
     selectedTargets.value.some((t) => t.name === item.entry.name && item.level >= t.minLevel);
 
@@ -1187,6 +1205,15 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                                 </span>
                                 <span class="text-gray-400">金</span>
                             </template>
+                            <span
+                                v-if="thisRunPR !== null && thisRunRatio !== null"
+                                class="font-semibold ml-1"
+                                :class="thisRunRatio < 1 ? 'text-green-400' : 'text-orange-400'"
+                            >
+                                {{ thisRunRatio < 1 ? "🍀" : "💸" }} 平均的 {{ fmtRatio(thisRunRatio) }} 倍
+                                <span class="text-gray-600 font-normal mx-0.5">·</span>
+                                PR {{ thisRunPR.toFixed(1) }}
+                            </span>
                         </div>
 
                         <!-- 3 stat tiles -->

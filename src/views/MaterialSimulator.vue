@@ -444,6 +444,13 @@
                                     <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
 
                                     <el-button type="info" plain @click="resetMaterialPrices">重置</el-button>
+
+                                    <el-button type="success" plain @click="exportMaterialPrices">匯出</el-button>
+
+                                    <label>
+                                        <el-button type="success" plain tag="span">匯入</el-button>
+                                        <input type="file" accept=".json" class="hidden" @change="importMaterialPrices" />
+                                    </label>
                                 </div>
                             </div>
                             <div class="mb-3 flex items-center gap-4">
@@ -616,6 +623,38 @@ const saveMaterialPrices = () => {
 const resetMaterialPrices = () => {
     materialPrices.value = defaultMaterialPrices.map((e) => ({ ...e }));
     localStorage.removeItem(STORAGE_KEY);
+};
+
+const exportMaterialPrices = () => {
+    const json = JSON.stringify(materialPrices.value, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "material-prices.json";
+    a.click();
+    URL.revokeObjectURL(url);
+};
+
+const importMaterialPrices = (e: Event) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        try {
+            const parsed: MaterialPriceEntry[] = JSON.parse(ev.target!.result as string);
+            materialPrices.value = defaultMaterialPrices.map((def) => {
+                const match = parsed.find((p) => p.id === def.id);
+                return match ? { ...def, ...match } : { ...def };
+            });
+            saveMaterialPrices();
+            ElMessage.success("匯入成功");
+        } catch {
+            ElMessage.error("檔案格式錯誤");
+        }
+    };
+    reader.readAsText(file);
+    (e.target as HTMLInputElement).value = "";
 };
 
 const formatNumberInput = (v: number): string => (v ? v.toLocaleString("zh-TW") : "0");

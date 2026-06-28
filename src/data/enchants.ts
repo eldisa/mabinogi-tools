@@ -19450,6 +19450,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["穆利亞斯的遺物"],
         effect: [
+            { id: "all_alchemy_damage", min: 16, max: 16 },
             { id: "HP", min: 30, max: 30 },
             { id: "MP", min: 30, max: 30 },
         ],
@@ -31755,42 +31756,6 @@ export const enchants: Enchant[] = [
         personalize: true,
     },
     {
-        id: 31608,
-        name: {
-            tw: "直覺的",
-            en: "Intuition",
-            tw2: "預感的",
-        },
-        list: ": IsGreaterEqualSkillLv(30201,13) : SetSetItemEffectOnEquip(MagicAttack, +(4~12));\\n: IsGreaterEqualSkillLv(30301,13) : SetSetItemEffectOnEquip(mana_saving, +(1~2));\\n: IsGreaterEqualSkillLv(30101,13) : SetParamOnEquip(Crit, +5);\\n: : SetParamOnEquip(Str, -15);\\n: : setpersonalize(true);",
-        desc: "魔杖,集魔杖上可以進行魔力賦予\\\\n火焰等級3以上時魔法攻擊力4~12增加\\\\n冰矛等級3以上時魔力消耗減少1~2增加\\\\n雷矢等級3以上時暴擊5增加\\\\n[力量15減少]\\\\n[修理費增加100%]\\\\n[把魔力賦予的裝備變為專用裝備]",
-        level: 7,
-        type: "suffix",
-        limit: ["魔杖", "集魔杖"],
-        effect: [
-            {
-                id: "magic_attack",
-                min: 4,
-                max: 12,
-            },
-            {
-                id: "manause_revised_set",
-                min: 1,
-                max: 2,
-            },
-            {
-                id: "critical",
-                min: 5,
-                max: 5,
-            },
-            {
-                id: "STR",
-                min: -15,
-                max: -15,
-            },
-        ],
-        personalize: true,
-    },
-    {
         id: 31610,
         name: {
             tw: "約定的",
@@ -35094,6 +35059,7 @@ export const enchants: Enchant[] = [
         limit: ["穆利亞斯的遺物"],
         effect: [
             { id: "arcana_skill_bonus_damage_rate", min: 1, max: 1 },
+            { id: "all_alchemy_damage", min: 16, max: 16 },
             { id: "SP", min: 20, max: 20 },
             { id: "item_durability_loss_dec_rate", min: 30, max: 30 },
         ],

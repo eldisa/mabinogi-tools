@@ -47,6 +47,7 @@ const menuGroups = ref([
             { name: "稱號查詢", path: "/title", icon: markRaw(Medal) },
             { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
             { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
+            { name: "魔法陣查詢", path: "/magic-circle", icon: markRaw(MagicStick) },
         ],
     },
     {
