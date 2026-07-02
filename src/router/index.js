@@ -24,7 +24,7 @@ import RaidBoss4DodgeTraining from '../views/RaidBoss4DodgeTraining.vue';
 import EchostoneSimulator from '../views/EchostoneSimulator.vue';
 import MusicCalculator from '../views/MusicCalculator.vue';
 import MagicCircleView from '../views/MagicCircleView.vue';
-import ArcanaComboView from '../views/ArcanaComboView.vue';
+import OghamView from '../views/OghamView.vue';
 import Changelog from '../views/Changelog.vue';
 
 const routes = [
@@ -153,9 +153,9 @@ const routes = [
             component: MagicCircleView,
         },
         {
-            path: '/arcana-combo',
-            name: '祕法組合',
-            component: ArcanaComboView,
+            path: '/ogham',
+            name: '符文',
+            component: OghamView,
         },]
     },
 
@@ -183,7 +183,7 @@ const pageTitles = {
     '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
     '音樂計算機': '音樂計算機 | 瑪奇小工具',
     '魔法陣查詢': '魔法陣查詢 | 瑪奇小工具',
-    '祕法組合': '祕法組合 | 瑪奇小工具',
+    '符文': '符文 | 瑪奇小工具',
     '1王機制練習': '1王機制練習 | 瑪奇小工具',
     '2關機制練習': '2關機制練習 | 瑪奇小工具',
     '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',

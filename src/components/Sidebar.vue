@@ -48,7 +48,7 @@ const menuGroups = ref([
             { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
             { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
             { name: "魔法陣查詢", path: "/magic-circle", icon: markRaw(MagicStick) },
-            { name: "祕法組合", path: "/arcana-combo", icon: markRaw(MagicStick) },
+            { name: "符文", path: "/ogham", icon: markRaw(MagicStick) },
         ],
     },
     {

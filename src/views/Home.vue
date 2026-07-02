@@ -26,7 +26,7 @@ const groups = [
             { icon: "Handbag",    title: "娃娃背包查詢", description: "查詢娃娃背包效果、召喚重量與自動拾取分類",             path: "/doll-bag" },
             { icon: "House",      title: "農場模型查詢", description: "查詢農場模型資料與相關資訊",                           path: "/farmModel" },
             { icon: "MagicStick", title: "魔法陣查詢",   description: "查詢各職業魔法陣（強化）的效果與類型",                 path: "/magic-circle" },
-            { icon: "MagicStick", title: "祕法組合",     description: "查詢各祕法的組合技與五劍詞條效果",                     path: "/arcana-combo" },
+            { icon: "MagicStick", title: "符文",         description: "查詢各祕法的符文組合技與詞條效果",                     path: "/ogham" },
         ],
     },
     {
