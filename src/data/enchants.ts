@@ -19458,7 +19458,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21696,
-        name: { tw: "單純的", en: "genuine ", tw2: "單純的", kr: "순수한" },
+        name: { tw: "純粹的", en: "genuine ", tw2: "單純的", kr: "순수한" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(musicbuff_bonus, 1);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(musicbuff_duration, 10);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予\n當啟用的秘法的專用選項時,效果發動\n音樂增益效果增加1\n音樂增益技能持續時間增加10.",
         level: 10,
@@ -19469,6 +19469,23 @@ export const enchants: Enchant[] = [
             { id: "music_buff_duration", min: 10, max: 10 },
         ],
         personalize: false,
+    },
+    {
+        id: 21698,
+        name: { tw: "殘虛的", en: "vestige ", tw2: "殘虛的", kr: "순수한" },
+        list: ":SetParamOnEquip(AttMax, +15);: : SetParamOnEquip(MagicAttack, +15);: : AddBonusOnAlchemy(alchemy_all, +15);: : SetParamOnEquip(musicbuff_bonus, +2);: : SetParamOnEquip(musicbuff_duration, +5);: : setpersonalize(true);",
+        desc: "可對穿著在腳部的道具進行魔力賦予\\n最大傷害增加15\\n魔法攻擊力增加15\\n4大屬性鍊金術傷害增加15\\n音樂增益效果增加2\\n音樂增益效果技能持續時間增加5\\n[把魔力賦予的裝備設定為專用]",
+        level: 10,
+        type: "prefix",
+        limit: ["穆利亞斯的遺物"],
+        effect: [
+            { id: "AttMax", min: 15, max: 15 },
+            { id: "MagicAttack", min: 15, max: 15 },
+            { id: "all_alchemy_damage", min: 15, max: 15 },
+            { id: "music_buff_bonus", min: 2, max: 2 },
+            { id: "music_buff_duration", min: 5, max: 5 },
+        ],
+        personalize: true,
     },
     {
         id: 30101,
@@ -35075,7 +35092,7 @@ export const enchants: Enchant[] = [
         limit: ["穆利亞斯的遺物"],
         effect: [
             { id: "music_buff_bonus_rate", min: 0.3, max: 0.3 },
-            { id: "healing", min: 5, max: 5 },
+            { id: "healing_skill", min: 5, max: 5 },
             { id: "MP", min: 20, max: 20 },
             { id: "item_durability_loss_dec_rate", min: 30, max: 30 },
         ],
