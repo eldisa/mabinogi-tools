@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { InfoFilled } from "@element-plus/icons-vue";
 import { oghamArcanas, type OghamComboEffect } from "../data/ogham";
 
 const selectedId = ref(oghamArcanas[0].id);
@@ -163,9 +164,15 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                 </div>
 
                 <!-- 詞條效果總表 -->
-                <h2 class="section-title text-xl font-bold text-accent mt-8 mb-3">
+                <h2 class="section-title text-xl font-bold text-accent mt-8 mb-2">
                     {{ arcana.name }} 相關符文詞條效果
                 </h2>
+                <p class="mb-3 flex items-center gap-1 text-xs text-gray-400">
+                    <el-icon class="text-accent"><InfoFilled /></el-icon>
+                    標示
+                    <el-icon class="text-accent"><InfoFilled /></el-icon>
+                    的「祕法」分類為特殊符文專用
+                </p>
                 <el-table
                     :data="arcana.effectTable"
                     border
@@ -176,9 +183,9 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                     <el-table-column label="分類" width="120" align="center">
                         <template #default="{ row }">
                             <span :class="categoryColor(row.category)" class="font-semibold">{{ row.category }}</span>
-                            <div v-if="row.special" class="mt-1">
-                                <el-tag type="info" size="small" effect="plain">特殊符文專用</el-tag>
-                            </div>
+                            <el-icon v-if="row.special" class="text-accent ml-1 align-middle">
+                                <InfoFilled />
+                            </el-icon>
                         </template>
                     </el-table-column>
 
