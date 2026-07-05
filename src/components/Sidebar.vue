@@ -48,6 +48,7 @@ const menuGroups = ref([
             { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
             { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
             { name: "魔法陣查詢", path: "/magic-circle", icon: markRaw(MagicStick) },
+            { name: "符文", path: "/ogham", icon: markRaw(MagicStick), note: "暫譯・台服未實裝" },
         ],
     },
     {
@@ -132,9 +133,14 @@ const menuGroups = ref([
                                 <el-icon :size="18" class="text-accent flex-shrink-0">
                                     <component :is="item.icon" />
                                 </el-icon>
-                                <p class="text-sm font-medium text-gray-200 truncate">
-                                    {{ item.name }}
-                                </p>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-gray-200 truncate">
+                                        {{ item.name }}
+                                    </p>
+                                    <p v-if="item.note" class="text-[0.65rem] text-gray-500 leading-tight truncate">
+                                        {{ item.note }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
