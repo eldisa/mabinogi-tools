@@ -112,7 +112,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "爆炎跳斬 傷害倍率增加",
                 "optionKo": "파이어 리프 어택 대미지 배율 증가",
-                "base": "150",
+                "base": "150%",
                 "special": true,
                 "skillName": "爆炎跳斬",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278421478.webp"
@@ -121,7 +121,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "冰霜風車 傷害倍率增加",
                 "optionKo": "아이스 윈드밀 대미지 배율 증가",
-                "base": "200",
+                "base": "200%",
                 "special": true,
                 "skillName": "冰霜風車",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278422382.webp"
@@ -130,7 +130,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "雷霆重擊 傷害倍率增加",
                 "optionKo": "라이트닝 스매시 대미지 배율 증가",
-                "base": "100",
+                "base": "100%",
                 "special": true,
                 "skillName": "雷霆重擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278423237.webp"
@@ -139,7 +139,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "破線 傷害倍率增加",
                 "optionKo": "라인 브레이크 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "special": true,
                 "skillName": "破線",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278425034.webp"
@@ -148,7 +148,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "重擊 傷害倍率增加",
                 "optionKo": "스매시 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "skillName": "重擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278164255.webp"
             },
@@ -156,7 +156,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "突進 傷害倍率增加",
                 "optionKo": "돌진 대미지 배율 증가",
-                "base": "60",
+                "base": "60%",
                 "skillName": "突進",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278166033.webp"
             },
@@ -164,7 +164,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "倒地攻擊 傷害倍率增加",
                 "optionKo": "다운 어택 대미지 배율 증가",
-                "base": "30",
+                "base": "30%",
                 "skillName": "倒地攻擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278167060.webp"
             },
@@ -172,7 +172,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "風車 傷害倍率增加",
                 "optionKo": "윈드밀 대미지 배율 증가",
-                "base": "40",
+                "base": "40%",
                 "skillName": "風車",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278182096.webp"
             },
@@ -291,7 +291,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "救贖的回音 傷害倍率增加",
                 "optionKo": "구원의 메아리 대미지 배율 증가",
-                "base": "4",
+                "base": "4%",
                 "special": true,
                 "skillName": "救贖的回音",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278413895.webp"
@@ -309,7 +309,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "音波洗禮 傷害倍率增加",
                 "optionKo": "음파의 세례 대미지 배율 증가",
-                "base": "7",
+                "base": "7%",
                 "special": true,
                 "skillName": "音波洗禮",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1778732999727.webp"
@@ -412,7 +412,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "龍炎 火 最大傷害倍率增加",
                 "optionKo": "익스플로전 런지 파이어 최대 대미지 배율 증가",
-                "base": "250",
+                "base": "250%",
                 "special": true,
                 "skillName": "龍炎",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278426208.webp"
@@ -421,7 +421,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "閃電鏈 電擊 最大傷害倍率增加",
                 "optionKo": "라이트닝 체인 전격 최대 대미지 배율 증가",
-                "base": "20",
+                "base": "20%",
                 "special": true,
                 "skillName": "閃電鏈",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278427071.webp"
@@ -430,7 +430,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "暴風雪 每秒 冰 最大傷害倍率增加",
                 "optionKo": "스노우 스톰 초당 아이스 최대 대미지 배율 증가",
-                "base": "35",
+                "base": "35%",
                 "special": true,
                 "skillName": "暴風雪",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278428014.webp"
@@ -439,7 +439,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "潛伏點火 火 最大傷害倍率增加",
                 "optionKo": "레이턴트 이그니션 파이어 최대 대미지 배율 증가",
-                "base": "300",
+                "base": "300%",
                 "special": true,
                 "skillName": "潛伏點火",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782350228756.webp"
@@ -448,7 +448,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "精通火魔法 傷害倍率增加",
                 "optionKo": "파이어 마스터리 대미지 배율 증가",
-                "base": "1",
+                "base": "1%",
                 "skillName": "精通火魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278219232.webp"
             },
@@ -456,7 +456,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "精通冰魔法 傷害倍率增加",
                 "optionKo": "아이스 마스터리 대미지 배율 증가",
-                "base": "1",
+                "base": "1%",
                 "skillName": "精通冰魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278220105.webp"
             },
@@ -464,7 +464,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "精通雷魔法 傷害倍率增加",
                 "optionKo": "라이트닝 마스터리 대미지 배율 증가",
-                "base": "1",
+                "base": "1%",
                 "skillName": "精通雷魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278221080.webp"
             },
@@ -472,7 +472,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "精通箭系魔法 傷害倍率增加",
                 "optionKo": "볼트 마스터리 대미지 배율 증가",
-                "base": "1",
+                "base": "1%",
                 "skillName": "精通箭系魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278222106.webp"
             },
@@ -480,7 +480,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "雷矢 最大傷害倍率增加",
                 "optionKo": "라이트닝볼트 최대 대미지 배율 증가",
-                "base": "2",
+                "base": "2%",
                 "skillName": "雷矢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278223912.webp"
             },
@@ -488,7 +488,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "雷擊 最大傷害倍率增加",
                 "optionKo": "썬더 최대 대미지 배율 증가",
-                "base": "0.5",
+                "base": "0.5%",
                 "skillName": "雷擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278224921.webp"
             },
@@ -496,7 +496,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "火矢 最大傷害倍率增加",
                 "optionKo": "파이어볼트 최대 대미지 배율 증가",
-                "base": "2",
+                "base": "2%",
                 "skillName": "火矢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278226774.webp"
             },
@@ -504,7 +504,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "火球 最大傷害倍率增加",
                 "optionKo": "파이어볼 최대 대미지 배율 증가",
-                "base": "60",
+                "base": "60%",
                 "skillName": "火球",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278227829.webp"
             },
@@ -512,7 +512,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "冰矢 最大傷害倍率增加",
                 "optionKo": "아이스볼트 최대 대미지 배율 증가",
-                "base": "2",
+                "base": "2%",
                 "skillName": "冰矢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278229742.webp"
             },
@@ -520,7 +520,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "冰矛 最大傷害倍率增加",
                 "optionKo": "아이스 스피어 최대 대미지 배율 증가",
-                "base": "6",
+                "base": "6%",
                 "skillName": "冰矛",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278230633.webp"
             },
@@ -528,7 +528,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "箭系組合魔法 傷害倍率增加",
                 "optionKo": "볼트 마법 조합 대미지 배율 증가",
-                "base": "1",
+                "base": "1%",
                 "skillName": "箭系組合魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278233312.webp"
             },
@@ -620,7 +620,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "烈焰爆發 傷害倍率增加",
                 "optionKo": "플레임 버스트 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "special": true,
                 "skillName": "烈焰爆發",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278432654.webp"
@@ -629,7 +629,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "水流箭 最大傷害倍率增加",
                 "optionKo": "하이드로 피어스 최대 대미지 배율 증가",
-                "base": "150",
+                "base": "150%",
                 "special": true,
                 "skillName": "水流箭",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278433695.webp"
@@ -638,7 +638,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "列陣 傷害倍率增加",
                 "optionKo": "라인 포스 대미지 배율 증가",
-                "base": "200",
+                "base": "200%",
                 "special": true,
                 "skillName": "列陣",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278434671.webp"
@@ -647,7 +647,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "塵埃射擊 傷害倍率增加",
                 "optionKo": "더스트 샷 대미지 배율 증가",
-                "base": "200",
+                "base": "200%",
                 "special": true,
                 "skillName": "塵埃射擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278435652.webp"
@@ -656,7 +656,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "元素連擊 일반 攻擊, 終結 攻擊的傷害倍率增加",
                 "optionKo": "트라이 어설트 일반 공격, 피니시 공격의 대미지 배율 증가",
-                "base": "60",
+                "base": "60%",
                 "special": true,
                 "skillName": "元素連擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278436490.webp"
@@ -665,7 +665,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "麥格農射擊 傷害倍率增加",
                 "optionKo": "매그넘 샷 대미지 배율 증가",
-                "base": "20",
+                "base": "20%",
                 "skillName": "麥格農射擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278174656.webp"
             },
@@ -673,7 +673,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "碎裂射擊 파편 傷害倍率增加",
                 "optionKo": "크래시 샷 파편 대미지 배율 증가",
-                "base": "20",
+                "base": "20%",
                 "skillName": "碎裂射擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278186959.webp"
             },
@@ -775,7 +775,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "聖域展開 傷害倍率增加",
                 "optionKo": "성역 전개 대미지 배율 증가",
-                "base": "10",
+                "base": "10%",
                 "special": true,
                 "skillName": "聖域展開",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278438379.webp"
@@ -784,7 +784,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "激突 傷害倍率增加",
                 "optionKo": "격돌 대미지 배율 증가",
-                "base": "100",
+                "base": "100%",
                 "special": true,
                 "skillName": "激突",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278440302.webp"
@@ -793,7 +793,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "鐵壁猛擊 傷害倍率增加",
                 "optionKo": "철벽 강타 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "special": true,
                 "skillName": "鐵壁猛擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278441243.webp"
@@ -802,7 +802,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "審判的一擊 傷害倍率增加",
                 "optionKo": "심판의 일격 대미지 배율 증가",
-                "base": "200",
+                "base": "200%",
                 "special": true,
                 "skillName": "審判的一擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278442077.webp"
@@ -811,7 +811,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "光輝的斷罪 2階段부터 階段每 傷害倍率增加",
                 "optionKo": "광휘의 단죄 2단계부터 단계당 대미지 배율 증가",
-                "base": "8",
+                "base": "8%",
                 "special": true,
                 "skillName": "光輝的斷罪",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1778731662673.webp"
@@ -820,7 +820,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "重擊 傷害倍率增加",
                 "optionKo": "스매시 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "skillName": "重擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278164255.webp"
             },
@@ -828,7 +828,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "突進 傷害倍率增加",
                 "optionKo": "돌진 대미지 배율 증가",
-                "base": "60",
+                "base": "60%",
                 "skillName": "突進",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278166033.webp"
             },
@@ -836,7 +836,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "倒地攻擊 傷害倍率增加",
                 "optionKo": "다운 어택 대미지 배율 증가",
-                "base": "30",
+                "base": "30%",
                 "skillName": "倒地攻擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278167060.webp"
             },
@@ -844,7 +844,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "風車 傷害倍率增加",
                 "optionKo": "윈드밀 대미지 배율 증가",
-                "base": "40",
+                "base": "40%",
                 "skillName": "風車",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278182096.webp"
             },
@@ -954,7 +954,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "衝擊粉碎 傷害倍率增加",
                 "optionKo": "임팩트 크러시 대미지 배율 증가",
-                "base": "80",
+                "base": "80%",
                 "special": true,
                 "skillName": "衝擊粉碎",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278446822.webp"
@@ -963,7 +963,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "螺旋漩渦 傷害倍率增加",
                 "optionKo": "스파이럴 볼텍스 대미지 배율 증가",
-                "base": "200",
+                "base": "200%",
                 "special": true,
                 "skillName": "螺旋漩渦",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278447732.webp"
@@ -972,7 +972,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "蓄勢突擊 傷害倍率增加",
                 "optionKo": "차지 어설트 대미지 배율 증가",
-                "base": "80",
+                "base": "80%",
                 "special": true,
                 "skillName": "蓄勢突擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278448747.webp"
@@ -981,7 +981,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "超載 傷害倍率增加",
                 "optionKo": "오버 드라이브 대미지 배율 증가",
-                "base": "40",
+                "base": "40%",
                 "special": true,
                 "skillName": "超載",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278449645.webp"
@@ -990,7 +990,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "湮滅 傷害倍率增加",
                 "optionKo": "어나이얼레이션 대미지 배율 증가",
-                "base": "200",
+                "base": "200%",
                 "special": true,
                 "skillName": "湮滅",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278450531.webp"
@@ -999,7 +999,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "騎槍衝擊 充能 傷害倍率增加",
                 "optionKo": "랜스 차지 차지 대미지 배율 증가",
-                "base": "8",
+                "base": "8%",
                 "skillName": "騎槍衝擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278168970.webp"
             },
@@ -1093,7 +1093,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "快速射擊 傷害倍率增加",
                 "optionKo": "래피드 파이어 대미지 배율 증가",
-                "base": "30",
+                "base": "30%",
                 "special": true,
                 "skillName": "快速射擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278623744.webp"
@@ -1102,7 +1102,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "重裝炮火 傷害倍率增加",
                 "optionKo": "헤비 아틸러리 대미지 배율 증가",
-                "base": "100",
+                "base": "100%",
                 "special": true,
                 "skillName": "重裝炮火",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278649869.webp"
@@ -1111,7 +1111,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "毀滅加農砲 傷害倍率增加",
                 "optionKo": "데바스테이션 캐논 대미지 배율 증가",
-                "base": "80",
+                "base": "80%",
                 "special": true,
                 "skillName": "毀滅加農砲",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278701243.webp"
@@ -1120,7 +1120,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "致命瞄準 傷害倍率增加",
                 "optionKo": "페이탈 스코프 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "special": true,
                 "skillName": "致命瞄準",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278723055.webp"
@@ -1137,7 +1137,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "十字爆破 傷害倍率增加",
                 "optionKo": "크로스 버스터 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "skillName": "十字爆破",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278307675.webp"
             },
@@ -1145,7 +1145,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "終結 傷害倍率增加",
                 "optionKo": "클로져 대미지 배율 증가",
-                "base": "100",
+                "base": "100%",
                 "skillName": "終結",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278308617.webp"
             },
@@ -1153,7 +1153,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "遠退 1발每 傷害倍率增加",
                 "optionKo": "파 어웨이 1발당 대미지 배율 증가",
-                "base": "8",
+                "base": "8%",
                 "skillName": "遠退",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278309610.webp"
             },
@@ -1161,7 +1161,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "射擊突進 1발每 傷害倍率增加",
                 "optionKo": "슈팅 러쉬 1발당 대미지 배율 증가",
-                "base": "10",
+                "base": "10%",
                 "skillName": "射擊突進",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278310521.webp"
             }
@@ -1247,7 +1247,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "召喚夢魘 (土 鍊金術 效果) 技能 最終 傷害倍率增加",
                 "optionKo": "서먼 나이트메어 (흙 연금술 효과) 스킬 최종 대미지 배율 증가",
-                "base": "0.2",
+                "base": "0.2%",
                 "special": true,
                 "skillName": "召喚夢魘",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278930240.webp"
@@ -1256,7 +1256,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "化學狂歡 (火 鍊金術 效果) 주 목표에게 주는 最終 傷害倍率增加",
                 "optionKo": "케미컬 카니발 (불 연금술 효과) 주 목표에게 주는 최종 대미지 배율 증가",
-                "base": "0.2",
+                "base": "0.2%",
                 "special": true,
                 "skillName": "化學狂歡",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278947694.webp"
@@ -1265,7 +1265,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "螺旋爆裂 (水 鍊金術 效果) 技能 技能 最終 傷害倍率增加",
                 "optionKo": "스파이럴 이럽션 (물 연금술 효과) 스킬 스킬 최종 대미지 배율 증가",
-                "base": "1",
+                "base": "1%",
                 "special": true,
                 "skillName": "螺旋爆裂",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278967471.webp"
@@ -1274,7 +1274,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "水砲 最大傷害倍率增加",
                 "optionKo": "워터 캐논 최대 대미지 배율 증가",
-                "base": "2",
+                "base": "2%",
                 "skillName": "水砲",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278247977.webp"
             },
@@ -1282,7 +1282,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "火焰噴射器 最大傷害倍率增加",
                 "optionKo": "플레이머 최대 대미지 배율 증가",
-                "base": "1",
+                "base": "1%",
                 "skillName": "火焰噴射器",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278252037.webp"
             },
@@ -1290,7 +1290,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "熱能爆破 最大傷害倍率增加",
                 "optionKo": "히트 버스터 최대 대미지 배율 증가",
-                "base": "5",
+                "base": "5%",
                 "skillName": "熱能爆破",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278250977.webp"
             },
@@ -1400,7 +1400,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "強拍重音 傷害倍率增加",
                 "optionKo": "다운비트 악센트 대미지 배율 증가",
-                "base": "250",
+                "base": "250%",
                 "special": true,
                 "skillName": "強拍重音",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441613507.webp"
@@ -1409,7 +1409,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "追蹤步伐 傷害倍率增加",
                 "optionKo": "트래킹 스텝 대미지 배율 증가",
-                "base": "50",
+                "base": "50%",
                 "special": true,
                 "skillName": "追蹤步伐",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441690885.webp"
@@ -1418,7 +1418,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "壯麗終章 콜로서스, 피에로, 에코 마리오네트 追加 傷害倍率增加",
                 "optionKo": "그랜드 피날레 콜로서스, 피에로, 에코 마리오네트 추가 대미지 배율 증가",
-                "base": "300",
+                "base": "300%",
                 "special": true,
                 "skillName": "壯麗終章",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441797050.webp"
@@ -1427,7 +1427,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "鋼絲網 傷害倍率增加",
                 "optionKo": "와이어 웹 대미지 배율 증가",
-                "base": "500",
+                "base": "500%",
                 "special": true,
                 "skillName": "鋼絲網",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441883324.webp"
@@ -1436,7 +1436,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "間奏斬擊 第四幕：嫉妒的化身 傷害倍率增加",
                 "optionKo": "인터루드 슬래시 4막: 질투의 화신 대미지 배율 증가",
-                "base": "3",
+                "base": "3%",
                 "special": true,
                 "skillName": "間奏斬擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441962685.webp"
@@ -1445,7 +1445,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "第一幕：偶然的衝突 傷害倍率增加",
                 "optionKo": "1막: 우연한 충돌 대미지 배율 증가",
-                "base": "15",
+                "base": "15%",
                 "skillName": "第一幕：偶然的衝突",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278299063.webp"
             },
@@ -1453,7 +1453,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "第二幕：激增的憤怒 傷害倍率增加",
                 "optionKo": "2막: 솟구치는 분노 대미지 배율 증가",
-                "base": "20",
+                "base": "20%",
                 "skillName": "第二幕：激增的憤怒",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278298144.webp"
             },
@@ -1461,7 +1461,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "第四幕：嫉妒的化身 傷害倍率增加",
                 "optionKo": "4막: 질투의 화신 대미지 배율 증가",
-                "base": "10",
+                "base": "10%",
                 "skillName": "第四幕：嫉妒的化身",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278300004.webp"
             },
@@ -1469,7 +1469,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "第七幕：狂亂的奔走 傷害倍率增加",
                 "optionKo": "7막: 광란의 질주 대미지 배율 증가",
-                "base": "10",
+                "base": "10%",
                 "skillName": "第七幕：狂亂的奔走",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278302035.webp"
             },
@@ -1561,7 +1561,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "超越：連鎖打擊 3次攻擊 及 終結 攻擊的傷害倍率增加",
                 "optionKo": "익시드 : 체인 블로우 3회 공격 및 피니시 공격의 대미지 배율 증가",
-                "base": "80",
+                "base": "80%",
                 "special": true,
                 "skillName": "超越：連鎖打擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770442704738.webp"
@@ -1570,7 +1570,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "超越：衝擊俯衝 傷害倍率增加",
                 "optionKo": "익시드 : 임팩트 다이브 대미지 배율 증가",
-                "base": "100",
+                "base": "100%",
                 "special": true,
                 "skillName": "超越：衝擊俯衝",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770442792340.webp"
@@ -1579,7 +1579,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "超越：力量猛擊 傷害倍率增加",
                 "optionKo": "익시드 : 포스 슬램 대미지 배율 증가",
-                "base": "500",
+                "base": "500%",
                 "special": true,
                 "skillName": "超越：力量猛擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770442862350.webp"
@@ -1588,7 +1588,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "烈風穿刺 傷害倍率增加",
                 "optionKo": "게일 피어스 대미지 배율 증가",
-                "base": "260",
+                "base": "260%",
                 "special": true,
                 "skillName": "烈風穿刺",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443293567.webp"
@@ -1597,7 +1597,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "終極打擊 2次攻擊 及 終結 攻擊的傷害倍率增加",
                 "optionKo": "얼티밋 스트라이크 2회 공격 및 피니시 공격의 대미지 배율 증가",
-                "base": "260",
+                "base": "260%",
                 "special": true,
                 "skillName": "終極打擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443428941.webp"
@@ -1606,7 +1606,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "祕法",
                 "option": "力量閃焰 傷害倍率增加",
                 "optionKo": "포스 플레어 대미지 배율 증가",
-                "base": "260",
+                "base": "260%",
                 "special": true,
                 "skillName": "力量閃焰",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443353075.webp"
@@ -1623,7 +1623,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "精通連續技 傷害倍率增加",
                 "optionKo": "연속기 마스터리 대미지 배율 증가",
-                "base": "2",
+                "base": "2%",
                 "skillName": "精通連續技",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278270518.webp"
             },
@@ -1631,7 +1631,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "連續技：衝刺拳 傷害倍率增加",
                 "optionKo": "연속기 : 대쉬 펀치 대미지 배율 증가",
-                "base": "6",
+                "base": "6%",
                 "skillName": "連續技：衝刺拳",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278271376.webp"
             },
@@ -1639,7 +1639,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "連續技：充能拳 傷害倍率增加",
                 "optionKo": "연속기 : 차징 피스트 대미지 배율 증가",
-                "base": "12",
+                "base": "12%",
                 "skillName": "連續技：充能拳",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278272230.webp"
             },
@@ -1647,7 +1647,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "連續技：螺旋勾拳 傷害倍率增加",
                 "optionKo": "연속기 : 스크류 어퍼 대미지 배율 증가",
-                "base": "18",
+                "base": "18%",
                 "skillName": "連續技：螺旋勾拳",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278273220.webp"
             },
@@ -1655,7 +1655,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "連續技：翻筋斗 傷害倍率增加",
                 "optionKo": "연속기 : 섬머솔트 대미지 배율 증가",
-                "base": "22",
+                "base": "22%",
                 "skillName": "連續技：翻筋斗",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278274146.webp"
             },
@@ -1663,7 +1663,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "連續技：落踢 傷害倍率增加",
                 "optionKo": "연속기 : 드롭킥 대미지 배율 증가",
-                "base": "24",
+                "base": "24%",
                 "skillName": "連續技：落踢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278275101.webp"
             },
@@ -1671,7 +1671,7 @@ export const oghamArcanas: OghamArcana[] = [
                 "category": "主要才能",
                 "option": "連續技：重搗 傷害倍率增加",
                 "optionKo": "연속기 : 파운딩 대미지 배율 증가",
-                "base": "24",
+                "base": "24%",
                 "skillName": "連續技：重搗",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278275959.webp"
             }
