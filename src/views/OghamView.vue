@@ -189,7 +189,7 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="選項" min-width="260">
+                    <el-table-column label="詞條" min-width="260">
                         <template #default="{ row }">
                             <div class="flex items-start gap-1.5 text-sm text-gray-200">
                                 <img
@@ -204,7 +204,7 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="個別最大倍率" width="110" align="right">
+                    <el-table-column label="滿級的效果" width="110" align="right">
                         <template #default="{ row }">
                             <span class="font-semibold text-accent">{{ row.base }}</span>
                         </template>
