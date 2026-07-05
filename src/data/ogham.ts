@@ -5,6 +5,7 @@ export interface OghamComboEffect {
     category: "祕法" | "主要才能" | "屬性";
     special?: boolean;
     option: string;
+    optionKo: string;
     base: string;
     skillName?: string;
     skillIcon?: string;
@@ -12,14 +13,17 @@ export interface OghamComboEffect {
 export interface OghamCombo {
     id: number;
     skillName: string;
+    skillNameKo?: string;
     skillIcon?: string;
     inGameImg?: string | null;
     words: string[];
     points: Record<string, string>;
+    pointsKo: Record<string, string>;
 }
 export interface OghamArcana {
     id: number;
     name: string;
+    nameKo: string;
     icon?: string;
     mainTalent: string;
     subTalent: string;
@@ -31,6 +35,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 1,
         "name": "元素騎士",
+        "nameKo": "엘레멘탈 나이트",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974455716.webp",
         "mainTalent": "近距離戰鬥",
         "subTalent": "魔法",
@@ -38,8 +43,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 1,
                 "skillName": "閃電重擊",
+                "skillNameKo": "라이트닝 스매시",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278423237.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782745535218.webp",
+                "pointsKo": {
+                    "5": "라이트닝 스매시: 뇌신\n\n라이트닝 스매시 대미지 배율 400% 증가\n공격 가능 거리 12m\n라이트닝 스매시가 지정한 적에게 7회 공격\n라이트닝 스매시 사용 시 4초 간 지속되는 [뇌신] 상태 획득\n[뇌신] 상태에서 스매시 사용 시 스매시 대미지 배율 200% 증가, [뇌신] 상태 종료\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 600%,\n아이스 윈드밀로 빙결된 적에게 1680% 추가 대미지\n재사용 대기 시간 10초",
+                    "6": "라이트닝 스매시: 뇌신\n\n라이트닝 스매시 대미지 배율 700% 증가\n공격 가능 거리 12m\n라이트닝 스매시가 지정한 적에게 7회 공격\n라이트닝 스매시 사용 시 4초 간 지속되는 [뇌신] 상태 획득\n[뇌신] 상태에서 스매시 사용 시스매시 대미지 배율 250% 증가, [뇌신] 상태 종료\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 600%,\n아이스 윈드밀로 빙결된 적에게 1680% 추가 대미지\n재사용 대기 시간 10초",
+                    "7": "라이트닝 스매시: 뇌신\n\n라이트닝 스매시 대미지 배율 1000% 증가\n공격 가능 거리 12m\n라이트닝 스매시가 지정한 적에게 7회 공격\n라이트닝 스매시 사용 시 4초 간 지속되는 [뇌신] 상태 획득\n[뇌신] 상태에서 스매시 사용 시 스매시 대미지 배율 300% 증가, [뇌신] 상태 종료\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 600%,\n아이스 윈드밀로 빙결된 적에게 1680% 추가 대미지\n재사용 대기 시간 10초",
+                    "8": "라이트닝 스매시: 뇌신\n\n라이트닝 스매시 대미지 배율 1300% 증가\n공격 가능 거리 12m\n라이트닝 스매시가 지정한 적에게 7회 공격\n라이트닝 스매시 사용 시 4초 간 지속되는 [뇌신] 상태 획득\n[뇌신] 상태에서 스매시 사용 시 스매시 대미지 배율 350% 증가, [뇌신] 상태 종료\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 600%,\n아이스 윈드밀로 빙결된 적에게 1680% 추가 대미지\n재사용 대기 시간 10초",
+                    "9": "라이트닝 스매시: 뇌신\n\n라이트닝 스매시 대미지 배율 1600% 증가\n공격 가능 거리 12m\n라이트닝 스매시가 지정한 적에게 7회 공격\n라이트닝 스매시 사용 시 4초 간 지속되는 [뇌신] 상태 획득\n[뇌신] 상태에서 스매시 사용 시 스매시 대미지 배율 500% 증가, [뇌신] 상태 종료\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 600%,\n아이스 윈드밀로 빙결된 적에게 1680% 추가 대미지\n재사용 대기 시간 10초"
+                },
                 "words": [
                     "貝赫",
                     "科爾",
@@ -56,8 +69,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 2,
                 "skillName": "火葉攻擊",
+                "skillNameKo": "파이어 리프 어택",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278421478.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782746427919.webp",
+                "pointsKo": {
+                    "5": "파이어 리프 어택: 완전연소\n\n사용자의 다운 어택 대미지 + 스킬 대미지로 공격\n공격 가능 거리 : 사용자의 다운 어택 거리 +1.2m\n파이어 리프 어택 공격 반경 +1.5m\n\n[연소], [완전연소] 상태이 모두 없을 때 파이어 리프 어택 사용 시 [연소] 상태 획득\n\n[연소] 상태에서 근접 전투 재능/마법 재능/파이어 리프 어택을 제외한 엘레멘탈 나이트 스킬로 공격 시, [완전연소] 상태를 최대 5스택까지 획득\n\n[완전연소] 스택 보유 중 파이어 리프 어택 사용 시 파이어 리프 어택으로 현재 타격한 적의 수만큼 최대 5스택까지 추가 변환하며, 최대 스택일 경우 [연소]의 지속 시간 5초 연장\n[연소]의 지속 시간은 20초를 초과할 수 없음\n[완전연소] 스택 당 100%의 추가 대미지 배율\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 800%, 공격 대상 5초 간 이동 속도 20%, 공격 속도 20% 감소, 피격된 적을 타겟 위치로 끌어당김\n\n재사용 대기 시간 1초 감소",
+                    "6": "파이어 리프 어택: 완전연소\n\n사용자의 다운 어택 대미지 + 스킬 대미지로 공격\n공격 가능 거리 : 사용자의 다운 어택 거리 +1.2m\n파이어 리프 어택 공격 반경 +2m\n\n[연소], [완전연소] 상태이 모두 없을 때 파이어 리프 어택 사용 시 [연소] 상태 획득\n\n[연소] 상태에서 근접 전투 재능/마법 재능/파이어 리프 어택을 제외한 엘레멘탈 나이트 스킬로 공격 시, [완전연소] 상태를 최대 5스택까지 획득\n\n[완전연소] 스택 보유 중 파이어 리프 어택 사용 시 파이어 리프 어택으로 현재 타격한 적의 수만큼 최대 5스택까지 추가 변환하며, 최대 스택일 경우 [연소]의 지속 시간 5초 연장\n[연소]의 지속 시간은 20초를 초과할 수 없음\n[완전연소] 스택 당 100%의 추가 대미지 배율\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 800%, 공격 대상 5초 간 이동 속도 20%, 공격 속도 20% 감소, 피격된 적을 타겟 위치로 끌어당김\n\n재사용 대기 시간 1초 감소",
+                    "7": "파이어 리프 어택: 완전연소\n\n사용자의 다운 어택 대미지 + 스킬 대미지로 공격\n공격 가능 거리 : 사용자의 다운 어택 거리 +1.2m\n파이어 리프 어택 공격 반경 +2.5m\n\n[연소], [완전연소] 상태이 모두 없을 때 파이어 리프 어택 사용 시 [연소] 상태 획득\n\n[연소] 상태에서 근접 전투 재능/마법 재능/파이어 리프 어택을 제외한 엘레멘탈 나이트 스킬로 공격 시, [완전연소] 상태를 최대 5스택까지 획득\n\n[완전연소] 스택 보유 중 파이어 리프 어택 사용 시 파이어 리프 어택으로 현재 타격한 적의 수만큼 최대 5스택까지 추가 변환하며, 최대 스택일 경우 [연소]의 지속 시간 5초 연장\n[연소]의 지속 시간은 20초를 초과할 수 없음\n[완전연소] 스택 당 100%의 추가 대미지 배율\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 800%, 공격 대상 5초 간 이동 속도 20%, 공격 속도 20% 감소, 피격된 적을 타겟 위치로 끌어당김\n\n재사용 대기 시간 1초 감소",
+                    "8": "파이어 리프 어택: 완전연소\n\n사용자의 다운 어택 대미지 + 스킬 대미지로 공격\n공격 가능 거리 : 사용자의 다운 어택 거리 +1.2m\n파이어 리프 어택 공격 반경 +3m\n\n[연소], [완전연소] 상태이 모두 없을 때 파이어 리프 어택 사용 시 [연소] 상태 획득\n\n[연소] 상태에서 근접 전투 재능/마법 재능/파이어 리프 어택을 제외한 엘레멘탈 나이트 스킬로 공격 시, [완전연소] 상태를 최대 5스택까지 획득\n\n[완전연소] 스택 보유 중 파이어 리프 어택 사용 시 파이어 리프 어택으로 현재 타격한 적의 수만큼 최대 5스택까지 추가 변환하며, 최대 스택일 경우 [연소]의 지속 시간 5초 연장\n[연소]의 지속 시간은 20초를 초과할 수 없음\n[완전연소] 스택 당 100%의 추가 대미지 배율\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 800%, 공격 대상 5초 간 이동 속도 20%, 공격 속도 20% 감소, 피격된 적을 타겟 위치로 끌어당김\n\n재사용 대기 시간 1초 감소",
+                    "9": "파이어 리프 어택: 완전연소\n\n사용자의 다운 어택 대미지 + 스킬 대미지로 공격\n공격 가능 거리 : 사용자의 다운 어택 거리 +1.2m\n파이어 리프 어택 공격 반경 +4m\n\n[연소], [완전연소] 상태이 모두 없을 때 파이어 리프 어택 사용 시 [연소] 상태 획득\n\n[연소] 상태에서 근접 전투 재능/마법 재능/파이어 리프 어택을 제외한 엘레멘탈 나이트 스킬로 공격 시, [완전연소] 상태를 최대 5스택까지 획득\n\n[완전연소] 스택 보유 중 파이어 리프 어택 사용 시 파이어 리프 어택으로 현재 타격한 적의 수만큼 최대 5스택까지 추가 변환하며, 최대 스택일 경우 [연소]의 지속 시간 5초 연장\n[연소]의 지속 시간은 20초를 초과할 수 없음\n[완전연소] 스택 당 100%의 추가 대미지 배율\n\n엘레멘탈 인젝션 사용 중일 때 추가 효과 발동\n추가 효과 : 추가 대미지 800%, 공격 대상 5초 간 이동 속도 20%, 공격 속도 20% 감소, 피격된 적을 타겟 위치로 끌어당김\n\n재사용 대기 시간 1초 감소"
+                },
                 "words": [
                     "寧",
                     "路斯",
@@ -74,8 +95,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 3,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "里斯",
                     "提訥",
@@ -88,6 +111,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "火葉攻擊 傷害倍率增加",
+                "optionKo": "파이어 리프 어택 대미지 배율 증가",
                 "base": "150",
                 "special": true,
                 "skillName": "火葉攻擊",
@@ -96,6 +120,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "冰風車 傷害倍率增加",
+                "optionKo": "아이스 윈드밀 대미지 배율 증가",
                 "base": "200",
                 "special": true,
                 "skillName": "冰風車",
@@ -104,6 +129,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "閃電重擊 傷害倍率增加",
+                "optionKo": "라이트닝 스매시 대미지 배율 증가",
                 "base": "100",
                 "special": true,
                 "skillName": "閃電重擊",
@@ -112,6 +138,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "破線 傷害倍率增加",
+                "optionKo": "라인 브레이크 대미지 배율 증가",
                 "base": "50",
                 "special": true,
                 "skillName": "破線",
@@ -120,6 +147,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "重擊 傷害倍率增加",
+                "optionKo": "스매시 대미지 배율 증가",
                 "base": "50",
                 "skillName": "重擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278164255.webp"
@@ -127,6 +155,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "突進 傷害倍率增加",
+                "optionKo": "돌진 대미지 배율 증가",
                 "base": "60",
                 "skillName": "突進",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278166033.webp"
@@ -134,6 +163,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "倒地攻擊 傷害倍率增加",
+                "optionKo": "다운 어택 대미지 배율 증가",
                 "base": "30",
                 "skillName": "倒地攻擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278167060.webp"
@@ -141,6 +171,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "風車 傷害倍率增加",
+                "optionKo": "윈드밀 대미지 배율 증가",
                 "base": "40",
                 "skillName": "風車",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278182096.webp"
@@ -148,6 +179,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通劍 最大傷害增加",
+                "optionKo": "소드 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通劍",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278189840.webp"
@@ -155,6 +187,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通斧 最大傷害增加",
+                "optionKo": "액스 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通斧",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278190756.webp"
@@ -162,6 +195,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通鈍器 最大傷害增加",
+                "optionKo": "블런트 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通鈍器",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278191623.webp"
@@ -171,6 +205,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 2,
         "name": "聖詠者",
+        "nameKo": "세인트 바드",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974506104.webp",
         "mainTalent": "祝福",
         "subTalent": "音樂",
@@ -178,8 +213,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 4,
                 "skillName": "淨化的鼓動",
+                "skillNameKo": "정화의 고동",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278415715.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782748273000.webp",
+                "pointsKo": {
+                    "5": "정화의 고동: 공명\n\n공격 범위 반경 7m\n1초마다 범위 내 스킬 대미지로 공격\n1초마다 범위 내 아군 생명력, 마나, 스태미나 회복\n영역 유지 중 시전자의 힐링 효과 증가\n\n범위 내 아군 경직, 다운 면역, 대미지 감소율 10% 증가, \n10초당 보스 몬스터 일부 대미지 관련 해로운 효과 1중첩 감소\n영역 소멸 시 유지 시간에 비례하여 추가 마법 대미지\n\n영역 유지 시간 16초\n영역 유지 중 스킬 재사용 시 강제 소멸\n재사용 대기 시간 60초",
+                    "6": "정화의 고동: 공명\n\n공격 범위 반경 7m\n1초마다 범위 내 스킬 대미지로 공격\n1초마다 범위 내 아군 생명력, 마나, 스태미나 회복\n영역 유지 중 시전자의 힐링 효과 증가\n\n범위 내 아군 경직, 다운 면역, 대미지 감소율 20% 증가, \n9초당 보스 몬스터 일부 대미지 관련 해로운 효과 1중첩 감소\n영역 소멸 시 유지 시간에 비례하여 추가 마법 대미지\n\n영역 유지 시간 17초\n영역 유지 중 스킬 재사용 시 강제 소멸\n재사용 대기 시간 60초",
+                    "7": "정화의 고동: 공명\n\n공격 범위 반경 7m\n1초마다 범위 내 스킬 대미지로 공격\n1초마다 범위 내 아군 생명력, 마나, 스태미나 회복\n영역 유지 중 시전자의 힐링 효과 증가\n\n범위 내 아군 경직, 다운 면역, 대미지 감소율 30% 증가, \n8초당 보스 몬스터 일부 대미지 관련 해로운 효과 1중첩 감소\n영역 소멸 시 유지 시간에 비례하여 추가 마법 대미지\n\n영역 유지 시간 18초\n영역 유지 중 스킬 재사용 시 강제 소멸\n재사용 대기 시간 60초",
+                    "8": "정화의 고동: 공명\n\n공격 범위 반경 7m\n1초마다 범위 내 스킬 대미지로 공격\n1초마다 범위 내 아군 생명력, 마나, 스태미나 회복\n영역 유지 중 시전자의 힐링 효과 증가\n\n범위 내 아군 경직, 다운 면역, 대미지 감소율 40% 증가, \n6초당 보스 몬스터 일부 대미지 관련 해로운 효과 1중첩 감소\n영역 소멸 시 유지 시간에 비례하여 추가 마법 대미지\n\n영역 유지 시간 19초\n영역 유지 중 스킬 재사용 시 강제 소멸\n재사용 대기 시간 60초",
+                    "9": "정화의 고동: 공명\n\n공격 범위 반경 7m\n1초마다 범위 내 스킬 대미지로 공격\n1초마다 범위 내 아군 생명력, 마나, 스태미나 회복\n영역 유지 중 시전자의 힐링 효과 증가\n\n범위 내 아군 경직, 다운 면역, 대미지 감소율 50% 증가, \n5초당 보스 몬스터 일부 대미지 관련 해로운 효과 1중첩 감소\n영역 소멸 시 유지 시간에 비례하여 추가 마법 대미지\n\n영역 유지 시간 20초\n영역 유지 중 스킬 재사용 시 강제 소멸\n재사용 대기 시간 60초"
+                },
                 "words": [
                     "薩爾",
                     "奧爾",
@@ -196,8 +239,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 5,
                 "skillName": "音波洗禮",
+                "skillNameKo": "음파의 세례",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1778732999727.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782748076296.webp",
+                "pointsKo": {
+                    "5": "음파의 세례: 폭음\n\n최대 15m 거리 내의 대상을 다회 공격\n음파의 세례 대미지 배율 100% 증가\n스플래시 대미지 대미지 배율 10%, 범위 반경 0.5m 증가\n스킬 사용 시 구원의 메아리 재사용 대기 시간 0.5초 감소\n피격된 적에게 불협화음 효과 180초간 적용 (최대 5중첩)\n\n불협화음 1중첩 당\n방어, 마법방어 {n} 감소\n보호, 마법보호 {n} 감소\n(힐링 및 파티 힐링 스킬 회복량(마법 공격력 제외)에 비례하여 효과 증가)\n\n회복 효과 및 생명의 온기 부여 효과 비활성화\n재사용 대기 시간 1초",
+                    "6": "음파의 세례: 폭음\n\n최대 15m 거리 내의 대상을 다회 공격\n음파의 세례 대미지 배율 120% 증가\n스플래시 대미지 대미지 배율 15%, 범위 반경 1m 증가\n스킬 사용 시 구원의 메아리 재사용 대기 시간 0.5초 감소\n피격된 적에게 불협화음 효과 180초간 적용 (최대 5중첩)\n\n불협화음 1중첩 당\n방어, 마법방어 {n} 감소\n보호, 마법보호 {n} 감소\n(힐링 및 파티 힐링 스킬 회복량(마법 공격력 제외)에 비례하여 효과 증가)\n\n회복 효과 및 생명의 온기 부여 효과 비활성화\n재사용 대기 시간 1초",
+                    "7": "음파의 세례: 폭음\n\n최대 15m 거리 내의 대상을 다회 공격\n음파의 세례 대미지 배율 140% 증가\n스플래시 대미지 대미지 배율 20%, 범위 반경 1.5m 증가\n스킬 사용 시 구원의 메아리 재사용 대기 시간 1초 감소\n피격된 적에게 불협화음 효과 180초간 적용 (최대 5중첩)\n\n불협화음 1중첩 당\n방어, 마법방어 {n} 감소\n보호, 마법보호 {n} 감소\n(힐링 및 파티 힐링 스킬 회복량(마법 공격력 제외)에 비례하여 효과 증가)\n\n회복 효과 및 생명의 온기 부여 효과 비활성화\n재사용 대기 시간 1초",
+                    "8": "음파의 세례: 폭음\n\n최대 15m 거리 내의 대상을 다회 공격\n음파의 세례 대미지 배율 170% 증가\n스플래시 대미지 대미지 배율 25%, 범위 반경 2m 증가\n스킬 사용 시 구원의 메아리 재사용 대기 시간 1.5초 감소\n피격된 적에게 불협화음 효과 180초간 적용 (최대 5중첩)\n\n불협화음 1중첩 당\n방어, 마법방어 {n} 감소\n보호, 마법보호 {n} 감소\n(힐링 및 파티 힐링 스킬 회복량(마법 공격력 제외)에 비례하여 효과 증가)\n\n회복 효과 및 생명의 온기 부여 효과 비활성화\n재사용 대기 시간 1초",
+                    "9": "음파의 세례: 폭음\n\n최대 15m 거리 내의 대상을 다회 공격\n음파의 세례 대미지 배율 200% 증가\n스플래시 대미지 대미지 배율 30%, 범위 반경 2.5m 증가\n스킬 사용 시 구원의 메아리 재사용 대기 시간 2초 감소\n피격된 적에게 불협화음 효과 180초간 적용 (최대 5중첩)\n\n불협화음 1중첩 당\n방어, 마법방어 {n} 감소\n보호, 마법보호 {n} 감소\n(힐링 및 파티 힐링 스킬 회복량(마법 공격력 제외)에 비례하여 효과 증가)\n\n회복 효과 및 생명의 온기 부여 효과 비활성화\n재사용 대기 시간 1초"
+                },
                 "words": [
                     "寧",
                     "提訥",
@@ -214,8 +265,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 6,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "佩恩",
                     "科爾",
@@ -228,6 +281,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "活力之聲 每秒 生命力 恢復量 增加",
+                "optionKo": "활력의 목소리 초당 생명력 회복량 증가",
                 "base": "10",
                 "special": true,
                 "skillName": "活力之聲",
@@ -236,6 +290,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "救贖的回音 傷害倍率增加",
+                "optionKo": "구원의 메아리 대미지 배율 증가",
                 "base": "4",
                 "special": true,
                 "skillName": "救贖的回音",
@@ -244,6 +299,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "淨化的鼓動 每秒 傷害 增加",
+                "optionKo": "정화의 고동 초당 대미지 증가",
                 "base": "1000",
                 "special": true,
                 "skillName": "淨化的鼓動",
@@ -252,6 +308,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "音波洗禮 傷害倍率增加",
+                "optionKo": "음파의 세례 대미지 배율 증가",
                 "base": "7",
                 "special": true,
                 "skillName": "音波洗禮",
@@ -260,6 +317,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "治療 生命力 最大 恢復量 增加",
+                "optionKo": "힐링 생명력 최대 회복량 증가",
                 "base": "10",
                 "skillName": "治療",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278216277.webp"
@@ -267,6 +325,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "隊伍治療 生命力 最大 恢復量 增加",
+                "optionKo": "파티 힐링 생명력 최대 회복량 증가",
                 "base": "10",
                 "skillName": "隊伍治療",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278218403.webp"
@@ -276,6 +335,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 3,
         "name": "黑魔法師",
+        "nameKo": "다크 메이지",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974539533.webp",
         "mainTalent": "魔法",
         "subTalent": "鎖鏈斬",
@@ -283,8 +343,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 7,
                 "skillName": "暴風雪",
+                "skillNameKo": "스노우 스톰",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278428014.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782749387445.webp",
+                "pointsKo": {
+                    "5": "스노우 스톰: 과냉각\n\n기존 공격 유지 시간 동안의 대미지 총 합의 110%로 기존 공격 범위 내의 적 대상에게 1회 공격\n\n대미지와 함께 중심을 향해 넉백\n도르카 3 소모\n\n피격 당한 적에게 12초 간 유지되는 과냉각 디버프 부여 과냉각 상태의 적은 경직\n과냉각 상태의 적에게 익스플로전 런지, 라이트닝 체인, 볼트 마법, 썬더/아이스 스피어/파이어볼 사용 시, 해당 스킬 최종 대미지의 125% 대미지로 공격\n과냉각 상태가 풀리는 시점에 스노우 스톰 최종 대미지의 50% 추가 대미지\n\n재사용 대기 시간 60초",
+                    "6": "스노우 스톰: 과냉각\n\n기존 공격 유지 시간 동안의 대미지 총 합의 115%로 기존 공격 범위 내의 적 대상에게 1회 공격\n\n대미지와 함께 중심을 향해 넉백\n도르카 3 소모\n\n피격 당한 적에게 12초 간 유지되는 과냉각 디버프 부여 과냉각 상태의 적은 경직\n과냉각 상태의 적에게 익스플로전 런지, 라이트닝 체인, 볼트 마법, 썬더/아이스 스피어/파이어볼 사용 시, 해당 스킬 최종 대미지의 125% 대미지로 공격\n과냉각 상태가 풀리는 시점에 스노우 스톰 최종 대미지의 55% 추가 대미지\n\n재사용 대기 시간 60초",
+                    "7": "스노우 스톰: 과냉각\n\n기존 공격 유지 시간 동안의 대미지 총 합의 120%로 기존 공격 범위 내의 적 대상에게 1회 공격\n\n대미지와 함께 중심을 향해 넉백\n도르카 3 소모\n\n피격 당한 적에게 12초 간 유지되는 과냉각 디버프 부여 과냉각 상태의 적은 경직\n과냉각 상태의 적에게 익스플로전 런지, 라이트닝 체인, 볼트 마법, 썬더/아이스 스피어/파이어볼 사용 시, 해당 스킬 최종 대미지의 125% 대미지로 공격\n과냉각 상태가 풀리는 시점에 스노우 스톰 최종 대미지의 60% 추가 대미지\n\n재사용 대기 시간 60초",
+                    "8": "스노우 스톰: 과냉각\n\n기존 공격 유지 시간 동안의 대미지 총 합의 125%로 기존 공격 범위 내의 적 대상에게 1회 공격\n\n대미지와 함께 중심을 향해 넉백\n도르카 3 소모\n\n피격 당한 적에게 12초 간 유지되는 과냉각 디버프 부여 과냉각 상태의 적은 경직\n과냉각 상태의 적에게 익스플로전 런지, 라이트닝 체인, 볼트 마법, 썬더/아이스 스피어/파이어볼 사용 시, 해당 스킬 최종 대미지의 125% 대미지로 공격\n과냉각 상태가 풀리는 시점에 스노우 스톰 최종 대미지의 65% 추가 대미지\n\n재사용 대기 시간 60초",
+                    "9": "스노우 스톰: 과냉각\n\n기존 공격 유지 시간 동안의 대미지 총 합의 130%로 기존 공격 범위 내의 적 대상에게 1회 공격\n\n대미지와 함께 중심을 향해 넉백\n도르카 3 소모\n\n피격 당한 적에게 12초 간 유지되는 과냉각 디버프 부여 과냉각 상태의 적은 경직\n과냉각 상태의 적에게 익스플로전 런지, 라이트닝 체인, 볼트 마법, 썬더/아이스 스피어/파이어볼 사용 시, 해당 스킬 최종 대미지의 125% 대미지로 공격\n과냉각 상태가 풀리는 시점에 스노우 스톰 최종 대미지의 70% 추가 대미지\n\n재사용 대기 시간 60초"
+                },
                 "words": [
                     "貝赫",
                     "斯特拉夫",
@@ -301,8 +369,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 8,
                 "skillName": "爆裂突刺",
+                "skillNameKo": "익스플로전 런지",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278426208.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782749490300.webp",
+                "pointsKo": {
+                    "5": "익스플로전 런지: 해방\n\n스킬 사용 시, 현재 보유한 도르카 전부 소모\n도르카 소모량에 따라 공격 형태 변화\n\n도르카 1 이상 6 미만 소모 시\n기존 익스플로전 런지 대미지의 113%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 6 이상 11 미만 소모 시\n공격 폭 1m 증가 +\n기존 익스플로전 런지 대미지의 113%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 11 이상 소모 시\n공격 폭 1m 증가 +\n기존 익스플로전 런지 대미지의 113%로 공격 +\n사선 상의 다른 적들에게 50% 대미지 +\n최종 대미지의 50%로 추가 공격\n\n소모한 도르카의 50% 회복\n\n재사용 대기 시간 10초",
+                    "6": "익스플로전 런지: 해방\n\n스킬 사용 시, 현재 보유한 도르카 전부 소모\n도르카 소모량에 따라 공격 형태 변화\n\n도르카 1 이상 6 미만 소모 시\n기존 익스플로전 런지 대미지의 116%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 6 이상 11 미만 소모 시\n공격 폭 1.2m 증가 +\n기존 익스플로전 런지 대미지의 116%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 11 이상 소모 시\n공격 폭 1.2m 증가 +\n기존 익스플로전 런지 대미지의 116%로 공격 +\n사선 상의 다른 적들에게 50% 대미지 +\n최종 대미지의 50%로 추가 공격\n\n소모한 도르카의 50% 회복\n\n재사용 대기 시간 10초",
+                    "7": "익스플로전 런지: 해방\n\n스킬 사용 시, 현재 보유한 도르카 전부 소모\n도르카 소모량에 따라 공격 형태 변화\n\n도르카 1 이상 6 미만 소모 시\n기존 익스플로전 런지 대미지의 119%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 6 이상 11 미만 소모 시\n공격 폭 1.4m 증가 +\n기존 익스플로전 런지 대미지의 119%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 11 이상 소모 시\n공격 폭 1.4m 증가 +\n기존 익스플로전 런지 대미지의 119%로 공격 +\n사선 상의 다른 적들에게 50% 대미지 +\n최종 대미지의 50%로 추가 공격\n\n소모한 도르카의 50% 회복\n\n재사용 대기 시간 10초",
+                    "8": "익스플로전 런지: 해방\n\n스킬 사용 시, 현재 보유한 도르카 전부 소모\n도르카 소모량에 따라 공격 형태 변화\n\n도르카 1 이상 6 미만 소모 시\n기존 익스플로전 런지 대미지의 122%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 6 이상 11 미만 소모 시\n공격 폭 1.7m 증가 +\n기존 익스플로전 런지 대미지의 122%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 11 이상 소모 시\n공격 폭 1.7m 증가 +\n기존 익스플로전 런지 대미지의 122%로 공격 +\n사선 상의 다른 적들에게 50% 대미지 +\n최종 대미지의 50%로 추가 공격\n\n소모한 도르카의 50% 회복\n\n재사용 대기 시간 10초",
+                    "9": "익스플로전 런지: 해방\n\n스킬 사용 시, 현재 보유한 도르카 전부 소모\n도르카 소모량에 따라 공격 형태 변화\n\n도르카 1 이상 6 미만 소모 시\n기존 익스플로전 런지 대미지의 125%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 6 이상 11 미만 소모 시\n공격 폭 2m 증가 +\n기존 익스플로전 런지 대미지의 125%로 공격 +\n사선 상의 다른 적들에게 50% 대미지\n\n도르카 11 이상 소모 시\n공격 폭 2m 증가 +\n기존 익스플로전 런지 대미지의 125%로 공격 +\n사선 상의 다른 적들에게 50% 대미지 +\n최종 대미지의 50%로 추가 공격\n\n소모한 도르카의 50% 회복\n\n재사용 대기 시간 10초"
+                },
                 "words": [
                     "里斯",
                     "烏赫",
@@ -319,8 +395,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 9,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "薩爾",
                     "戈爾特",
@@ -333,6 +411,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "爆裂突刺 火 最大傷害倍率增加",
+                "optionKo": "익스플로전 런지 파이어 최대 대미지 배율 증가",
                 "base": "250",
                 "special": true,
                 "skillName": "爆裂突刺",
@@ -341,6 +420,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "電氣鎖鏈 電擊 最大傷害倍率增加",
+                "optionKo": "라이트닝 체인 전격 최대 대미지 배율 증가",
                 "base": "20",
                 "special": true,
                 "skillName": "電氣鎖鏈",
@@ -349,6 +429,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "暴風雪 每秒 冰 最大傷害倍率增加",
+                "optionKo": "스노우 스톰 초당 아이스 최대 대미지 배율 증가",
                 "base": "35",
                 "special": true,
                 "skillName": "暴風雪",
@@ -357,6 +438,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "潛伏點火 火 最大傷害倍率增加",
+                "optionKo": "레이턴트 이그니션 파이어 최대 대미지 배율 증가",
                 "base": "300",
                 "special": true,
                 "skillName": "潛伏點火",
@@ -365,6 +447,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通火魔法 傷害倍率增加",
+                "optionKo": "파이어 마스터리 대미지 배율 증가",
                 "base": "1",
                 "skillName": "精通火魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278219232.webp"
@@ -372,6 +455,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通冰魔法 傷害倍率增加",
+                "optionKo": "아이스 마스터리 대미지 배율 증가",
                 "base": "1",
                 "skillName": "精通冰魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278220105.webp"
@@ -379,6 +463,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通雷魔法 傷害倍率增加",
+                "optionKo": "라이트닝 마스터리 대미지 배율 증가",
                 "base": "1",
                 "skillName": "精通雷魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278221080.webp"
@@ -386,6 +471,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通箭系魔法 傷害倍率增加",
+                "optionKo": "볼트 마스터리 대미지 배율 증가",
                 "base": "1",
                 "skillName": "精通箭系魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278222106.webp"
@@ -393,6 +479,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "雷矢 最大傷害倍率增加",
+                "optionKo": "라이트닝볼트 최대 대미지 배율 증가",
                 "base": "2",
                 "skillName": "雷矢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278223912.webp"
@@ -400,6 +487,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "雷擊 最大傷害倍率增加",
+                "optionKo": "썬더 최대 대미지 배율 증가",
                 "base": "0.5",
                 "skillName": "雷擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278224921.webp"
@@ -407,6 +495,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "火矢 最大傷害倍率增加",
+                "optionKo": "파이어볼트 최대 대미지 배율 증가",
                 "base": "2",
                 "skillName": "火矢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278226774.webp"
@@ -414,6 +503,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "火球 最大傷害倍率增加",
+                "optionKo": "파이어볼 최대 대미지 배율 증가",
                 "base": "60",
                 "skillName": "火球",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278227829.webp"
@@ -421,6 +511,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "冰矢 最大傷害倍率增加",
+                "optionKo": "아이스볼트 최대 대미지 배율 증가",
                 "base": "2",
                 "skillName": "冰矢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278229742.webp"
@@ -428,6 +519,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "冰矛 最大傷害倍率增加",
+                "optionKo": "아이스 스피어 최대 대미지 배율 증가",
                 "base": "6",
                 "skillName": "冰矛",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278230633.webp"
@@ -435,6 +527,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "箭系組合魔法 傷害倍率增加",
+                "optionKo": "볼트 마법 조합 대미지 배율 증가",
                 "base": "1",
                 "skillName": "箭系組合魔法",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278233312.webp"
@@ -442,6 +535,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "屬性",
                 "option": "魔法 攻擊力增加",
+                "optionKo": "마법 공격력 증가",
                 "base": "10"
             }
         ]
@@ -449,6 +543,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 4,
         "name": "鍊金射手",
+        "nameKo": "알케믹 스팅어",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974562311.webp",
         "mainTalent": "弓術",
         "subTalent": "戰鬥鍊金術",
@@ -456,8 +551,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 10,
                 "skillName": "三重突襲",
+                "skillNameKo": "트라이 어설트",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278436490.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782823520396.webp",
+                "pointsKo": {
+                    "5": "트라이 어설트: 융합\n\n4종의 에너지 속성을 모두 소모하여 1회 공격\n트라이 어설트 피니시 공격 대미지 배율 3300% 증가\n불, 물, 바람, 흙 속성 연금술 마스터리 효율에 따라 대미지 증가\n\n피격된 모든 적에게 [알케믹 시너지]의 모든 효과 (증발, 과열, 전류, 분진, 냉각, 부식) 적용\n\n재사용 대기 시간 36초",
+                    "6": "트라이 어설트: 융합\n\n4종의 에너지 속성을 모두 소모하여 1회 공격\n트라이 어설트 피니시 공격 대미지 배율 3600% 증가\n불, 물, 바람, 흙 속성 연금술 마스터리 효율에 따라 대미지 증가\n\n피격된 모든 적에게 [알케믹 시너지]의 모든 효과 (증발, 과열, 전류, 분진, 냉각, 부식) 적용\n\n재사용 대기 시간 36초",
+                    "7": "트라이 어설트: 융합\n\n4종의 에너지 속성을 모두 소모하여 1회 공격\n트라이 어설트 피니시 공격 대미지 배율 3900% 증가\n불, 물, 바람, 흙 속성 연금술 마스터리 효율에 따라 대미지 증가\n\n피격된 모든 적에게 [알케믹 시너지]의 모든 효과 (증발, 과열, 전류, 분진, 냉각, 부식) 적용\n\n재사용 대기 시간 36초",
+                    "8": "트라이 어설트: 융합\n\n4종의 에너지 속성을 모두 소모하여 1회 공격\n트라이 어설트 피니시 공격 대미지 배율 4200% 증가\n불, 물, 바람, 흙 속성 연금술 마스터리 효율에 따라 대미지 증가\n\n피격된 모든 적에게 [알케믹 시너지]의 모든 효과 (증발, 과열, 전류, 분진, 냉각, 부식) 적용\n\n재사용 대기 시간 36초",
+                    "9": "트라이 어설트: 융합\n\n4종의 에너지 속성을 모두 소모하여 1회 공격\n트라이 어설트 피니시 공격 대미지 배율 4500% 증가\n불, 물, 바람, 흙 속성 연금술 마스터리 효율에 따라 대미지 증가\n\n피격된 모든 적에게 [알케믹 시너지]의 모든 효과 (증발, 과열, 전류, 분진, 냉각, 부식) 적용\n\n재사용 대기 시간 36초"
+                },
                 "words": [
                     "佩恩",
                     "伊達德",
@@ -474,8 +577,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 11,
                 "skillName": "水流貫穿",
+                "skillNameKo": "하이드로 피어스",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278433695.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782823954542.webp",
+                "pointsKo": {
+                    "5": "하이드로 피어스: 격류\n\n하이드로 피어스 차징 불가\n사용자의 매그넘 샷 대미지 + 기존 하이드로 피어스 최대 대미지 배율의 7%로 공격\n\n[흐름], [격류] 상태를 모두 보유하고 있지 않을 때 하이드로 피어스 사용 시 [흐름] 획득\n\n[흐름] 상태에서 매그넘 샷 사용 시 [격류] 컨디션을 최대 3스택까지 획득\n\n[격류] 스택 보유 중 하이드로 피어스 사용 시 스택을 모두 소모하며, 스택 당 2회의 추가 공격 발생\n\n재사용 대기 시간 10초",
+                    "6": "하이드로 피어스: 격류\n\n하이드로 피어스 차징 불가\n사용자의 매그넘 샷 대미지 + 기존 하이드로 피어스 최대 대미지 배율의 9%로 공격\n\n[흐름], [격류] 상태를 모두 보유하고 있지 않을 때 하이드로 피어스 사용 시 [흐름] 획득\n\n[흐름] 상태에서 매그넘 샷 사용 시 [격류] 컨디션을 최대 3스택까지 획득\n\n[격류] 스택 보유 중 하이드로 피어스 사용 시 스택을 모두 소모하며, 스택 당 2회의 추가 공격 발생\n\n재사용 대기 시간 10초",
+                    "7": "하이드로 피어스: 격류\n\n하이드로 피어스 차징 불가\n사용자의 매그넘 샷 대미지 + 기존 하이드로 피어스 최대 대미지 배율의 11%로 공격\n\n[흐름], [격류] 상태를 모두 보유하고 있지 않을 때 하이드로 피어스 사용 시 [흐름] 획득\n\n[흐름] 상태에서 매그넘 샷 사용 시 [격류] 컨디션을 최대 3스택까지 획득\n\n[격류] 스택 보유 중 하이드로 피어스 사용 시 스택을 모두 소모하며, 스택 당 2회의 추가 공격 발생\n\n재사용 대기 시간 10초",
+                    "8": "하이드로 피어스: 격류\n\n하이드로 피어스 차징 불가\n사용자의 매그넘 샷 대미지 + 기존 하이드로 피어스 최대 대미지 배율의 13%로 공격\n\n[흐름], [격류] 상태를 모두 보유하고 있지 않을 때 하이드로 피어스 사용 시 [흐름] 획득\n\n[흐름] 상태에서 매그넘 샷 사용 시 [격류] 컨디션을 최대 3스택까지 획득\n\n[격류] 스택 보유 중 하이드로 피어스 사용 시 스택을 모두 소모하며, 스택 당 2회의 추가 공격 발생\n\n재사용 대기 시간 10초",
+                    "9": "하이드로 피어스: 격류\n\n하이드로 피어스 차징 불가\n사용자의 매그넘 샷 대미지 + 기존 하이드로 피어스 최대 대미지 배율의 15%로 공격\n\n[흐름], [격류] 상태를 모두 보유하고 있지 않을 때 하이드로 피어스 사용 시 [흐름] 획득\n\n[흐름] 상태에서 매그넘 샷 사용 시 [격류] 컨디션을 최대 3스택까지 획득\n\n[격류] 스택 보유 중 하이드로 피어스 사용 시 스택을 모두 소모하며, 스택 당 2회의 추가 공격 발생\n\n재사용 대기 시간 10초"
+                },
                 "words": [
                     "薩爾",
                     "達爾",
@@ -492,8 +603,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 12,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "寧",
                     "凱爾特",
@@ -506,6 +619,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "烈焰爆發 傷害倍率增加",
+                "optionKo": "플레임 버스트 대미지 배율 증가",
                 "base": "50",
                 "special": true,
                 "skillName": "烈焰爆發",
@@ -514,6 +628,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "水流貫穿 最大傷害倍率增加",
+                "optionKo": "하이드로 피어스 최대 대미지 배율 증가",
                 "base": "150",
                 "special": true,
                 "skillName": "水流貫穿",
@@ -522,6 +637,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "列陣 傷害倍率增加",
+                "optionKo": "라인 포스 대미지 배율 증가",
                 "base": "200",
                 "special": true,
                 "skillName": "列陣",
@@ -530,6 +646,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "塵埃射擊 傷害倍率增加",
+                "optionKo": "더스트 샷 대미지 배율 증가",
                 "base": "200",
                 "special": true,
                 "skillName": "塵埃射擊",
@@ -538,6 +655,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "三重突襲 일반 攻擊, 終結 攻擊的傷害倍率增加",
+                "optionKo": "트라이 어설트 일반 공격, 피니시 공격의 대미지 배율 증가",
                 "base": "60",
                 "special": true,
                 "skillName": "三重突襲",
@@ -546,6 +664,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "麥格農射擊 傷害倍率增加",
+                "optionKo": "매그넘 샷 대미지 배율 증가",
                 "base": "20",
                 "skillName": "麥格農射擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278174656.webp"
@@ -553,6 +672,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "碎裂射擊 파편 傷害倍率增加",
+                "optionKo": "크래시 샷 파편 대미지 배율 증가",
                 "base": "20",
                 "skillName": "碎裂射擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278186959.webp"
@@ -560,6 +680,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通弓 最大傷害增加",
+                "optionKo": "보우 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通弓",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278200193.webp"
@@ -567,6 +688,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通弩 最大傷害增加",
+                "optionKo": "크로스보우 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通弩",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278201056.webp"
@@ -576,6 +698,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 5,
         "name": "聖盾",
+        "nameKo": "세이크리드 가드",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974584004.webp",
         "mainTalent": "近距離戰鬥",
         "subTalent": "祝福",
@@ -583,8 +706,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 13,
                 "skillName": "光輝的斷罪",
+                "skillNameKo": "광휘의 단죄",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1778731662673.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782835338035.webp",
+                "pointsKo": {
+                    "5": "광휘의 단죄: 집행\n\n광휘의 단죄가 상시 3단계로 동작\n광휘의 단죄의 기본 대미지, 방어력, 최대 생명력 배율 1.1배 증가\n\n적 혹은 지정한 곳으로 사용 가능\n스킬로 이동 가능한 거리 : 최대 6m\n\n고결한 서약 활성화 상태일 경우 희생 4 획득\n\n재사용 대기 시간 2.5초",
+                    "6": "광휘의 단죄: 집행\n\n광휘의 단죄가 상시 3단계로 동작\n광휘의 단죄의 기본 대미지, 방어력, 최대 생명력 배율 1.2배 증가\n공격 범위 반경 증가\n\n적 혹은 지정한 곳으로 사용 가능\n스킬로 이동 가능한 거리 : 최대 6.5m\n\n고결한 서약 활성화 상태일 경우 희생 4 획득\n\n재사용 대기 시간 2.5초",
+                    "7": "광휘의 단죄: 집행\n\n광휘의 단죄가 상시 3단계로 동작\n광휘의 단죄의 기본 대미지, 방어력, 최대 생명력 배율 1.3배 증가\n공격 범위 반경 증가\n\n적 혹은 지정한 곳으로 사용 가능\n스킬로 이동 가능한 거리 : 최대 7m\n\n고결한 서약 활성화 상태일 경우 희생 4 획득\n\n재사용 대기 시간 2.5초",
+                    "8": "광휘의 단죄: 집행\n\n광휘의 단죄가 상시 3단계로 동작\n광휘의 단죄의 기본 대미지, 방어력, 최대 생명력 배율 1.4배 증가\n공격 범위 반경 증가\n\n적 혹은 지정한 곳으로 사용 가능\n스킬로 이동 가능한 거리 : 최대 7.5m\n\n고결한 서약 활성화 상태일 경우 희생 4 획득\n\n재사용 대기 시간 2.5초",
+                    "9": "광휘의 단죄: 집행\n\n광휘의 단죄가 상시 3단계로 동작\n광휘의 단죄의 기본 대미지, 방어력, 최대 생명력 배율 1.5배 증가\n공격 범위 반경 증가\n\n적 혹은 지정한 곳으로 사용 가능\n스킬로 이동 가능한 거리 : 최대 8m\n\n고결한 서약 활성화 상태일 경우 희생 4 획득\n\n재사용 대기 시간 2.5초"
+                },
                 "words": [
                     "里斯",
                     "提訥",
@@ -601,8 +732,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 14,
                 "skillName": "鐵壁強打",
+                "skillNameKo": "철벽 강타",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278441243.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782835547817.webp",
+                "pointsKo": {
+                    "5": "철벽 강타: 요새\n\n철벽 강타의 윈드밀 대미지 배율 5%,\n기본 대미지 배율 200%, 방어력 배율 300%,\n최대 생명력 배율 50% 증가\n\n공격 범위 : 6m\n공격 각도 : 150도\n고결한 서약 활성화 상태에서 스킬 사용 시, 희생 1 획득\n\n사용 직후 1.5초간 받는 대미지 50% 감소 및\n보스 몬스터의 일부 해로운 효과 면역,\n적의 공격에 피격 시 재사용 대기 시간 초기화\n고결한 서약 활성화 상태에서 대미지 경감 성공 시,\n희생 2 획득 및 자신에게 요새화 효과를 부여\n요새화 지속 시간 : 15초\n\n요새화 효과 : 모든 세이크리드 가드 공격 스킬 희생 획득량\n10% 증가, 희생의 응징 스킬 시 효과 제거\n\n요새화 최대 중첩 수 : 3\n\n기존 쿨타임 대신 누적 쿨타임 적용\n누적 쿨타임 한계 : 12초\n(누적된 쿨타임이 한계점을 넘어가면 누적된 쿨타임동안 스킬 사용 불가) ",
+                    "6": "철벽 강타: 요새\n\n철벽 강타의 윈드밀 대미지 배율 10%,\n기본 대미지 배율 300%, 방어력 배율 300%,\n최대 생명력 배율 50% 증가\n\n공격 범위 : 6m\n공격 각도 : 150도\n고결한 서약 활성화 상태에서 스킬 사용 시, 희생 1 획득\n\n사용 직후 1.5초간 받는 대미지 50% 감소 및\n보스 몬스터의 일부 해로운 효과 면역,\n적의 공격에 피격 시 재사용 대기 시간 초기화\n고결한 서약 활성화 상태에서 대미지 경감 성공 시,\n희생 2 획득 및 자신에게 요새화 효과를 부여\n요새화 지속 시간 : 15초\n\n요새화 효과 : 모든 세이크리드 가드 공격 스킬 희생 획득량\n15% 증가, 희생의 응징 스킬 시 효과 제거\n\n요새화 최대 중첩 수 : 3\n\n기존 쿨타임 대신 누적 쿨타임 적용\n누적 쿨타임 한계 : 12초\n(누적된 쿨타임이 한계점을 넘어가면 누적된 쿨타임동안 스킬 사용 불가) ",
+                    "7": "철벽 강타: 요새\n\n철벽 강타의 윈드밀 대미지 배율 15%,\n기본 대미지 배율 400%, 방어력 배율 300%,\n최대 생명력 배율 50% 증가\n\n공격 범위 : 6m\n공격 각도 : 150도\n고결한 서약 활성화 상태에서 스킬 사용 시, 희생 1 획득\n\n사용 직후 1.5초간 받는 대미지 50% 감소 및\n보스 몬스터의 일부 해로운 효과 면역,\n적의 공격에 피격 시 재사용 대기 시간 초기화\n고결한 서약 활성화 상태에서 대미지 경감 성공 시,\n희생 2 획득 및 자신에게 요새화 효과를 부여\n요새화 지속 시간 : 15초\n\n요새화 효과 : 모든 세이크리드 가드 공격 스킬 희생 획득량\n20% 증가, 희생의 응징 스킬 시 효과 제거\n\n요새화 최대 중첩 수 : 3\n\n기존 쿨타임 대신 누적 쿨타임 적용\n누적 쿨타임 한계 : 12초\n(누적된 쿨타임이 한계점을 넘어가면 누적된 쿨타임동안 스킬 사용 불가) ",
+                    "8": "철벽 강타: 요새\n\n철벽 강타의 윈드밀 대미지 배율 20%,\n기본 대미지 배율 500%, 방어력 배율 300%,\n최대 생명력 배율 50% 증가\n\n공격 범위 : 6m\n공격 각도 : 150도\n고결한 서약 활성화 상태에서 스킬 사용 시, 희생 1 획득\n\n사용 직후 1.5초간 받는 대미지 50% 감소 및\n보스 몬스터의 일부 해로운 효과 면역,\n적의 공격에 피격 시 재사용 대기 시간 초기화\n고결한 서약 활성화 상태에서 대미지 경감 성공 시,\n희생 2 획득 및 자신에게 요새화 효과를 부여\n요새화 지속 시간 : 15초\n\n요새화 효과 : 모든 세이크리드 가드 공격 스킬 희생 획득량\n25% 증가, 희생의 응징 스킬 시 효과 제거\n\n요새화 최대 중첩 수 : 3\n\n기존 쿨타임 대신 누적 쿨타임 적용\n누적 쿨타임 한계 : 12초\n(누적된 쿨타임이 한계점을 넘어가면 누적된 쿨타임동안 스킬 사용 불가) ",
+                    "9": "철벽 강타: 요새\n\n철벽 강타의 윈드밀 대미지 배율 25%,\n기본 대미지 배율 600%, 방어력 배율 300%,\n최대 생명력 배율 50% 증가\n\n공격 범위 : 6m\n공격 각도 : 150도\n고결한 서약 활성화 상태에서 스킬 사용 시, 희생 1 획득\n\n사용 직후 1.5초간 받는 대미지 50% 감소 및\n보스 몬스터의 일부 해로운 효과 면역,\n적의 공격에 피격 시 재사용 대기 시간 초기화\n고결한 서약 활성화 상태에서 대미지 경감 성공 시,\n희생 2 획득 및 자신에게 요새화 효과를 부여\n요새화 지속 시간 : 15초\n\n요새화 효과 : 모든 세이크리드 가드 공격 스킬 희생 획득량\n30% 증가, 희생의 응징 스킬 시 효과 제거\n\n요새화 최대 중첩 수 : 3\n\n기존 쿨타임 대신 누적 쿨타임 적용\n누적 쿨타임 한계 : 12초\n(누적된 쿨타임이 한계점을 넘어가면 누적된 쿨타임동안 스킬 사용 불가) "
+                },
                 "words": [
                     "薩爾",
                     "戈爾特",
@@ -619,8 +758,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 15,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "貝赫",
                     "蓋塔爾",
@@ -633,6 +774,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "聖域展開 傷害倍率增加",
+                "optionKo": "성역 전개 대미지 배율 증가",
                 "base": "10",
                 "special": true,
                 "skillName": "聖域展開",
@@ -641,6 +783,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "激突 傷害倍率增加",
+                "optionKo": "격돌 대미지 배율 증가",
                 "base": "100",
                 "special": true,
                 "skillName": "激突",
@@ -649,6 +792,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "鐵壁強打 傷害倍率增加",
+                "optionKo": "철벽 강타 대미지 배율 증가",
                 "base": "50",
                 "special": true,
                 "skillName": "鐵壁強打",
@@ -657,6 +801,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "審判的一擊 傷害倍率增加",
+                "optionKo": "심판의 일격 대미지 배율 증가",
                 "base": "200",
                 "special": true,
                 "skillName": "審判的一擊",
@@ -665,6 +810,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "光輝的斷罪 2階段부터 階段每 傷害倍率增加",
+                "optionKo": "광휘의 단죄 2단계부터 단계당 대미지 배율 증가",
                 "base": "8",
                 "special": true,
                 "skillName": "光輝的斷罪",
@@ -673,6 +819,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "重擊 傷害倍率增加",
+                "optionKo": "스매시 대미지 배율 증가",
                 "base": "50",
                 "skillName": "重擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278164255.webp"
@@ -680,6 +827,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "突進 傷害倍率增加",
+                "optionKo": "돌진 대미지 배율 증가",
                 "base": "60",
                 "skillName": "突進",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278166033.webp"
@@ -687,6 +835,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "倒地攻擊 傷害倍率增加",
+                "optionKo": "다운 어택 대미지 배율 증가",
                 "base": "30",
                 "skillName": "倒地攻擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278167060.webp"
@@ -694,6 +843,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "風車 傷害倍率增加",
+                "optionKo": "윈드밀 대미지 배율 증가",
                 "base": "40",
                 "skillName": "風車",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278182096.webp"
@@ -701,6 +851,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通劍 最大傷害增加",
+                "optionKo": "소드 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通劍",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278189840.webp"
@@ -708,6 +859,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通斧 最大傷害增加",
+                "optionKo": "액스 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通斧",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278190756.webp"
@@ -715,6 +867,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通鈍器 最大傷害增加",
+                "optionKo": "블런트 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通鈍器",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278191623.webp"
@@ -724,6 +877,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 6,
         "name": "爆裂槍兵",
+        "nameKo": "블래스트 랜서",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974606466.webp",
         "mainTalent": "騎槍",
         "subTalent": "槍手",
@@ -731,8 +885,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 16,
                 "skillName": "衝鋒突襲",
+                "skillNameKo": "차지 어설트",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278448747.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782836374406.webp",
+                "pointsKo": {
+                    "5": "차지 어설트: 질풍\n\n차지 어설트 이동 거리 1m 증가\n캐릭터 후방 공격 거리 1m 증가\n공격 폭 10m 내 적 대상을 밀어냄\n차지 어설트 대미지 배율 800% 증가\n누적 쿨 타임 대기 시간 증가값 0.5초 감소",
+                    "6": "차지 어설트: 질풍\n\n차지 어설트 이동 거리 1m 증가\n캐릭터 후방 공격 거리 1m 증가\n공격 폭 10m 내 적 대상을 밀어냄\n차지 어설트 대미지 배율 1100% 증가\n누적 쿨 타임 대기 시간 증가값 0.5초 감소",
+                    "7": "차지 어설트: 질풍\n\n차지 어설트 이동 거리 2m 증가\n캐릭터 후방 공격 거리 1m 증가\n공격 폭 10m 내 적 대상을 밀어냄\n차지 어설트 대미지 배율 1400% 증가\n누적 쿨 타임 대기 시간 증가값 0.5초 감소",
+                    "8": "차지 어설트: 질풍\n\n차지 어설트 이동 거리 2m 증가\n캐릭터 후방 공격 거리 1m 증가\n공격 폭 10m 내 적 대상을 밀어냄\n차지 어설트 대미지 배율 1700% 증가\n누적 쿨 타임 대기 시간 증가값 0.5초 감소",
+                    "9": "차지 어설트: 질풍\n\n차지 어설트 이동 거리 3m 증가\n캐릭터 후방 공격 거리 1m 증가\n공격 폭 10m 내 적 대상을 밀어냄\n차지 어설트 대미지 배율 2000% 증가\n누적 쿨 타임 대기 시간 증가값 0.5초 감소"
+                },
                 "words": [
                     "寧",
                     "達爾",
@@ -749,8 +911,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 17,
                 "skillName": "超載",
+                "skillNameKo": "오버 드라이브",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278449645.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782836723448.webp",
+                "pointsKo": {
+                    "5": "오버 드라이브: 기폭\n\n스킬 대미지로 찌르기 공격\n사용자의 랜스 차지 대미지로 폭발 공격\n\n스킬 사용 시 기폭 마력탄 45초간 적용 (최대 2중첩)\n기폭 마력탄 적용 중 블래스트 랜서 스킬 사용 시 1% 추가 대미지 (1회)\n어나이얼레이션 사용 시 중첩당 대폭발 최종 대미지 0.5% 증가 및 중첩\n수 초기화\n\n재사용 대기 시간 6초 + 랜스 차지 재사용 대기 시간",
+                    "6": "오버 드라이브: 기폭\n\n스킬 대미지로 찌르기 공격\n사용자의 랜스 차지 대미지로 폭발 공격\n\n스킬 사용 시 기폭 마력탄 45초간 적용 (최대 3중첩)\n기폭 마력탄 적용 중 블래스트 랜서 스킬 사용 시 1.5% 추가 대미지 (1회)\n어나이얼레이션 사용 시 중첩당 대폭발 최종 대미지 0.5% 증가 및 중첩\n수 초기화\n\n재사용 대기 시간 6초 + 랜스 차지 재사용 대기 시간",
+                    "7": "오버 드라이브: 기폭\n\n스킬 대미지로 찌르기 공격\n사용자의 랜스 차지 대미지로 폭발 공격\n\n스킬 사용 시 기폭 마력탄 45초간 적용 (최대 4중첩)\n기폭 마력탄 적용 중 블래스트 랜서 스킬 사용 시 2% 추가 대미지 (1회)\n어나이얼레이션 사용 시 중첩당 대폭발 최종 대미지 0.5% 증가 및 중첩\n수 초기화\n\n재사용 대기 시간 6초 + 랜스 차지 재사용 대기 시간",
+                    "8": "오버 드라이브: 기폭\n\n스킬 대미지로 찌르기 공격\n사용자의 랜스 차지 대미지로 폭발 공격\n\n스킬 사용 시 기폭 마력탄 45초간 적용 (최대 5중첩)\n기폭 마력탄 적용 중 블래스트 랜서 스킬 사용 시 2.5% 추가 대미지 (1회)\n어나이얼레이션 사용 시 중첩당 대폭발 최종 대미지 0.5% 증가 및 중첩\n수 초기화\n\n재사용 대기 시간 6초 + 랜스 차지 재사용 대기 시간",
+                    "9": "오버 드라이브: 기폭\n\n스킬 대미지로 찌르기 공격\n사용자의 랜스 차지 대미지로 폭발 공격\n\n스킬 사용 시 기폭 마력탄 45초간 적용 (최대 6중첩)\n기폭 마력탄 적용 중 블래스트 랜서 스킬 사용 시 3ㅊ% 추가 대미지 (1회)\n어나이얼레이션 사용 시 중첩당 대폭발 최종 대미지 0.5% 증가 및 중첩\n수 초기화\n\n재사용 대기 시간 6초 + 랜스 차지 재사용 대기 시간"
+                },
                 "words": [
                     "貝赫",
                     "埃達德",
@@ -767,8 +937,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 18,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "里斯",
                     "路斯",
@@ -781,6 +953,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "衝擊粉碎 傷害倍率增加",
+                "optionKo": "임팩트 크러시 대미지 배율 증가",
                 "base": "80",
                 "special": true,
                 "skillName": "衝擊粉碎",
@@ -789,6 +962,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "螺旋漩渦 傷害倍率增加",
+                "optionKo": "스파이럴 볼텍스 대미지 배율 증가",
                 "base": "200",
                 "special": true,
                 "skillName": "螺旋漩渦",
@@ -797,6 +971,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "衝鋒突襲 傷害倍率增加",
+                "optionKo": "차지 어설트 대미지 배율 증가",
                 "base": "80",
                 "special": true,
                 "skillName": "衝鋒突襲",
@@ -805,6 +980,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "超載 傷害倍率增加",
+                "optionKo": "오버 드라이브 대미지 배율 증가",
                 "base": "40",
                 "special": true,
                 "skillName": "超載",
@@ -813,6 +989,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "殲滅 傷害倍率增加",
+                "optionKo": "어나이얼레이션 대미지 배율 증가",
                 "base": "200",
                 "special": true,
                 "skillName": "殲滅",
@@ -821,6 +998,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "騎槍衝擊 充能 傷害倍率增加",
+                "optionKo": "랜스 차지 차지 대미지 배율 증가",
                 "base": "8",
                 "skillName": "騎槍衝擊",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278168970.webp"
@@ -828,6 +1006,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通騎槍 最大傷害增加",
+                "optionKo": "랜스 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通騎槍",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278201897.webp"
@@ -837,6 +1016,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 7,
         "name": "幻變槍手",
+        "nameKo": "배리어블 거너",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974664397.webp",
         "mainTalent": "槍手",
         "subTalent": "煉成鍊金術",
@@ -844,8 +1024,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 19,
                 "skillName": "重型火砲",
+                "skillNameKo": "헤비 아틸러리",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278649869.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782837751189.webp",
+                "pointsKo": {
+                    "5": "헤비 아틸러리: 연속 포격\n\n반경 9m의 영역을 기본 대미지의 600% +\n크로스 버스터 대미지로 공격\n마력탄 10 소모\n연성 에너지 200 증가\n(연성 에너지탄 1개: 연성 에너지 100)\n\n트랜스뮤트 존이 존재할 때\n스킬 사용 후 6초마다 최대 3회까지 추가 포격 발생\n\n재사용 대기 시간 15초 증가",
+                    "6": "헤비 아틸러리: 연속 포격\n\n반경 9m의 영역을 기본 대미지의 600% +\n크로스 버스터 대미지로 공격\n마력탄 10 소모\n연성 에너지 200 증가\n(연성 에너지탄 1개: 연성 에너지 100)\n\n트랜스뮤트 존이 존재할 때\n스킬 사용 후 5.5초마다 최대 3회까지 추가 포격 발생\n\n재사용 대기 시간 15초 증가",
+                    "7": "헤비 아틸러리: 연속 포격\n\n반경 9m의 영역을 기본 대미지의 600% +\n크로스 버스터 대미지로 공격\n마력탄 10 소모\n연성 에너지 200 증가\n(연성 에너지탄 1개: 연성 에너지 100)\n\n트랜스뮤트 존이 존재할 때\n스킬 사용 후 5초마다 최대 4회까지 추가 포격 발생\n\n재사용 대기 시간 15초 증가",
+                    "8": "헤비 아틸러리: 연속 포격\n\n반경 9m의 영역을 기본 대미지의 600% +\n크로스 버스터 대미지로 공격\n마력탄 10 소모\n연성 에너지 200 증가\n(연성 에너지탄 1개: 연성 에너지 100)\n\n트랜스뮤트 존이 존재할 때\n스킬 사용 후 4.5초마다 최대 4회까지 추가 포격 발생\n\n재사용 대기 시간 15초 증가",
+                    "9": "헤비 아틸러리: 연속 포격\n\n반경 9m의 영역을 기본 대미지의 600% +\n크로스 버스터 대미지로 공격\n마력탄 10 소모\n연성 에너지 200 증가\n(연성 에너지탄 1개: 연성 에너지 100)\n\n트랜스뮤트 존이 존재할 때\n스킬 사용 후 4초마다 최대 5회까지 추가 포격 발생\n\n재사용 대기 시간 15초 증가"
+                },
                 "words": [
                     "佩恩",
                     "戈爾特",
@@ -862,8 +1050,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 20,
                 "skillName": "煉成領域",
+                "skillNameKo": "트랜스뮤트 존",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278782490.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782838063465.webp",
+                "pointsKo": {
+                    "5": "트랜스뮤트 존: 록온\n\n단일 적을 지정하여 발동 가능\n슈팅 러쉬 공격폭에 2m를 더한 반경의 배리어블 거너\n스킬 강화 영역을 동시에 3개 설치\n\n트랜스뮤트 존이 자동으로 지정한 적의 위치를 따라감\n(영역은 시전자에게만 보이며 효과 또한 시전자의 스킬에만 적용)\n영역 유지 시간 : 10초\n\n영역 효과\n래피드 파이어:\n영역 위로 공격 시 영역 내 적을 1m 씩 끌어당김\n\n헤비 아틸러리:\n설치된 영역만큼 추가 공격\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 30% 증가)\n\n데바스테이션 캐논:\n영역 위로 공격 시 영역 내 모든 적에게 공격 판정\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 30% 증가)\n\n페이탈 스코프:\n대상이 영역 내에 있을 경우 조준 속도 100% 증가\n(슈터스 아이 효과와는 중첩되지 않음)\n\n마력탄 4 소모\n연성 에너지탄 3개 소모",
+                    "6": "트랜스뮤트 존: 록온\n\n단일 적을 지정하여 발동 가능\n슈팅 러쉬 공격폭에 2m를 더한 반경의 배리어블 거너\n스킬 강화 영역을 동시에 3개 설치\n\n트랜스뮤트 존이 자동으로 지정한 적의 위치를 따라감\n(영역은 시전자에게만 보이며 효과 또한 시전자의 스킬에만 적용)\n영역 유지 시간 : 10초\n\n영역 효과\n래피드 파이어:\n영역 위로 공격 시 영역 내 적을 1m 씩 끌어당김\n\n헤비 아틸러리:\n설치된 영역만큼 추가 공격\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 35% 증가)\n\n데바스테이션 캐논:\n영역 위로 공격 시 영역 내 모든 적에게 공격 판정\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 35% 증가)\n\n페이탈 스코프:\n대상이 영역 내에 있을 경우 조준 속도 100% 증가\n(슈터스 아이 효과와는 중첩되지 않음)\n\n마력탄 4 소모\n연성 에너지탄 3개 소모",
+                    "7": "트랜스뮤트 존: 록온\n\n단일 적을 지정하여 발동 가능\n슈팅 러쉬 공격폭에 2m를 더한 반경의 배리어블 거너\n스킬 강화 영역을 동시에 3개 설치\n\n트랜스뮤트 존이 자동으로 지정한 적의 위치를 따라감\n(영역은 시전자에게만 보이며 효과 또한 시전자의 스킬에만 적용)\n영역 유지 시간 : 10초\n\n영역 효과\n래피드 파이어:\n영역 위로 공격 시 영역 내 적을 1m 씩 끌어당김\n\n헤비 아틸러리:\n설치된 영역만큼 추가 공격\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 40% 증가)\n\n데바스테이션 캐논:\n영역 위로 공격 시 영역 내 모든 적에게 공격 판정\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 40% 증가)\n\n페이탈 스코프:\n대상이 영역 내에 있을 경우 조준 속도 100% 증가\n(슈터스 아이 효과와는 중첩되지 않음)\n\n마력탄 4 소모\n연성 에너지탄 3개 소모",
+                    "8": "트랜스뮤트 존: 록온\n\n단일 적을 지정하여 발동 가능\n슈팅 러쉬 공격폭에 2m를 더한 반경의 배리어블 거너\n스킬 강화 영역을 동시에 3개 설치\n\n트랜스뮤트 존이 자동으로 지정한 적의 위치를 따라감\n(영역은 시전자에게만 보이며 효과 또한 시전자의 스킬에만 적용)\n영역 유지 시간 : 10초\n\n영역 효과\n래피드 파이어:\n영역 위로 공격 시 영역 내 적을 1m 씩 끌어당김\n\n헤비 아틸러리:\n설치된 영역만큼 추가 공격\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 50% 증가)\n\n데바스테이션 캐논:\n영역 위로 공격 시 영역 내 모든 적에게 공격 판정\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 50% 증가)\n\n페이탈 스코프:\n대상이 영역 내에 있을 경우 조준 속도 100% 증가\n(슈터스 아이 효과와는 중첩되지 않음)\n\n마력탄 4 소모\n연성 에너지탄 3개 소모",
+                    "9": "트랜스뮤트 존: 록온\n\n단일 적을 지정하여 발동 가능\n슈팅 러쉬 공격폭에 2m를 더한 반경의 배리어블 거너\n스킬 강화 영역을 동시에 3개 설치\n\n트랜스뮤트 존이 자동으로 지정한 적의 위치를 따라감\n(영역은 시전자에게만 보이며 효과 또한 시전자의 스킬에만 적용)\n영역 유지 시간 : 10초\n\n영역 효과\n래피드 파이어:\n영역 위로 공격 시 영역 내 적을 1m 씩 끌어당김\n\n헤비 아틸러리:\n설치된 영역만큼 추가 공격\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 60% 증가)\n\n데바스테이션 캐논:\n영역 위로 공격 시 영역 내 모든 적에게 공격 판정\n(겹쳐진 영역은 대미지 10% 증가,\n겹쳐진 영역이 2개인 경우 30% 증가,\n겹쳐진 영역이 3개인 경우 60% 증가)\n\n페이탈 스코프:\n대상이 영역 내에 있을 경우 조준 속도 100% 증가\n(슈터스 아이 효과와는 중첩되지 않음)\n\n마력탄 4 소모\n연성 에너지탄 3개 소모"
+                },
                 "words": [
                     "貝赫",
                     "烏赫",
@@ -880,8 +1076,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 21,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "薩爾",
                     "敏",
@@ -894,6 +1092,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "快速射擊 傷害倍率增加",
+                "optionKo": "래피드 파이어 대미지 배율 증가",
                 "base": "30",
                 "special": true,
                 "skillName": "快速射擊",
@@ -902,6 +1101,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "重型火砲 傷害倍率增加",
+                "optionKo": "헤비 아틸러리 대미지 배율 증가",
                 "base": "100",
                 "special": true,
                 "skillName": "重型火砲",
@@ -910,6 +1110,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "毀滅加農砲 傷害倍率增加",
+                "optionKo": "데바스테이션 캐논 대미지 배율 증가",
                 "base": "80",
                 "special": true,
                 "skillName": "毀滅加農砲",
@@ -918,6 +1119,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "致命瞄準 傷害倍率增加",
+                "optionKo": "페이탈 스코프 대미지 배율 증가",
                 "base": "50",
                 "special": true,
                 "skillName": "致命瞄準",
@@ -926,6 +1128,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "듀얼건 最大傷害增加",
+                "optionKo": "듀얼건 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通雙槍",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278306799.webp"
@@ -933,6 +1136,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "十字爆破 傷害倍率增加",
+                "optionKo": "크로스 버스터 대미지 배율 증가",
                 "base": "50",
                 "skillName": "十字爆破",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278307675.webp"
@@ -940,6 +1144,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "終結 傷害倍率增加",
+                "optionKo": "클로져 대미지 배율 증가",
                 "base": "100",
                 "skillName": "終結",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278308617.webp"
@@ -947,6 +1152,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "遠退 1발每 傷害倍率增加",
+                "optionKo": "파 어웨이 1발당 대미지 배율 증가",
                 "base": "8",
                 "skillName": "遠退",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278309610.webp"
@@ -954,6 +1160,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "射擊突進 1발每 傷害倍率增加",
+                "optionKo": "슈팅 러쉬 1발당 대미지 배율 증가",
                 "base": "10",
                 "skillName": "射擊突進",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278310521.webp"
@@ -963,6 +1170,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 8,
         "name": "禁忌煉金士",
+        "nameKo": "포비든 알케미스트",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974686850.webp",
         "mainTalent": "戰鬥鍊金術",
         "subTalent": "藥品研究",
@@ -970,8 +1178,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 22,
                 "skillName": "螺旋噴發",
+                "skillNameKo": "스파이럴 이럽션",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278967471.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782839006456.webp",
+                "pointsKo": {
+                    "5": "스파이럴 이럽션: 응축\n\n스파이럴 이럽션의 누적 쿨타임에 따라 가능한 최대 차지 횟수만큼 한 번에 차지하여,\n반경 3m 범위 내의 적 대상들을 중심으로 당기고 공격\n\n1차지 대미지: 기존 대미지의 100%,\n1차지 추가 시마다 38%만큼 대미지 증가\n차지 횟수에 비례하여 홀딩 시간 0.5초씩 증가\n\n스킬 사용 시, 4속성 연금술 에너지 회복\n(엘레멘탈 콤비네이션 조합식의 결정 소모량에 따라 에너지 회복량 증가)\n차지 횟수에 비례하여 에너지 회복량 증가",
+                    "6": "스파이럴 이럽션: 응축\n\n스파이럴 이럽션의 누적 쿨타임에 따라 가능한 최대 차지 횟수만큼 한 번에 차지하여,\n반경 3m 범위 내의 적 대상들을 중심으로 당기고 공격\n\n1차지 대미지: 기존 대미지의 105%,\n1차지 추가 시마다 41%만큼 대미지 증가\n차지 횟수에 비례하여 홀딩 시간 0.5초씩 증가\n\n스킬 사용 시, 4속성 연금술 에너지 회복\n(엘레멘탈 콤비네이션 조합식의 결정 소모량에 따라 에너지 회복량 증가)\n차지 횟수에 비례하여 에너지 회복량 증가",
+                    "7": "스파이럴 이럽션: 응축\n\n스파이럴 이럽션의 누적 쿨타임에 따라 가능한 최대 차지 횟수만큼 한 번에 차지하여,\n반경 3m 범위 내의 적 대상들을 중심으로 당기고 공격\n\n1차지 대미지: 기존 대미지의 110%,\n1차지 추가 시마다 44%만큼 대미지 증가\n차지 횟수에 비례하여 홀딩 시간 0.5초씩 증가\n\n스킬 사용 시, 4속성 연금술 에너지 회복\n(엘레멘탈 콤비네이션 조합식의 결정 소모량에 따라 에너지 회복량 증가)\n차지 횟수에 비례하여 에너지 회복량 증가",
+                    "8": "스파이럴 이럽션: 응축\n\n스파이럴 이럽션의 누적 쿨타임에 따라 가능한 최대 차지 횟수만큼 한 번에 차지하여,\n반경 3m 범위 내의 적 대상들을 중심으로 당기고 공격\n\n1차지 대미지: 기존 대미지의 115%,\n1차지 추가 시마다 47%만큼 대미지 증가\n차지 횟수에 비례하여 홀딩 시간 0.5초씩 증가\n\n스킬 사용 시, 4속성 연금술 에너지 회복\n(엘레멘탈 콤비네이션 조합식의 결정 소모량에 따라 에너지 회복량 증가)\n차지 횟수에 비례하여 에너지 회복량 증가",
+                    "9": "스파이럴 이럽션: 응축\n\n스파이럴 이럽션의 누적 쿨타임에 따라 가능한 최대 차지 횟수만큼 한 번에 차지하여,한\n최대 차지 횟수만큼 한 번에 차지하여,\n반경 3m 범위 내의 적 대상들을 중심으로 당기고 공격\n\n1차지 대미지: 기존 대미지의 120%,\n1차지 추가 시마다 50%만큼 대미지 증가\n차지 횟수에 비례하여 홀딩 시간 0.5초씩 증가\n\n스킬 사용 시, 4속성 연금술 에너지 회복\n(엘레멘탈 콤비네이션 조합식의 결정 소모량에 따라 에너지 회복량 증가)\n차지 횟수에 비례하여 에너지 회복량 증가"
+                },
                 "words": [
                     "薩爾",
                     "阿爾姆",
@@ -988,8 +1204,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 23,
                 "skillName": "化學嘉年華",
+                "skillNameKo": "케미컬 카니발",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278947694.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782839222619.webp",
+                "pointsKo": {
+                    "5": "케미컬 카니발: 폭화\n\n반경 2.5m 범위 내의 적 대상들에게\n기존 스킬 대미지로 최초 공격\n\n반경 6.5m 범위 내의 적 대상들에게\n첫 폭발 대미지의 110%에 해당하는 후속 폭발 발생\n후속 폭발은 속성 에너지 소모량 관계없이 1회 발생\n속성 에너지 소모량에 비례하여 후속 폭발 대미지 증가\n\n후속 폭발에 맞은 적 대상들에게 8초 동안 지속되는 디버프 부여\n디버프를 부여받은 적 대상들에게 1초에 한 번\n4속성 연금술 대미지 평균의 10%의 도트 대미지를 줌\n디버프를 부여받은 적 대상들에게\n포비든 알케미스트 스킬을 적중하면,\n케미컬 카니발 사용 시 소모한 속성 에너지를 10% 충전\n\n재사용 대기 시간 6초",
+                    "6": "케미컬 카니발: 폭화\n\n반경 2.5m 범위 내의 적 대상들에게\n기존 스킬 대미지로 최초 공격\n\n반경 6.5m 범위 내의 적 대상들에게\n첫 폭발 대미지의 120%에 해당하는 후속 폭발 발생\n후속 폭발은 속성 에너지 소모량 관계없이 1회 발생\n속성 에너지 소모량에 비례하여 후속 폭발 대미지 증가\n\n후속 폭발에 맞은 적 대상들에게 8초 동안 지속되는 디버프 부여\n디버프를 부여받은 적 대상들에게 1초에 한 번\n4속성 연금술 대미지 평균의 12%의 도트 대미지를 줌\n디버프를 부여받은 적 대상들에게\n포비든 알케미스트 스킬을 적중하면,\n케미컬 카니발 사용 시 소모한 속성 에너지를 10% 충전\n\n재사용 대기 시간 6초",
+                    "7": "케미컬 카니발: 폭화\n\n반경 2.5m 범위 내의 적 대상들에게\n기존 스킬 대미지로 최초 공격\n\n반경 6.5m 범위 내의 적 대상들에게\n첫 폭발 대미지의 130%에 해당하는 후속 폭발 발생\n후속 폭발은 속성 에너지 소모량 관계없이 1회 발생\n속성 에너지 소모량에 비례하여 후속 폭발 대미지 증가\n\n후속 폭발에 맞은 적 대상들에게 8초 동안 지속되는 디버프 부여\n디버프를 부여받은 적 대상들에게 1초에 한 번\n4속성 연금술 대미지 평균의 14%의 도트 대미지를 줌\n디버프를 부여받은 적 대상들에게\n포비든 알케미스트 스킬을 적중하면,\n케미컬 카니발 사용 시 소모한 속성 에너지를 10% 충전\n\n재사용 대기 시간 6초",
+                    "8": "케미컬 카니발: 폭화\n\n반경 2.5m 범위 내의 적 대상들에게\n기존 스킬 대미지로 최초 공격\n\n반경 6.5m 범위 내의 적 대상들에게\n첫 폭발 대미지의 140%에 해당하는 후속 폭발 발생\n후속 폭발은 속성 에너지 소모량 관계없이 1회 발생\n속성 에너지 소모량에 비례하여 후속 폭발 대미지 증가\n\n후속 폭발에 맞은 적 대상들에게 8초 동안 지속되는 디버프 부여\n디버프를 부여받은 적 대상들에게 1초에 한 번\n4속성 연금술 대미지 평균의 17%의 도트 대미지를 줌\n디버프를 부여받은 적 대상들에게\n포비든 알케미스트 스킬을 적중하면,\n케미컬 카니발 사용 시 소모한 속성 에너지를 10% 충전\n\n재사용 대기 시간 6초",
+                    "9": "케미컬 카니발: 폭화\n\n반경 2.5m 범위 내의 적 대상들에게\n기존 스킬 대미지로 최초 공격\n\n반경 6.5m 범위 내의 적 대상들에게\n첫 폭발 대미지의 150%에 해당하는 후속 폭발 발생\n후속 폭발은 속성 에너지 소모량 관계없이 1회 발생\n속성 에너지 소모량에 비례하여 후속 폭발 대미지 증가\n\n후속 폭발에 맞은 적 대상들에게 8초 동안 지속되는 디버프 부여\n디버프를 부여받은 적 대상들에게 1초에 한 번\n4속성 연금술 대미지 평균의 20%의 도트 대미지를 줌\n디버프를 부여받은 적 대상들에게\n포비든 알케미스트 스킬을 적중하면,\n케미컬 카니발 사용 시 소모한 속성 에너지를 10% 충전\n\n재사용 대기 시간 6초"
+                },
                 "words": [
                     "里斯",
                     "科爾",
@@ -1006,8 +1230,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 24,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "佩恩",
                     "路斯",
@@ -1020,6 +1246,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "召喚夢魘 (土 鍊金術 效果) 技能 最終 傷害倍率增加",
+                "optionKo": "서먼 나이트메어 (흙 연금술 효과) 스킬 최종 대미지 배율 증가",
                 "base": "0.2",
                 "special": true,
                 "skillName": "召喚夢魘",
@@ -1028,6 +1255,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "化學嘉年華 (火 鍊金術 效果) 주 목표에게 주는 最終 傷害倍率增加",
+                "optionKo": "케미컬 카니발 (불 연금술 효과) 주 목표에게 주는 최종 대미지 배율 증가",
                 "base": "0.2",
                 "special": true,
                 "skillName": "化學嘉年華",
@@ -1036,6 +1264,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "螺旋噴發 (水 鍊金術 效果) 技能 技能 最終 傷害倍率增加",
+                "optionKo": "스파이럴 이럽션 (물 연금술 효과) 스킬 스킬 최종 대미지 배율 증가",
                 "base": "1",
                 "special": true,
                 "skillName": "螺旋噴發",
@@ -1044,6 +1273,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "水砲 最大傷害倍率增加",
+                "optionKo": "워터 캐논 최대 대미지 배율 증가",
                 "base": "2",
                 "skillName": "水砲",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278247977.webp"
@@ -1051,6 +1281,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "火焰噴射器 最大傷害倍率增加",
+                "optionKo": "플레이머 최대 대미지 배율 증가",
                 "base": "1",
                 "skillName": "火焰噴射器",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278252037.webp"
@@ -1058,6 +1289,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "熱能爆破 最大傷害倍率增加",
+                "optionKo": "히트 버스터 최대 대미지 배율 증가",
                 "base": "5",
                 "skillName": "熱能爆破",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278250977.webp"
@@ -1065,21 +1297,25 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "屬性",
                 "option": "火 屬性 鍊金術 傷害 增加",
+                "optionKo": "불 속성 연금술 대미지 증가",
                 "base": "10"
             },
             {
                 "category": "屬性",
                 "option": "水 屬性 鍊金術 傷害 增加",
+                "optionKo": "물 속성 연금술 대미지 증가",
                 "base": "10"
             },
             {
                 "category": "屬性",
                 "option": "風 屬性 鍊金術 傷害 增加",
+                "optionKo": "바람 속성 연금술 대미지 증가",
                 "base": "10"
             },
             {
                 "category": "屬性",
                 "option": "土 屬性 鍊金術 傷害 增加",
+                "optionKo": "흙 속성 연금술 대미지 증가",
                 "base": "10"
             }
         ]
@@ -1087,6 +1323,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 9,
         "name": "旋律人偶師",
+        "nameKo": "멜로딕 퍼피티어",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770440624569.webp",
         "mainTalent": "人偶術",
         "subTalent": "音樂",
@@ -1094,8 +1331,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 25,
                 "skillName": "間奏斬擊",
+                "skillNameKo": "인터루드 슬래시",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441962685.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782840551382.webp",
+                "pointsKo": {
+                    "5": "인터루드 슬래시: 크레센도\n\n인형 소환 스킬로 공격 시 적에게 최대 3회까지 쌓이는 스택형 '크레센도' 상태를 부여\n\n스택이 쌓인 적 대상에게 스택 수에 비례한 대미지로 공격\n(인형이 1기 이상 소환되었을 때만 스킬 사용 가능)\n1스택 대미지: 기존 인터루드 슬래시 대미지 배율 +5%\n스택은 5초간 유지되며, 유지 시간 종료 시 스택 초기화\n재사용 대기 시간 4초",
+                    "6": "인터루드 슬래시: 크레센도\n\n인형 소환 스킬로 공격 시 적에게 최대 3회까지 쌓이는 스택형 '크레센도' 상태를 부여\n\n스택이 쌓인 적 대상에게 스택 수에 비례한 대미지로 공격\n(인형이 1기 이상 소환되었을 때만 스킬 사용 가능)\n1스택 대미지: 기존 인터루드 슬래시 대미지 배율 +8%\n스택은 5초간 유지되며, 유지 시간 종료 시 스택 초기화\n재사용 대기 시간 4초",
+                    "7": "인터루드 슬래시: 크레센도\n\n인형 소환 스킬로 공격 시 적에게 최대 3회까지 쌓이는 스택형 '크레센도' 상태를 부여\n\n스택이 쌓인 적 대상에게 스택 수에 비례한 대미지로 공격\n(인형이 1기 이상 소환되었을 때만 스킬 사용 가능)\n1스택 대미지: 기존 인터루드 슬래시 대미지 배율 +12%\n스택은 5초간 유지되며, 유지 시간 종료 시 스택 초기화\n재사용 대기 시간 4초",
+                    "8": "인터루드 슬래시: 크레센도\n\n인형 소환 스킬로 공격 시 적에게 최대 3회까지 쌓이는 스택형 '크레센도' 상태를 부여\n\n스택이 쌓인 적 대상에게 스택 수에 비례한 대미지로 공격\n(인형이 1기 이상 소환되었을 때만 스킬 사용 가능)\n1스택 대미지: 기존 인터루드 슬래시 대미지 배율 +16%\n스택은 5초간 유지되며, 유지 시간 종료 시 스택 초기화\n재사용 대기 시간 4초",
+                    "9": "인터루드 슬래시: 크레센도\n\n인형 소환 스킬로 공격 시 적에게 최대 3회까지 쌓이는 스택형 '크레센도' 상태를 부여\n\n스택이 쌓인 적 대상에게 스택 수에 비례한 대미지로 공격\n(인형이 1기 이상 소환되었을 때만 스킬 사용 가능)\n1스택 대미지: 기존 인터루드 슬래시 대미지 배율 +20%\n스택은 5초간 유지되며, 유지 시간 종료 시 스택 초기화\n재사용 대기 시간 4초"
+                },
                 "words": [
                     "里斯",
                     "蓋塔爾",
@@ -1112,8 +1357,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 26,
                 "skillName": "強拍重音",
+                "skillNameKo": "다운비트 악센트",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441613507.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782840784984.webp",
+                "pointsKo": {
+                    "5": "다운비트 악센트: 앙상블\n\n소환 가능한 인형을 모두 소환\n\n인형 3기 소환 시, 각 인형이 폭 5m, 길이 10m 범위로 세 방향 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 60%로 추가 공격\n\n인형 2기 소환 시, 인형 2기가 폭 7.5m, 길이 10m 범위로 앞으로 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 70%로 추가 공격\n\n인형 1기 소환 시, 인형 1기가 반경 2.5m 내 적들에게\n돌진하며 다운비트 악센트의 최종 대미지의 80%로 3회 공격\n\n재사용 대기 시간 8초",
+                    "6": "다운비트 악센트: 앙상블\n\n소환 가능한 인형을 모두 소환\n\n인형 3기 소환 시, 각 인형이 폭 5m, 길이 10m 범위로 세 방향 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 65%로 추가 공격\n\n인형 2기 소환 시, 인형 2기가 폭 7.5m, 길이 10m 범위로 앞으로 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 75%로 추가 공격\n\n인형 1기 소환 시, 인형 1기가 반경 2.5m 내 적들에게\n돌진하며 다운비트 악센트의 최종 대미지의 85%로 3회 공격\n\n재사용 대기 시간 8초",
+                    "7": "다운비트 악센트: 앙상블\n\n소환 가능한 인형을 모두 소환\n\n인형 3기 소환 시, 각 인형이 폭 5m, 길이 10m 범위로 세 방향 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 70%로 추가 공격\n\n인형 2기 소환 시, 인형 2기가 폭 7.5m, 길이 10m 범위로 앞으로 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 80%로 추가 공격\n\n인형 1기 소환 시, 인형 1기가 반경 2.5m 내 적들에게\n돌진하며 다운비트 악센트의 최종 대미지의 90%로 3회 공격\n\n재사용 대기 시간 8초",
+                    "8": "다운비트 악센트: 앙상블\n\n소환 가능한 인형을 모두 소환\n\n인형 3기 소환 시, 각 인형이 폭 5m, 길이 10m 범위로 세 방향 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 75%로 추가 공격\n\n인형 2기 소환 시, 인형 2기가 폭 7.5m, 길이 10m 범위로 앞으로 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 85%로 추가 공격\n\n인형 1기 소환 시, 인형 1기가 반경 2.5m 내 적들에게\n돌진하며 다운비트 악센트의 최종 대미지의 95%로 3회 공격\n\n재사용 대기 시간 8초",
+                    "9": "다운비트 악센트: 앙상블\n\n소환 가능한 인형을 모두 소환\n\n인형 3기 소환 시, 각 인형이 폭 5m, 길이 10m 범위로 세 방향 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 80%로 추가 공격\n\n인형 2기 소환 시, 인형 2기가 폭 7.5m, 길이 10m 범위로 앞으로 돌진하며 2회 공격\n다운비트 악센트의 최종 대미지로 최초 공격,\n최초 공격의 90%로 추가 공격\n\n인형 1기 소환 시, 인형 1기가 반경 2.5m 내 적들에게\n돌진하며 다운비트 악센트의 최종 대미지의 100%로 3회 공격\n\n재사용 대기 시간 8초"
+                },
                 "words": [
                     "佩恩",
                     "敏",
@@ -1130,8 +1383,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 27,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "寧",
                     "達爾",
@@ -1144,6 +1399,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "強拍重音 傷害倍率增加",
+                "optionKo": "다운비트 악센트 대미지 배율 증가",
                 "base": "250",
                 "special": true,
                 "skillName": "強拍重音",
@@ -1152,6 +1408,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "追蹤步伐 傷害倍率增加",
+                "optionKo": "트래킹 스텝 대미지 배율 증가",
                 "base": "50",
                 "special": true,
                 "skillName": "追蹤步伐",
@@ -1160,6 +1417,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "壯麗終章 콜로서스, 피에로, 에코 마리오네트 追加 傷害倍率增加",
+                "optionKo": "그랜드 피날레 콜로서스, 피에로, 에코 마리오네트 추가 대미지 배율 증가",
                 "base": "300",
                 "special": true,
                 "skillName": "壯麗終章",
@@ -1168,6 +1426,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "鋼絲網 傷害倍率增加",
+                "optionKo": "와이어 웹 대미지 배율 증가",
                 "base": "500",
                 "special": true,
                 "skillName": "鋼絲網",
@@ -1176,6 +1435,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "間奏斬擊 第四幕：嫉妒的化身 傷害倍率增加",
+                "optionKo": "인터루드 슬래시 4막: 질투의 화신 대미지 배율 증가",
                 "base": "3",
                 "special": true,
                 "skillName": "間奏斬擊",
@@ -1184,6 +1444,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "第一幕：偶然的衝突 傷害倍率增加",
+                "optionKo": "1막: 우연한 충돌 대미지 배율 증가",
                 "base": "15",
                 "skillName": "第一幕：偶然的衝突",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278299063.webp"
@@ -1191,6 +1452,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "第二幕：激增的憤怒 傷害倍率增加",
+                "optionKo": "2막: 솟구치는 분노 대미지 배율 증가",
                 "base": "20",
                 "skillName": "第二幕：激增的憤怒",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278298144.webp"
@@ -1198,6 +1460,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "第四幕：嫉妒的化身 傷害倍率增加",
+                "optionKo": "4막: 질투의 화신 대미지 배율 증가",
                 "base": "10",
                 "skillName": "第四幕：嫉妒的化身",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278300004.webp"
@@ -1205,6 +1468,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "第七幕：狂亂的奔走 傷害倍率增加",
+                "optionKo": "7막: 광란의 질주 대미지 배율 증가",
                 "base": "10",
                 "skillName": "第七幕：狂亂的奔走",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278302035.webp"
@@ -1212,6 +1476,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "屬性",
                 "option": "마리오네트 最大傷害增加",
+                "optionKo": "마리오네트 최대 대미지 증가",
                 "base": "10"
             }
         ]
@@ -1219,6 +1484,7 @@ export const oghamArcanas: OghamArcana[] = [
     {
         "id": 10,
         "name": "狂怒鬥士",
+        "nameKo": "퓨리 파이터",
         "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770440758409.webp",
         "mainTalent": "格鬥術",
         "subTalent": "近距離戰鬥",
@@ -1226,8 +1492,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 28,
                 "skillName": "疾風穿刺",
+                "skillNameKo": "게일 피어스",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443293567.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782841606401.webp",
+                "pointsKo": {
+                    "5": "게일 피어스: 돌진\n\n게일 피어스 사용 시 타겟한 적 방향으로 5m 돌진 후, 기존 게일 피어스 대미지의 100%로 공격\n\n게일 피어스 사용 후 5초 내에 연속기 3단계 스킬 사용 시, 기존 대미지의 104%로 적 공격\n\n포스 소모량 1개\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고, 너클 무기를 사용하여 공격을 가하는 스킬의 피해량 15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "6": "게일 피어스: 돌진\n\n게일 피어스 사용 시 타겟한 적 방향으로 5m 돌진 후, 기존 게일 피어스 대미지의 105%로 공격\n\n게일 피어스 사용 후 5초 내에 연속기 3단계 스킬 사용 시, 기존 대미지의 106%로 적 공격\n\n포스 소모량 1개\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고, 너클 무기를 사용하여 공격을 가하는 스킬의 피해량 15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "7": "게일 피어스: 돌진\n\n게일 피어스 사용 시 타겟한 적 방향으로 5m 돌진 후, 기존 게일 피어스 대미지의 110%로 공격\n\n게일 피어스 사용 후 5초 내에 연속기 3단계 스킬 사용 시, 기존 대미지의 108%로 적 공격\n\n포스 소모량 1개\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고, 너클 무기를 사용하여 공격을 가하는 스킬의 피해량 15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "8": "게일 피어스: 돌진\n\n게일 피어스 사용 시 타겟한 적 방향으로 5m 돌진 후, 기존 게일 피어스 대미지의 115%로 공격\n\n게일 피어스 사용 후 5초 내에 연속기 3단계 스킬 사용 시, 기존 대미지의 110%로 적 공격\n\n포스 소모량 1개\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고, 너클 무기를 사용하여 공격을 가하는 스킬의 피해량 15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "9": "게일 피어스: 돌진\n\n게일 피어스 사용 시 타겟한 적 방향으로 5m 돌진 후, 기존 게일 피어스 대미지의 120%로 공격\n\n게일 피어스 사용 후 5초 내에 연속기 3단계 스킬 사용 시, 기존 대미지의 112%로 적 공격\n\n포스 소모량 1개\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고, 너클 무기를 사용하여 공격을 가하는 스킬의 피해량 15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))"
+                },
                 "words": [
                     "寧",
                     "阿爾姆",
@@ -1244,8 +1518,16 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 29,
                 "skillName": "終極一擊",
+                "skillNameKo": "얼티밋 스트라이크",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443428941.webp",
                 "inGameImg": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782841801692.webp",
+                "pointsKo": {
+                    "5": "얼티밋 스트라이크: 극의\n\n기존 1,2타 공격 대미지의 120%로 2회 공격\n기존 피니시 공격 대미지의 150%로 피니시 공격\n\n포스 소모량 3개\n재사용 대기 시간 45초\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고,\n너클 무기를 사용하여 공격을 가하는 스킬의 피해량\n15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "6": "얼티밋 스트라이크: 극의\n\n기존 1,2타 공격 대미지의 130%로 2회 공격\n기존 피니시 공격 대미지의 170%로 피니시 공격\n\n포스 소모량 3개\n재사용 대기 시간 45초\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고,\n너클 무기를 사용하여 공격을 가하는 스킬의 피해량\n15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "7": "얼티밋 스트라이크: 극의\n\n기존 1,2타 공격 대미지의 140%로 2회 공격\n기존 피니시 공격 대미지의 190%로 피니시 공격\n\n포스 소모량 3개\n재사용 대기 시간 45초\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고,\n너클 무기를 사용하여 공격을 가하는 스킬의 피해량\n15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "8": "얼티밋 스트라이크: 극의\n\n기존 1,2타 공격 대미지의 150%로 2회 공격\n기존 피니시 공격 대미지의 210%로 피니시 공격\n\n포스 소모량 3개\n재사용 대기 시간 45초\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고,\n너클 무기를 사용하여 공격을 가하는 스킬의 피해량\n15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))",
+                    "9": "얼티밋 스트라이크: 극의\n\n기존 1,2타 공격 대미지의 160%로 2회 공격\n기존 피니시 공격 대미지의 230%로 피니시 공격\n\n포스 소모량 3개\n재사용 대기 시간 45초\n\n자신에게 퓨리어스 앱솔루트를 10초 동안 적용\n(일정 수준 이하의 헤비 스텐더 자동 방어를 무시하고,\n너클 무기를 사용하여 공격을 가하는 스킬의 피해량\n15% 증가 효과 부여 (레이지 임팩트 효과와 중첩 불가))"
+                },
                 "words": [
                     "佩恩",
                     "凱爾特",
@@ -1262,8 +1544,10 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "id": 30,
                 "skillName": "未公開",
+                "skillNameKo": null,
                 "skillIcon": null,
                 "inGameImg": null,
+                "pointsKo": {},
                 "words": [
                     "貝赫",
                     "烏赫",
@@ -1276,6 +1560,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "超越：連鎖打擊 3次攻擊 及 終結 攻擊的傷害倍率增加",
+                "optionKo": "익시드 : 체인 블로우 3회 공격 및 피니시 공격의 대미지 배율 증가",
                 "base": "80",
                 "special": true,
                 "skillName": "超越：連鎖打擊",
@@ -1284,6 +1569,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "超越：衝擊俯衝 傷害倍率增加",
+                "optionKo": "익시드 : 임팩트 다이브 대미지 배율 증가",
                 "base": "100",
                 "special": true,
                 "skillName": "超越：衝擊俯衝",
@@ -1292,6 +1578,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "超越：力量猛擊 傷害倍率增加",
+                "optionKo": "익시드 : 포스 슬램 대미지 배율 증가",
                 "base": "500",
                 "special": true,
                 "skillName": "超越：力量猛擊",
@@ -1300,6 +1587,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "疾風穿刺 傷害倍率增加",
+                "optionKo": "게일 피어스 대미지 배율 증가",
                 "base": "260",
                 "special": true,
                 "skillName": "疾風穿刺",
@@ -1308,6 +1596,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "終極一擊 2次攻擊 及 終結 攻擊的傷害倍率增加",
+                "optionKo": "얼티밋 스트라이크 2회 공격 및 피니시 공격의 대미지 배율 증가",
                 "base": "260",
                 "special": true,
                 "skillName": "終極一擊",
@@ -1316,6 +1605,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "祕法",
                 "option": "力量閃焰 傷害倍率增加",
+                "optionKo": "포스 플레어 대미지 배율 증가",
                 "base": "260",
                 "special": true,
                 "skillName": "力量閃焰",
@@ -1324,6 +1614,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通拳套 最大傷害增加",
+                "optionKo": "너클 마스터리 최대 대미지 증가",
                 "base": "10",
                 "skillName": "精通拳套",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278269637.webp"
@@ -1331,6 +1622,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "精通連續技 傷害倍率增加",
+                "optionKo": "연속기 마스터리 대미지 배율 증가",
                 "base": "2",
                 "skillName": "精通連續技",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278270518.webp"
@@ -1338,6 +1630,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "連續技：衝刺拳 傷害倍率增加",
+                "optionKo": "연속기 : 대쉬 펀치 대미지 배율 증가",
                 "base": "6",
                 "skillName": "連續技：衝刺拳",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278271376.webp"
@@ -1345,6 +1638,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "連續技：充能拳 傷害倍率增加",
+                "optionKo": "연속기 : 차징 피스트 대미지 배율 증가",
                 "base": "12",
                 "skillName": "連續技：充能拳",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278272230.webp"
@@ -1352,6 +1646,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "連續技：螺旋勾拳 傷害倍率增加",
+                "optionKo": "연속기 : 스크류 어퍼 대미지 배율 증가",
                 "base": "18",
                 "skillName": "連續技：螺旋勾拳",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278273220.webp"
@@ -1359,6 +1654,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "連續技：翻筋斗 傷害倍率增加",
+                "optionKo": "연속기 : 섬머솔트 대미지 배율 증가",
                 "base": "22",
                 "skillName": "連續技：翻筋斗",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278274146.webp"
@@ -1366,6 +1662,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "連續技：落踢 傷害倍率增加",
+                "optionKo": "연속기 : 드롭킥 대미지 배율 증가",
                 "base": "24",
                 "skillName": "連續技：落踢",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278275101.webp"
@@ -1373,6 +1670,7 @@ export const oghamArcanas: OghamArcana[] = [
             {
                 "category": "主要才能",
                 "option": "連續技：重搗 傷害倍率增加",
+                "optionKo": "연속기 : 파운딩 대미지 배율 증가",
                 "base": "24",
                 "skillName": "連續技：重搗",
                 "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278275959.webp"

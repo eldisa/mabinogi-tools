@@ -13,6 +13,10 @@ const availablePoints = computed(() => Object.keys(activeCombo.value?.points ?? 
 const activePoint = ref(9);
 const currentText = computed(() => activeCombo.value?.points[String(activePoint.value)] ?? "");
 
+// 顯示韓文原文（翻譯對照用）
+const showKo = ref(false);
+const currentTextKo = computed(() => activeCombo.value?.pointsKo[String(activePoint.value)] ?? "");
+
 const onArcanaChange = () => {
     const a = arcana.value;
     activeComboId.value = a.combos[0]?.id ?? 0;
@@ -45,6 +49,10 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                     </el-option>
                 </el-select>
                 <span class="ml-3 text-sm text-gray-500">{{ arcana.mainTalent }} / {{ arcana.subTalent }}</span>
+                <el-checkbox v-model="showKo" class="ml-4">
+                    <span class="text-sm text-gray-300">顯示韓文原文</span>
+                    <span class="text-xs text-gray-500 ml-1">（對照用）</span>
+                </el-checkbox>
 
                 <!-- 組合技按鈕 -->
                 <div class="mt-4 flex flex-wrap gap-2">
@@ -85,16 +93,31 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                 </div>
 
                 <!-- 效果說明 -->
-                <div class="mt-4 p-4 rounded-lg bg-gray-900/50 border border-gray-700">
-                    <p
-                        v-for="(line, i) in currentText.split('\n')"
-                        :key="i"
-                        class="text-sm text-gray-300 leading-relaxed min-h-[0.5rem]"
-                        :class="i === 0 ? 'font-bold text-accent mb-1' : ''"
+                <div class="mt-4 grid gap-3" :class="showKo && currentTextKo ? 'sm:grid-cols-2' : 'grid-cols-1'">
+                    <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+                        <p
+                            v-for="(line, i) in currentText.split('\n')"
+                            :key="i"
+                            class="text-sm text-gray-300 leading-relaxed min-h-[0.5rem]"
+                            :class="i === 0 ? 'font-bold text-accent mb-1' : ''"
+                        >
+                            {{ line }}
+                        </p>
+                        <p v-if="!currentText" class="text-sm text-gray-500">此組合的效果說明資料待補</p>
+                    </div>
+                    <div
+                        v-if="showKo && currentTextKo"
+                        class="p-4 rounded-lg bg-gray-900/30 border border-dashed border-gray-600"
                     >
-                        {{ line }}
-                    </p>
-                    <p v-if="!currentText" class="text-sm text-gray-500">此組合的效果說明資料待補</p>
+                        <p class="text-xs text-gray-500 mb-1">韓文原文</p>
+                        <p
+                            v-for="(line, i) in currentTextKo.split('\n')"
+                            :key="i"
+                            class="text-sm text-gray-400 leading-relaxed min-h-[0.5rem]"
+                        >
+                            {{ line }}
+                        </p>
+                    </div>
                 </div>
 
                 <!-- 詞條效果總表 -->
@@ -118,6 +141,7 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                     <el-table-column label="選項" min-width="260">
                         <template #default="{ row }">
                             <div class="text-sm text-gray-200">{{ row.option }}</div>
+                            <div v-if="showKo" class="text-xs text-gray-500 mt-0.5">{{ row.optionKo }}</div>
                             <div v-if="row.skillName" class="flex items-center gap-1 mt-1 text-xs text-gray-400">
                                 <img v-if="row.skillIcon" :src="row.skillIcon" alt="" class="h-4 w-4 object-contain" />
                                 <span>{{ row.skillName }}</span>
