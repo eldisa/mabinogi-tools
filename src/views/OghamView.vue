@@ -17,6 +17,46 @@ const currentText = computed(() => activeCombo.value?.points[String(activePoint.
 const showKo = ref(false);
 const currentTextKo = computed(() => activeCombo.value?.pointsKo[String(activePoint.value)] ?? "");
 
+const NUM_RE = /\d+(?:\.\d+)?%?/g;
+
+// 找出此組合各點數之間「會變動」的數字位置（多半是倍率）
+const changingPositions = computed<Set<number> | null>(() => {
+    const combo = activeCombo.value;
+    if (!combo) return null;
+    const seqs = availablePoints.value.map((p) => combo.points[String(p)]?.match(NUM_RE) ?? []);
+    if (seqs.length < 2) return null;
+    const len = seqs[0].length;
+    if (!seqs.every((s) => s.length === len)) return null; // 結構不一致 → 退回
+    const set = new Set<number>();
+    for (let i = 0; i < len; i++) {
+        if (new Set(seqs.map((s) => s[i])).size > 1) set.add(i);
+    }
+    return set;
+});
+
+// 將目前點數說明切成段落，標示會變動的數字（倍率）
+const currentSegments = computed(() => {
+    const changing = changingPositions.value;
+    const lines: { text: string; hi: boolean }[][] = [];
+    let numIdx = 0;
+    for (const line of currentText.value.split("\n")) {
+        const segs: { text: string; hi: boolean }[] = [];
+        let last = 0;
+        let m: RegExpExecArray | null;
+        NUM_RE.lastIndex = 0;
+        while ((m = NUM_RE.exec(line)) !== null) {
+            if (m.index > last) segs.push({ text: line.slice(last, m.index), hi: false });
+            const hi = changing ? changing.has(numIdx) : m[0].endsWith("%");
+            segs.push({ text: m[0], hi });
+            last = m.index + m[0].length;
+            numIdx++;
+        }
+        if (last < line.length) segs.push({ text: line.slice(last), hi: false });
+        lines.push(segs);
+    }
+    return lines;
+});
+
 const onArcanaChange = () => {
     const a = arcana.value;
     activeComboId.value = a.combos[0]?.id ?? 0;
@@ -96,12 +136,14 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                 <div class="mt-4 grid gap-3" :class="showKo && currentTextKo ? 'sm:grid-cols-2' : 'grid-cols-1'">
                     <div class="p-4 rounded-lg bg-gray-900/50 border border-gray-700">
                         <p
-                            v-for="(line, i) in currentText.split('\n')"
+                            v-for="(segs, i) in currentSegments"
                             :key="i"
                             class="text-sm text-gray-300 leading-relaxed min-h-[0.5rem]"
                             :class="i === 0 ? 'font-bold text-accent mb-1' : ''"
                         >
-                            {{ line }}
+                            <template v-for="(seg, j) in segs" :key="j">
+                                <span :class="seg.hi && i !== 0 ? 'text-accent font-bold' : ''">{{ seg.text }}</span>
+                            </template>
                         </p>
                         <p v-if="!currentText" class="text-sm text-gray-500">此組合的效果說明資料待補</p>
                     </div>
@@ -134,18 +176,24 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                     <el-table-column label="分類" width="120" align="center">
                         <template #default="{ row }">
                             <span :class="categoryColor(row.category)" class="font-semibold">{{ row.category }}</span>
-                            <div v-if="row.special" class="text-xs text-red-500 font-bold mt-0.5">(特殊符文專用)</div>
+                            <div v-if="row.special" class="mt-1">
+                                <el-tag type="info" size="small" effect="plain">特殊符文專用</el-tag>
+                            </div>
                         </template>
                     </el-table-column>
 
                     <el-table-column label="選項" min-width="260">
                         <template #default="{ row }">
-                            <div class="text-sm text-gray-200">{{ row.option }}</div>
-                            <div v-if="showKo" class="text-xs text-gray-500 mt-0.5">{{ row.optionKo }}</div>
-                            <div v-if="row.skillName" class="flex items-center gap-1 mt-1 text-xs text-gray-400">
-                                <img v-if="row.skillIcon" :src="row.skillIcon" alt="" class="h-4 w-4 object-contain" />
-                                <span>{{ row.skillName }}</span>
+                            <div class="flex items-start gap-1.5 text-sm text-gray-200">
+                                <img
+                                    v-if="row.skillIcon"
+                                    :src="row.skillIcon"
+                                    alt=""
+                                    class="h-4 w-4 object-contain mt-0.5 flex-shrink-0"
+                                />
+                                <span>{{ row.option }}</span>
                             </div>
+                            <div v-if="showKo" class="text-xs text-gray-500 mt-0.5 pl-5">{{ row.optionKo }}</div>
                         </template>
                     </el-table-column>
 
