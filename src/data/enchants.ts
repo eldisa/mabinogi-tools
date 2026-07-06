@@ -19398,7 +19398,7 @@ export const enchants: Enchant[] = [
     // 中間是佛格斯活動的
     {
         id: 21692,
-        name: { tw: "信任的", en: "faithful", tw2: "信任的", kr: "신뢰하는" },
+        name: { tw: "受信賴的", en: "faithful", tw2: "受信賴的", kr: "신뢰하는" },
         list: ": IsRelicOfMuriasEnabled(0) : SetParamOnEquip(AttMax, +16);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(Prot, +3);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(Def, +10);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予.\n當啟用的秘法的專用選項時,效果發動\n最大傷害值增加16\n保護增加3\n防禦增加10.",
         level: 10,
@@ -19443,7 +19443,7 @@ export const enchants: Enchant[] = [
     },
     {
         id: 21695,
-        name: { tw: "侵蝕的", en: "overwhelmed", tw2: "侵蝕的", kr: "잠식된" },
+        name: { tw: "被蠶食的", en: "overwhelmed", tw2: "被蠶食的", kr: "잠식된" },
         list: ": IsRelicOfMuriasEnabled(0) : AddBonusOnAlchemy(alchemy_all, +(16));\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(LifeMax, +30);\n: IsRelicOfMuriasEnabled(0) : SetParamOnEquip(ManaMax, +30);",
         desc: "能於穆利亞斯的遺物上進行魔力賦予\n當啟用的秘法的專用選項時,效果發動\n所有屬性鍊金術傷害增加16\n最大生命力增加30\n最大魔法增加30.",
         level: 10,
