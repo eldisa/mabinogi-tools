@@ -169,7 +169,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-1",
-                name: "보석 개조",
+                name: "寶石改造",
                 required: {
                     ep: 100,
                     gold: 45000,
@@ -202,7 +202,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-2",
-                name: "검신 다듬기1",
+                name: "修整劍身1",
                 required: {
                     ep: 40,
                     gold: 40000,
@@ -229,7 +229,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-3",
-                name: "검신 다듬기2",
+                name: "修整劍身2",
                 required: {
                     ep: 45,
                     gold: 42000,
@@ -256,7 +256,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-4",
-                name: "검신 다듬기3",
+                name: "修整劍身3",
                 required: {
                     ep: 60,
                     gold: 47000,
@@ -279,7 +279,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-5",
-                name: "검신 다듬기4",
+                name: "修整劍身4",
                 required: {
                     ep: 90,
                     gold: 79000,
@@ -302,7 +302,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-6",
-                name: "칼끝 깎기1",
+                name: "削銳刀尖1",
                 required: {
                     ep: 40,
                     gold: 40000,
@@ -325,7 +325,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-7",
-                name: "칼끝 깎기2",
+                name: "削銳刀尖2",
                 required: {
                     ep: 45,
                     gold: 42000,
@@ -348,7 +348,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-8",
-                name: "칼날 갈기",
+                name: "磨利刀刃",
                 required: {
                     ep: 23,
                     gold: 33000,
@@ -363,7 +363,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-9",
-                name: "소울 리버레이트 소드 전용 개조 1",
+                name: "靈魂解放者單手劍專用改造 1",
                 required: {
                     ep: 100,
                     gold: 99000,
@@ -386,7 +386,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1000059-10",
-                name: "소울 리버레이트 소드 전용 개조 2",
+                name: "靈魂解放者單手劍專用改造 2",
                 required: {
                     ep: 100,
                     gold: 99000,
@@ -459,7 +459,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-1",
-                name: "무게 조절 1",
+                name: "調整重量 1",
                 required: {
                     ep: 10,
                     gold: 10000,
@@ -475,7 +475,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-2",
-                name: "무게 조절 2",
+                name: "調整重量 2",
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -491,7 +491,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-3",
-                name: "무게 조절 3",
+                name: "調整重量 3",
                 required: {
                     ep: 50,
                     gold: 27000,
@@ -507,7 +507,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-4",
-                name: "무게 조절 4",
+                name: "調整重量 4",
                 required: {
                     ep: 60,
                     gold: 34000,
@@ -523,7 +523,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-5",
-                name: "담금질 1",
+                name: "淬火 1",
                 required: {
                     ep: 5,
                     gold: 25000,
@@ -543,7 +543,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-6",
-                name: "담금질 2",
+                name: "淬火 2",
                 required: {
                     ep: 15,
                     gold: 45000,
@@ -563,7 +563,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-7",
-                name: "담금질 3",
+                name: "淬火 3",
                 required: {
                     ep: 25,
                     gold: 65000,
@@ -583,7 +583,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-8",
-                name: "담금질 4",
+                name: "淬火 4",
                 required: {
                     ep: 35,
                     gold: 85000,
@@ -603,7 +603,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-9",
-                name: "담금질 5",
+                name: "淬火 5",
                 required: {
                     ep: 45,
                     gold: 105000,
@@ -623,7 +623,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-10",
-                name: "경량화1",
+                name: "輕量化1",
                 required: {
                     ep: 10,
                     gold: 90000,
@@ -647,7 +647,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-11",
-                name: "모서리 깎기",
+                name: "修磨稜角",
                 required: {
                     ep: 10,
                     gold: 90000,
@@ -667,7 +667,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-12",
-                name: "손잡이 교체",
+                name: "更換手把",
                 required: {
                     ep: 30,
                     gold: 35000,
@@ -687,7 +687,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-13",
-                name: "크루크식 해머 강화",
+                name: "庫魯格鐵錘強化",
                 required: {
                     ep: 60,
                     gold: 48000,
@@ -715,7 +715,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-14",
-                name: "타우네스식 해머 개조",
+                name: "陶恩斯式鐵錘改造",
                 required: {
                     ep: 50,
                     gold: 49000,
@@ -743,7 +743,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-15",
-                name: "타우네스식 해머 강화",
+                name: "陶恩斯式鐵錘強化",
                 required: {
                     ep: 88,
                     gold: 88000,
@@ -771,7 +771,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-16",
-                name: "해머 보석 개조1",
+                name: "鐵錘寶石改造1",
                 required: {
                     ep: 100,
                     gold: 73000,
@@ -840,7 +840,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-18",
-                name: "소울 리버레이트 해머 전용 개조1",
+                name: "靈魂解放者單手鎚專用改造1",
                 required: {
                     ep: 100,
                     gold: 122000,
@@ -876,7 +876,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-19",
-                name: "소울 리버레이트 해머 전용 개조2",
+                name: "靈魂解放者單手鎚專用改造2",
                 required: {
                     ep: 100,
                     gold: 122000,
@@ -908,7 +908,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-20",
-                name: "경량화2",
+                name: "輕量化2",
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -932,7 +932,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1010070-21",
-                name: "모서리 깎기2",
+                name: "修磨稜角2",
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -992,7 +992,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-1",
-                name: "무게 조절",
+                name: "調整重量",
                 required: {
                     ep: 15,
                     gold: 10000,
@@ -1008,7 +1008,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-2",
-                name: "담금질1",
+                name: "淬火1",
                 required: {
                     ep: 20,
                     gold: 30000,
@@ -1028,7 +1028,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-3",
-                name: "담금질2",
+                name: "淬火2",
                 required: {
                     ep: 30,
                     gold: 40000,
@@ -1052,7 +1052,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-4",
-                name: "담금질3",
+                name: "淬火3",
                 required: {
                     ep: 50,
                     gold: 50000,
@@ -1076,7 +1076,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-5",
-                name: "담금질4",
+                name: "淬火4",
                 required: {
                     ep: 80,
                     gold: 90000,
@@ -1100,7 +1100,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-6",
-                name: "담금질5",
+                name: "淬火5",
                 required: {
                     ep: 100,
                     gold: 95000,
@@ -1120,7 +1120,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-7",
-                name: "경량화1",
+                name: "輕量化1",
                 required: {
                     ep: 20,
                     gold: 15000,
@@ -1136,7 +1136,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-8",
-                name: "경량화2",
+                name: "輕量化2",
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -1152,7 +1152,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-9",
-                name: "경량화3",
+                name: "輕量化3",
                 required: {
                     ep: 50,
                     gold: 35000,
@@ -1168,7 +1168,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-10",
-                name: "경량화4",
+                name: "輕量化4",
                 required: {
                     ep: 80,
                     gold: 40000,
@@ -1184,7 +1184,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-11",
-                name: "도끼날 갈기1",
+                name: "磨利斧刃1",
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -1208,7 +1208,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-12",
-                name: "도끼날 갈기2",
+                name: "磨利斧刃2",
                 required: {
                     ep: 20,
                     gold: 25000,
@@ -1224,7 +1224,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-13",
-                name: "도끼날 갈기3",
+                name: "磨利斧刃3",
                 required: {
                     ep: 30,
                     gold: 50000,
@@ -1240,7 +1240,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-14",
-                name: "손잡이 교체1",
+                name: "更換手把1",
                 required: {
                     ep: 80,
                     gold: 80000,
@@ -1264,7 +1264,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-15",
-                name: "아이데른식 소울 리버레이트 액스 강화",
+                name: "艾頓式靈魂解放者單手斧強化",
                 required: {
                     ep: 80,
                     gold: 42000,
@@ -1296,7 +1296,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-16",
-                name: "트레보식 소울 리버레이트 액스 개조",
+                name: "崔弗式靈魂解放者單手斧改造",
                 required: {
                     ep: 50,
                     gold: 10000,
@@ -1320,7 +1320,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-17",
-                name: "엔포리움 소울 리버레이트 액스 특수 개조",
+                name: "艾波里恩靈魂解放者單手斧特殊改造",
                 required: {
                     ep: 60,
                     gold: 15000,
@@ -1344,7 +1344,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-18",
-                name: "소울 리버레이트 액스 보석 개조1",
+                name: "靈魂解放者單手斧寶石改造1",
                 required: {
                     ep: 100,
                     gold: 18000,
@@ -1377,7 +1377,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-19",
-                name: "소울 리버레이트 액스 전용 개조1",
+                name: "靈魂解放者單手斧專用改造1",
                 required: {
                     ep: 100,
                     gold: 119000,
@@ -1405,7 +1405,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-20",
-                name: "소울 리버레이트 액스 전용 개조2",
+                name: "靈魂解放者單手斧專用改造2",
                 required: {
                     ep: 100,
                     gold: 119000,
@@ -1461,7 +1461,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-22",
-                name: "손잡이 교체2",
+                name: "更換手把2",
                 required: {
                     ep: 80,
                     gold: 80000,
@@ -1481,7 +1481,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1020004-23",
-                name: "도끼날 갈기",
+                name: "磨利斧刃",
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -1540,7 +1540,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-1",
-                name: "활줄 강화3",
+                name: "弓線強化3",
                 required: {
                     ep: 25,
                     gold: 36000,
@@ -1560,7 +1560,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-2",
-                name: "활줄 강화4",
+                name: "弓線強化4",
                 required: {
                     ep: 37,
                     gold: 66600,
@@ -1580,7 +1580,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-3",
-                name: "활줄 강화5",
+                name: "弓線強化5",
                 required: {
                     ep: 55,
                     gold: 136000,
@@ -1600,7 +1600,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-4",
-                name: "조준기 교체1",
+                name: "瞄準器更換1",
                 required: {
                     ep: 90,
                     gold: 159000,
@@ -1620,7 +1620,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-5",
-                name: "조준기 교체2",
+                name: "瞄準器更換2",
                 required: {
                     ep: 90,
                     gold: 159000,
@@ -1644,7 +1644,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-6",
-                name: "조준기 교체3",
+                name: "瞄準器更換3",
                 required: {
                     ep: 90,
                     gold: 159000,
@@ -1664,7 +1664,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-7",
-                name: "활 팁 강화",
+                name: "強化箭尖",
                 required: {
                     ep: 70,
                     gold: 75000,
@@ -1680,7 +1680,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-8",
-                name: "소울 리버레이트 보우 봉인해제1",
+                name: "靈魂解放者弓封印解除1",
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -1704,7 +1704,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-9",
-                name: "소울 리버레이트 보우 봉인해제2",
+                name: "靈魂解放者弓封印解除2",
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -1756,7 +1756,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040054-11",
-                name: "소울 리버레이트 보우 보석 개조",
+                name: "靈魂解放者弓寶石改造",
                 required: {
                     ep: 100,
                     gold: 90000,
@@ -2207,7 +2207,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040055-32",
-                name: "소울 리버레이트 석궁 전용 트리거 교체",
+                name: "靈魂解放者弩專用扳機更換",
                 required: {
                     ep: 45,
                     gold: 47000,
@@ -2227,7 +2227,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040055-33",
-                name: "소울 리버레이트 석궁 전용 활줄 강화1",
+                name: "靈魂解放者弩專用弓線強化1",
                 required: {
                     ep: 80,
                     gold: 97000,
@@ -2251,7 +2251,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040055-34",
-                name: "소울 리버레이트 석궁 전용 활등 강화2",
+                name: "靈魂解放者弩專用弓線強化2",
                 required: {
                     ep: 80,
                     gold: 97000,
@@ -2271,7 +2271,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040055-35",
-                name: "소울 리버레이트 석궁 전용 개조",
+                name: "靈魂解放者弩專用改造",
                 required: {
                     ep: 100,
                     gold: 88000,
@@ -2295,7 +2295,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040055-36",
-                name: "소울 리버레이트 석궁 전용 마무리1",
+                name: "靈魂解放者弩專用收尾1",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2315,7 +2315,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1040055-37",
-                name: "소울 리버레이트 석궁 전용 마무리2",
+                name: "靈魂解放者弩專用收尾2",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2681,7 +2681,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1050017-22",
-                name: "소울 리버레이트 원드 보석 개조",
+                name: "靈魂解放者魔杖寶石改造",
                 required: {
                     ep: 100,
                     gold: 120000,
@@ -2714,7 +2714,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1050017-23",
-                name: "소울 리버레이트 원드 봉인해제1",
+                name: "靈魂解放者魔杖封印解除1",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2734,7 +2734,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1050017-24",
-                name: "소울 리버레이트 원드 봉인해제2",
+                name: "靈魂解放者魔杖封印解除2",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2758,7 +2758,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1050017-25",
-                name: "소울 리버레이트 원드 엘리멘탈 응축1",
+                name: "靈魂解放者魔自然力凝聚1",
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -2774,7 +2774,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1050017-26",
-                name: "소울 리버레이트 원드 엘리멘탈 응축2",
+                name: "靈魂解放者魔自然力凝聚2",
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -3033,7 +3033,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1070014-10",
-                name: "소울 리버레이트 핸들 길들이기1",
+                name: "靈魂解放者手把養成1",
                 required: {
                     ep: 50,
                     gold: 88000,
@@ -3049,7 +3049,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1070014-11",
-                name: "소울 리버레이트 핸들 길들이기2",
+                name: "靈魂解放者手把養成2",
                 required: {
                     ep: 50,
                     gold: 88000,
@@ -3065,7 +3065,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1070014-12",
-                name: "소울 리버레이트 핸들 맞춤 개조",
+                name: "靈魂解放者手把客製化改造",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -3097,7 +3097,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1070014-14",
-                name: "소울 리버레이트 핸들 보석 수리1",
+                name: "靈魂解放者手把寶石修理1",
                 required: {
                     ep: 100,
                     gold: 100000,
@@ -3126,7 +3126,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1070014-15",
-                name: "소울 리버레이트 핸들 보석 수리2",
+                name: "靈魂解放者手把寶石修理2",
                 required: {
                     ep: 100,
                     gold: 100000,
@@ -3161,7 +3161,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
         methods: [
             {
                 id: "1090010-0",
-                name: "날 다듬기",
+                name: "修磨刀刃",
                 required: {
                     ep: 50,
                     gold: 59000,
@@ -3181,7 +3181,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-1",
-                name: "마력 부여1",
+                name: "魔力賦予1",
                 required: {
                     ep: 70,
                     gold: 77000,
@@ -3201,7 +3201,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-2",
-                name: "손잡이 다듬기",
+                name: "修磨把手",
                 required: {
                     ep: 90,
                     gold: 83000,
@@ -3221,7 +3221,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-3",
-                name: "균형추 경량화",
+                name: "平衡錘輕量化",
                 required: {
                     ep: 100,
                     gold: 99000,
@@ -3241,7 +3241,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-4",
-                name: "소울 리버레이트 사이드 전용 개조1",
+                name: "靈魂解放者鐮刀專用改造1",
                 required: {
                     ep: 100,
                     gold: 157000,
@@ -3265,7 +3265,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-5",
-                name: "소울 리버레이트 사이드 전용 개조2",
+                name: "靈魂解放者鐮刀專用改造2",
                 required: {
                     ep: 100,
                     gold: 157000,
@@ -3302,7 +3302,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-7",
-                name: "보석 수리",
+                name: "寶石修理",
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -3331,7 +3331,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-8",
-                name: "보석 개조",
+                name: "寶石改造",
                 required: {
                     ep: 100,
                     gold: 30000,
@@ -3364,7 +3364,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1090010-9",
-                name: "마력 부여2",
+                name: "魔力賦予2",
                 required: {
                     ep: 70,
                     gold: 77000,
@@ -3415,7 +3415,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-1",
-                name: "무게 조절 1",
+                name: "調整重量 1",
                 required: {
                     ep: 20,
                     gold: 5000,
@@ -3431,7 +3431,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-2",
-                name: "무게 조절 2",
+                name: "調整重量 2",
                 required: {
                     ep: 30,
                     gold: 10000,
@@ -3447,7 +3447,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-3",
-                name: "무게 조절 3",
+                name: "調整重量 3",
                 required: {
                     ep: 40,
                     gold: 15000,
@@ -3463,7 +3463,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-4",
-                name: "무게 조절 4",
+                name: "調整重量 4",
                 required: {
                     ep: 50,
                     gold: 20000,
@@ -3479,7 +3479,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-5",
-                name: "담금질 1",
+                name: "淬火 1",
                 required: {
                     ep: 50,
                     gold: 25000,
@@ -3499,7 +3499,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-6",
-                name: "담금질 2",
+                name: "淬火 2",
                 required: {
                     ep: 45,
                     gold: 45000,
@@ -3523,7 +3523,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-7",
-                name: "담금질 3",
+                name: "淬火 3",
                 required: {
                     ep: 50,
                     gold: 65000,
@@ -3547,7 +3547,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-8",
-                name: "담금질 4",
+                name: "淬火 4",
                 required: {
                     ep: 60,
                     gold: 77000,
@@ -3571,7 +3571,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-9",
-                name: "담금질 5",
+                name: "淬火 5",
                 required: {
                     ep: 80,
                     gold: 89000,
@@ -3595,7 +3595,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-10",
-                name: "경량화1",
+                name: "輕量化1",
                 required: {
                     ep: 80,
                     gold: 133000,
@@ -3615,7 +3615,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-11",
-                name: "모서리 깎기",
+                name: "修磨稜角",
                 required: {
                     ep: 10,
                     gold: 20000,
@@ -3631,7 +3631,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-12",
-                name: "손잡이 교체",
+                name: "更換手把",
                 required: {
                     ep: 30,
                     gold: 30000,
@@ -3651,7 +3651,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-13",
-                name: "크루크식 해머 강화",
+                name: "庫魯格鐵錘強化",
                 required: {
                     ep: 60,
                     gold: 38400,
@@ -3679,7 +3679,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-14",
-                name: "타우네스식 해머 개조",
+                name: "陶恩斯式鐵錘改造",
                 required: {
                     ep: 50,
                     gold: 43300,
@@ -3707,7 +3707,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-15",
-                name: "타우네스식 해머 강화",
+                name: "陶恩斯式鐵錘強化",
                 required: {
                     ep: 88,
                     gold: 68500,
@@ -3739,7 +3739,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-16",
-                name: "해머 보석 개조",
+                name: "鐵錘寶石改造",
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -3808,7 +3808,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-18",
-                name: "소울 리버레이트 워리어 해머 전용 개조1",
+                name: "靈魂解放者雙手鎚用改造1",
                 required: {
                     ep: 100,
                     gold: 110000,
@@ -3840,7 +3840,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-19",
-                name: "소울 리버레이트 워리어 해머 전용 개조2",
+                name: "靈魂解放者雙手鎚用改造2",
                 required: {
                     ep: 100,
                     gold: 110000,
@@ -3868,7 +3868,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1210067-20",
-                name: "경량화2",
+                name: "輕量化2",
                 required: {
                     ep: 80,
                     gold: 133000,
@@ -3927,7 +3927,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-1",
-                name: "담금질 2",
+                name: "淬火 2",
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -3951,7 +3951,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-2",
-                name: "담금질 3",
+                name: "淬火 3",
                 required: {
                     ep: 80,
                     gold: 85600,
@@ -3975,7 +3975,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-3",
-                name: "담금질 4",
+                name: "淬火 4",
                 required: {
                     ep: 90,
                     gold: 95000,
@@ -3999,7 +3999,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-4",
-                name: "소울 리버레이트 워리어 액스 전용 담금질",
+                name: "靈魂解放者雙手斧專用淬火",
                 required: {
                     ep: 80,
                     gold: 47000,
@@ -4027,7 +4027,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-5",
-                name: "소울 리버레이트 워리어 액스 보석 개조",
+                name: "靈魂解放者雙手斧寶石改造",
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -4092,7 +4092,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-7",
-                name: "소울 리버레이트 워리어 액스 전용 개조1",
+                name: "靈魂解放者雙手斧專用改造1",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4120,7 +4120,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-8",
-                name: "소울 리버레이트 워리어 액스 전용 개조2",
+                name: "靈魂解放者雙手斧專用改造2",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4148,7 +4148,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1220018-9",
-                name: "담금질 1",
+                name: "淬火 1",
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -4211,7 +4211,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-1",
-                name: "엘레멘탈 응축 1",
+                name: "自然力凝聚1",
                 required: {
                     ep: 25,
                     gold: 69000,
@@ -4231,7 +4231,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-2",
-                name: "엘레멘탈 응축 2",
+                name: "自然力凝聚2",
                 required: {
                     ep: 30,
                     gold: 73000,
@@ -4251,7 +4251,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-3",
-                name: "엘레멘탈 응축 3",
+                name: "自然力凝聚3",
                 required: {
                     ep: 35,
                     gold: 75000,
@@ -4271,7 +4271,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-4",
-                name: "엘레멘탈 응축 4",
+                name: "自然力凝聚4",
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -4291,7 +4291,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-5",
-                name: "소울 리버레이트 스태프 전용 개조1",
+                name: "靈魂解放者集魔杖專用改造1",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4315,7 +4315,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-6",
-                name: "소울 리버레이트 스태프 전용 개조2",
+                name: "靈魂解放者集魔杖專用改造2",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4343,7 +4343,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-7",
-                name: "보석 수리",
+                name: "寶石修理",
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -4372,7 +4372,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-8",
-                name: "소울 리버레이트 스태프 보석 개조",
+                name: "靈魂解放者集魔杖寶石改造",
                 required: {
                     ep: 100,
                     gold: 80000,
@@ -4405,7 +4405,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1230039-9",
-                name: "엘레멘탈 응축 5",
+                name: "自然力凝聚5",
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -4435,7 +4435,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
         methods: [
             {
                 id: "1250026-0",
-                name: "담금질 1",
+                name: "淬火 1",
                 required: {
                     ep: 50,
                     gold: 59000,
@@ -4459,7 +4459,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-1",
-                name: "담금질 2",
+                name: "淬火 2",
                 required: {
                     ep: 60,
                     gold: 68000,
@@ -4483,7 +4483,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-2",
-                name: "담금질 3",
+                name: "淬火 3",
                 required: {
                     ep: 70,
                     gold: 79000,
@@ -4507,7 +4507,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-3",
-                name: "칼날갈기 1",
+                name: "磨利刀刃1",
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -4531,7 +4531,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-4",
-                name: "칼날갈기 2",
+                name: "磨利刀刃2",
                 required: {
                     ep: 80,
                     gold: 90000,
@@ -4555,7 +4555,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-5",
-                name: "칼날갈기 3",
+                name: "磨利刀刃3",
                 required: {
                     ep: 90,
                     gold: 110000,
@@ -4579,7 +4579,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-6",
-                name: "소울 리버레이트 랜스 전용 개조1",
+                name: "靈魂解放者騎槍專用改造1",
                 required: {
                     ep: 100,
                     gold: 153000,
@@ -4607,7 +4607,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-7",
-                name: "소울 리버레이트 랜스 전용 개조2",
+                name: "靈魂解放者騎槍專用改造2",
                 required: {
                     ep: 100,
                     gold: 153000,
@@ -4667,7 +4667,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-9",
-                name: "보석 개조",
+                name: "寶石改造",
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -4700,7 +4700,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1250026-10",
-                name: "보석 수리",
+                name: "寶石修理",
                 required: {
                     ep: 100,
                     gold: 10000,
@@ -4764,7 +4764,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1260020-1",
-                name: "징 연마 1",
+                name: "鎖鏈研磨1(1改)",
                 required: {
                     ep: 30,
                     gold: 3000,
@@ -4784,7 +4784,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1260020-2",
-                name: "징 연마 2",
+                name: "鎖鏈研磨2(1改)",
                 required: {
                     ep: 30,
                     gold: 3000,
@@ -4800,7 +4800,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1260020-3",
-                name: "체인 연마1",
+                name: "鎖鏈研磨1(2改)",
                 required: {
                     ep: 40,
                     gold: 6000,
@@ -4820,7 +4820,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1260020-4",
-                name: "경량화",
+                name: "輕量化",
                 required: {
                     ep: 50,
                     gold: 9000,
@@ -4840,7 +4840,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1260020-5",
-                name: "소울 리버레이트 너클 봉인 해제",
+                name: "靈魂解放者拳套封印解除",
                 required: {
                     ep: 95,
                     gold: 100000,
@@ -4864,7 +4864,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1260020-6",
-                name: "소울 리버레이트 너클 전용 개조",
+                name: "靈魂解放者拳套專用改造",
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4909,7 +4909,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1260020-8",
-                name: "체인 연마2",
+                name: "鎖鏈研磨2(2改)",
                 required: {
                     ep: 40,
                     gold: 6000,
@@ -5216,7 +5216,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1270029-13",
-                name: "소울 리버레이트 듀얼건 전용 개조1",
+                name: "靈魂解放者雙槍專用改造1",
                 required: {
                     ep: 100,
                     gold: 88000,
@@ -5248,7 +5248,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1270029-14",
-                name: "소울 리버레이트 듀얼건 중량화1",
+                name: "靈魂解放者雙槍重量化1",
                 required: {
                     ep: 70,
                     gold: 88000,
@@ -5264,7 +5264,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1270029-15",
-                name: "소울 리버레이트 듀얼건 중량화2",
+                name: "靈魂解放者雙槍重量化2",
                 required: {
                     ep: 70,
                     gold: 88000,
@@ -5284,7 +5284,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1270029-16",
-                name: "소울 리버레이트 듀얼건 전용 개조2",
+                name: "靈魂解放者雙槍專用改造2",
                 required: {
                     ep: 100,
                     gold: 88000,
@@ -5640,7 +5640,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1280018-14",
-                name: "소울 리버레이트 스로잉 스타 전용 개조1",
+                name: "靈魂解放者手裏劍專用改造1",
                 required: {
                     ep: 100,
                     gold: 143000,
@@ -5668,7 +5668,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1280018-15",
-                name: "소울 리버레이트 스로잉 스타 전용 개조2",
+                name: "靈魂解放者手裏劍專用改造2",
                 required: {
                     ep: 100,
                     gold: 143000,
@@ -5723,7 +5723,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1280018-17",
-                name: "소울 리버레이트 스로잉 스타 특수 개조1",
+                name: "靈魂解放者手裏劍特別改造1",
                 required: {
                     ep: 80,
                     gold: 101000,
@@ -5747,7 +5747,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1280018-18",
-                name: "소울 리버레이트 스로잉 스타 특수 개조2",
+                name: "靈魂解放者手裏劍特別改造2",
                 required: {
                     ep: 80,
                     gold: 101000,
@@ -5977,7 +5977,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1290021-10",
-                name: "소울 리버레이트 체인 블레이드 전용 개조1",
+                name: "靈魂解放者鎖鏈鐮刃專用改造1",
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6005,7 +6005,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1290021-11",
-                name: "소울 리버레이트 체인 블레이드 전용 개조2",
+                name: "靈魂解放者鎖鏈鐮刃專用改造2",
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6052,7 +6052,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1290021-13",
-                name: "소울 리버레이트 체인 블레이드 칼날 갈기 1",
+                name: "靈魂解放者鎖鏈鐮刃磨利刀刃 1",
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6076,7 +6076,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1290021-14",
-                name: "소울 리버레이트 체인 블레이드 칼날 갈기 2",
+                name: "靈魂解放者鎖鏈鐮刃磨利刀刃 2",
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6164,7 +6164,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1650001-2",
-                name: "엘레멘탈 응축1",
+                name: "自然力凝聚1",
                 required: {
                     ep: 50,
                     gold: 77000,
@@ -6175,7 +6175,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1650001-3",
-                name: "엘레멘탈 응축2",
+                name: "自然力凝聚2",
                 required: {
                     ep: 50,
                     gold: 77000,
@@ -6186,7 +6186,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1650001-4",
-                name: "엘레멘탈 공명3",
+                name: "自然力共鳴3",
                 required: {
                     ep: 70,
                     gold: 99500,
@@ -6202,7 +6202,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1650001-5",
-                name: "엘레멘탈 공명4",
+                name: "自然力共鳴4",
                 required: {
                     ep: 80,
                     gold: 105000,
@@ -6218,7 +6218,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1650001-6",
-                name: "엘레멘탈 공명5",
+                name: "自然力共鳴5",
                 required: {
                     ep: 100,
                     gold: 110000,
@@ -6261,7 +6261,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1650001-8",
-                name: "소울 리버레이트 힐링 원드 봉인해제1",
+                name: "靈魂解放者治癒魔杖封印解除1",
                 required: {
                     ep: 100,
                     gold: 130000,
@@ -6272,7 +6272,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1650001-9",
-                name: "소울 리버레이트 힐링 원드 봉인해제2",
+                name: "靈魂解放者治癒魔杖封印解除2",
                 required: {
                     ep: 100,
                     gold: 130000,
@@ -6412,7 +6412,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-5",
-                name: "표면 강화",
+                name: "表面強化",
                 required: {
                     ep: 40,
                     gold: 54000,
@@ -6428,7 +6428,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-6",
-                name: "소울 리버레이트 실드 특수 개조1",
+                name: "靈魂解放者盾牌別改造1",
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6444,7 +6444,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-7",
-                name: "소울 리버레이트 실드 특수 개조2",
+                name: "靈魂解放者盾牌別改造2",
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6460,7 +6460,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-8",
-                name: "소울 리버레이트 실드 특수 개조3",
+                name: "靈魂解放者盾牌別改造3",
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6476,7 +6476,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-9",
-                name: "소울 리버레이트 실드 전용 개조1",
+                name: "靈魂解放者盾牌專用改造1",
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6504,7 +6504,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-10",
-                name: "소울 리버레이트 실드 전용 개조2",
+                name: "靈魂解放者盾牌專用改造2",
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6532,7 +6532,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-craftman-2",
-                name: "靈魂解放者之盾專用工匠改",
+                name: "靈魂解放者之盾專用工匠改造",
                 required: {
                     ep: 80,
                     gold: 50000,
@@ -6564,7 +6564,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-12",
-                name: "소울 리버레이트 실드 보석 수리",
+                name: "靈魂解放者盾牌寶石修理",
                 required: {
                     ep: 100,
                     gold: 25000,
@@ -6593,7 +6593,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400011-13",
-                name: "보석 개조",
+                name: "寶石改造",
                 required: {
                     ep: 100,
                     gold: 35000,
@@ -6751,7 +6751,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400012-5",
-                name: "소울 리버레이트 워리어 실드 특수 개조 1",
+                name: "靈魂解放者戰士盾牌別改造 1",
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6767,7 +6767,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400012-6",
-                name: "소울 리버레이트 워리어 실드 특수 개조 2",
+                name: "靈魂解放者戰士盾牌別改造 2",
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6783,7 +6783,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400012-7",
-                name: "소울 리버레이트 워리어 실드 특수 개조 3",
+                name: "靈魂解放者戰士盾牌別改造 3",
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6799,7 +6799,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400012-8",
-                name: "소울 리버레이트 워리어 실드 전용 개조1",
+                name: "靈魂解放者戰士盾牌專用改造1",
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6827,7 +6827,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400012-9",
-                name: "소울 리버레이트 워리어 실드 전용 개조2",
+                name: "靈魂解放者戰士盾牌專用改造2",
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6887,7 +6887,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1400012-11",
-                name: "소울 리버레이트 워리어 실드 보석 수리",
+                name: "靈魂解放者戰士盾牌寶石修理",
                 required: {
                     ep: 80,
                     gold: 25000,
@@ -7254,7 +7254,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-17",
-                name: "소울 리버레이트 가드실린더 특수 개조 1",
+                name: "靈魂解放者盾牌鋼瓶特別改造 1",
                 required: {
                     ep: 50,
                     gold: 60000,
@@ -7265,7 +7265,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-18",
-                name: "소울 리버레이트 가드실린더 특수 개조 2",
+                name: "靈魂解放者盾牌鋼瓶特別改造 2",
                 required: {
                     ep: 50,
                     gold: 60000,
@@ -7276,7 +7276,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-19",
-                name: "소울 리버레이트 가드실린더 특수 개조 3",
+                name: "靈魂解放者盾牌鋼瓶特別改造 3",
                 required: {
                     ep: 50,
                     gold: 60000,
@@ -7287,7 +7287,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-20",
-                name: "소울 리버레이트 가드실린더 전용 개조1",
+                name: "靈魂解放者盾牌鋼瓶專用改造1",
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7303,7 +7303,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-21",
-                name: "소울 리버레이트 가드실린더 전용 개조2",
+                name: "靈魂解放者盾牌鋼瓶專用改造2",
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7319,7 +7319,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-22",
-                name: "소울 리버레이트 가드실린더 전용 개조3",
+                name: "靈魂解放者盾牌鋼瓶專用改造3",
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7335,7 +7335,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-23",
-                name: "소울 리버레이트 가드실린더 전용 개조4",
+                name: "靈魂解放者盾牌鋼瓶專用改造4",
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7367,7 +7367,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1440006-25",
-                name: "보석 수리",
+                name: "寶石修理",
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -7502,7 +7502,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             // },
             {
                 id: "1060011-7",
-                name: "4대 속성 활성화 2",
+                name: "四大屬性啟動2",
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7513,7 +7513,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-8",
-                name: "4대 속성 활성화 3",
+                name: "四大屬性啟動3",
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7524,7 +7524,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-9",
-                name: "4대 속성 활성화 4",
+                name: "四大屬性啟動4",
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7535,7 +7535,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-10",
-                name: "4대 속성 활성화 5",
+                name: "四大屬性啟動5",
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7546,7 +7546,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-11",
-                name: "불 속성 활성화 1",
+                name: "火屬性啟動1",
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7557,7 +7557,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-12",
-                name: "불 속성 활성화 2",
+                name: "火屬性啟動2",
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7568,7 +7568,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-13",
-                name: "불 속성 활성화 3",
+                name: "火屬性啟動3",
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7579,7 +7579,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-14",
-                name: "불 속성 활성화 4",
+                name: "火屬性啟動4",
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7590,7 +7590,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-15",
-                name: "물 속성 활성화 1",
+                name: "水屬性啟動1",
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7601,7 +7601,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-16",
-                name: "물 속성 활성화 2",
+                name: "水屬性啟動2",
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7612,7 +7612,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-17",
-                name: "물 속성 활성화 3",
+                name: "水屬性啟動3",
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7623,7 +7623,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-18",
-                name: "물 속성 활성화 4",
+                name: "水屬性啟動4",
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7634,7 +7634,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-19",
-                name: "흙 속성 활성화 1",
+                name: "土屬性啟動1",
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7645,7 +7645,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-20",
-                name: "흙 속성 활성화 2",
+                name: "土屬性啟動2",
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7656,7 +7656,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-21",
-                name: "흙 속성 활성화 3",
+                name: "土屬性啟動3",
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7667,7 +7667,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-22",
-                name: "흙 속성 활성화 4",
+                name: "土屬性啟動4",
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7678,7 +7678,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-23",
-                name: "바람 속성 활성화 1",
+                name: "風屬性啟動1",
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7689,7 +7689,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-24",
-                name: "바람 속성 활성화 2",
+                name: "風屬性啟動2",
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7700,7 +7700,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-25",
-                name: "바람 속성 활성화 3",
+                name: "風屬性啟動3",
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7711,7 +7711,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-26",
-                name: "바람 속성 활성화 4",
+                name: "風屬性啟動4",
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7722,7 +7722,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-27",
-                name: "소울 리버레이트 실린더 전용 개조1",
+                name: "靈魂解放者鋼瓶專用改造1",
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -7754,7 +7754,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1060011-28",
-                name: "소울 리버레이트 실린더 전용 개조2",
+                name: "靈魂解放者鋼瓶專用改造2",
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -8028,7 +8028,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1080048-8",
-                name: "소울 리버레이트 리라 부품 교체",
+                name: "靈魂解放者里拉零件更換",
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -8060,7 +8060,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1080048-9",
-                name: "소울 리버레이트 리라 내부 청소하기",
+                name: "靈魂解放者里拉內部清理",
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -8092,7 +8092,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1080048-10",
-                name: "소울 리버레이트 리라 울림 바로잡기",
+                name: "靈魂解放者里拉調整共鳴",
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -8124,7 +8124,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1080048-11",
-                name: "소울 리버레이트 리라 봉인해제",
+                name: "靈魂解放者里拉封印解除",
                 required: {
                     ep: 100,
                     gold: 130000,
@@ -8167,7 +8167,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1080048-13",
-                name: "소울 리버레이트 리라 보석 수리1",
+                name: "靈魂解放者里拉寶石修理1",
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -8196,7 +8196,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
             {
                 id: "1080048-14",
-                name: "소울 리버레이트 리라 부품 교체2",
+                name: "靈魂解放者里拉零件更換2",
                 required: {
                     ep: 70,
                     gold: 70000,
