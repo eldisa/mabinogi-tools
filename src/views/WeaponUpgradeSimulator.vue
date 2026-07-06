@@ -460,13 +460,7 @@
                                     <el-button
                                         type="primary"
                                         class="flex-1"
-                                        @click="
-                                            activeTab =
-                                                craftmanUpgrade &&
-                                                form.selectedUpgradeArray.includes(craftmanUpgrade.id)
-                                                    ? 'craftman'
-                                                    : 'result'
-                                        "
+                                        @click="activeTab = isCraftmanSelected ? 'craftman' : 'result'"
                                     >
                                         下一步
                                     </el-button>
@@ -823,6 +817,7 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             attack_max: 1,
             attack_min: 0.5,
+            marionette_attack_max: 1,
         },
     },
     // 物理遠程 - 大傷優先
@@ -1076,6 +1071,9 @@ watch(
 ); // immediate: true 讓頁面載入時也執行一次
 
 const craftmanUpgrade = computed(() => upgradeList.value.find((item) => item.id.includes("craftman")));
+const isCraftmanSelected = computed(
+    () => !!craftmanUpgrade.value && form.value.selectedUpgradeArray.includes(craftmanUpgrade.value.id),
+);
 
 // 使用 map 創建 options，確保下拉選單能動態顯示
 const op: Option[] = infoForG27Weapon
