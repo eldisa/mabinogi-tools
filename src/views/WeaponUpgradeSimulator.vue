@@ -823,6 +823,7 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             attack_max: 1,
             attack_min: 0.5,
+            marionette_attack_max: 1,
         },
     },
     // 物理遠程 - 大傷優先
