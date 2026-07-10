@@ -129,8 +129,15 @@ const gradeColor = (grade: string): string => {
     return g === "S" ? "text-yellow-400" : g === "A" ? "text-purple-400" : g === "B" ? "text-blue-400" : "text-gray-300";
 };
 
+// 統計篩選
+const filterGrade = ref<string>("");
+const filterName = ref<string>("");
+const gradeOptions = computed(() => [...new Set(items.value.map((i) => i.grade))]);
+
 const sortedStats = computed(() =>
     items.value
+        .filter((it) => !filterGrade.value || it.grade === filterGrade.value)
+        .filter((it) => !filterName.value.trim() || it.name.includes(filterName.value.trim()))
         .map((it) => {
             const c = counts.value[it.name] ?? 0;
             return { ...it, count: c, actual: totalPulls.value ? (c / totalPulls.value) * 100 : 0 };
@@ -268,6 +275,19 @@ const gradeStats = computed(() => {
                 </div>
 
                 <!-- 各道具 -->
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <el-select v-model="filterGrade" placeholder="全部等級" clearable size="small" style="width: 130px">
+                        <el-option v-for="g in gradeOptions" :key="g" :label="g" :value="g" />
+                    </el-select>
+                    <el-input
+                        v-model="filterName"
+                        placeholder="搜尋道具名稱"
+                        clearable
+                        size="small"
+                        style="max-width: 220px"
+                    />
+                    <span class="text-xs text-gray-500">顯示 {{ sortedStats.length }} / {{ items.length }} 項</span>
+                </div>
                 <el-table
                     :data="sortedStats"
                     border
