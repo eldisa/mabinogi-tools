@@ -26,6 +26,7 @@ import MusicCalculator from '../views/MusicCalculator.vue';
 import MagicCircleView from '../views/MagicCircleView.vue';
 import OghamView from '../views/OghamView.vue';
 import OghamSimulatorView from '../views/OghamSimulatorView.vue';
+import GachaSimulatorView from '../views/GachaSimulatorView.vue';
 import Changelog from '../views/Changelog.vue';
 
 const routes = [
@@ -162,6 +163,11 @@ const routes = [
             path: '/ogham-simulator',
             name: '符文模擬器',
             component: OghamSimulatorView,
+        },
+        {
+            path: '/gacha-simulator',
+            name: '轉蛋模擬器',
+            component: GachaSimulatorView,
         },]
     },
 
@@ -191,6 +197,7 @@ const pageTitles = {
     '魔法陣查詢': '魔法陣查詢 | 瑪奇小工具',
     '符文': '符文 | 瑪奇小工具',
     '符文模擬器': '符文模擬器 | 瑪奇小工具',
+    '轉蛋模擬器': '轉蛋模擬器 | 瑪奇小工具',
     '1王機制練習': '1王機制練習 | 瑪奇小工具',
     '2關機制練習': '2關機制練習 | 瑪奇小工具',
     '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',

@@ -61,6 +61,7 @@ const menuGroups = ref([
             { name: "聖水模擬器", path: "/holy-water", icon: markRaw(MagicStick) },
             { name: "回音石模擬器", path: "/echostone-simulator", icon: markRaw(MagicStick) },
             { name: "符文模擬器", path: "/ogham-simulator", icon: markRaw(MagicStick), note: "暫譯・台服未實裝" },
+            { name: "轉蛋模擬器", path: "/gacha-simulator", icon: markRaw(Present) },
         ],
     },
     {

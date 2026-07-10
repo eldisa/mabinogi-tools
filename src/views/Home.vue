@@ -38,6 +38,7 @@ const groups = [
             { icon: "MagicStick", title: "聖水模擬器",         description: "模擬聖水洗屬性所需次數，支援目標屬性設定與自動模擬",   path: "/holy-water" },
             { icon: "Star",       title: "回音石模擬器",       description: "模擬回音石覺醒詞條，支援目標設定與連續覺醒，含打磨石機制", path: "/echostone-simulator" },
             { icon: "MagicStick", title: "符文模擬器",         description: "模擬符文詞條抽取，支援鎖定、抽到目標為止與花費統計",   path: "/ogham-simulator" },
+            { icon: "Present",    title: "轉蛋模擬器",         description: "貼上機率表模擬抽取，支援多抽、抽到目標為止與統計",     path: "/gacha-simulator" },
         ],
     },
     {
