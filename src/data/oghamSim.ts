@@ -28,7 +28,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 1,
         "name": "元素騎士",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974455716.webp",
+        "icon": "oghamImage/img-1761974455716.webp",
         "mainTalentId": 1,
         "subTalentId": 2,
         "mainTalent": "近距離戰鬥",
@@ -37,7 +37,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 2,
         "name": "聖詠者",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974506104.webp",
+        "icon": "oghamImage/img-1761974506104.webp",
         "mainTalentId": 16,
         "subTalentId": 6,
         "mainTalent": "祝福",
@@ -46,7 +46,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 3,
         "name": "縛魂者",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974539533.webp",
+        "icon": "oghamImage/img-1761974539533.webp",
         "mainTalentId": 2,
         "subTalentId": 12,
         "mainTalent": "魔法",
@@ -55,7 +55,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 4,
         "name": "秘術遊俠",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974562311.webp",
+        "icon": "oghamImage/img-1761974562311.webp",
         "mainTalentId": 3,
         "subTalentId": 4,
         "mainTalent": "弓術",
@@ -64,7 +64,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 5,
         "name": "聖盾守衛",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974584004.webp",
+        "icon": "oghamImage/img-1761974584004.webp",
         "mainTalentId": 1,
         "subTalentId": 16,
         "mainTalent": "近距離戰鬥",
@@ -73,7 +73,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 6,
         "name": "爆裂槍兵",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974606466.webp",
+        "icon": "oghamImage/img-1761974606466.webp",
         "mainTalentId": 8,
         "subTalentId": 10,
         "mainTalent": "騎槍",
@@ -82,7 +82,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 7,
         "name": "幻變槍手",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974664397.webp",
+        "icon": "oghamImage/img-1761974664397.webp",
         "mainTalentId": 10,
         "subTalentId": 9,
         "mainTalent": "槍手",
@@ -91,7 +91,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 8,
         "name": "禁忌煉金士",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1761974686850.webp",
+        "icon": "oghamImage/img-1761974686850.webp",
         "mainTalentId": 4,
         "subTalentId": 20,
         "mainTalent": "戰鬥鍊金術",
@@ -100,7 +100,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 9,
         "name": "旋律人偶師",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770440624569.webp",
+        "icon": "oghamImage/img-1770440624569.webp",
         "mainTalentId": 7,
         "subTalentId": 6,
         "mainTalent": "人偶術",
@@ -109,7 +109,7 @@ export const simArcanas: SimArcana[] = [
     {
         "id": 10,
         "name": "狂怒鬥士",
-        "icon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770440758409.webp",
+        "icon": "oghamImage/img-1770440758409.webp",
         "mainTalentId": 5,
         "subTalentId": 1,
         "mainTalent": "格鬥術",
@@ -334,7 +334,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "火焰躍擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278421478.webp",
+        "skillIcon": "oghamImage/img-1762278421478.webp",
         "kind": "arcana",
         "arcanaId": 1
     },
@@ -345,7 +345,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "寒冰旋風",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278422382.webp",
+        "skillIcon": "oghamImage/img-1762278422382.webp",
         "kind": "arcana",
         "arcanaId": 1
     },
@@ -356,7 +356,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "閃電雷擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278423237.webp",
+        "skillIcon": "oghamImage/img-1762278423237.webp",
         "kind": "arcana",
         "arcanaId": 1
     },
@@ -367,7 +367,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "破陣突圍",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278425034.webp",
+        "skillIcon": "oghamImage/img-1762278425034.webp",
         "kind": "arcana",
         "arcanaId": 1
     },
@@ -378,7 +378,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "活力之聲",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278414788.webp",
+        "skillIcon": "oghamImage/img-1762278414788.webp",
         "kind": "arcana",
         "arcanaId": 2
     },
@@ -389,7 +389,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "救贖的迴聲",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278413895.webp",
+        "skillIcon": "oghamImage/img-1762278413895.webp",
         "kind": "arcana",
         "arcanaId": 2
     },
@@ -400,7 +400,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "淨化的鼓動",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278415715.webp",
+        "skillIcon": "oghamImage/img-1762278415715.webp",
         "kind": "arcana",
         "arcanaId": 2
     },
@@ -411,7 +411,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "音波洗禮",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1778732999727.webp",
+        "skillIcon": "oghamImage/img-1778732999727.webp",
         "kind": "arcana",
         "arcanaId": 2
     },
@@ -422,7 +422,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "龍焰",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278426208.webp",
+        "skillIcon": "oghamImage/img-1762278426208.webp",
         "kind": "arcana",
         "arcanaId": 3
     },
@@ -433,7 +433,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "暗雷連結",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278427071.webp",
+        "skillIcon": "oghamImage/img-1762278427071.webp",
         "kind": "arcana",
         "arcanaId": 3
     },
@@ -444,7 +444,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "寒冰送葬",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278428014.webp",
+        "skillIcon": "oghamImage/img-1762278428014.webp",
         "kind": "arcana",
         "arcanaId": 3
     },
@@ -455,7 +455,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "潛伏點火",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1782350228756.webp",
+        "skillIcon": "oghamImage/img-1782350228756.webp",
         "kind": "arcana",
         "arcanaId": 3
     },
@@ -466,7 +466,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "爆炎箭",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278432654.webp",
+        "skillIcon": "oghamImage/img-1762278432654.webp",
         "kind": "arcana",
         "arcanaId": 4
     },
@@ -477,7 +477,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "流水射擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278433695.webp",
+        "skillIcon": "oghamImage/img-1762278433695.webp",
         "kind": "arcana",
         "arcanaId": 4
     },
@@ -488,7 +488,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "界線之力",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278434671.webp",
+        "skillIcon": "oghamImage/img-1762278434671.webp",
         "kind": "arcana",
         "arcanaId": 4
     },
@@ -499,7 +499,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "霰彈射擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278435652.webp",
+        "skillIcon": "oghamImage/img-1762278435652.webp",
         "kind": "arcana",
         "arcanaId": 4
     },
@@ -510,7 +510,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "三重極限",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278436490.webp",
+        "skillIcon": "oghamImage/img-1762278436490.webp",
         "kind": "arcana",
         "arcanaId": 4
     },
@@ -521,7 +521,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "聖域展開",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278438379.webp",
+        "skillIcon": "oghamImage/img-1762278438379.webp",
         "kind": "arcana",
         "arcanaId": 5
     },
@@ -532,7 +532,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "盾擊衝鋒",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278440302.webp",
+        "skillIcon": "oghamImage/img-1762278440302.webp",
         "kind": "arcana",
         "arcanaId": 5
     },
@@ -543,7 +543,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "盾崩強襲",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278441243.webp",
+        "skillIcon": "oghamImage/img-1762278441243.webp",
         "kind": "arcana",
         "arcanaId": 5
     },
@@ -554,7 +554,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "審判重擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278442077.webp",
+        "skillIcon": "oghamImage/img-1762278442077.webp",
         "kind": "arcana",
         "arcanaId": 5
     },
@@ -565,7 +565,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "光輝的斷罪",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1778731662673.webp",
+        "skillIcon": "oghamImage/img-1778731662673.webp",
         "kind": "arcana",
         "arcanaId": 5
     },
@@ -576,7 +576,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "衝擊粉碎",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278446822.webp",
+        "skillIcon": "oghamImage/img-1762278446822.webp",
         "kind": "arcana",
         "arcanaId": 6
     },
@@ -587,7 +587,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "旋渦風暴",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278447732.webp",
+        "skillIcon": "oghamImage/img-1762278447732.webp",
         "kind": "arcana",
         "arcanaId": 6
     },
@@ -598,7 +598,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "衝鋒突擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278448747.webp",
+        "skillIcon": "oghamImage/img-1762278448747.webp",
         "kind": "arcana",
         "arcanaId": 6
     },
@@ -609,7 +609,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "超載爆發",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278449645.webp",
+        "skillIcon": "oghamImage/img-1762278449645.webp",
         "kind": "arcana",
         "arcanaId": 6
     },
@@ -620,7 +620,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "湮滅一槍",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278450531.webp",
+        "skillIcon": "oghamImage/img-1762278450531.webp",
         "kind": "arcana",
         "arcanaId": 6
     },
@@ -631,7 +631,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "迅捷連射",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278623744.webp",
+        "skillIcon": "oghamImage/img-1762278623744.webp",
         "kind": "arcana",
         "arcanaId": 7
     },
@@ -642,7 +642,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "重裝武力",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278649869.webp",
+        "skillIcon": "oghamImage/img-1762278649869.webp",
         "kind": "arcana",
         "arcanaId": 7
     },
@@ -653,7 +653,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "毀滅砲擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278701243.webp",
+        "skillIcon": "oghamImage/img-1762278701243.webp",
         "kind": "arcana",
         "arcanaId": 7
     },
@@ -664,7 +664,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "死亡準星",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278723055.webp",
+        "skillIcon": "oghamImage/img-1762278723055.webp",
         "kind": "arcana",
         "arcanaId": 7
     },
@@ -675,7 +675,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "召喚噩夢",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278930240.webp",
+        "skillIcon": "oghamImage/img-1762278930240.webp",
         "kind": "arcana",
         "arcanaId": 8
     },
@@ -686,7 +686,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "化學狂歡",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278947694.webp",
+        "skillIcon": "oghamImage/img-1762278947694.webp",
         "kind": "arcana",
         "arcanaId": 8
     },
@@ -697,7 +697,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "地裂螺旋",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278967471.webp",
+        "skillIcon": "oghamImage/img-1762278967471.webp",
         "kind": "arcana",
         "arcanaId": 8
     },
@@ -708,7 +708,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "強拍重音",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441613507.webp",
+        "skillIcon": "oghamImage/img-1770441613507.webp",
         "kind": "arcana",
         "arcanaId": 9
     },
@@ -719,7 +719,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "追蹤步伐",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441690885.webp",
+        "skillIcon": "oghamImage/img-1770441690885.webp",
         "kind": "arcana",
         "arcanaId": 9
     },
@@ -730,7 +730,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "壯麗終章",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441797050.webp",
+        "skillIcon": "oghamImage/img-1770441797050.webp",
         "kind": "arcana",
         "arcanaId": 9
     },
@@ -741,7 +741,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "鋼絲網",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441883324.webp",
+        "skillIcon": "oghamImage/img-1770441883324.webp",
         "kind": "arcana",
         "arcanaId": 9
     },
@@ -752,7 +752,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "間奏斬擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770441962685.webp",
+        "skillIcon": "oghamImage/img-1770441962685.webp",
         "kind": "arcana",
         "arcanaId": 9
     },
@@ -763,7 +763,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "超越：連鎖打擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770442704738.webp",
+        "skillIcon": "oghamImage/img-1770442704738.webp",
         "kind": "arcana",
         "arcanaId": 10
     },
@@ -774,7 +774,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "超越：衝擊俯衝",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770442792340.webp",
+        "skillIcon": "oghamImage/img-1770442792340.webp",
         "kind": "arcana",
         "arcanaId": 10
     },
@@ -785,7 +785,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "超越：力量猛擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770442862350.webp",
+        "skillIcon": "oghamImage/img-1770442862350.webp",
         "kind": "arcana",
         "arcanaId": 10
     },
@@ -796,7 +796,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "烈風穿刺",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443293567.webp",
+        "skillIcon": "oghamImage/img-1770443293567.webp",
         "kind": "arcana",
         "arcanaId": 10
     },
@@ -807,7 +807,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "終極打擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443428941.webp",
+        "skillIcon": "oghamImage/img-1770443428941.webp",
         "kind": "arcana",
         "arcanaId": 10
     },
@@ -818,7 +818,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": true,
         "skillName": "力量閃焰",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1770443353075.webp",
+        "skillIcon": "oghamImage/img-1770443353075.webp",
         "kind": "arcana",
         "arcanaId": 10
     },
@@ -829,7 +829,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通雙槍",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278306799.webp",
+        "skillIcon": "oghamImage/img-1762278306799.webp",
         "kind": "talent",
         "talentId": 10
     },
@@ -894,7 +894,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "重擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278164255.webp",
+        "skillIcon": "oghamImage/img-1762278164255.webp",
         "kind": "talent",
         "talentId": 1
     },
@@ -905,7 +905,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "突擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278166033.webp",
+        "skillIcon": "oghamImage/img-1762278166033.webp",
         "kind": "talent",
         "talentId": 1
     },
@@ -916,7 +916,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "躍擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278167060.webp",
+        "skillIcon": "oghamImage/img-1762278167060.webp",
         "kind": "talent",
         "talentId": 1
     },
@@ -927,7 +927,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "騎槍衝擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278168970.webp",
+        "skillIcon": "oghamImage/img-1762278168970.webp",
         "kind": "talent",
         "talentId": 8
     },
@@ -938,7 +938,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "穿心箭",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278174656.webp",
+        "skillIcon": "oghamImage/img-1762278174656.webp",
         "kind": "talent",
         "talentId": 3
     },
@@ -949,7 +949,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "旋風擺蓮腿",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278182096.webp",
+        "skillIcon": "oghamImage/img-1762278182096.webp",
         "kind": "talent",
         "talentId": 1
     },
@@ -960,7 +960,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "爆裂箭碎片",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278186959.webp",
+        "skillIcon": "oghamImage/img-1762278186959.webp",
         "kind": "talent",
         "talentId": 3
     },
@@ -971,7 +971,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通劍",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278189840.webp",
+        "skillIcon": "oghamImage/img-1762278189840.webp",
         "kind": "talent",
         "talentId": 1
     },
@@ -982,7 +982,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通斧",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278190756.webp",
+        "skillIcon": "oghamImage/img-1762278190756.webp",
         "kind": "talent",
         "talentId": 1
     },
@@ -993,7 +993,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通鈍器",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278191623.webp",
+        "skillIcon": "oghamImage/img-1762278191623.webp",
         "kind": "talent",
         "talentId": 1
     },
@@ -1004,7 +1004,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通弓",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278200193.webp",
+        "skillIcon": "oghamImage/img-1762278200193.webp",
         "kind": "talent",
         "talentId": 3
     },
@@ -1015,7 +1015,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通弩",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278201056.webp",
+        "skillIcon": "oghamImage/img-1762278201056.webp",
         "kind": "talent",
         "talentId": 3
     },
@@ -1026,7 +1026,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通騎槍",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278201897.webp",
+        "skillIcon": "oghamImage/img-1762278201897.webp",
         "kind": "talent",
         "talentId": 8
     },
@@ -1037,7 +1037,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "精通拳套",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278269637.webp",
+        "skillIcon": "oghamImage/img-1762278269637.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1048,7 +1048,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "精通連續技",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278270518.webp",
+        "skillIcon": "oghamImage/img-1762278270518.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1059,7 +1059,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "連續技能：突拳",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278271376.webp",
+        "skillIcon": "oghamImage/img-1762278271376.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1070,7 +1070,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "連續技能：導電拳擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278272230.webp",
+        "skillIcon": "oghamImage/img-1762278272230.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1081,7 +1081,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "連續技：螺旋勾拳",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278273220.webp",
+        "skillIcon": "oghamImage/img-1762278273220.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1092,7 +1092,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "連續技：翻筋斗",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278274146.webp",
+        "skillIcon": "oghamImage/img-1762278274146.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1103,7 +1103,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "連續技能：飛踢",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278275101.webp",
+        "skillIcon": "oghamImage/img-1762278275101.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1114,7 +1114,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "連續技能：猛烈突擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278275959.webp",
+        "skillIcon": "oghamImage/img-1762278275959.webp",
         "kind": "talent",
         "talentId": 5
     },
@@ -1125,7 +1125,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "治療",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278216277.webp",
+        "skillIcon": "oghamImage/img-1762278216277.webp",
         "kind": "talent",
         "talentId": 16
     },
@@ -1136,7 +1136,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 10,
         "percent": false,
         "skillName": "隊伍治療",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278218403.webp",
+        "skillIcon": "oghamImage/img-1762278218403.webp",
         "kind": "talent",
         "talentId": 16
     },
@@ -1147,7 +1147,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "精通火魔法",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278219232.webp",
+        "skillIcon": "oghamImage/img-1762278219232.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1158,7 +1158,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "精通冰魔法",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278220105.webp",
+        "skillIcon": "oghamImage/img-1762278220105.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1169,7 +1169,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "精通雷魔法",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278221080.webp",
+        "skillIcon": "oghamImage/img-1762278221080.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1180,7 +1180,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "精通箭系魔法",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278222106.webp",
+        "skillIcon": "oghamImage/img-1762278222106.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1191,7 +1191,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "雷矢",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278223912.webp",
+        "skillIcon": "oghamImage/img-1762278223912.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1202,7 +1202,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "雷擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278224921.webp",
+        "skillIcon": "oghamImage/img-1762278224921.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1213,7 +1213,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "火焰",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278226774.webp",
+        "skillIcon": "oghamImage/img-1762278226774.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1224,7 +1224,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "火球",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278227829.webp",
+        "skillIcon": "oghamImage/img-1762278227829.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1235,7 +1235,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "冰矛",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278229742.webp",
+        "skillIcon": "oghamImage/img-1762278229742.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1246,7 +1246,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "冰刃",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278230633.webp",
+        "skillIcon": "oghamImage/img-1762278230633.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1257,7 +1257,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "箭系組合魔法",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278233312.webp",
+        "skillIcon": "oghamImage/img-1762278233312.webp",
         "kind": "talent",
         "talentId": 2
     },
@@ -1268,7 +1268,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "水砲",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278247977.webp",
+        "skillIcon": "oghamImage/img-1762278247977.webp",
         "kind": "talent",
         "talentId": 4
     },
@@ -1279,7 +1279,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "火焰噴射",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278252037.webp",
+        "skillIcon": "oghamImage/img-1762278252037.webp",
         "kind": "talent",
         "talentId": 4
     },
@@ -1290,7 +1290,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "高壓火爆",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278250977.webp",
+        "skillIcon": "oghamImage/img-1762278250977.webp",
         "kind": "talent",
         "talentId": 4
     },
@@ -1301,7 +1301,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "第一幕：偶然的衝突",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278299063.webp",
+        "skillIcon": "oghamImage/img-1762278299063.webp",
         "kind": "talent",
         "talentId": 7
     },
@@ -1312,7 +1312,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "第二幕：激增的憤怒",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278298144.webp",
+        "skillIcon": "oghamImage/img-1762278298144.webp",
         "kind": "talent",
         "talentId": 7
     },
@@ -1323,7 +1323,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "第四幕：嫉妒的化身",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278300004.webp",
+        "skillIcon": "oghamImage/img-1762278300004.webp",
         "kind": "talent",
         "talentId": 7
     },
@@ -1334,7 +1334,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "第七幕：狂亂的奔走",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278302035.webp",
+        "skillIcon": "oghamImage/img-1762278302035.webp",
         "kind": "talent",
         "talentId": 7
     },
@@ -1345,7 +1345,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "十字槍擊",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278307675.webp",
+        "skillIcon": "oghamImage/img-1762278307675.webp",
         "kind": "talent",
         "talentId": 10
     },
@@ -1356,7 +1356,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "拉近",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278308617.webp",
+        "skillIcon": "oghamImage/img-1762278308617.webp",
         "kind": "talent",
         "talentId": 10
     },
@@ -1367,7 +1367,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "退遠",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278309610.webp",
+        "skillIcon": "oghamImage/img-1762278309610.webp",
         "kind": "talent",
         "talentId": 10
     },
@@ -1378,7 +1378,7 @@ export const simOptions: SimOption[] = [
         "maxLevel": 20,
         "percent": true,
         "skillName": "衝射",
-        "skillIcon": "https://tacask-cdn.com/mabi-labanyu/web-upload/img-1762278310521.webp",
+        "skillIcon": "oghamImage/img-1762278310521.webp",
         "kind": "talent",
         "talentId": 10
     }
@@ -1390,7 +1390,7 @@ export const simPrices: SimPrice[] = [
         "items": [
             {
                 "name": "符文碎片",
-                "thumbnail": "https://tacask-cdn.com/mabi-labanyu/mabi-labanyu/item-base-data/thumbnail/item-42897.png",
+                "thumbnail": "oghamImage/item-42897.png",
                 "count": 1
             }
         ]
@@ -1401,12 +1401,12 @@ export const simPrices: SimPrice[] = [
         "items": [
             {
                 "name": "符文碎片",
-                "thumbnail": "https://tacask-cdn.com/mabi-labanyu/mabi-labanyu/item-base-data/thumbnail/item-42897.png",
+                "thumbnail": "oghamImage/item-42897.png",
                 "count": 3
             },
             {
-                "name": "火焰束",
-                "thumbnail": "https://tacask-cdn.com/mabi-labanyu/item-base-data/thumbnail/item-31704.png",
+                "name": "火繩結",
+                "thumbnail": "oghamImage/item-31704.png",
                 "count": 1
             }
         ]
@@ -1417,17 +1417,17 @@ export const simPrices: SimPrice[] = [
         "items": [
             {
                 "name": "符文碎片",
-                "thumbnail": "https://tacask-cdn.com/mabi-labanyu/mabi-labanyu/item-base-data/thumbnail/item-42897.png",
+                "thumbnail": "oghamImage/item-42897.png",
                 "count": 5
             },
             {
-                "name": "火焰束",
-                "thumbnail": "https://tacask-cdn.com/mabi-labanyu/item-base-data/thumbnail/item-31704.png",
+                "name": "火繩結",
+                "thumbnail": "oghamImage/item-31704.png",
                 "count": 1
             },
             {
-                "name": "冰凍火焰束",
-                "thumbnail": "https://tacask-cdn.com/mabi-labanyu/item-base-data/thumbnail/item-31723.png",
+                "name": "凍結的火繩結",
+                "thumbnail": "oghamImage/item-31723.png",
                 "count": 1
             }
         ]

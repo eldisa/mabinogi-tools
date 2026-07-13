@@ -2,11 +2,15 @@
 import { ref, computed, watch } from "vue";
 import { simArcanas, simWords, simOptions, simPrices, type SimOption } from "../data/oghamSim";
 
+const baseUrl = import.meta.env.BASE_URL;
+const imgUrl = (p?: string | null) => (p ? baseUrl + p : "");
+
 // ===== 選擇 =====
 const selectedArcanaId = ref(simArcanas[0].id);
 const arcana = computed(() => simArcanas.find((a) => a.id === selectedArcanaId.value)!);
 const selectedWordId = ref(simWords[0].id);
 const word = computed(() => simWords.find((w) => w.id === selectedWordId.value)!);
+const isSpecialWord = computed(() => word.value.hasArcana); // 特殊符文固定大師級
 const rockLine = ref(2); // 0/1/2 → 1/2/3 條詞條（精英/史詩/大師）
 const lineCount = computed(() => rockLine.value + 1);
 const gradeName = ["精英", "史詩", "大師"];
@@ -37,9 +41,14 @@ const lines = ref<(Line | null)[]>(Array(lineCount.value).fill(null));
 // 設定變更時重置詞條行（保留鎖定的合理性：條數變動就清空）
 watch([selectedArcanaId, selectedWordId, rockLine], () => {
     lines.value = Array(lineCount.value).fill(null);
-    targetOptionId.value = null;
+    targetOptionIds.value = [];
     autoResult.value = "";
 });
+
+// 特殊符文固定大師級（3 條）；一般符文可自由選等級
+watch(isSpecialWord, (special) => {
+    if (special) rockLine.value = 2;
+}, { immediate: true });
 
 const randInt = (lo: number, hi: number) => Math.floor(Math.random() * (hi - lo)) + lo; // [lo, hi)
 
@@ -94,37 +103,57 @@ const fmtValue = (o: SimOption, level: number): string => {
 };
 
 // ===== 目標模式（抽到為止）=====
-const targetOptionId = ref<number | null>(null);
+const targetOptionIds = ref<number[]>([]); // 最多 3 個目標詞條
+const targetLimit = computed(() => Math.min(3, lineCount.value)); // 目標數 ≤ 詞條數
 const targetMinLevel = ref(1);
 const maxTries = ref(1000);
 const autoResult = ref("");
-const targetOption = computed(() => pool.value.find((o) => o.id === targetOptionId.value) ?? null);
+// 各目標最低等級上限取所選詞條 maxLevel 的最小值
+const targetMaxLevel = computed(() => {
+    const sel = pool.value.filter((o) => targetOptionIds.value.includes(o.id));
+    return sel.length ? Math.min(...sel.map((o) => o.maxLevel)) : 20;
+});
 
-const lineMatchesTarget = (arr: (Line | null)[]) =>
-    arr.some((l) => l && l.option.id === targetOptionId.value && l.level >= targetMinLevel.value);
+const targetsSatisfied = (arr: (Line | null)[]) =>
+    targetOptionIds.value.every((tid) =>
+        arr.some((l) => l && l.option.id === tid && l.level >= targetMinLevel.value),
+    );
 
 const rollUntil = () => {
-    if (pool.value.length === 0 || targetOptionId.value == null) return;
+    if (pool.value.length === 0 || targetOptionIds.value.length === 0) return;
+    const targets = targetOptionIds.value;
     let tries = 0;
     let hit = false;
     while (tries < maxTries.value) {
         tries++;
         payOnce();
         lines.value = rollOnce();
-        if (lineMatchesTarget(lines.value)) {
+        // 命中目標的詞條行自動鎖定，避免下一次重抽被洗掉（模擬實際鎖詞條farming）
+        lines.value.forEach((l, i) => {
+            if (l && !l.locked && targets.includes(l.option.id) && l.level >= targetMinLevel.value) {
+                lines.value[i] = { ...l, locked: true };
+            }
+        });
+        if (targetsSatisfied(lines.value)) {
             hit = true;
             break;
         }
     }
     autoResult.value = hit
-        ? `🎉 第 ${tries.toLocaleString()} 次抽中目標`
-        : `⚠ ${tries.toLocaleString()} 次仍未抽中（已達上限）`;
+        ? `🎉 第 ${tries.toLocaleString()} 次湊齊全部目標`
+        : `⚠ ${tries.toLocaleString()} 次仍未湊齊目標（已達上限）`;
 };
 
 const kindLabel = (o: SimOption): string =>
     o.kind === "arcana" ? "祕法" : o.kind === "stat" ? "屬性" : "才能";
 const kindColor = (o: SimOption): string =>
     o.kind === "arcana" ? "text-red-400" : o.kind === "stat" ? "text-green-400" : "text-blue-400";
+
+// ===== 各區塊收合 =====
+const showSelectCard = ref(true);
+const showTargetCard = ref(true);
+const showRollCard = ref(true);
+const showCostCard = ref(true);
 </script>
 
 <template>
@@ -139,13 +168,29 @@ const kindColor = (o: SimOption): string =>
 
             <!-- 選擇 -->
             <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
+                <div
+                    class="flex items-center gap-2 cursor-pointer select-none"
+                    :class="showSelectCard ? 'mb-4 border-b border-gray-700 pb-3' : ''"
+                    @click="showSelectCard = !showSelectCard"
+                >
+                    <h2 class="text-xl font-bold text-accent">選擇</h2>
+                    <span class="text-xs text-gray-500 hidden sm:inline">祕法 / 等級 / 符文</span>
+                    <span
+                        class="ml-auto text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showSelectCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >
+                        ▼
+                    </span>
+                </div>
+
+                <div v-show="showSelectCard">
                 <div class="flex flex-wrap gap-5 items-end">
                     <div>
                         <p class="step-label">祕法</p>
                         <el-select v-model="selectedArcanaId" style="width: 200px">
                             <el-option v-for="a in simArcanas" :key="a.id" :label="a.name" :value="a.id">
                                 <span class="flex items-center gap-2">
-                                    <img :src="a.icon" alt="" class="h-5 w-5 object-contain" />
+                                    <img :src="imgUrl(a.icon)" alt="" class="h-5 w-5 object-contain" />
                                     {{ a.name }}
                                 </span>
                             </el-option>
@@ -160,11 +205,13 @@ const kindColor = (o: SimOption): string =>
                                 :key="p.rockLine"
                                 class="tier-btn"
                                 :class="{ 'tier-btn--active': rockLine === p.rockLine }"
+                                :disabled="isSpecialWord"
                                 @click="rockLine = p.rockLine"
                             >
                                 {{ gradeName[p.rockLine] }}（{{ p.rockLine + 1 }} 條）
                             </button>
                         </div>
+                        <p v-if="isSpecialWord" class="text-xs text-accent mt-1">特殊符文固定為大師級（3 條）</p>
                     </div>
                 </div>
 
@@ -189,23 +236,108 @@ const kindColor = (o: SimOption): string =>
                     <span class="text-gray-400">每抽：</span>
                     <span class="text-yellow-400 font-semibold">{{ price.gold.toLocaleString() }} 金</span>
                     <span v-for="it in price.items" :key="it.name" class="flex items-center gap-1 text-gray-300">
-                        <img :src="it.thumbnail" alt="" class="h-5 w-5 object-contain" />
+                        <img :src="imgUrl(it.thumbnail)" alt="" class="h-5 w-5 object-contain" />
                         {{ it.name }} ×{{ it.count }}
                     </span>
                     <span class="text-xs text-gray-500">・詞條池 {{ pool.length }} 種</span>
+                </div>
+                </div>
+            </el-card>
+
+            <!-- 目標模式 -->
+            <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
+                <div
+                    class="flex items-center gap-2 cursor-pointer select-none"
+                    :class="showTargetCard ? 'mb-3 border-b border-gray-700 pb-3' : ''"
+                    @click="showTargetCard = !showTargetCard"
+                >
+                    <h2 class="text-xl font-bold text-accent">抽到目標為止</h2>
+                    <span
+                        class="ml-auto text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showTargetCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >
+                        ▼
+                    </span>
+                </div>
+
+                <div v-show="showTargetCard">
+                <div class="flex flex-wrap items-end gap-3">
+                    <div>
+                        <p class="step-label">目標詞條（最多 {{ targetLimit }} 個）</p>
+                        <el-select
+                            v-model="targetOptionIds"
+                            placeholder="選擇目標詞條"
+                            multiple
+                            :multiple-limit="targetLimit"
+                            collapse-tags
+                            collapse-tags-tooltip
+                            filterable
+                            clearable
+                            style="width: 320px"
+                        >
+                            <el-option v-for="o in pool" :key="o.id" :label="o.name" :value="o.id">
+                                <span class="flex items-center gap-1">
+                                    <span :class="kindColor(o)" class="text-xs">{{ kindLabel(o) }}</span>
+                                    {{ o.name }}
+                                </span>
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <p class="step-label">最低等級</p>
+                        <el-input-number
+                            v-model="targetMinLevel"
+                            :min="1"
+                            :max="targetMaxLevel"
+                            size="default"
+                            controls-position="right"
+                            style="width: 110px"
+                        />
+                    </div>
+                    <div>
+                        <p class="step-label">最多次數</p>
+                        <el-input-number
+                            v-model="maxTries"
+                            :min="1"
+                            :max="1000000"
+                            :step="1000"
+                            size="default"
+                            controls-position="right"
+                            style="width: 130px"
+                        />
+                    </div>
+                    <el-button type="warning" :disabled="targetOptionIds.length === 0" @click="rollUntil">
+                        抽到為止
+                    </el-button>
+                </div>
+                <p v-if="autoResult" class="mt-3 text-sm text-gray-200">{{ autoResult }}</p>
+                <p class="mt-1 text-xs text-gray-500">
+                    自未鎖定的詞條行中重複抽取，命中的目標詞條會自動鎖定，直到湊齊全部目標（或達上限）。
+                </p>
                 </div>
             </el-card>
 
             <!-- 抽取 -->
             <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
-                <div class="mb-4 flex items-center gap-3 flex-wrap">
+                <div
+                    class="mb-4 flex items-center gap-3 flex-wrap cursor-pointer select-none"
+                    @click="showRollCard = !showRollCard"
+                >
                     <h2 class="text-xl font-bold text-accent">抽取</h2>
                     <span class="text-xs text-gray-500 hidden sm:inline">點詞條可鎖定，重抽時保留</span>
                     <span v-if="attempts > 0" class="text-sm text-gray-400 ml-auto">
                         已抽 <span class="text-white font-bold">{{ attempts.toLocaleString() }}</span> 次
                     </span>
+                    <span
+                        class="text-gray-400 text-sm transition-transform duration-200"
+                        :class="attempts > 0 ? '' : 'ml-auto'"
+                        :style="{ transform: showRollCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >
+                        ▼
+                    </span>
                 </div>
 
+                <div v-show="showRollCard">
                 <!-- 詞條行 -->
                 <div class="flex flex-col gap-2">
                     <div
@@ -225,7 +357,7 @@ const kindColor = (o: SimOption): string =>
                             </span>
                             <img
                                 v-if="lines[i - 1]!.option.skillIcon"
-                                :src="lines[i - 1]!.option.skillIcon"
+                                :src="imgUrl(lines[i - 1]!.option.skillIcon)"
                                 alt=""
                                 class="h-5 w-5 object-contain flex-shrink-0"
                             />
@@ -248,65 +380,26 @@ const kindColor = (o: SimOption): string =>
                         重置統計
                     </el-button>
                 </div>
-            </el-card>
-
-            <!-- 目標模式 -->
-            <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
-                <h2 class="text-xl font-bold text-accent mb-3">抽到目標為止</h2>
-                <div class="flex flex-wrap items-end gap-3">
-                    <div>
-                        <p class="step-label">目標詞條</p>
-                        <el-select
-                            v-model="targetOptionId"
-                            placeholder="選擇目標詞條"
-                            filterable
-                            clearable
-                            style="width: 300px"
-                        >
-                            <el-option v-for="o in pool" :key="o.id" :label="o.name" :value="o.id">
-                                <span class="flex items-center gap-1">
-                                    <span :class="kindColor(o)" class="text-xs">{{ kindLabel(o) }}</span>
-                                    {{ o.name }}
-                                </span>
-                            </el-option>
-                        </el-select>
-                    </div>
-                    <div>
-                        <p class="step-label">最低等級</p>
-                        <el-input-number
-                            v-model="targetMinLevel"
-                            :min="1"
-                            :max="targetOption?.maxLevel ?? 20"
-                            size="default"
-                            controls-position="right"
-                            style="width: 110px"
-                        />
-                    </div>
-                    <div>
-                        <p class="step-label">最多次數</p>
-                        <el-input-number
-                            v-model="maxTries"
-                            :min="1"
-                            :max="1000000"
-                            :step="1000"
-                            size="default"
-                            controls-position="right"
-                            style="width: 130px"
-                        />
-                    </div>
-                    <el-button type="warning" :disabled="targetOptionId == null" @click="rollUntil">
-                        抽到為止
-                    </el-button>
                 </div>
-                <p v-if="autoResult" class="mt-3 text-sm text-gray-200">{{ autoResult }}</p>
-                <p class="mt-1 text-xs text-gray-500">
-                    自未鎖定的詞條行中，重複抽取直到目標詞條以最低等級以上出現（或達上限）。
-                </p>
             </el-card>
 
             <!-- 花費統計 -->
             <el-card v-if="attempts > 0" class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
-                <h2 class="text-xl font-bold text-accent mb-3">累計花費</h2>
+                <div
+                    class="flex items-center gap-2 cursor-pointer select-none"
+                    :class="showCostCard ? 'mb-3 border-b border-gray-700 pb-3' : ''"
+                    @click="showCostCard = !showCostCard"
+                >
+                    <h2 class="text-xl font-bold text-accent">累計花費</h2>
+                    <span
+                        class="ml-auto text-gray-400 text-sm transition-transform duration-200"
+                        :style="{ transform: showCostCard ? 'rotate(180deg)' : 'rotate(0deg)' }"
+                    >
+                        ▼
+                    </span>
+                </div>
+
+                <div v-show="showCostCard">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div class="stat-card">
                         <div class="stat-label">抽取次數</div>
@@ -320,6 +413,7 @@ const kindColor = (o: SimOption): string =>
                         <div class="stat-label">{{ name }}</div>
                         <div class="stat-value text-blue-400">{{ count.toLocaleString() }}</div>
                     </div>
+                </div>
                 </div>
             </el-card>
 
@@ -359,6 +453,13 @@ const kindColor = (o: SimOption): string =>
     background: #2d2207;
     color: #fbbf24;
     font-weight: 600;
+}
+.tier-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.tier-btn:disabled:hover {
+    border-color: #374151;
 }
 
 .word-chip {
