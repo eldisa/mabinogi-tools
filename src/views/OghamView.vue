@@ -2,9 +2,14 @@
 import { ref, computed } from "vue";
 import { InfoFilled } from "@element-plus/icons-vue";
 import { oghamArcanas, type OghamComboEffect } from "../data/ogham";
+import { simWords } from "../data/oghamSim";
 
 const baseUrl = import.meta.env.BASE_URL;
 const imgUrl = (p?: string | null) => (p ? baseUrl + p : "");
+
+// 符文詞 → 歐甘符文字符（ᚁ…），資料沿用模擬器的 simWords
+const wordRune = new Map(simWords.map((w) => [w.name, w.icon]));
+const runeIcon = (name: string) => wordRune.get(name) ?? "";
 
 const selectedId = ref(oghamArcanas[0].id);
 const arcana = computed(() => oghamArcanas.find((a) => a.id === selectedId.value)!);
@@ -114,7 +119,10 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
 
                 <!-- 符文格 -->
                 <div v-if="activeCombo?.words.length" class="mt-4 flex flex-wrap gap-2">
-                    <div v-for="(w, i) in activeCombo.words" :key="i" class="word-tile">{{ w }}</div>
+                    <div v-for="(w, i) in activeCombo.words" :key="i" class="word-tile">
+                        <span class="word-tile-rune">{{ runeIcon(w) }}</span>
+                        <span>{{ w }}</span>
+                    </div>
                 </div>
 
                 <!-- 示意圖 -->
@@ -249,17 +257,25 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
 
 .word-tile {
     min-width: 64px;
-    height: 48px;
-    padding: 0 10px;
+    min-height: 56px;
+    padding: 6px 10px;
     border: 1px solid #4b5563;
     border-radius: 6px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
     background: #111827;
     color: #fbbf24;
     font-size: 0.85rem;
     font-weight: 600;
+}
+
+.word-tile-rune {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #d1d5db;
 }
 
 .combo-img {
