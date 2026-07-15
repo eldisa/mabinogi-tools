@@ -37,6 +37,8 @@ const groups = [
             { icon: "MagicStick", title: "細工模擬器",         description: "模擬細工洗詞條所需次數與費用，支援前綴後綴分別設定目標", path: "/reforge" },
             { icon: "MagicStick", title: "聖水模擬器",         description: "模擬聖水洗屬性所需次數，支援目標屬性設定與自動模擬",   path: "/holy-water" },
             { icon: "Star",       title: "回音石模擬器",       description: "模擬回音石覺醒詞條，支援目標設定與連續覺醒，含打磨石機制", path: "/echostone-simulator" },
+            { icon: "MagicStick", title: "符文模擬器",         description: "模擬符文詞條抽取，支援鎖定、抽到目標為止與花費統計",   path: "/ogham-simulator" },
+            { icon: "Present",    title: "轉蛋模擬器",         description: "貼上機率表模擬抽取，支援多抽、抽到目標為止與統計",     path: "/gacha-simulator" },
         ],
     },
     {
@@ -54,6 +56,7 @@ const groups = [
             { icon: "Trophy", title: "2關機制練習",   description: "練習 G27 第二關的機制",               path: "/raid-stage2" },
             { icon: "Trophy", title: "4王安全屋計時", description: "計時 G27 四王安全屋的輪轉節奏",       path: "/boss-timer" },
             { icon: "Trophy", title: "4王65%躲彈幕", description: "練習 G27 四王 65% 階段的彈幕走位",    path: "/raid-boss4-dodge" },
+            { icon: "Trophy", title: "破防練習",     description: "練習維持破防條件同時在場，掌握重施時機", path: "/armor-break" },
         ],
     },
 ];

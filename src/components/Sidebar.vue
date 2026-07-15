@@ -60,6 +60,8 @@ const menuGroups = ref([
             { name: "細工模擬器", path: "/reforge", icon: markRaw(MagicStick) },
             { name: "聖水模擬器", path: "/holy-water", icon: markRaw(MagicStick) },
             { name: "回音石模擬器", path: "/echostone-simulator", icon: markRaw(MagicStick) },
+            { name: "符文模擬器", path: "/ogham-simulator", icon: markRaw(MagicStick), note: "暫譯・台服未實裝" },
+            { name: "轉蛋模擬器", path: "/gacha-simulator", icon: markRaw(Present) },
         ],
     },
     {
@@ -79,6 +81,7 @@ const menuGroups = ref([
             { name: "2關機制練習", path: "/raid-stage2", icon: markRaw(Trophy) },
             { name: "4王安全屋計時", path: "/boss-timer", icon: markRaw(Trophy) },
             { name: "4王65%躲彈幕", path: "/raid-boss4-dodge", icon: markRaw(Trophy) },
+            { name: "破防練習", path: "/armor-break", icon: markRaw(Trophy) },
         ],
     },
     {

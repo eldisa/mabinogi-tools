@@ -2,6 +2,14 @@
 import { ref, computed } from "vue";
 import { InfoFilled } from "@element-plus/icons-vue";
 import { oghamArcanas, type OghamComboEffect } from "../data/ogham";
+import { simWords } from "../data/oghamSim";
+
+const baseUrl = import.meta.env.BASE_URL;
+const imgUrl = (p?: string | null) => (p ? baseUrl + p : "");
+
+// 符文詞 → 歐甘符文字符（ᚁ…），資料沿用模擬器的 simWords
+const wordRune = new Map(simWords.map((w) => [w.name, w.icon]));
+const runeIcon = (name: string) => wordRune.get(name) ?? "";
 
 const selectedId = ref(oghamArcanas[0].id);
 const arcana = computed(() => oghamArcanas.find((a) => a.id === selectedId.value)!);
@@ -84,7 +92,7 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                 <el-select v-model="selectedId" size="large" style="width: 240px" @change="onArcanaChange">
                     <el-option v-for="a in oghamArcanas" :key="a.id" :label="a.name" :value="a.id">
                         <span class="flex items-center gap-2">
-                            <img v-if="a.icon" :src="a.icon" alt="" class="h-5 w-5 object-contain" />
+                            <img v-if="a.icon" :src="imgUrl(a.icon)" alt="" class="h-5 w-5 object-contain" />
                             {{ a.name }}
                         </span>
                     </el-option>
@@ -104,20 +112,23 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                         :class="{ 'combo-btn--active': activeComboId === c.id }"
                         @click="activeComboId = c.id"
                     >
-                        <img v-if="c.skillIcon" :src="c.skillIcon" alt="" class="h-6 w-6 object-contain" />
+                        <img v-if="c.skillIcon" :src="imgUrl(c.skillIcon)" alt="" class="h-6 w-6 object-contain" />
                         {{ c.skillName }}
                     </button>
                 </div>
 
                 <!-- 符文格 -->
                 <div v-if="activeCombo?.words.length" class="mt-4 flex flex-wrap gap-2">
-                    <div v-for="(w, i) in activeCombo.words" :key="i" class="word-tile">{{ w }}</div>
+                    <div v-for="(w, i) in activeCombo.words" :key="i" class="word-tile">
+                        <span class="word-tile-rune">{{ runeIcon(w) }}</span>
+                        <span>{{ w }}</span>
+                    </div>
                 </div>
 
                 <!-- 示意圖 -->
                 <div v-if="activeCombo?.inGameImg" class="mt-5">
                     <p class="text-center font-semibold text-gray-300 mb-1">組合技能使用畫面</p>
-                    <img :src="activeCombo.inGameImg" alt="組合技能" class="combo-img" />
+                    <img :src="imgUrl(activeCombo.inGameImg)" alt="組合技能" class="combo-img" />
                 </div>
 
                 <!-- 點數效果按鈕 -->
@@ -194,7 +205,7 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                             <div class="flex items-start gap-1.5 text-sm text-gray-200">
                                 <img
                                     v-if="row.skillIcon"
-                                    :src="row.skillIcon"
+                                    :src="imgUrl(row.skillIcon)"
                                     alt=""
                                     class="h-4 w-4 object-contain mt-0.5 flex-shrink-0"
                                 />
@@ -246,17 +257,25 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
 
 .word-tile {
     min-width: 64px;
-    height: 48px;
-    padding: 0 10px;
+    min-height: 56px;
+    padding: 6px 10px;
     border: 1px solid #4b5563;
     border-radius: 6px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
     background: #111827;
     color: #fbbf24;
     font-size: 0.85rem;
     font-weight: 600;
+}
+
+.word-tile-rune {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #d1d5db;
 }
 
 .combo-img {

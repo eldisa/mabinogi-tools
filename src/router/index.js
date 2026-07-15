@@ -25,6 +25,9 @@ import EchostoneSimulator from '../views/EchostoneSimulator.vue';
 import MusicCalculator from '../views/MusicCalculator.vue';
 import MagicCircleView from '../views/MagicCircleView.vue';
 import OghamView from '../views/OghamView.vue';
+import OghamSimulatorView from '../views/OghamSimulatorView.vue';
+import GachaSimulatorView from '../views/GachaSimulatorView.vue';
+import ArmorBreakTraining from '../views/ArmorBreakTraining.vue';
 import Changelog from '../views/Changelog.vue';
 
 const routes = [
@@ -156,6 +159,21 @@ const routes = [
             path: '/ogham',
             name: '符文',
             component: OghamView,
+        },
+        {
+            path: '/ogham-simulator',
+            name: '符文模擬器',
+            component: OghamSimulatorView,
+        },
+        {
+            path: '/gacha-simulator',
+            name: '轉蛋模擬器',
+            component: GachaSimulatorView,
+        },
+        {
+            path: '/armor-break',
+            name: '破防練習',
+            component: ArmorBreakTraining,
         },]
     },
 
@@ -184,9 +202,12 @@ const pageTitles = {
     '音樂計算機': '音樂計算機 | 瑪奇小工具',
     '魔法陣查詢': '魔法陣查詢 | 瑪奇小工具',
     '符文': '符文 | 瑪奇小工具',
+    '符文模擬器': '符文模擬器 | 瑪奇小工具',
+    '轉蛋模擬器': '轉蛋模擬器 | 瑪奇小工具',
     '1王機制練習': '1王機制練習 | 瑪奇小工具',
     '2關機制練習': '2關機制練習 | 瑪奇小工具',
     '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',
+    '破防練習': '破防練習 | 瑪奇小工具',
     '回音石模擬器': '回音石模擬器 | 瑪奇小工具',
     '關於': '關於 | 瑪奇小工具',
 };
