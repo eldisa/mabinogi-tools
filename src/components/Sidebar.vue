@@ -81,6 +81,7 @@ const menuGroups = ref([
             { name: "2關機制練習", path: "/raid-stage2", icon: markRaw(Trophy) },
             { name: "4王安全屋計時", path: "/boss-timer", icon: markRaw(Trophy) },
             { name: "4王65%躲彈幕", path: "/raid-boss4-dodge", icon: markRaw(Trophy) },
+            { name: "破防練習", path: "/armor-break", icon: markRaw(Trophy) },
         ],
     },
     {

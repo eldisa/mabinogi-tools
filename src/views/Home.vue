@@ -56,6 +56,7 @@ const groups = [
             { icon: "Trophy", title: "2關機制練習",   description: "練習 G27 第二關的機制",               path: "/raid-stage2" },
             { icon: "Trophy", title: "4王安全屋計時", description: "計時 G27 四王安全屋的輪轉節奏",       path: "/boss-timer" },
             { icon: "Trophy", title: "4王65%躲彈幕", description: "練習 G27 四王 65% 階段的彈幕走位",    path: "/raid-boss4-dodge" },
+            { icon: "Trophy", title: "破防練習",     description: "練習維持破防條件同時在場，掌握重施時機", path: "/armor-break" },
         ],
     },
 ];
