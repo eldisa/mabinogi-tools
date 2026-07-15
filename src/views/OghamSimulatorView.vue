@@ -105,13 +105,17 @@ const fmtValue = (o: SimOption, level: number): string => {
 // ===== 目標模式（抽到為止）=====
 const targetOptionIds = ref<number[]>([]); // 最多 3 個目標詞條
 const targetLimit = computed(() => Math.min(3, lineCount.value)); // 目標數 ≤ 詞條數
-const targetMinLevel = ref(1);
-const maxTries = ref(1000);
+const targetMinLevel = ref(20);
 const autoResult = ref("");
+const MAX_TRIES = 1_000_000; // 安全上限，避免目標無法達成時無限迴圈
 // 各目標最低等級上限取所選詞條 maxLevel 的最小值
 const targetMaxLevel = computed(() => {
     const sel = pool.value.filter((o) => targetOptionIds.value.includes(o.id));
     return sel.length ? Math.min(...sel.map((o) => o.maxLevel)) : 20;
+});
+// 選擇目標時，最低等級預設為滿等（可再往下調）
+watch(targetOptionIds, () => {
+    targetMinLevel.value = targetMaxLevel.value;
 });
 
 const targetsSatisfied = (arr: (Line | null)[]) =>
@@ -124,7 +128,7 @@ const rollUntil = () => {
     const targets = targetOptionIds.value;
     let tries = 0;
     let hit = false;
-    while (tries < maxTries.value) {
+    while (tries < MAX_TRIES) {
         tries++;
         payOnce();
         lines.value = rollOnce();
@@ -239,7 +243,7 @@ const showCostCard = ref(true);
                         <img :src="imgUrl(it.thumbnail)" alt="" class="h-5 w-5 object-contain" />
                         {{ it.name }} ×{{ it.count }}
                     </span>
-                    <span class="text-xs text-gray-500">・詞條池 {{ pool.length }} 種</span>
+                    <span class="text-xs text-gray-500">・符文池 {{ pool.length }} 種</span>
                 </div>
                 </div>
             </el-card>
@@ -292,18 +296,6 @@ const showCostCard = ref(true);
                             size="default"
                             controls-position="right"
                             style="width: 110px"
-                        />
-                    </div>
-                    <div>
-                        <p class="step-label">最多次數</p>
-                        <el-input-number
-                            v-model="maxTries"
-                            :min="1"
-                            :max="1000000"
-                            :step="1000"
-                            size="default"
-                            controls-position="right"
-                            style="width: 130px"
                         />
                     </div>
                     <el-button type="warning" :disabled="targetOptionIds.length === 0" @click="rollUntil">
