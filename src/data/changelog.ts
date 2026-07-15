@@ -12,6 +12,13 @@ export interface TodoItem {
 }
 
 export const announcements: Announcement[] = [
+    { date: "2026-07-16", type: "new", text: "新增 破防練習：練習維持破防條件同時在場，含技能／寵物施加與隨機出題 10 關" },
+    { date: "2026-07-16", type: "update", text: "符文模擬器：目標詞條最低等級改為預設滿等、移除最多次數設定" },
+    { date: "2026-07-14", type: "update", text: "符文查詢：符文格加上對應的歐甘符文字符" },
+    { date: "2026-07-14", type: "update", text: "符文模擬器：特殊符文固定大師級、目標詞條可多選（抽到目標為止）、各區塊可收合" },
+    { date: "2026-07-11", type: "update", text: "轉蛋模擬器：統計表新增等級／道具名稱篩選" },
+    { date: "2026-07-10", type: "new", text: "新增 轉蛋模擬器：貼上機率表模擬抽取，支援多抽、抽到目標為止與統計" },
+    { date: "2026-07-10", type: "new", text: "新增 符文模擬器：模擬符文詞條抽取，支援鎖定、抽到目標為止與花費統計" },
     { date: "2026-07-06", type: "update", text: "修正 武器改造 手把的推薦選擇大傷會異常的問題" },
     { date: "2026-07-06", type: "update", text: "更新 武器改造 改造式名稱的翻譯" },
     { date: "2026-07-05", type: "new", text: "新增 符文（Ogham）查詢：10 祕法組合技與詞條，含韓文原文對照" },
