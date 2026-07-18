@@ -10,7 +10,6 @@ import {
     InfoFilled,
     Medal,
     Present,
-    DataAnalysis,
     Handbag,
     TrendCharts,
     Coin,
@@ -70,7 +69,6 @@ const menuGroups = ref([
         items: [
             { name: "頂裝差距", path: "/gear-gap", icon: markRaw(TrendCharts) },
             { name: "音樂計算機", path: "/music-calculator", icon: markRaw(Headset) },
-            { name: "傷害計算分析", path: "/dmg-analyzer", icon: markRaw(DataAnalysis) },
         ],
     },
     {
