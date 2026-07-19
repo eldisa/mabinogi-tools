@@ -314,6 +314,12 @@ const showCostCard = ref(true);
                             >
                                 <el-option v-for="o in targetOptions" :key="o.id" :label="o.name" :value="o.id">
                                     <span class="flex items-center gap-1">
+                                        <img
+                                            v-if="o.skillIcon"
+                                            :src="imgUrl(o.skillIcon)"
+                                            alt=""
+                                            class="h-4 w-4 object-contain flex-shrink-0"
+                                        />
                                         <span :class="kindColor(o)" class="text-xs">{{ kindLabel(o) }}</span>
                                         {{ o.name }}
                                     </span>
