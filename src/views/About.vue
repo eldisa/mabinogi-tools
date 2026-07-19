@@ -74,6 +74,10 @@ onMounted(() => {
                         <strong>Discord：</strong>
                         eldisa
                     </li>
+                    <li>
+                        <strong>歐付寶會員編號：</strong>
+                        <span style="user-select: all">2515326</span>
+                    </li>
                 </ul>
             </section>
 
@@ -185,6 +189,10 @@ onMounted(() => {
                     <li>
                         <strong>Discord：</strong>
                         eldisa
+                    </li>
+                    <li>
+                        <strong>歐付寶會員編號：</strong>
+                        <span style="user-select: all">2515326</span>
                     </li>
                 </ul>
             </section>

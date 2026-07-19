@@ -143,6 +143,7 @@ const navigateTo = (path: string) => {
                 <div class="info-actions">
                     <el-button type="primary" plain @click="navigateTo('/about')">了解更多</el-button>
                     <el-button plain @click="navigateTo('/changelog')">更新紀錄</el-button>
+                    <el-button plain @click="navigateTo('/sponsor')">💙 贊助支持</el-button>
                 </div>
             </div>
         </section>

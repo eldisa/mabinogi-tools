@@ -15,6 +15,7 @@ import {
     Coin,
     Trophy,
     Headset,
+    Coffee,
     ArrowDown,
 } from "@element-plus/icons-vue";
 
@@ -86,6 +87,7 @@ const menuGroups = ref([
         label: "其他",
         collapsed: false,
         items: [
+            { name: "贊助", path: "/sponsor", icon: markRaw(Coffee) },
             { name: "About", path: "/about", icon: markRaw(InfoFilled) },
         ],
     },
