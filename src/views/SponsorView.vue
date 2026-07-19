@@ -9,6 +9,8 @@ const ecpayMemberId = "2515326";
 // 歐付寶贊助連結與 QR
 const donateUrl = "https://qr.opay.tw/wL8KF";
 const qrSrc = `${baseUrl}opay-qrcode.png`;
+// Ko-fi（海外信用卡／PayPal）
+const kofiUrl = "https://ko-fi.com/eldisa";
 </script>
 
 <template>
@@ -25,7 +27,7 @@ const qrSrc = `${baseUrl}opay-qrcode.png`;
             </section>
 
             <section class="section">
-                <h2>歐付寶贊助</h2>
+                <h2>歐付寶贊助 <span class="review-badge">審核中</span></h2>
                 <div class="donate-box">
                     <a :href="donateUrl" target="_blank" rel="noopener noreferrer" class="qr-link">
                         <img :src="qrSrc" alt="歐付寶贊助 QR Code" class="qr" />
@@ -38,9 +40,17 @@ const qrSrc = `${baseUrl}opay-qrcode.png`;
                             歐付寶會員編號：
                             <strong class="member-id">{{ ecpayMemberId }}</strong>
                         </p>
-                        <p class="note">掃描 QR 或點按鈕即可前往歐付寶贊助頁面。</p>
+                        <p class="note">
+                            ＊ 歐付寶目前仍在審核中，可能暫時無法完成付款；審核通過前建議使用下方 Ko-fi。
+                        </p>
                     </div>
                 </div>
+            </section>
+
+            <section class="section">
+                <h2>Ko-fi 贊助（海外／信用卡）</h2>
+                <p>使用海外信用卡或 PayPal，可透過 Ko-fi 支持：</p>
+                <a :href="kofiUrl" target="_blank" rel="noopener noreferrer" class="kofi-btn">☕ 在 Ko-fi 上支持</a>
             </section>
 
             <section class="section">
@@ -110,6 +120,19 @@ p:last-child {
     margin-bottom: 0;
 }
 
+.review-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fbbf24;
+    background: #422006;
+    border: 1px solid #b45309;
+    border-radius: 9999px;
+    padding: 1px 8px;
+    vertical-align: middle;
+    margin-left: 0.25rem;
+}
+
 .donate-box {
     display: flex;
     gap: 1.5rem;
@@ -142,6 +165,21 @@ p:last-child {
     transition: filter 0.2s, transform 0.2s;
 }
 .donate-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+}
+
+.kofi-btn {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    border-radius: 9999px;
+    background: #ff5e5b;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter 0.2s, transform 0.2s;
+}
+.kofi-btn:hover {
     filter: brightness(1.08);
     transform: translateY(-2px);
 }
