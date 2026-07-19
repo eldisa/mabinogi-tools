@@ -28,6 +28,7 @@ import OghamView from '../views/OghamView.vue';
 import OghamSimulatorView from '../views/OghamSimulatorView.vue';
 import GachaSimulatorView from '../views/GachaSimulatorView.vue';
 import ArmorBreakTraining from '../views/ArmorBreakTraining.vue';
+import SponsorView from '../views/SponsorView.vue';
 import Changelog from '../views/Changelog.vue';
 
 const routes = [
@@ -174,6 +175,11 @@ const routes = [
             path: '/armor-break',
             name: '破防練習',
             component: ArmorBreakTraining,
+        },
+        {
+            path: '/sponsor',
+            name: '贊助',
+            component: SponsorView,
         },]
     },
 
@@ -209,6 +215,7 @@ const pageTitles = {
     '4王安全屋計時': '4王安全屋計時 | 瑪奇小工具',
     '破防練習': '破防練習 | 瑪奇小工具',
     '回音石模擬器': '回音石模擬器 | 瑪奇小工具',
+    '贊助': '贊助 | 瑪奇小工具',
     '關於': '關於 | 瑪奇小工具',
 };
 

@@ -10,12 +10,12 @@ import {
     InfoFilled,
     Medal,
     Present,
-    DataAnalysis,
     Handbag,
     TrendCharts,
     Coin,
     Trophy,
     Headset,
+    Coffee,
     ArrowDown,
 } from "@element-plus/icons-vue";
 
@@ -70,7 +70,6 @@ const menuGroups = ref([
         items: [
             { name: "頂裝差距", path: "/gear-gap", icon: markRaw(TrendCharts) },
             { name: "音樂計算機", path: "/music-calculator", icon: markRaw(Headset) },
-            { name: "傷害計算分析", path: "/dmg-analyzer", icon: markRaw(DataAnalysis) },
         ],
     },
     {
@@ -88,6 +87,7 @@ const menuGroups = ref([
         label: "其他",
         collapsed: false,
         items: [
+            { name: "贊助", path: "/sponsor", icon: markRaw(Coffee) },
             { name: "About", path: "/about", icon: markRaw(InfoFilled) },
         ],
     },

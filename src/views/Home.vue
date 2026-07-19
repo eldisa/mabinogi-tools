@@ -46,7 +46,6 @@ const groups = [
         items: [
             { icon: "TrendCharts",  title: "頂裝差距",     description: "比較與頂裝之間的差距",                   path: "/gear-gap" },
             { icon: "Headset",      title: "音樂計算機",   description: "計算音樂技能的傷害加成與樂器配置",       path: "/music-calculator" },
-            { icon: "DataAnalysis", title: "傷害計算分析", description: "解析戰鬥紀錄，分析各技能傷害來源分布",   path: "/dmg-analyzer" },
         ],
     },
     {
@@ -144,6 +143,7 @@ const navigateTo = (path: string) => {
                 <div class="info-actions">
                     <el-button type="primary" plain @click="navigateTo('/about')">了解更多</el-button>
                     <el-button plain @click="navigateTo('/changelog')">更新紀錄</el-button>
+                    <el-button plain @click="navigateTo('/sponsor')">💙 贊助支持</el-button>
                 </div>
             </div>
         </section>
