@@ -36,14 +36,14 @@ const CONDITIONS: Condition[] = [
     { id: 1165, name: "減少魔法防禦/魔法保護", seconds: 300, side: "magic", valueKind: "prot" },
     { id: 1166, name: "所受傷害增加", seconds: 300, valueKind: "atk" },
     { id: 426, name: "死神烙印", seconds: 200 }, // 僅死神烙印施加
-    { id: 392, name: "纏繞的閃電", seconds: 300 },
-    { id: 464, name: "冰雪狀態", permanent: true, permLabel: "在場", advanced: true, note: "在場即永久" },
-    { id: 594, name: "跑跑卡丁車水球", permanent: true },
-    { id: 912, name: "喵喵的喵皇降臨", seconds: 300 },
-    { id: 1004, name: "銳利目光", permanent: true, permLabel: "在場", advanced: true, note: "寵物在場即永久" },
+    { id: 392, name: "纏繞的閃電", seconds: 300, valueKind: "prot" },
+    { id: 464, name: "冰雪狀態", permanent: true, permLabel: "在場", advanced: true, note: "在場即永久", valueKind: "prot" },
+    { id: 594, name: "跑跑卡丁車水球", permanent: true, valueKind: "prot" },
+    { id: 912, name: "喵喵的喵皇降臨", seconds: 300, valueKind: "prot" },
+    { id: 1004, name: "銳利目光", permanent: true, permLabel: "在場", advanced: true, note: "寵物在場即永久（暴擊傷害）", valueKind: "atk" },
     { id: 1093, name: "保護最大減少", permanent: true, side: "phys", valueKind: "prot" },
     { id: 1094, name: "魔法保護最大減少", permanent: true, side: "magic", valueKind: "prot" },
-    { id: 1138, name: "幸運草標記", seconds: 300 },
+    { id: 1138, name: "幸運草標記", seconds: 300, valueKind: "atk" },
     { id: 10001, name: "物理防禦和保護減少瑪奇魔法陣", advanced: true, seconds: 110, side: "phys", valueKind: "prot" },
     { id: 10002, name: "魔法防禦和保護減少瑪奇魔法陣", advanced: true, seconds: 110, side: "magic", valueKind: "prot" },
     // ===== 追加（皆以自身 condition 圖示施加；持續時間見 durationOf）=====
@@ -74,10 +74,11 @@ const SOURCES: Source[] = [
     { id: 490411, kind: "pet", conditions: [912] },
     { id: 490431, kind: "pet", conditions: [1138] },
     { id: 491006, kind: "pet", conditions: [1004] },
+    { id: 490279, kind: "pet", conditions: [578] }, // 天使貓 → 魔法光圈
+    { id: 490280, kind: "pet", conditions: [578] }, // 天使貓 → 魔法光圈
     // 追加：以自身 condition 圖示施加
     { id: 521, kind: "self", conditions: [521] },
     { id: 1026, kind: "self", conditions: [1026] },
-    { id: 578, kind: "self", conditions: [578] },
     { id: 803, kind: "self", conditions: [803] },
     { id: 1063, kind: "self", conditions: [1063] },
     { id: 339, kind: "self", conditions: [339] },
@@ -169,7 +170,8 @@ const skillValue = (skillId: number, condId: number): DebuffValue => {
             return { pct: 3 + st.totem * 0.4, fixed: 0 };
         case 1026: // 倒吊人（增傷）
             return { pct: 2 + 0.1 * st.card, fixed: 0 };
-        case 578: // 魔法光圈（保護＋魔保）
+        case 490279: // 天使貓 → 578 魔法光圈（保護＋魔保）
+        case 490280:
             return { pct: 0, fixed: 1 };
         case 803: // 崩潰的波動（保護＋魔保）
             return { pct: 0, fixed: 40 };
@@ -181,6 +183,20 @@ const skillValue = (skillId: number, condId: number): DebuffValue => {
             return { pct: 0, fixed: 3.68 };
         case 1147: // 召喚噩夢（保護＋魔保；最終傷害另計，不入 value）
             return { pct: 0, fixed: 1.845 };
+        // ===== 寵物／其他（保護＋魔保 或 增傷）=====
+        case 50226: // 水炸彈投擲 → 594 跑跑卡丁車水球
+            return { pct: 0, fixed: 3 };
+        case 490105: // 寵物 → 392 纏繞的閃電
+        case 490253:
+            return { pct: 0, fixed: 10 };
+        case 490229: // 寵物 → 464 冰雪狀態
+            return { pct: 0, fixed: 4 };
+        case 490411: // 寵物 → 912 喵喵的喵皇降臨
+            return { pct: 0, fixed: 15 };
+        case 490431: // 寵物 → 1138 幸運草標記（增傷）
+            return { pct: 15, fixed: 0 };
+        case 491006: // 寵物 → 1004 銳利目光（暴擊傷害）
+            return { pct: 3, fixed: 0 };
         default:
             return { pct: 0, fixed: 0 };
     }
@@ -471,10 +487,23 @@ interface StatGroup {
     conds: number[];
 }
 const STAT_GROUPS: StatGroup[] = [
-    { key: "phys", label: "物理保護減少", iconId: 1164, kind: "prot", conds: [1164, 1093, 10001, 578, 803, 1063, 1145, 1147] },
-    { key: "magic", label: "魔法保護減少", iconId: 1165, kind: "prot", conds: [1165, 1094, 10002, 578, 803, 1063, 1145, 1147] },
-    { key: "atk", label: "所受傷害增加", iconId: 1166, kind: "atk", conds: [1166, 521, 1026] },
+    {
+        key: "phys",
+        label: "物理保護減少",
+        iconId: 1164,
+        kind: "prot",
+        conds: [1164, 1093, 10001, 578, 803, 1063, 1145, 1147, 392, 464, 594, 912],
+    },
+    {
+        key: "magic",
+        label: "魔法保護減少",
+        iconId: 1165,
+        kind: "prot",
+        conds: [1165, 1094, 10002, 578, 803, 1063, 1145, 1147, 392, 464, 594, 912],
+    },
+    { key: "atk", label: "所受傷害增加", iconId: 1166, kind: "atk", conds: [1166, 521, 1026, 1138] },
     { key: "melee", label: "近戰技能傷害", iconId: 339, kind: "atk", conds: [339] },
+    { key: "crit", label: "暴擊傷害", iconId: 1004, kind: "atk", conds: [1004] },
 ];
 const fmtVal = (kind: "prot" | "atk", pct: number, fixed: number) => {
     if (kind === "atk") return `+${num(pct)}%`;

@@ -1,29 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useLocalStorage } from "../composables/useLocalStorage";
-
-const DEFAULT_INPUT = `迷你英雄鼠鼠寵物箱子
-
-等級	道具名稱	個別機率
-S 等級	軟呼小倉鼠鼠哨子	1.3011%
-S 等級	霸氣小倉鼠鼠哨子	1.3011%
-S 等級	呆萌小倉鼠鼠哨子	1.3011%
-S 等級	粗飽小倉鼠鼠哨子	1.3011%
-S 等級	守護的犬靈哨子	3.7175%
-S 等級	審判的犬靈哨子	3.7175%
-S 等級	犬靈哨子	3.7175%
-S 等級	戲法小步狐-北極狐哨子	5.5762%
-S 等級	戲法小步狐-沙漠狐哨子	5.5762%
-S 等級	戲法小步狐-森林狐哨子	5.5762%
-A 等級	紅炎的精靈龍哨子	5.5762%
-A 等級	翠草的精靈龍哨子	5.5762%
-A 等級	蒼冰的精靈龍哨子	5.5762%
-A 等級	鳳凰哨子	7.4349%
-B 等級	黃金餐車哨子	9.2937%
-B 等級	星雲觔斗雲哨子	8.3643%
-B 等級	喵喵拳擊傑克哨子	8.3643%
-B 等級	機靈的傑克哨子	8.3643%
-B 等級	愛笑的傑克哨子	8.3643%`;
+import { gachaPools } from "../data/gachaPools";
 
 interface GachaItem {
     grade: string;
@@ -31,7 +9,16 @@ interface GachaItem {
     prob: number;
 }
 
-const inputText = useLocalStorage<string>("gacha-sim-input", DEFAULT_INPUT);
+const inputText = useLocalStorage<string>("gacha-sim-input", gachaPools[0].text);
+
+// 內建池子下拉：選了就把該池子機率表載入文字框（仍可手動編輯／貼上覆蓋）
+const selectedPool = ref("");
+const loadPool = (name: string) => {
+    const pool = gachaPools.find((p) => p.name === name);
+    if (!pool) return;
+    inputText.value = pool.text;
+    applyInput();
+};
 
 const parsed = computed<{ title: string; items: GachaItem[] }>(() => {
     const lines = inputText.value.split("\n");
@@ -172,7 +159,16 @@ const gradeStats = computed(() => {
             <el-card class="mb-4 bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
                 <div class="flex items-center gap-3 mb-2 flex-wrap">
                     <h2 class="text-xl font-bold text-accent">機率表</h2>
-                    <span class="text-xs text-gray-500">貼上「等級 &nbsp;道具名稱 &nbsp;個別機率」（Tab 或多空格分隔）</span>
+                    <el-select
+                        v-model="selectedPool"
+                        placeholder="選擇內建池子"
+                        size="small"
+                        style="width: 220px"
+                        @change="loadPool"
+                    >
+                        <el-option v-for="p in gachaPools" :key="p.name" :label="p.name" :value="p.name" />
+                    </el-select>
+                    <span class="text-xs text-gray-500 hidden sm:inline">或自行貼上機率表（Tab／多空格分隔）</span>
                     <span
                         class="ml-auto text-sm"
                         :class="Math.abs(totalProb - 100) < 0.5 ? 'text-green-400' : 'text-orange-400'"
