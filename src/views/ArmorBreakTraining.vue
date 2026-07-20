@@ -74,10 +74,11 @@ const SOURCES: Source[] = [
     { id: 490411, kind: "pet", conditions: [912] },
     { id: 490431, kind: "pet", conditions: [1138] },
     { id: 491006, kind: "pet", conditions: [1004] },
+    { id: 490279, kind: "pet", conditions: [578] }, // 天使貓 → 魔法光圈
+    { id: 490280, kind: "pet", conditions: [578] }, // 天使貓 → 魔法光圈
     // 追加：以自身 condition 圖示施加
     { id: 521, kind: "self", conditions: [521] },
     { id: 1026, kind: "self", conditions: [1026] },
-    { id: 578, kind: "self", conditions: [578] },
     { id: 803, kind: "self", conditions: [803] },
     { id: 1063, kind: "self", conditions: [1063] },
     { id: 339, kind: "self", conditions: [339] },
@@ -169,7 +170,8 @@ const skillValue = (skillId: number, condId: number): DebuffValue => {
             return { pct: 3 + st.totem * 0.4, fixed: 0 };
         case 1026: // 倒吊人（增傷）
             return { pct: 2 + 0.1 * st.card, fixed: 0 };
-        case 578: // 魔法光圈（保護＋魔保）
+        case 490279: // 天使貓 → 578 魔法光圈（保護＋魔保）
+        case 490280:
             return { pct: 0, fixed: 1 };
         case 803: // 崩潰的波動（保護＋魔保）
             return { pct: 0, fixed: 40 };
