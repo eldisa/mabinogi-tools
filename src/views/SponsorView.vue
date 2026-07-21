@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SponsorThanks from "../components/SponsorThanks.vue";
+
 const baseUrl = import.meta.env.BASE_URL;
 
 // ⚠ 待放入：把 banner 圖存到 public/sponsor-banner.png
@@ -49,6 +51,8 @@ const kofiUrl = "https://ko-fi.com/eldisa";
                 <p>使用海外信用卡或 PayPal，可透過 Ko-fi 支持：</p>
                 <a :href="kofiUrl" target="_blank" rel="noopener noreferrer" class="kofi-btn">☕ 在 Ko-fi 上支持</a>
             </section>
+
+            <SponsorThanks />
 
             <section class="section">
                 <h2>其他聯絡方式</h2>
