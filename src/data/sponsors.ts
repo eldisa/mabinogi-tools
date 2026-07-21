@@ -33,8 +33,8 @@ const sponsors: Sponsor[] = [
         order: 10,
     },
     {
-        id: "霄颯",
-        name: "霄颯",
+        id: "ropcat",
+        name: "洛普貓",
         description: "洛普貓聊天區-群主，喜歡幫忙算數學的人。\n如果你真的非常想贊助的話，可以用下面的管道贊助",
         avatar: "/supporter/ropcat-chara.png",
         type: "featured",
