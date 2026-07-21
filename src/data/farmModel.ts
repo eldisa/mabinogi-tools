@@ -1921,6 +1921,28 @@ export const farmModel: FarmModel[] = [
         ],
     },
     {
+        id: "711",
+        name: {
+            tw: "浪浪漫農場芬奇模型",
+            en: "Fynnky Miniature",
+        },
+        category: "normal",
+        abilities: [
+            {
+                id: "extra_damage",
+                value: 1,
+            },
+            {
+                id: "magic_attack",
+                value: 5,
+            },
+            {
+                id: "critical_damage",
+                value: 3,
+            },
+        ],
+    },
+    {
         id: "712",
         name: {
             tw: "浪漫農場卡泰爾特別模型",
