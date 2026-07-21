@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SponsorThanks from "../components/SponsorThanks.vue";
+
 const baseUrl = import.meta.env.BASE_URL;
 
 // ⚠ 待放入：把 banner 圖存到 public/sponsor-banner.png
@@ -27,7 +29,7 @@ const kofiUrl = "https://ko-fi.com/eldisa";
             </section>
 
             <section class="section">
-                <h2>歐付寶贊助 <span class="review-badge">審核中</span></h2>
+                <h2>歐付寶贊助</h2>
                 <div class="donate-box">
                     <a :href="donateUrl" target="_blank" rel="noopener noreferrer" class="qr-link">
                         <img :src="qrSrc" alt="歐付寶贊助 QR Code" class="qr" />
@@ -40,9 +42,6 @@ const kofiUrl = "https://ko-fi.com/eldisa";
                             歐付寶會員編號：
                             <strong class="member-id">{{ ecpayMemberId }}</strong>
                         </p>
-                        <p class="note">
-                            ＊ 歐付寶目前仍在審核中，可能暫時無法完成付款；審核通過前建議使用下方 Ko-fi。
-                        </p>
                     </div>
                 </div>
             </section>
@@ -53,16 +52,27 @@ const kofiUrl = "https://ko-fi.com/eldisa";
                 <a :href="kofiUrl" target="_blank" rel="noopener noreferrer" class="kofi-btn">☕ 在 Ko-fi 上支持</a>
             </section>
 
+            <SponsorThanks />
+
             <section class="section">
                 <h2>其他聯絡方式</h2>
                 <ul class="contact-list">
-                    <li><strong>遊戲伺服器：</strong>娜歐</li>
-                    <li><strong>角色 ID：</strong>楓羽戀情</li>
+                    <li>
+                        <strong>遊戲伺服器：</strong>
+                        娜歐
+                    </li>
+                    <li>
+                        <strong>角色 ID：</strong>
+                        楓羽戀情
+                    </li>
                     <li>
                         <strong>GitHub：</strong>
                         <a href="https://github.com/eldisa" target="_blank" rel="noopener noreferrer">eldisa</a>
                     </li>
-                    <li><strong>Discord：</strong>eldisa</li>
+                    <li>
+                        <strong>Discord：</strong>
+                        eldisa
+                    </li>
                 </ul>
             </section>
 
@@ -162,7 +172,9 @@ p:last-child {
     color: #fff;
     font-weight: 600;
     text-decoration: none;
-    transition: filter 0.2s, transform 0.2s;
+    transition:
+        filter 0.2s,
+        transform 0.2s;
 }
 .donate-btn:hover {
     filter: brightness(1.08);
@@ -177,7 +189,9 @@ p:last-child {
     color: #fff;
     font-weight: 600;
     text-decoration: none;
-    transition: filter 0.2s, transform 0.2s;
+    transition:
+        filter 0.2s,
+        transform 0.2s;
 }
 .kofi-btn:hover {
     filter: brightness(1.08);

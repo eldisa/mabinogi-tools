@@ -3,6 +3,9 @@ export const infoForG27Weapon = [
         id: 1000059,
         name: {
             en: "Soul Liberat Sword",
+            us: "Soul Liberator Sword",
+            cn: "释魂者灵狱单手剑",
+            jp: "ソウルリバレートソード",
             kr: "소울 리버레이트 소드",
             tw: "靈魂解放者單手劍",
         },
@@ -58,6 +61,9 @@ export const infoForG27Weapon = [
         id: 1010070,
         name: {
             en: "Soul Liberat Hammer",
+            us: "Soul Liberator Hammer",
+            cn: "释魂者冥震单手锤",
+            jp: "ソウルリバレートハンマー",
             kr: "소울 리버레이트 해머",
             tw: "靈魂解放者單手錘",
         },
@@ -113,6 +119,9 @@ export const infoForG27Weapon = [
         id: 1020004,
         name: {
             en: "Soul Liberat Axe",
+            us: "Soul Liberator Axe",
+            cn: "释魂者黄泉单手斧",
+            jp: "ソウルリバレートアックス",
             kr: "소울 리버레이트 액스",
             tw: "靈魂解放者單手斧",
         },
@@ -168,6 +177,9 @@ export const infoForG27Weapon = [
         id: 1040054,
         name: {
             en: "Soul Liberat Bow",
+            us: "Soul Liberator Bow",
+            cn: "释魂者幽冥长弓",
+            jp: "ソウルリバレートボウ",
             kr: "소울 리버레이트 보우",
             tw: "靈魂解放者弓",
         },
@@ -228,6 +240,9 @@ export const infoForG27Weapon = [
         id: 1040055,
         name: {
             en: "Soul Liberat Crossbow",
+            us: "Soul Liberator Crossbow",
+            cn: "释魂者王权十字弩",
+            jp: "ソウルリバレートクロスボウ",
             kr: "소울 리버레이트 크로스보우",
             tw: "靈魂解放者弩",
         },
@@ -288,6 +303,9 @@ export const infoForG27Weapon = [
         id: 1050017,
         name: {
             en: "Soul Liberat Wand",
+            us: "Soul Liberator Wand",
+            cn: "释魂者终末魔杖",
+            jp: "ソウルリバレートワンド",
             kr: "소울 리버레이트 원드",
             tw: "靈魂解放者魔杖",
         },
@@ -343,6 +361,9 @@ export const infoForG27Weapon = [
         id: 1060011,
         name: {
             en: "Soul Liberat Cylinder",
+            us: "Soul Liberator Cylinder",
+            cn: "释魂者永夜铳炮",
+            jp: "ソウルリバレートシリンダー",
             kr: "소울 리버레이트 실린더",
             tw: "靈魂解放者鋼瓶",
         },
@@ -403,6 +424,9 @@ export const infoForG27Weapon = [
         id: 1070014,
         name: {
             en: "Soul Liberat Handle",
+            us: "Soul Liberator Control Bars",
+            cn: "释魂者魂域操纵杆",
+            jp: "ソウルリバレートハンドル",
             kr: "소울 리버레이트 핸들",
             tw: "靈魂解放者手把",
         },
@@ -468,6 +492,9 @@ export const infoForG27Weapon = [
         id: 1080048,
         name: {
             en: "Soul Liberat Lyra",
+            us: "Soul Liberator Lyre",
+            cn: "释魂者幽咽里拉琴",
+            jp: "ソウルリバレートリラ",
             kr: "소울 리버레이트 리라",
             tw: "靈魂解放者里拉",
         },
@@ -503,6 +530,9 @@ export const infoForG27Weapon = [
         id: 1090010,
         name: {
             en: "Soul Liberat Scythe",
+            us: "Soul Liberator Scythe",
+            cn: "释魂者幽魄镰刀",
+            jp: "ソウルリバレートサイズ",
             kr: "소울 리버레이트 사이드",
             tw: "靈魂解放者鐮刀",
         },
@@ -553,6 +583,9 @@ export const infoForG27Weapon = [
         id: 1200043,
         name: {
             en: "Soul Liberat Blade",
+            us: "Soul Liberator Greatsword",
+            cn: "释魂者裁决双手剑",
+            jp: "ソウルリバレートブレイド",
             kr: "소울 리버레이트 블레이드",
             tw: "靈魂解放者雙手劍",
         },
@@ -603,6 +636,9 @@ export const infoForG27Weapon = [
         id: 1210067,
         name: {
             en: "Soul Liberat Warrior Hammer",
+            us: "Soul Liberator Greathammer",
+            cn: "释魂者千狱双手锤",
+            jp: "ソウルリバレートウォーリアハンマー",
             kr: "소울 리버레이트 워리어 해머",
             tw: "靈魂解放者雙手鎚",
         },
@@ -668,6 +704,9 @@ export const infoForG27Weapon = [
         id: 1220018,
         name: {
             en: "Soul Liberat Warrior Axe",
+            us: "Soul Liberator Greataxe",
+            cn: "释魂者断罪双手斧",
+            jp: "ソウルリバレートウォーリアアックス",
             kr: "소울 리버레이트 워리어 액스",
             tw: "靈魂解放者雙手斧",
         },
@@ -733,6 +772,9 @@ export const infoForG27Weapon = [
         id: 1230039,
         name: {
             en: "Soul Liberat Staff",
+            us: "Soul Liberator Staff",
+            cn: "释魂者终焉法杖",
+            jp: "ソウルリバレートスタッフ",
             kr: "소울 리버레이트 스태프",
             tw: "靈魂解放者集魔杖",
         },
@@ -798,6 +840,9 @@ export const infoForG27Weapon = [
         id: 1250026,
         name: {
             en: "Soul Liberat Lance",
+            us: "Soul Liberator Lance",
+            cn: "释魂者骑士枪",
+            jp: "ソウルリバレートランス",
             kr: "소울 리버레이트 랜스",
             tw: "靈魂解放者騎槍",
         },
@@ -843,6 +888,9 @@ export const infoForG27Weapon = [
         id: 1260020,
         name: {
             en: "Soul Liberat Knuckle",
+            us: "Soul Liberator Knuckles",
+            cn: "释魂者悼灵拳套",
+            jp: "ソウルリバレートナックル",
             kr: "소울 리버레이트 너클",
             tw: "靈魂解放者拳套",
         },
@@ -908,6 +956,9 @@ export const infoForG27Weapon = [
         id: 1270029,
         name: {
             en: "Soul Liberat Dual-Gun",
+            us: "Soul Liberator Dual Guns",
+            cn: "释魂者虚空双枪",
+            jp: "ソウルリバレートデュアルガン",
             kr: "소울 리버레이트 듀얼건",
             tw: "靈魂解放者雙槍",
         },
@@ -978,6 +1029,9 @@ export const infoForG27Weapon = [
         id: 1280018,
         name: {
             en: "Soul Liberat Throwing Star",
+            us: "Soul Liberator Shuriken",
+            cn: "释魂者幽影手里剑",
+            jp: "ソウルリバレートスローイングスター",
             kr: "소울 리버레이트 스로잉 스타",
             tw: "靈魂解放者手裏劍",
         },
@@ -1038,6 +1092,9 @@ export const infoForG27Weapon = [
         id: 1290021,
         name: {
             en: "Soul Liberat Chain Blade",
+            us: "Soul Liberator Chain Blade",
+            cn: "释魂者链刃",
+            jp: "ソウルリバレートチェーンブレイド",
             kr: "소울 리버레이트 체인 블레이드",
             tw: "靈魂解放者鎖鏈鐮刃",
         },
@@ -1098,6 +1155,9 @@ export const infoForG27Weapon = [
         id: 1400011,
         name: {
             en: "Soul Liberat Shield",
+            us: "Soul Liberator Shield",
+            cn: "释魂者永寂中型盾牌",
+            jp: "ソウルリバレートシールド",
             kr: "소울 리버레이트 실드",
             tw: "靈魂解放者盾牌",
         },
@@ -1143,6 +1203,9 @@ export const infoForG27Weapon = [
         id: 1400012,
         name: {
             en: "Soul Liberat Shield",
+            us: "Soul Liberator Greatshield",
+            cn: "释魂者永锢大型盾牌",
+            jp: "ソウルリバレートウォーリアシールド",
             kr: "소울 리버레이트 워리어 실드",
             tw: "靈魂解放者戰士盾牌",
         },
@@ -1188,6 +1251,9 @@ export const infoForG27Weapon = [
         id: 1420006,
         name: {
             en: "Soul Liberat Eternal Arrow",
+            us: "Soul Liberator Eternal Arrows",
+            cn: "释魂者永恒弓箭",
+            jp: "ソウルリバレートエターナルアロー",
             kr: "소울 리버레이트 이터널 애로우",
             tw: "靈魂解放者永恆之箭",
         },
@@ -1213,6 +1279,9 @@ export const infoForG27Weapon = [
         id: 1420007,
         name: {
             en: "Soul Liberat Eternal Bolt",
+            us: "Soul Liberator Eternal Bolts",
+            cn: "释魂者永恒弩箭",
+            jp: "ソウルリバレートエターナルボルト",
             kr: "소울 리버레이트 이터널 볼트",
             tw: "靈魂解放者永恆弩箭",
         },
@@ -1238,6 +1307,9 @@ export const infoForG27Weapon = [
         id: 1430005,
         name: {
             en: "Soul Liberat Grimoire",
+            us: "Soul Liberator Grimoire",
+            cn: "释魂者深渊魔法书",
+            jp: "ソウルリバレート魔道書",
             kr: "소울 리버레이트 마도서",
             tw: "靈魂解放者魔導書",
         },
@@ -1303,6 +1375,9 @@ export const infoForG27Weapon = [
         id: 1440006,
         name: {
             en: "Soul Liberat GuardCylinder",
+            us: "Soul Liberator Guard Cylinder",
+            cn: "释魂者高能盾铳",
+            jp: "ソウルリバレートガードシリンダー",
             kr: "소울 리버레이트 가드실린더",
             tw: "靈魂解放者盾牌鋼瓶",
         },
@@ -1343,6 +1418,9 @@ export const infoForG27Weapon = [
         id: 1460003,
         name: {
             en: "Soul Liberat Orb",
+            us: "Soul Liberator Orb",
+            cn: "释魂者永黯宝珠",
+            jp: "ソウルリバレートオーブ",
             kr: "소울 리버레이트 오브",
             tw: "靈魂解放者水晶球",
         },
@@ -1383,6 +1461,9 @@ export const infoForG27Weapon = [
         id: 1640003,
         name: {
             en: "Soul Liberat Pierrot Miniature",
+            us: "Soul Liberator Pierrot Marionette",
+            cn: "释魂者皮埃萝模型",
+            jp: "ソウルリバレートピエロミニチュア",
             kr: "소울 리버레이트 피에로 미니어처",
             tw: "靈魂解放者小丑人偶",
         },
@@ -1413,6 +1494,9 @@ export const infoForG27Weapon = [
         id: 1640004,
         name: {
             en: "Soul Liberat Colosus Miniature",
+            us: "Soul Liberator Colossus Marionette",
+            cn: "释魂者克罗修斯模型",
+            jp: "ソウルリバレートコロッサスミニチュア",
             kr: "소울 리버레이트 콜로서스 미니어처",
             tw: "靈魂解放者巨像人偶",
         },
@@ -1443,6 +1527,9 @@ export const infoForG27Weapon = [
         id: 1650001,
         name: {
             en: "Soul Liberat Healing Wand",
+            us: "Soul Liberator Healing Wand",
+            cn: "释魂者再生治疗魔杖",
+            jp: "ソウルリバレートヒーリングワンド",
             kr: "소울 리버레이트 힐링 원드",
             tw: "靈魂解放者治癒魔杖",
         },
