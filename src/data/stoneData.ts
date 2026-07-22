@@ -16,7 +16,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Fire Leap Attack",
         parameter: 50,
         maxLimit: 500,
-        prices: [250, 250, 600, 1500, 2000, 2000, 3500, 6500, 10500, 18300],
+        prices: [250, 300, 600, 1500, 2000, 2000, 3500, 6500, 10500, 18300],
     },
     {
         id: 59025,
@@ -226,9 +226,30 @@ export const stoneAbilities: AbilityOption[] = [
         maxLimit: 300,
         prices: [190, 200, 490, 1700, 1500, 4400, 6000, 6580, 15555, 39000],
     },
+
+    {
+        id: 59161,
+        skillLocalName: "重拍強音",
+        skillEngName: "Interlude Slash",
+        job: "旋律操控師",
+
+        parameter: 70,
+        maxLimit: 700,
+        prices: [5, 450, 1000, 1600, 1700, 3000, 14000, 16000, 21500, 55000],
+    },
+    {
+        id: 59163,
+        skillLocalName: "壯麗終曲",
+        skillEngName: "Grand Finale",
+        job: "旋律操控師",
+
+        parameter: 150,
+        maxLimit: 1500,
+        prices: [300, 750, 2000, 3000, 9600, 10400, 14500, 31000, 80000, 100000],
+    },
     {
         id: 59165,
-        skillLocalName: "间奏斩击",
+        skillLocalName: "間奏斬擊",
         skillEngName: "Interlude Slash",
         job: "旋律操控師",
 
@@ -237,18 +258,8 @@ export const stoneAbilities: AbilityOption[] = [
         prices: [40, 100, 400, 500, 4000, 8000, 8600, 9000, 14400, 47900],
     },
     {
-        id: 59163,
-        skillLocalName: "终幕绝响",
-        skillEngName: "Grand Finale",
-        job: "旋律操控師",
-
-        parameter: 150,
-        maxLimit: 1500,
-        prices: [300, 750, 1500, 300, 9600, 10400, 14500, 33000, 83000, 154500],
-    },
-    {
         id: 59180,
-        skillLocalName: "燃魂：三连击",
+        skillLocalName: "極限：連鎖重擊",
         skillEngName: "Exced : Chain Blow",
         job: "狂怒鬥士",
 
@@ -258,7 +269,7 @@ export const stoneAbilities: AbilityOption[] = [
     },
     {
         id: 59181,
-        skillLocalName: "燃魂：三连踢",
+        skillLocalName: "極限：迴旋落擊",
         skillEngName: "Exced : Impact Dive",
         job: "狂怒鬥士",
 
@@ -268,7 +279,7 @@ export const stoneAbilities: AbilityOption[] = [
     },
     {
         id: 59182,
-        skillLocalName: "燃魂：聚力猛击",
+        skillLocalName: "極限：破敵猛擊",
         skillEngName: "Exced : Force Slam",
         job: "狂怒鬥士",
 
