@@ -16,7 +16,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Fire Leap Attack",
         parameter: 50,
         maxLimit: 500,
-        prices: [400, 900, 2000, 2400, 3500, 3500, 6950, 11000, 17500, 37000],
+        prices: [250, 250, 600, 1500, 2000, 2000, 3500, 6500, 10500, 18300],
     },
     {
         id: 59025,
@@ -25,7 +25,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Ice Windmill",
         parameter: 60,
         maxLimit: 600,
-        prices: [1500, 3900, 3500, 4400, 7800, 13399, 19500, 35000, 62000, 92000],
+        prices: [500, 1000, 2000, 2000, 2900, 4500, 6200, 13400, 17000, 27950],
     },
     {
         id: 59026,
@@ -34,7 +34,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Lightning Smash",
         parameter: 80,
         maxLimit: 800,
-        prices: [1790, 7000, 15000, 21000, 27000, 34500, 50000, 80000, 120000, 219000],
+        prices: [1500, 2400, 3500, 6209, 13000, 17000, 28500, 37400, 73000, 113000],
     },
     {
         id: 59001,
@@ -43,7 +43,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Salvation Echo",
         parameter: 50,
         maxLimit: 500,
-        prices: [1000, 1999, 2000, 4000, 4200, 8000, 9900, 20000, 32000, 43000],
+        prices: [1234, 6000, 2000, 3000, 5000, 6500, 11000, 20000, 25000, 49000],
     },
     {
         id: 59004,
@@ -52,7 +52,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Purification Pulse",
         parameter: 0.5,
         maxLimit: 5,
-        prices: [400, 2000, 5500, 7000, 11000, 11000, 10000, 28999, 29000, 42000],
+        prices: [50000, 1400, 1800, 4500, 3999, 5900, 13000, 21000, 29000, 53000],
     },
     {
         id: 59005,
@@ -61,7 +61,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Collapse Wave",
         parameter: 0.5,
         maxLimit: 5,
-        prices: [990, 5000, 9000, 19000, 23000, 40000, 45000, 80000, 99500, 155000],
+        prices: [150000, 3500, 5000, 21000, 23500, 44000, 56900, 90000, 140000, 200000],
     },
     {
         id: 59040,
@@ -70,7 +70,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Explosion Lunge",
         parameter: 0.2,
         maxLimit: 2,
-        prices: [1500, 3000, 4000, 13000, 14800, 31000, 45000, 59500, 101800, 195000],
+        prices: [1100, 1500, 4000, 8500, 15000, 23333, 40000, 70000, 120000, 200000],
     },
     {
         id: 59041,
@@ -79,7 +79,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Lightning Chain",
         parameter: 0.4,
         maxLimit: 4,
-        prices: [1999, 7500, 10000, 37000, 54000, 61800, 88000, 93500, 105000, 119000],
+        prices: [900, 1500, 2800, 7299, 10000, 13800, 35000, 50000, 95000, 184000],
     },
     {
         id: 59042,
@@ -88,7 +88,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Snow Storm",
         parameter: 0.5,
         maxLimit: 5,
-        prices: [499, 990, 1200, 2000, 3000, 4500, 10000, 11000, 27000, 45000],
+        prices: [2000, 500, 1550, 3000, 4800, 8300, 13000, 22000, 40000, 70000],
     },
     {
         id: 59060,
@@ -97,7 +97,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Flame Burst",
         parameter: 30,
         maxLimit: 300,
-        prices: [2500, 2400, 7500, 14500, 22000, 50000, 69000, 90000, 123000, 190000],
+        prices: [1100, 1800, 3800, 5200, 12000, 19000, 24900, 40500, 80000, 103500],
     },
     {
         id: 59061,
@@ -106,7 +106,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Hydro Pierce",
         parameter: 60,
         maxLimit: 600,
-        prices: [2000, 8000, 4500, 12500, 25000, 27000, 49000, 64000, 115000, 140000],
+        prices: [890, 1400, 2750, 4500, 8500, 14400, 21000, 30900, 38000, 150000],
     },
     {
         id: 59064,
@@ -115,7 +115,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Tri Assault",
         parameter: 100,
         maxLimit: 1000,
-        prices: [1450, 1800, 4900, 9000, 24000, 24000, 29000, 39000, 50500, 90000],
+        prices: [60000, 1888, 3000, 5000, 6500, 14300, 27000, 37000, 55000, 69000],
     },
     {
         id: 59085,
@@ -124,7 +124,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Sacrifice Retribution",
         parameter: 1,
         maxLimit: 10,
-        prices: [400, 2000, 4500, 8000, 9300, 15000, 15000, 22000, 28000, 39000],
+        prices: [300, 500, 1500, 3400, 12000, 6800, 10000, 9950, 24500, 40990],
     },
     {
         id: 59084,
@@ -133,7 +133,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Referee Stroke",
         parameter: 60,
         maxLimit: 600,
-        prices: [1000, 6500, 1900, 4050, 4500, 9500, 16000, 18000, 38000, 59500],
+        prices: [50000, 1000, 2500, 4000, 5000, 7500, 11000, 20000, 25000, 59600],
     },
     {
         id: 59086,
@@ -142,7 +142,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Noble Sacrifice",
         parameter: 0.2,
         maxLimit: 2,
-        prices: [999, 9300, 9500, 13000, 15000, 27000, 18000, 39000, 68000, 71800],
+        prices: [1200, 450, 1600, 1500, 1900, 2555, 14000, 5555, 8390, 17000],
     },
     {
         id: 59102,
@@ -151,7 +151,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Impact Crush",
         parameter: 50,
         maxLimit: 500,
-        prices: [500, 1000, 2000, 4444, 7000, 3300, 5000, 10000, 13500, 40000],
+        prices: [11000, 280, 400, 500, 1200, 1500, 1900, 5700, 9400, 15555],
     },
     {
         id: 59105,
@@ -160,7 +160,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Over Drive",
         parameter: 70,
         maxLimit: 700,
-        prices: [1500, 3000, 5000, 10000, 15000, 19000, 31000, 48000, 74000, 74000 * 1.5],
+        prices: [280, 1000, 1100, 1300, 8500, 4000, 7000, 13980, 19999, 70500],
     },
     {
         id: 59106,
@@ -169,7 +169,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Annihilation",
         parameter: 0.3,
         maxLimit: 3,
-        prices: [500, 990, 1800, 3000, 4400, 5500, 9000, 22222, 33000, 56000],
+        prices: [200, 400, 400, 800, 1500, 500, 3980, 7000, 30000, 45900],
     },
     {
         id: 59121,
@@ -178,7 +178,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Heavy Artillery",
         parameter: 30,
         maxLimit: 300,
-        prices: [490, 1000, 2000, 4500, 6900, 7000, 9000, 20000, 33000, 71000],
+        prices: [500, 700, 800, 1900, 4000, 5000, 8400, 9000, 28000, 50000],
     },
     {
         id: 59122,
@@ -187,7 +187,7 @@ export const stoneAbilities: AbilityOption[] = [
         skillEngName: "Devastation Cannon",
         parameter: 40,
         maxLimit: 400,
-        prices: [900, 1300, 3000, 4350, 7000, 17600, 21000, 30000, 48000, 71900],
+        prices: [44000, 800, 1500, 2500, 4000, 5500, 8500, 24000, 31000, 49000],
     },
     {
         id: 59123,
@@ -196,7 +196,7 @@ export const stoneAbilities: AbilityOption[] = [
         job: "幻變槍手",
         parameter: 40,
         maxLimit: 400,
-        prices: [1500, 3000, 4000, 5300, 6999, 14500, 28500, 70000, 81000, 110000],
+        prices: [1000, 900, 1000, 2000, 4000, 8000, 9000, 19500, 40000, 78000],
     },
     {
         id: 59144,
@@ -205,7 +205,7 @@ export const stoneAbilities: AbilityOption[] = [
         job: "禁忌煉金士",
         parameter: 30,
         maxLimit: 300,
-        prices: [1000, 800, 1000, 2900, 3800, 7000, 7800, 14800, 21900, 48000],
+        prices: [200, 200, 500, 1000, 1900, 3500, 4500, 8000, 23500, 55000],
     },
     {
         id: 59145,
@@ -214,7 +214,7 @@ export const stoneAbilities: AbilityOption[] = [
         job: "禁忌煉金士",
         parameter: 20,
         maxLimit: 200,
-        prices: [300, 3900, 900, 2800, 3700, 4900, 8800, 20000, 35000, 96666],
+        prices: [1555, 600, 590, 100, 2500, 5800, 10000, 13200, 26000, 65000],
     },
     {
         id: 59143,
@@ -224,6 +224,56 @@ export const stoneAbilities: AbilityOption[] = [
 
         parameter: 30,
         maxLimit: 300,
-        prices: [1300, 3000, 3900, 10000, 13000, 16800, 28000, 39000, 119000, 119000 * 1.5],
+        prices: [190, 200, 490, 1700, 1500, 4400, 6000, 6580, 15555, 39000],
+    },
+    {
+        id: 59165,
+        skillLocalName: "间奏斩击",
+        skillEngName: "Interlude Slash",
+        job: "旋律操控師",
+
+        parameter: 2,
+        maxLimit: 20,
+        prices: [40, 100, 400, 500, 4000, 8000, 8600, 9000, 14400, 47900],
+    },
+    {
+        id: 59163,
+        skillLocalName: "终幕绝响",
+        skillEngName: "Grand Finale",
+        job: "旋律操控師",
+
+        parameter: 150,
+        maxLimit: 1500,
+        prices: [300, 750, 1500, 300, 9600, 10400, 14500, 33000, 83000, 154500],
+    },
+    {
+        id: 59180,
+        skillLocalName: "燃魂：三连击",
+        skillEngName: "Exced : Chain Blow",
+        job: "狂怒鬥士",
+
+        parameter: 30,
+        maxLimit: 300,
+        prices: [150, 200, 350, 800, 1200, 1500, 2800, 4500, 7800, 19000],
+    },
+    {
+        id: 59181,
+        skillLocalName: "燃魂：三连踢",
+        skillEngName: "Exced : Impact Dive",
+        job: "狂怒鬥士",
+
+        parameter: 20,
+        maxLimit: 200,
+        prices: [500, 700, 800, 1200, 1350, 1700, 2500, 4900, 6000, 18000],
+    },
+    {
+        id: 59182,
+        skillLocalName: "燃魂：聚力猛击",
+        skillEngName: "Exced : Force Slam",
+        job: "狂怒鬥士",
+
+        parameter: 100,
+        maxLimit: 1000,
+        prices: [150, 190, 450, 870, 2800, 7900, 14000, 27000, 55000, 113000],
     },
 ];
