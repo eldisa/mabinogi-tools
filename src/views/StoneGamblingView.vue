@@ -141,8 +141,13 @@
                                     :key="skill.id"
                                     class="flex items-center justify-between bg-gray-700/50 rounded px-2 py-1"
                                 >
-                                    <span class="text-xs text-gray-300 truncate flex-1 mr-2">
-                                        {{ skill.skillLocalName }}
+                                    <span class="flex items-center gap-1.5 text-xs text-gray-300 truncate flex-1 mr-2">
+                                        <img
+                                            :src="getSkillIcon(skill.id)"
+                                            :alt="getSkillDisplayName(skill)"
+                                            class="w-5 h-5 flex-shrink-0 object-contain"
+                                        />
+                                        <span class="truncate">{{ getSkillDisplayName(skill) }}</span>
                                     </span>
                                     <el-select
                                         v-model="tempRetentionMap[skill.id]"
@@ -171,7 +176,14 @@
                             <p class="text-sm font-medium text-accent mb-2">{{ job }}</p>
                             <div class="space-y-2">
                                 <div v-for="skill in skills" :key="skill.id" class="bg-gray-700/30 rounded p-2">
-                                    <p class="text-xs text-gray-400 mb-1">{{ skill.skillLocalName }}</p>
+                                    <p class="flex items-center gap-1.5 text-xs text-gray-400 mb-1">
+                                        <img
+                                            :src="getSkillIcon(skill.id)"
+                                            :alt="getSkillDisplayName(skill)"
+                                            class="w-5 h-5 flex-shrink-0 object-contain"
+                                        />
+                                        <span class="truncate">{{ getSkillDisplayName(skill) }}</span>
+                                    </p>
                                     <div class="grid grid-cols-5 gap-1">
                                         <div v-for="lv in 10" :key="lv" class="flex flex-col items-center gap-0.5">
                                             <span class="text-xs text-gray-500">Lv{{ lv }}</span>
@@ -388,13 +400,18 @@
                 <div v-if="activeTab !== 'report'" class="space-y-2 max-h-60 overflow-y-auto">
                     <div
                         v-for="group in groupedFilteredHistory"
-                        :key="`${group.ability.skillLocalName}__${group.level}`"
+                        :key="`${group.ability.id}__${group.level}`"
                         class="flex items-center justify-between p-2 bg-gray-700/50 rounded-lg text-sm"
                     >
                         <div class="flex-1 min-w-0">
                             <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
-                            <p class="font-medium result-text truncate text-sm">
-                                {{ group.ability.skillLocalName }} Lv.{{ group.level }}
+                            <p class="flex items-center gap-1.5 font-medium result-text truncate text-sm">
+                                <img
+                                    :src="getSkillIcon(group.ability.id)"
+                                    :alt="getSkillDisplayName(group.ability)"
+                                    class="w-5 h-5 flex-shrink-0 object-contain"
+                                />
+                                <span class="truncate">{{ getSkillDisplayName(group.ability) }} Lv.{{ group.level }}</span>
                                 <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">
                                     ×{{ group.count }}
                                 </span>
@@ -613,13 +630,18 @@
                         <div v-if="activeTab !== 'report'" class="space-y-2 max-h-96 overflow-y-auto">
                             <div
                                 v-for="group in groupedFilteredHistory"
-                                :key="`${group.ability.skillLocalName}__${group.level}`"
+                                :key="`${group.ability.id}__${group.level}`"
                                 class="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
                             >
                                 <div class="flex-1 min-w-0">
                                     <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
-                                    <p class="font-medium result-text truncate">
-                                        {{ group.ability.skillLocalName }} Lv.{{ group.level }}
+                                    <p class="flex items-center gap-1.5 font-medium result-text truncate">
+                                        <img
+                                            :src="getSkillIcon(group.ability.id)"
+                                            :alt="getSkillDisplayName(group.ability)"
+                                            class="w-5 h-5 flex-shrink-0 object-contain"
+                                        />
+                                        <span class="truncate">{{ getSkillDisplayName(group.ability) }} Lv.{{ group.level }}</span>
                                         <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">
                                             ×{{ group.count }}
                                         </span>
@@ -721,7 +743,7 @@
             <div class="space-y-2 max-h-[50vh] overflow-y-auto">
                 <div
                     v-for="group in groupedResults"
-                    :key="`${group.ability.skillLocalName}__${group.level}`"
+                    :key="`${group.ability.id}__${group.level}`"
                     class="flex items-center justify-between p-2 rounded-lg"
                     :class="
                         group.status === 'collected' ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-700/50'
@@ -729,8 +751,13 @@
                 >
                     <div class="flex-1 min-w-0">
                         <p class="text-xs text-gray-400">{{ group.ability.job }}</p>
-                        <p class="text-sm font-medium result-text truncate">
-                            {{ group.ability.skillLocalName }} Lv.{{ group.level }}
+                        <p class="flex items-center gap-1.5 text-sm font-medium result-text truncate">
+                            <img
+                                :src="getSkillIcon(group.ability.id)"
+                                :alt="getSkillDisplayName(group.ability)"
+                                class="w-5 h-5 flex-shrink-0 object-contain"
+                            />
+                            <span class="truncate">{{ getSkillDisplayName(group.ability) }} Lv.{{ group.level }}</span>
                             <span v-if="group.count > 1" class="ml-1 text-xs text-yellow-400 font-bold">
                                 ×{{ group.count }}
                             </span>
@@ -789,9 +816,17 @@ import {
     type ProbabilityMode,
 } from "../stores/gamble";
 import { stoneAbilities, type AbilityOption } from "../data/stoneData";
+import { skillNames } from "../data/skillNames";
+import { getSkillIcon } from "../utils/image";
 
 const store = useGambleStore();
 const baseUrl = import.meta.env.BASE_URL;
+const skillNameMap = new Map(skillNames.map((skill) => [skill.id, skill.name]));
+
+function getSkillDisplayName(skill: Pick<AbilityOption, "id" | "skillLocalName" | "skillEngName">): string {
+    const localizedName = skillNameMap.get(skill.id);
+    return localizedName?.tw || localizedName?.us || skill.skillLocalName || skill.skillEngName;
+}
 
 // 充值相關
 const rechargeDialogVisible = ref(false);
@@ -895,7 +930,7 @@ interface GroupedHistory {
 function groupHistory(records: AppraisalRecord[]): GroupedHistory[] {
     const map = new Map<string, GroupedHistory>();
     for (const r of records) {
-        const key = `${r.ability.skillLocalName}__${r.level}`;
+        const key = `${r.ability.id}__${r.level}`;
         if (map.has(key)) {
             const g = map.get(key)!;
             g.count++;
@@ -999,7 +1034,7 @@ interface GroupedResult {
 const groupedResults = computed<GroupedResult[]>(() => {
     const map = new Map<string, GroupedResult>();
     for (const r of pendingResults.value) {
-        const key = `${r.ability.skillLocalName}__${r.level}`;
+        const key = `${r.ability.id}__${r.level}`;
         if (map.has(key)) {
             const g = map.get(key)!;
             g.count++;
