@@ -29,7 +29,7 @@ const sponsors: Sponsor[] = [
         avatar: "/supporter/ropcat-group.png",
         type: "featured",
         role: "Community",
-        website: "https://discord.gg/RJptwqhQXr",
+        discord: "https://discord.gg/RJptwqhQXr",
         order: 10,
     },
     {
@@ -39,7 +39,7 @@ const sponsors: Sponsor[] = [
         avatar: "/supporter/ropcat-chara.png",
         type: "featured",
         role: "Developer",
-        website: "https://payment.opay.tw/Broadcaster/Donate/C279BD065B44B0A73260AD1FF71EEAEA",
+        donateUrl: "https://payment.opay.tw/Broadcaster/Donate/C279BD065B44B0A73260AD1FF71EEAEA",
         order: 20,
     },
     // {
