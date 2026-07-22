@@ -69,8 +69,8 @@ const getSponsorLinks = (sponsor: Sponsor): SponsorLink[] =>
 </script>
 
 <template>
-    <section v-if="hasSponsors" class="section sponsor-thanks" aria-labelledby="sponsor-thanks-title">
-        <h2 id="sponsor-thanks-title">🌟 特別感謝</h2>
+    <section v-if="hasSponsors" class="section thanksthanks" aria-labelledby="thanksthanks-title">
+        <h2 id="thanksthanks-title">🌟 特別感謝</h2>
 
         <div v-if="featuredSponsors.length" class="thanks-group">
             <h3>Featured Supporters</h3>
@@ -87,19 +87,19 @@ const getSponsorLinks = (sponsor: Sponsor): SponsorLink[] =>
                     </div>
 
                     <div class="featured-content">
-                        <p v-if="sponsor.role" class="sponsor-role">{{ sponsor.role }}</p>
+                        <p v-if="sponsor.role" class="thanksrole">{{ sponsor.role }}</p>
                         <h4>{{ getSponsorName(sponsor) }}</h4>
-                        <p v-if="sponsor.description" class="sponsor-description">
+                        <p v-if="sponsor.description" class="thanksdescription">
                             {{ sponsor.description }}
                         </p>
                     </div>
 
-                    <div v-if="getSponsorLinks(sponsor).length" class="sponsor-actions">
+                    <div v-if="getSponsorLinks(sponsor).length" class="thanksactions">
                         <a
                             v-for="link in getSponsorLinks(sponsor)"
                             :key="link.label"
                             :href="link.href"
-                            :class="['sponsor-link', link.className]"
+                            :class="['thankslink', link.className]"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -134,7 +134,7 @@ const getSponsorLinks = (sponsor: Sponsor): SponsorLink[] =>
 </template>
 
 <style scoped>
-.sponsor-thanks {
+.thanksthanks {
     padding-top: 2rem;
     border-top: 1px solid var(--color-border-primary, #374151);
 }
@@ -175,8 +175,7 @@ h4 {
     border: 1px solid var(--color-border-primary, #374151);
     border-radius: 16px;
     background:
-        linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0.01)),
-        var(--color-bg-secondary, #1f2937);
+        linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0.01)), var(--color-bg-secondary, #1f2937);
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
     transition:
         box-shadow 200ms ease,
@@ -230,7 +229,7 @@ h4 {
     flex: 1;
 }
 
-.sponsor-role {
+.thanksrole {
     margin: 0 0 0.35rem;
     color: var(--color-accent-primary, #fbbf24);
     font-size: 0.78rem;
@@ -238,7 +237,7 @@ h4 {
     line-height: 1.3;
 }
 
-.sponsor-description {
+.thanksdescription {
     margin: 0.55rem 0 0;
     color: var(--color-text-secondary, #d1d5db);
     font-size: 0.95rem;
@@ -246,14 +245,14 @@ h4 {
     white-space: pre-line;
 }
 
-.sponsor-actions {
+.thanksactions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 1rem;
 }
 
-.sponsor-link {
+.thankslink {
     display: inline-flex;
     align-items: center;
     min-height: 36px;
@@ -273,20 +272,20 @@ h4 {
         opacity 200ms ease;
 }
 
-.sponsor-link:hover {
+.thankslink:hover {
     border-color: rgb(251 191 36 / 0.55);
     background: rgb(251 191 36 / 0.12);
     color: var(--color-accent-hover, #fcd34d);
     opacity: 0.9;
 }
 
-.sponsor-link.primary {
+.thankslink.primary {
     border-color: transparent;
     background: linear-gradient(135deg, #3b82f6, #60a5fa);
     color: #ffffff;
 }
 
-.sponsor-link.primary:hover {
+.thankslink.primary:hover {
     background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: #ffffff;
 }
