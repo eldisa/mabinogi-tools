@@ -32,6 +32,9 @@ export interface CraftableItem {
 export type CurrencyInGame = "gold" | "ducat"; // 遊戲內貨幣類型
 export type Currency = "game" | "NTD" | "HKD";
 
+// 生產製作方式（生活技能）。未填時 UI 僅顯示「生產製作」。
+export type ProductionMethod = "冶煉" | "打鐵" | "紡織" | "製衣" | "手工藝" | "木工" | "魔法製造" | "稀原工學";
+
 export type MaterialSource =
     | { type: "drop" | "reward" | "shop" | "dissolution" | "desc"; description: string; token?: number } // 測試用
     // | { type: "drop"; monster: string } // 怪物掉落
@@ -40,7 +43,7 @@ export type MaterialSource =
 
     // | { type: "dissolution"; materials: string } // 分解
     // | { type: "desc"; description: string } // 其他描述
-    | { type: "craft"; materials: { id: number; amount: number }[] } // 製作所需材料
+    | { type: "craft"; materials: { id: number; amount: number }[]; method?: ProductionMethod } // 製作所需材料；method=生產方式
     | { type: "" };
 
 export interface MaterialCount {

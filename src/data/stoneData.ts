@@ -231,7 +231,7 @@ export const stoneAbilities: AbilityOption[] = [
         id: 59161,
         skillLocalName: "重拍強音",
         skillEngName: "Interlude Slash",
-        job: "旋律操控師",
+        job: "旋律人偶師",
 
         parameter: 70,
         maxLimit: 700,
@@ -241,7 +241,7 @@ export const stoneAbilities: AbilityOption[] = [
         id: 59163,
         skillLocalName: "壯麗終曲",
         skillEngName: "Grand Finale",
-        job: "旋律操控師",
+        job: "旋律人偶師",
 
         parameter: 150,
         maxLimit: 1500,
@@ -251,7 +251,7 @@ export const stoneAbilities: AbilityOption[] = [
         id: 59165,
         skillLocalName: "間奏斬擊",
         skillEngName: "Interlude Slash",
-        job: "旋律操控師",
+        job: "旋律人偶師",
 
         parameter: 2,
         maxLimit: 20,

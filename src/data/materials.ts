@@ -852,6 +852,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100305,
@@ -884,6 +885,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100306,
@@ -916,6 +918,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "手工藝",
             materials: [
                 {
                     id: 5100307,
@@ -948,6 +951,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100308,
@@ -980,6 +984,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100308,
@@ -1012,6 +1017,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "手工藝",
             materials: [
                 {
                     id: 5100308,
@@ -1048,6 +1054,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100319,
@@ -1080,6 +1087,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100319,
@@ -1112,6 +1120,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "手工藝",
             materials: [
                 {
                     id: 5100319,
@@ -1144,6 +1153,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100274,
@@ -1180,6 +1190,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100309,
@@ -1212,6 +1223,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100310,
@@ -1244,6 +1256,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "手工藝",
             materials: [
                 {
                     id: 5100311,
@@ -1276,6 +1289,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100312,
@@ -1308,6 +1322,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100274,
@@ -1340,6 +1355,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100320,
@@ -1372,6 +1388,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100321,
@@ -1404,6 +1421,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100322,
@@ -1436,6 +1454,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "手工藝",
             materials: [
                 {
                     id: 5100323,
@@ -1472,6 +1491,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 5100324,
@@ -1504,6 +1524,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100325,
@@ -1536,6 +1557,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100326,
@@ -1568,6 +1590,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100327,
@@ -1600,6 +1623,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 5100328,
@@ -1632,6 +1656,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "手工藝",
             materials: [
                 {
                     id: 5100329,
@@ -1665,6 +1690,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 67111,
@@ -1694,6 +1720,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "魔法製造",
             materials: [
                 {
                     id: 67209,
@@ -1723,6 +1750,7 @@ export const materials: CraftableItem[] = [
         },
         source: {
             type: "craft",
+            method: "稀原工學",
             materials: [
                 {
                     id: 64639,

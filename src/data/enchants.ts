@@ -19479,7 +19479,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["穆利亞斯的遺物"],
         effect: [
-            { id: "AttMax", min: 15, max: 15 },
+            { id: "attack_max", min: 15, max: 15 },
             { id: "MagicAttack", min: 15, max: 15 },
             { id: "all_alchemy_damage", min: 15, max: 15 },
             { id: "music_buff_bonus", min: 2, max: 2 },

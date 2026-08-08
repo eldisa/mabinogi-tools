@@ -168,8 +168,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "windmill_attack_range",
-                min: 0.1,
-                max: 0.1,
+                min: 10,
+                max: 10,
             },
         ],
     },
