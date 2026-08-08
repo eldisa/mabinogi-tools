@@ -259,7 +259,11 @@
                                                     <span>{{ row.name }}</span>
                                                     <el-tooltip placement="top">
                                                         <template #content>
-                                                            <div v-if="row.source.type === 'craft'">生產製作</div>
+                                                            <div v-if="row.source.type === 'craft'">
+                                                                生產製作{{
+                                                                    row.source.method ? `（${row.source.method}）` : ""
+                                                                }}
+                                                            </div>
                                                             <div v-else-if="row.source.type === ''">-</div>
                                                             <div v-else>{{ row.source.description || "" }}</div>
                                                         </template>
