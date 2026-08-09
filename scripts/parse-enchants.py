@@ -31,8 +31,8 @@ ABILITY_ID_NORMALIZE_MAP: dict[str, str] = {
     # 傷害
     "attmax":              "attack_max",
     "attmin":              "attack_min",
-    "wattmax":             "attack_max",
-    "wattmin":             "attack_min",
+    "wattmax":             "wound_max",
+    "wattmin":             "wound_min",
     "rate":                "balance",
     # 魔法
     "magicattack":         "magic_attack",
