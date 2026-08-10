@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 bg-texture-dark">
         <div class="enchant-notice">
-            🚧 施工中，資料待更新｜⚠️ 作者沒動力更新，沒用的捲那麼多，反正大家也就用那些而已
+            ✅ 2026/08/10 已校正賦予資料（接頭接尾、缺漏賦予、翻譯錯字）｜⚠️ 部分用字翻譯仍待確認，如發現錯誤歡迎回報
         </div>
         <div class="max-w-6xl mx-auto">
             <header class="text-center pt-8 pb-4">
