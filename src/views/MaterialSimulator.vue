@@ -785,13 +785,27 @@ const filteredMaterialPrices = computed(() => {
         return b.id - a.id;
     });
 });
-const displayData = ref<CraftTreeNode[]>([]);
+// 依「選擇的武器」+「當前庫存」展開製作樹。
+// 用 computed 而非在 watch 內賦值：庫存(stock)變動時才會重算——
+// 否則更新中間加工品（如高純度力量結晶）的持有量，其扣減效果不會反映，造價不變。
+const craftResult = computed(() => {
+    const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
+    const accMap = new Map<number, number>();
+    const trees = craftTarget.map(
+        (target) => buildCraftTree(target, materials, 1, "", accMap, materialPriceMap.value).node,
+    );
+    return {
+        trees,
+        materialMap: Array.from(accMap.entries()).map(([id, total]) => ({ id, total })),
+    };
+});
+const displayData = computed(() => craftResult.value.trees);
+const materialMap = computed(() => craftResult.value.materialMap);
+
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
 const useCostEstimate = ref(false);
 const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataIndex.value]);
-
-const materialMap = ref<{ id: number; total: number }[]>([]);
 
 const materialSummaryTable = computed(() => {
     let tokenTotal = 0;
@@ -1087,16 +1101,6 @@ watch(
     () => selectedWeapons.value,
     (newData) => {
         localStorage.setItem(WEAPONS_STORAGE_KEY, JSON.stringify(newData));
-
-        if (newData) {
-            const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
-            const accMap = new Map<number, number>();
-            displayData.value = craftTarget.map((target) => buildCraftTree(target, materials, 1, "", accMap, materialPriceMap.value).node);
-            materialMap.value = Array.from(accMap.entries()).map(([id, total]) => ({ id, total }));
-        } else {
-            displayData.value = [];
-            materialMap.value = [];
-        }
 
         if (!hasAddEvent.value && selectedWeapons.value.length >= 10) {
             scrollRow.value?.addEventListener("wheel", (e: WheelEvent) => {
