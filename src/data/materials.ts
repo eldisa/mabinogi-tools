@@ -2158,8 +2158,8 @@ export const materials: CraftableItem[] = [
             cn: "纯白的羽毛",
             jp: "純白の羽根",
             kr: "순백의 깃털",
-            tw: "純白的羽毛",
-            tw2: "純白羽毛",
+            tw: "純白羽毛",
+            tw2: "純白的羽毛",
         },
         source: {
             type: "desc",
