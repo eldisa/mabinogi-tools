@@ -391,12 +391,12 @@ const filteredHistory = computed(() => history.value.filter((r) => r.typeId === 
                             class="w-8 h-8 pixelated"
                             @error="($event.target as HTMLImageElement).style.display = 'none'"
                         />
-                        <span class="text-sm text-gray-300">布里萊赫的殘渣</span>
+                        <span class="text-sm text-gray-300">布里萊赫的礫石</span>
                         <span class="text-yellow-400 font-semibold">× 3</span>
                         <span class="text-gray-600 text-sm">/ 次</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-400">每個殘渣金幣（選填）</span>
+                        <span class="text-sm text-gray-400">每個礫石金幣（選填）</span>
                         <el-input-number
                             v-model="costPerCraft"
                             :min="0"
