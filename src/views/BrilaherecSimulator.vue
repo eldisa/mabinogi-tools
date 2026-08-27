@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { evaluateItemQuality, type TierGrade } from "../data/itemQualityEvaluator";
+import { evaluateItemQuality, type CoinFormulaId, type TierGrade } from "../data/itemQualityEvaluator";
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -155,9 +155,13 @@ const checkSuccess = (stats: Record<string, number>): boolean => {
 };
 
 // ===== Quality evaluation =====
-// 評分公式 (X1×1 + X2×6 + X3×4) 僅與物理/魔法/煉金硬幣的三格素質（20/10/20 種取值）順序相符
-const QUALITY_TYPE_IDS = ["physical", "magic", "alchemy"];
-const canEvaluateQuality = computed(() => QUALITY_TYPE_IDS.includes(selectedTypeId.value));
+// 各硬幣素質對應的評分公式：物理／煉金共用一組係數，魔法、支援各自獨立
+const FORMULA_BY_TYPE: Record<string, CoinFormulaId> = {
+    physical: "physAlch",
+    alchemy: "physAlch",
+    magic: "magic",
+    support: "support",
+};
 
 const TIER_BADGE_CLASS: Record<TierGrade, string> = {
     SSS: "text-rose-400 border-rose-500 bg-rose-900/30",
@@ -169,15 +173,13 @@ const TIER_BADGE_CLASS: Record<TierGrade, string> = {
     D: "text-gray-600 border-gray-700 bg-gray-900/40",
 };
 
-const statIndex = (s: StatDef, val: number): number => Math.round((val - s.min) / s.step) + 1;
-
 const qualityResult = computed(() => {
-    if (!canEvaluateQuality.value || !lastResult.value) return null;
-    const stats = selectedType.value.stats;
-    const x1 = statIndex(stats[0], lastResult.value.stats[stats[0].key]);
-    const x2 = statIndex(stats[1], lastResult.value.stats[stats[1].key]);
-    const x3 = statIndex(stats[2], lastResult.value.stats[stats[2].key]);
-    return evaluateItemQuality(x1, x2, x3);
+    const result = lastResult.value;
+    if (!result) return null;
+    const formulaId = FORMULA_BY_TYPE[result.typeId];
+    const stats = COIN_TYPES.find((c) => c.id === result.typeId)!.stats;
+    const [x1, x2, x3] = stats.map((s) => result.stats[s.key]);
+    return evaluateItemQuality(formulaId, x1, x2, x3);
 });
 
 // ===== Actions =====
@@ -462,7 +464,7 @@ const filteredHistory = computed(() => history.value.filter((r) => r.typeId === 
                                 <span class="text-sm font-bold text-gray-200">{{ qualityResult.tier.name }}</span>
                                 <span class="text-xs text-gray-500">{{ qualityResult.tier.description }}</span>
                                 <span class="text-sm text-gray-400 ml-auto">
-                                    {{ qualityResult.totalScore }} 分 · 完成度
+                                    {{ qualityResult.totalScore.toFixed(2) }} 分 · 完成度
                                     {{ qualityResult.qualityPercentage.toFixed(2) }}%
                                 </span>
                             </div>
