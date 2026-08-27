@@ -470,6 +470,7 @@ export const abilitiesValueWithPercentArray: string[] = [
     "arcana_skill_bonus_damage_rate",
     "music_buff_bonus_rate",
     "item_durability_loss_dec_rate",
+    "healing_skill",
 ];
 
 export const abilitiesValueWithRangeArray: string[] = [
