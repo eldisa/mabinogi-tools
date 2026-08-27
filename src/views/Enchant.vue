@@ -267,12 +267,7 @@
                                 <el-form-item label="武器類型">
                                     <div class="flex gap-2">
                                         <el-select v-model="weaponCategory" style="width: 110px">
-                                            <el-option
-                                                v-for="c in WEAPON_CATEGORIES"
-                                                :key="c"
-                                                :label="c"
-                                                :value="c"
-                                            />
+                                            <el-option v-for="c in WEAPON_CATEGORIES" :key="c" :label="c" :value="c" />
                                         </el-select>
                                         <el-select v-model="quickWeaponType" style="width: 160px">
                                             <el-option
@@ -291,7 +286,7 @@
                                             <span class="text-xs text-gray-500 ml-1">（過濾轉專用）</span>
                                         </el-checkbox>
                                         <el-checkbox v-model="showSourceHighlight">
-                                            <span class="text-sm text-gray-300">標示 G27 / VH</span>
+                                            <span class="text-sm text-gray-300">標示 G27 / VH / G28</span>
                                             <span class="text-xs text-gray-500 ml-1">（標示出處）</span>
                                         </el-checkbox>
                                         <el-checkbox v-model="wearBrokenRobe">
@@ -590,6 +585,7 @@
                                 ★ /
                                 <span class="text-green-400">G27</span>
                                 <span class="text-green-400">VH</span>
+                                <span class="text-green-400">G28</span>
                                 = 目前有已知副本來源
                             </div>
                         </el-card>
@@ -1004,23 +1000,60 @@ interface WeaponOpt {
 
 const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
     // 近距離
-    { label: "雙持單手武器", category: "近距離", limits: ["武器", "近距離武器", "單手武器", "鈍器", "斧", "斧頭"], strictFilter: true },
-    { label: "單手武器+盾", category: "近距離", limits: ["武器", "近距離武器", "單手武器", "鈍器", "斧", "斧頭"], strictFilter: true },
-    { label: "雙手武器", category: "近距離", limits: ["武器", "近距離武器", "雙手武器", "雙手斧武器"], strictFilter: true },
-    { label: "雙手武器+盾", category: "近距離", limits: ["武器", "近距離武器", "雙手武器", "雙手斧武器"], strictFilter: true },
+    {
+        label: "雙持單手武器",
+        category: "近距離",
+        limits: ["武器", "近距離武器", "單手武器", "鈍器", "斧", "斧頭"],
+        strictFilter: true,
+    },
+    {
+        label: "單手武器+盾",
+        category: "近距離",
+        limits: ["武器", "近距離武器", "單手武器", "鈍器", "斧", "斧頭"],
+        strictFilter: true,
+    },
+    {
+        label: "雙手武器",
+        category: "近距離",
+        limits: ["武器", "近距離武器", "雙手武器", "雙手斧武器"],
+        strictFilter: true,
+    },
+    {
+        label: "雙手武器+盾",
+        category: "近距離",
+        limits: ["武器", "近距離武器", "雙手武器", "雙手斧武器"],
+        strictFilter: true,
+    },
     { label: "拳套", category: "近距離", limits: ["武器", "近距離武器", "雙手武器", "拳套"], strictFilter: true },
     { label: "騎槍", category: "近距離", limits: ["武器", "近距離武器", "雙手武器", "騎槍"], strictFilter: true },
     { label: "手把", category: "近距離", limits: ["武器", "手把"], strictFilter: true },
-    { label: "鎖鏈", category: "近距離", limits: ["武器", "近距離武器", "雙手武器", "鎖鏈鐮刃", "支援用鎖鏈鐮刃"], strictFilter: true },
+    {
+        label: "鎖鏈",
+        category: "近距離",
+        limits: ["武器", "近距離武器", "雙手武器", "鎖鏈鐮刃", "支援用鎖鏈鐮刃"],
+        strictFilter: true,
+    },
     // 遠距離
     { label: "弓/弩", category: "遠距離", limits: ["武器", "弓", "弩"], strictFilter: true },
     { label: "雙槍", category: "遠距離", limits: ["武器", "雙槍"], strictFilter: true },
     { label: "手裏劍", category: "遠距離", limits: ["武器", "手裏劍", "手裡劍"], strictFilter: true },
     // 魔法
     { label: "魔杖", display: "短杖", category: "魔法", limits: ["魔杖", "單手魔杖、集魔杖"], strictFilter: true },
-    { label: "集魔杖", display: "長杖/集魔杖", category: "魔法", limits: ["集魔杖", "單手魔杖、集魔杖"], strictFilter: true },
+    {
+        label: "集魔杖",
+        display: "長杖/集魔杖",
+        category: "魔法",
+        limits: ["集魔杖", "單手魔杖、集魔杖"],
+        strictFilter: true,
+    },
     { label: "鐮刀", category: "魔法", limits: ["大型鐮刀"], strictFilter: true },
-    { label: "鋼瓶", display: "煉金", category: "魔法", limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"], strictFilter: true },
+    {
+        label: "鋼瓶",
+        display: "煉金",
+        category: "魔法",
+        limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"],
+        strictFilter: true,
+    },
     // 音樂
     { label: "音樂", category: "音樂", limits: ["樂器"], topN: 3, strictFilter: true },
 ];
@@ -1180,6 +1213,7 @@ const getSourceLabel = (id: number): string => {
     if (src === "—") return "";
     if (src.includes("G27")) return "G27";
     if (src.includes("VH") || src.includes("格倫")) return "VH";
+    if (src.includes("G28")) return "G28";
     return "★";
 };
 
@@ -1244,11 +1278,7 @@ const quickViewData = computed((): QuickViewRow[] => {
     return QUICK_VIEW_SLOTS.filter((slot) => !(hideRobe && slot.label === "袍/翅膀"))
         .filter((slot) => !(slot.isOffhand && !OFFHAND_LIMITS[wType]))
         .map((slot) => {
-            const limits = slot.isWeapon
-                ? weaponLimits
-                : slot.isOffhand
-                  ? (OFFHAND_LIMITS[wType] ?? [])
-                  : slot.limits;
+            const limits = slot.isWeapon ? weaponLimits : slot.isOffhand ? (OFFHAND_LIMITS[wType] ?? []) : slot.limits;
 
             // [""] 代表無裝備限制，應顯示於所有部位（exclusive 部位除外，只吃符合 limit 者）
             const isNoRestriction = (e: Enchant) => e.limit.length === 0 || (e.limit.length === 1 && e.limit[0] === "");
@@ -1314,6 +1344,7 @@ const raidOptions: { label: string; value: string }[] = [
     { label: "G27/布里萊赫", value: "G27/布里萊赫" },
     { label: "G27/信仰的崩壞", value: "G27/信仰的崩壞" },
     { label: "雪VH/格倫貝爾納-太古之冬", value: "雪VH/格倫貝爾納-太古之冬" },
+    { label: "G28/塔拉加赫", value: "G28" },
 ];
 
 // 裝備類型列表（從資料中自動提取）
