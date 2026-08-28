@@ -19901,7 +19901,7 @@ export const enchants: Enchant[] = [
         desc: "可對穿著在腳部的道具進行魔力賦予\\n最大傷害增加15\\n魔法攻擊力增加15\\n4大屬性鍊金術傷害增加15\\n音樂增益效果增加2\\n音樂增益效果技能持續時間增加5\\n[把魔力賦予的裝備設定為專用]",
         level: 10,
         type: "prefix",
-        limit: ["穆利亞斯的遺物"],
+        limit: ["腳部裝備"],
         effect: [
             { id: "attack_max", min: 15, max: 15 },
             { id: "MagicAttack", min: 15, max: 15 },
