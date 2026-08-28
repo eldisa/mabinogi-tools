@@ -1268,7 +1268,6 @@ const QUICK_VIEW_SLOTS: SlotDef[] = [
     { label: "武器", isWeapon: true, limits: [] },
     { label: "副手", isOffhand: true, limits: [] },
     { label: "飾品", limits: ["飾品"] },
-    { label: "月餅", exclusive: true, limits: ["穆利亞斯的遺物"] },
     { label: "頭", limits: ["頭部裝備", "頭", "頭部"] },
     {
         label: "身",
@@ -1288,6 +1287,7 @@ const QUICK_VIEW_SLOTS: SlotDef[] = [
     { label: "手", limits: ["手套", "金屬手套", "重盔甲手套", "手部裝備", "手", "衣服、盔甲、手套、鞋子"] },
     { label: "腳", limits: ["鞋子", "金屬靴", "腳", "腳部裝備", "衣服、盔甲、手套、鞋子"] },
     { label: "袍/翅膀", limits: ["特定的翅膀", "特定翅膀", "翅膀", "服裝"] },
+    { label: "月餅", exclusive: true, limits: ["穆利亞斯的遺物"] },
 ];
 
 interface QuickViewRow {
