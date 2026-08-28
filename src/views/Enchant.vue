@@ -1288,7 +1288,7 @@ const QUICK_VIEW_SLOTS: SlotDef[] = [
     },
     { label: "手", limits: ["手套", "金屬手套", "重盔甲手套", "手部裝備", "手", "衣服、盔甲、手套、鞋子"] },
     { label: "腳", limits: ["鞋子", "金屬靴", "腳", "腳部裝備", "衣服、盔甲、手套、鞋子"] },
-    { label: "袍/翅膀", limits: ["特定的翅膀", "特定翅膀", "翅膀", "服裝"] },
+    { label: "袍/翅膀", exclusive: true, limits: ["特定的翅膀", "特定翅膀", "翅膀", "服裝"] },
     { label: "月餅", exclusive: true, limits: ["穆利亞斯的遺物"] },
 ];
 
