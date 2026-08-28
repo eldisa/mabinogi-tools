@@ -1113,6 +1113,7 @@ const MARIONETTE_PRIMARY = ["marionette_attack_max"];
 const MARIONETTE_RELEVANT = [
     "marionette_attack_max",
     ...PHYS_DMG_IDS,
+    "lance_piercing",
     "arcana_skill_bonus_damage_rate",
 ];
 // 共用 PHYS 設定的物理武器（手把為傀儡，單獨處理）
