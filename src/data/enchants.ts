@@ -5018,6 +5018,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=20313):
     {
         id: 20313,
         name: { tw: "유머러스", en: "humorous", tw2: "유머러스" },
@@ -5032,6 +5033,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=20314):
     {
         id: 20314,
         name: { tw: "성숙한", en: "mature", tw2: "성숙한" },
@@ -5043,6 +5046,7 @@ export const enchants: Enchant[] = [
         effect: [{ id: "LUK", min: 14, max: 14 }],
         personalize: false,
     },
+    */
     {
         id: 20316,
         name: {
@@ -5660,6 +5664,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=20420):
     {
         id: 20420,
         name: { tw: "명랑한", en: "vivacious", tw2: "명랑한" },
@@ -5674,6 +5679,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 20422,
         name: {
@@ -6111,6 +6117,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=20514):
     {
         id: 20514,
         name: { tw: "조심스러운", en: "discreet", tw2: "조심스러운" },
@@ -6125,6 +6132,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 20515,
         name: {
@@ -7009,6 +7017,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: true,
     },
+    /* TODO(韓文未翻譯待補 id=20636):
     {
         id: 20636,
         name: { tw: "귀여운", en: "cute", tw2: "귀여운" },
@@ -7024,6 +7033,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=20637):
     {
         id: 20637,
         name: { tw: "정의로운", en: "righteousness", tw2: "정의로운" },
@@ -7035,6 +7046,7 @@ export const enchants: Enchant[] = [
         effect: [{ id: "Critical", min: 9, max: 12 }],
         personalize: false,
     },
+    */
     {
         id: 20638,
         name: {
@@ -10178,6 +10190,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=20844):
     {
         id: 20844,
         name: { tw: "선량한", en: "virtuous", tw2: "선량한" },
@@ -10193,6 +10206,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=20845):
     {
         id: 20845,
         name: { tw: "온유한", en: "mild", tw2: "온유한" },
@@ -10204,6 +10219,7 @@ export const enchants: Enchant[] = [
         effect: [{ id: "CombatPower", min: -100, max: -100 }],
         personalize: false,
     },
+    */
     {
         id: 20846,
         name: {
@@ -11506,6 +11522,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=20938):
     {
         id: 20938,
         name: { tw: "뛰어난", en: "o​utstanding", tw2: "뛰어난" },
@@ -11521,6 +11538,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 20939,
         name: {
@@ -14379,6 +14397,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: true,
     },
+    /* TODO(韓文未翻譯待補 id=21415):
     {
         id: 21415,
         name: { tw: "아노하나", en: "Anohana", tw2: "아노하나" },
@@ -14394,6 +14413,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=21416):
     {
         id: 21416,
         name: { tw: "재미있는", en: "Funny", tw2: "재미있는" },
@@ -14408,6 +14429,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=21417):
     {
         id: 21417,
         name: { tw: "상냥한", en: "Friendly", tw2: "상냥한" },
@@ -14419,6 +14442,8 @@ export const enchants: Enchant[] = [
         effect: [{ id: "DEX", min: 5, max: 15 }],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=21418):
     {
         id: 21418,
         name: { tw: "야무진", en: "Shrewd", tw2: "야무진" },
@@ -14434,6 +14459,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=21419):
     {
         id: 21419,
         name: { tw: "다함께", en: "Together", tw2: "다함께" },
@@ -14448,6 +14475,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=21420):
     {
         id: 21420,
         name: { tw: "보이지않는", en: "Hide", tw2: "보이지않는" },
@@ -14462,6 +14491,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=21421):
     {
         id: 21421,
         name: { tw: "리더", en: "Leader", tw2: "리더" },
@@ -14473,6 +14504,7 @@ export const enchants: Enchant[] = [
         effect: [{ id: "WIL", min: 1, max: 30 }],
         personalize: false,
     },
+    */
     {
         id: 21422,
         name: {
@@ -19901,7 +19933,7 @@ export const enchants: Enchant[] = [
         desc: "可對穿著在腳部的道具進行魔力賦予\\n最大傷害增加15\\n魔法攻擊力增加15\\n4大屬性鍊金術傷害增加15\\n音樂增益效果增加2\\n音樂增益效果技能持續時間增加5\\n[把魔力賦予的裝備設定為專用]",
         level: 10,
         type: "prefix",
-        limit: ["穆利亞斯的遺物"],
+        limit: ["腳部裝備"],
         effect: [
             { id: "attack_max", min: 15, max: 15 },
             { id: "MagicAttack", min: 15, max: 15 },
@@ -23919,6 +23951,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=30648):
     {
         id: 30648,
         name: { tw: "노력가의", en: "hard worker", tw2: "노력가의" },
@@ -23934,6 +23967,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=30649):
     {
         id: 30649,
         name: { tw: "활동가의", en: "activist", tw2: "활동가의" },
@@ -23949,6 +23984,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=30650):
     {
         id: 30650,
         name: { tw: "장난의", en: "mischief", tw2: "장난의" },
@@ -23964,6 +24001,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 30651,
         name: {
@@ -25640,6 +25678,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=30742):
     {
         id: 30742,
         name: { tw: "부끄럼쟁이의", en: "shyness", tw2: "부끄럼쟁이의" },
@@ -25655,6 +25694,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=30743):
     {
         id: 30743,
         name: { tw: "진실의", en: "fact", tw2: "진실의" },
@@ -25669,6 +25710,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 30744,
         name: {
@@ -27361,6 +27403,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=30840):
     {
         id: 30840,
         name: { tw: "은둔자의", en: "hermit", tw2: "은둔자의" },
@@ -27372,6 +27415,7 @@ export const enchants: Enchant[] = [
         effect: [{ id: "dissolution", min: 3, max: 3 }],
         personalize: false,
     },
+    */
     {
         id: 30841,
         name: {
@@ -28282,6 +28326,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: true,
     },
+    /* TODO(韓文未翻譯待補 id=30926):
     {
         id: 30926,
         name: { tw: "코미디언의", en: "comedian", tw2: "코미디언의" },
@@ -28296,6 +28341,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 30927,
         name: {
@@ -28638,6 +28684,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: true,
     },
+    /* TODO(韓文未翻譯待補 id=30939):
     {
         id: 30939,
         name: { tw: "미스터리", en: "Mystery", tw2: "神秘" },
@@ -28652,6 +28699,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 30940,
         name: {
@@ -30351,6 +30399,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=31113):
     {
         id: 31113,
         name: {
@@ -30387,6 +30436,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 31114,
         name: {
@@ -32166,6 +32216,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    /* TODO(韓文未翻譯待補 id=31513):
     {
         id: 31513,
         name: {
@@ -32197,6 +32248,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=31514):
     {
         id: 31514,
         name: {
@@ -32218,6 +32271,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=31515):
     {
         id: 31515,
         name: {
@@ -32239,6 +32294,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=31516):
     {
         id: 31516,
         name: {
@@ -32260,6 +32317,8 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
+    /* TODO(韓文未翻譯待補 id=31517):
     {
         id: 31517,
         name: {
@@ -32281,6 +32340,7 @@ export const enchants: Enchant[] = [
         ],
         personalize: false,
     },
+    */
     {
         id: 31518,
         name: {

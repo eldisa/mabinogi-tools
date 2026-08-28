@@ -524,6 +524,14 @@
                                                                 </el-tag>
                                                                 <span v-else class="text-yellow-400 text-xs">★</span>
                                                             </template>
+                                                            <el-tag
+                                                                v-if="isGachaSpecial(e.id)"
+                                                                type="danger"
+                                                                size="small"
+                                                                class="qv-small-tag"
+                                                            >
+                                                                轉蛋特規品
+                                                            </el-tag>
                                                         </div>
                                                         <div class="text-xs text-gray-300 pl-5 leading-tight">
                                                             {{ formatEnchantEffects(e, quickWeaponType) }}
@@ -1054,6 +1062,7 @@ const QUICK_WEAPON_OPTIONS: WeaponOpt[] = [
         limits: ["鋼瓶", "兇猛暴君鋼瓶", "塔座鋼瓶", "福音鋼瓶"],
         strictFilter: true,
     },
+    { label: "治癒杖", category: "魔法", limits: ["魔杖", "單手魔杖、集魔杖"], strictFilter: true },
     // 音樂
     { label: "音樂", category: "音樂", limits: ["樂器"], topN: 3, strictFilter: true },
 ];
@@ -1090,8 +1099,6 @@ const ANY_EXCLUSIVE = new Set([...PHYS_DMG_IDS, ...MAGIC_IDS, ...ALCHEMY_IDS, ..
 const PHYS_PRIMARY = ["attack_max", "AttMax", "Attmax", "wAttMax"];
 const PHYS_RELEVANT = [
     ...PHYS_DMG_IDS,
-    "critical",
-    "Crit",
     "critical_damage",
     "criticaldamage",
     "critical_cap_increase",
@@ -1100,16 +1107,14 @@ const PHYS_RELEVANT = [
     "bonusdamage",
     "ArcheryTalentAttMax",
     "CombatTalentAttMax",
+    "arcana_skill_bonus_damage_rate",
 ];
 const MARIONETTE_PRIMARY = ["marionette_attack_max"];
 const MARIONETTE_RELEVANT = [
     "marionette_attack_max",
-    "marionette_attack_min",
-    "marionette_critical",
-    "marionette_hp",
-    "marionette_defense",
-    "marionette_protect",
     ...PHYS_DMG_IDS,
+    "lance_piercing",
+    "arcana_skill_bonus_damage_rate",
 ];
 // 共用 PHYS 設定的物理武器（手把為傀儡，單獨處理）
 const PHYS_WEAPON_LABELS = [
@@ -1124,6 +1129,12 @@ const PHYS_WEAPON_LABELS = [
     "雙槍",
     "手裏劍",
 ];
+
+// 物理系「接尾」排除的例外賦予（舊版重複賦予）
+const PHYS_SUFFIX_EXCLUDE_IDS = new Set([30931]);
+// 物理系「飾品」接尾強制納入的轉蛋特規品（原始 limit 標示為雙手武器，但實際可用於飾品）
+const PHYS_ACCESSORY_SUFFIX_GACHA_IDS = new Set([30619, 30620, 30921, 30927]);
+const isGachaSpecial = (id: number): boolean => PHYS_ACCESSORY_SUFFIX_GACHA_IDS.has(id);
 
 // 各武器類型「主要數值」ID（排序用）
 const PRIMARY_IDS: Record<string, string[]> = {
@@ -1140,17 +1151,25 @@ const PRIMARY_IDS: Record<string, string[]> = {
     鐮刀: ["magic_attack", "MagicAttack", "magic_damage"],
     音樂: ["music_buff_bonus"],
     手把: MARIONETTE_PRIMARY,
+    治癒杖: ["healing_skill"],
 };
 PHYS_WEAPON_LABELS.forEach((l) => (PRIMARY_IDS[l] = PHYS_PRIMARY));
 
 // 各武器類型「顯示」能力 ID（效果摘要只顯示此集合內的屬性）
 const RELEVANT_IDS: Record<string, Set<string>> = {
-    魔杖: new Set([...MAGIC_IDS]),
-    集魔杖: new Set([...MAGIC_IDS]),
-    鋼瓶: new Set([...ALCHEMY_IDS]),
-    鐮刀: new Set(["magic_attack", "MagicAttack", "magic_damage", "lance_piercing"]),
+    魔杖: new Set([...MAGIC_IDS, "arcana_skill_bonus_damage_rate"]),
+    集魔杖: new Set([...MAGIC_IDS, "arcana_skill_bonus_damage_rate"]),
+    鋼瓶: new Set([...ALCHEMY_IDS, "arcana_skill_bonus_damage_rate"]),
+    鐮刀: new Set([
+        "magic_attack",
+        "MagicAttack",
+        "magic_damage",
+        "lance_piercing",
+        "arcana_skill_bonus_damage_rate",
+    ]),
     音樂: new Set(["music_buff_bonus"]),
     手把: new Set(MARIONETTE_RELEVANT),
+    治癒杖: new Set(["healing_skill"]),
 };
 PHYS_WEAPON_LABELS.forEach((l) => (RELEVANT_IDS[l] = new Set(PHYS_RELEVANT)));
 
@@ -1174,7 +1193,20 @@ const mergeEffects = (enchant: Enchant): MergedEff[] => {
     return Array.from(map.values());
 };
 
+// 煉金（鋼瓶）排序權重：4屬性（all_alchemy_damage / AlchemyElementalBonus）權重 4，單一屬性權重 1
+const ALCHEMY_SORT_WEIGHTS: Record<string, number> = {
+    all_alchemy_damage: 4,
+    AlchemyElementalBonus: 4,
+    fire_alchemy_damage: 1,
+    water_alchemy_damage: 1,
+    earth_alchemy_damage: 1,
+    wind_alchemy_damage: 1,
+};
+
 const getPrimaryValue = (enchant: Enchant, weaponType: string): number => {
+    if (weaponType === "鋼瓶") {
+        return mergeEffects(enchant).reduce((sum, eff) => sum + (ALCHEMY_SORT_WEIGHTS[eff.id] ?? 0) * eff.max, 0);
+    }
     const ids = PRIMARY_IDS[weaponType] ?? [];
     let best = 0;
     for (const eff of mergeEffects(enchant)) {
@@ -1238,7 +1270,6 @@ const QUICK_VIEW_SLOTS: SlotDef[] = [
     { label: "武器", isWeapon: true, limits: [] },
     { label: "副手", isOffhand: true, limits: [] },
     { label: "飾品", limits: ["飾品"] },
-    { label: "月餅", exclusive: true, limits: ["穆利亞斯的遺物"] },
     { label: "頭", limits: ["頭部裝備", "頭", "頭部"] },
     {
         label: "身",
@@ -1257,7 +1288,8 @@ const QUICK_VIEW_SLOTS: SlotDef[] = [
     },
     { label: "手", limits: ["手套", "金屬手套", "重盔甲手套", "手部裝備", "手", "衣服、盔甲、手套、鞋子"] },
     { label: "腳", limits: ["鞋子", "金屬靴", "腳", "腳部裝備", "衣服、盔甲、手套、鞋子"] },
-    { label: "袍/翅膀", limits: ["特定的翅膀", "特定翅膀", "翅膀", "服裝"] },
+    { label: "袍/翅膀", exclusive: true, limits: ["特定的翅膀", "特定翅膀", "翅膀", "服裝"] },
+    { label: "月餅", exclusive: true, limits: ["穆利亞斯的遺物"] },
 ];
 
 interface QuickViewRow {
@@ -1307,6 +1339,21 @@ const quickViewData = computed((): QuickViewRow[] => {
 
             // 不綁專 filter
             if (noPersonalize) applicable = applicable.filter((e) => !e.personalize);
+
+            // 物理系例外：排除舊版重複賦予／飾品欄強制納入轉蛋特規品
+            if (PHYS_WEAPON_LABELS.includes(wType)) {
+                applicable = applicable.filter((e) => !(e.type === "suffix" && PHYS_SUFFIX_EXCLUDE_IDS.has(e.id)));
+                if (slot.label === "飾品") {
+                    const existingIds = new Set(applicable.map((e) => e.id));
+                    const gachaExtras = enchants.filter(
+                        (e) =>
+                            PHYS_ACCESSORY_SUFFIX_GACHA_IDS.has(e.id) &&
+                            !existingIds.has(e.id) &&
+                            !(noPersonalize && e.personalize),
+                    );
+                    applicable = [...applicable, ...gachaExtras];
+                }
+            }
 
             // 排序：有權重設定時依加權分數，否則依主要數值
             const hasWeights = weightSettings.value.some((ws) => ws.abilityId);
