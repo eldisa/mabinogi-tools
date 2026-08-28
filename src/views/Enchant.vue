@@ -1099,8 +1099,6 @@ const ANY_EXCLUSIVE = new Set([...PHYS_DMG_IDS, ...MAGIC_IDS, ...ALCHEMY_IDS, ..
 const PHYS_PRIMARY = ["attack_max", "AttMax", "Attmax", "wAttMax"];
 const PHYS_RELEVANT = [
     ...PHYS_DMG_IDS,
-    "critical",
-    "Crit",
     "critical_damage",
     "criticaldamage",
     "critical_cap_increase",
@@ -1109,16 +1107,13 @@ const PHYS_RELEVANT = [
     "bonusdamage",
     "ArcheryTalentAttMax",
     "CombatTalentAttMax",
+    "arcana_skill_bonus_damage_rate",
 ];
 const MARIONETTE_PRIMARY = ["marionette_attack_max"];
 const MARIONETTE_RELEVANT = [
     "marionette_attack_max",
-    "marionette_attack_min",
-    "marionette_critical",
-    "marionette_hp",
-    "marionette_defense",
-    "marionette_protect",
     ...PHYS_DMG_IDS,
+    "arcana_skill_bonus_damage_rate",
 ];
 // 共用 PHYS 設定的物理武器（手把為傀儡，單獨處理）
 const PHYS_WEAPON_LABELS = [
@@ -1161,10 +1156,16 @@ PHYS_WEAPON_LABELS.forEach((l) => (PRIMARY_IDS[l] = PHYS_PRIMARY));
 
 // 各武器類型「顯示」能力 ID（效果摘要只顯示此集合內的屬性）
 const RELEVANT_IDS: Record<string, Set<string>> = {
-    魔杖: new Set([...MAGIC_IDS]),
-    集魔杖: new Set([...MAGIC_IDS]),
-    鋼瓶: new Set([...ALCHEMY_IDS]),
-    鐮刀: new Set(["magic_attack", "MagicAttack", "magic_damage", "lance_piercing"]),
+    魔杖: new Set([...MAGIC_IDS, "arcana_skill_bonus_damage_rate"]),
+    集魔杖: new Set([...MAGIC_IDS, "arcana_skill_bonus_damage_rate"]),
+    鋼瓶: new Set([...ALCHEMY_IDS, "arcana_skill_bonus_damage_rate"]),
+    鐮刀: new Set([
+        "magic_attack",
+        "MagicAttack",
+        "magic_damage",
+        "lance_piercing",
+        "arcana_skill_bonus_damage_rate",
+    ]),
     音樂: new Set(["music_buff_bonus"]),
     手把: new Set(MARIONETTE_RELEVANT),
     治癒杖: new Set(["healing_skill"]),
