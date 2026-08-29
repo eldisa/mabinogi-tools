@@ -30,6 +30,7 @@ import GachaSimulatorView from '../views/GachaSimulatorView.vue';
 import ArmorBreakTraining from '../views/ArmorBreakTraining.vue';
 import SponsorView from '../views/SponsorView.vue';
 import Changelog from '../views/Changelog.vue';
+import TradeCalculator from '../views/TradeCalculator.vue';
 
 const routes = [
     {
@@ -180,6 +181,11 @@ const routes = [
             path: '/sponsor',
             name: '贊助',
             component: SponsorView,
+        },
+        {
+            path: '/trade-calculator',
+            name: '貿易計算機',
+            component: TradeCalculator,
         },]
     },
 
@@ -216,6 +222,7 @@ const pageTitles = {
     '破防練習': '破防練習 | 瑪奇小工具',
     '回音石模擬器': '回音石模擬器 | 瑪奇小工具',
     '贊助': '贊助 | 瑪奇小工具',
+    '貿易計算機': '貿易計算機 | 瑪奇小工具',
     '關於': '關於 | 瑪奇小工具',
 };
 
