@@ -10,9 +10,12 @@ import {
     lifeTradeLocations,
     lifeTradeLevelStats,
     lifeTradeMaterialCategories,
+    skahaGoods,
     type TradeVehicle,
     type TradeGood,
     type TradeCity,
+    type SkahaGood,
+    type LifeTradeItem,
 } from "../data/tradeGoods";
 
 const baseUrl = import.meta.env.BASE_URL;
@@ -54,7 +57,7 @@ const settings = useLocalStorage<TradeSettings>("trade-calculator-settings", {
 });
 
 // 個人貿易（羊駝／夥伴＋交通工具馱運）、商團貿易（商團馬車配送）與生活貿易（材料兌換）是三套不同機制，分開呈現
-const mode = ref<"personal" | "guild" | "life" | "lifeMaterials">("personal");
+const mode = ref<"personal" | "guild" | "life" | "skaha" | "lifeMaterials">("life");
 
 const personalCities = computed(() =>
     tradeCities.map((city) => ({ ...city, goods: city.goods.filter((g) => !g.guild) })),
@@ -78,14 +81,29 @@ const openSettings = ref(["settings"]);
 const openLifeSelection = ref(["select"]);
 const openLifeTotals = ref(["totals"]);
 
-function itemKey(location: string, level: number) {
-    return `${location}-${level}`;
+// 以名稱而非等級組 key：高難度商品同一地點內共用等級 6，等級無法唯一識別
+function itemKey(location: string, name: string) {
+    return `${location}-${name}`;
 }
 
 const flatLifeItems = lifeTradeLocations.flatMap((loc) =>
-    loc.items.map((item) => ({ ...item, location: loc.name, key: itemKey(loc.name, item.level) })),
+    loc.items.map((item) => ({ ...item, location: loc.name, key: itemKey(loc.name, item.name) })),
 );
 type FlatLifeItem = (typeof flatLifeItems)[number];
+
+// 每個地點可輪替的高難度商品清單（每地點同時間只會開放其中一種，隨週次輪替）
+const hardItemsByLocation: Record<string, LifeTradeItem[]> = Object.fromEntries(
+    lifeTradeLocations.map((loc) => [loc.name, loc.items.filter((i) => i.hard)]),
+);
+
+// 每個地點目前選定的「本週高難度商品」名稱；空字串表示未設定（不顯示）
+const activeHardItem = ref<Record<string, string>>(
+    Object.fromEntries(lifeTradeLocations.map((loc) => [loc.name, ""])),
+);
+
+function isActiveHardItem(item: { location: string; name: string; hard?: boolean }) {
+    return !item.hard || activeHardItem.value[item.location] === item.name;
+}
 
 function priceKey(city: TradeCity, good: TradeGood) {
     return `${city.name}-${good.name}`;
@@ -209,8 +227,8 @@ function setLifeItemChecked(key: string, checked: boolean, level: number) {
     lifeItemCounts.value[key] = lifeMaxQtyMode.value ? lifeTradeLevelStats[level].weeklyLimit : 1;
 }
 
-function toggleLifeItem(location: string, level: number) {
-    const key = itemKey(location, level);
+function toggleLifeItem(location: string, name: string, level: number) {
+    const key = itemKey(location, name);
     setLifeItemChecked(key, !isLifeItemChecked(key), level);
 }
 
@@ -241,9 +259,11 @@ const selectedLifeCount = computed(
     () => Object.values(lifeItemCounts.value).filter((n) => n > 0).length,
 );
 
-// 全選只作用於目前「顯示地點」勾選中的商品
+// 全選只作用於目前「顯示地點」勾選中、且為本週已選定的高難度商品（或非高難度商品）
 const visibleFlatLifeItems = computed(() =>
-    flatLifeItems.filter((item) => visibleLifeLocations.value[item.location] !== false),
+    flatLifeItems.filter(
+        (item) => visibleLifeLocations.value[item.location] !== false && isActiveHardItem(item),
+    ),
 );
 
 const allLifeItemsSelected = computed(
@@ -264,7 +284,7 @@ function toggleSelectAllLifeItems(checked: boolean) {
 
 const lifeMaterialCategoryOrder = [
     "冶煉", "魔法製造", "希里原工學", "木工", "料理/食物",
-    "藥水製作", "手工藝", "紡織", "芬恩手工藝", "文具的手工藝", "其他",
+    "藥水製作", "手工藝", "紡織", "芬恩手工藝", "文具的手工藝", "農場物產", "其他",
 ];
 
 const lifeTotalGroupMode = ref<"location" | "category">("category");
@@ -316,8 +336,8 @@ function clearLifeSelection() {
 }
 
 // ===== 生活貿易：城鎮收購比價 =====
-// 生活貿易出發地不在 12 城鎮之中，換得的商品每座城鎮都可收購；實際可交易量取「載具容量」與「每週兌換上限」兩者較小值
-function lifeQtyOf(level: number): number {
+// 生活貿易出發地不在 12 城鎮之中，換得的商品每座城鎮都可收購；實際可交易量上限取「載具容量」與「每週兌換上限」兩者較小值
+function lifeQtyCap(level: number): number {
     const stats = lifeTradeLevelStats[level];
     if (!visibleVehicles.value.length) return 0;
     const vehicleQty = Math.max(
@@ -331,6 +351,40 @@ function lifeQtyOf(level: number): number {
     return Math.min(vehicleQty, stats.weeklyLimit);
 }
 
+// 顯示地點：篩選比價表要顯示哪些地點的商品欄位；預設只顯示佩拉
+const pricingVisibleLocations = ref<Record<string, boolean>>(
+    Object.fromEntries(lifeTradeLocations.map((l) => [l.name, l.name === "佩拉"])),
+);
+const pricingVisibleItems = computed(() =>
+    flatLifeItems.filter(
+        (item) => pricingVisibleLocations.value[item.location] !== false && isActiveHardItem(item),
+    ),
+);
+
+// 項目可勾選：只有勾選的商品才會計入「總計」
+const pricingSelected = ref<Record<string, boolean>>(
+    Object.fromEntries(flatLifeItems.map((item) => [item.key, true])),
+);
+
+// 可交易數量可修改，但不能超過載具容量／每週兌換上限
+const pricingQty = ref<Record<string, number>>(
+    Object.fromEntries(flatLifeItems.map((item) => [item.key, lifeQtyCap(item.level)])),
+);
+const pricingMaxQtyMode = ref(false);
+
+function pricingQtyOf(item: FlatLifeItem): number {
+    return pricingQty.value[item.key] ?? lifeQtyCap(item.level);
+}
+
+watch(pricingMaxQtyMode, (enabled) => {
+    if (!enabled) return;
+    for (const item of flatLifeItems) {
+        if (pricingSelected.value[item.key]) {
+            pricingQty.value[item.key] = lifeQtyCap(item.level);
+        }
+    }
+});
+
 const lifePrices = ref<Record<string, number>>({});
 
 function lifePriceKey(item: FlatLifeItem, cityName: string) {
@@ -339,7 +393,7 @@ function lifePriceKey(item: FlatLifeItem, cityName: string) {
 
 function lifeValueOf(item: FlatLifeItem, cityName: string): number {
     const price = Number(lifePrices.value[lifePriceKey(item, cityName)]) || 0;
-    return price * lifeQtyOf(item.level);
+    return Math.floor(price * pricingQtyOf(item));
 }
 
 function bestLifeCities(item: FlatLifeItem): Set<string> {
@@ -354,22 +408,168 @@ function bestLifeCities(item: FlatLifeItem): Set<string> {
     return names;
 }
 
+// 城鎮總計：加總該城鎮下所有「已勾選」商品的估值
+function cityPricingTotal(cityName: string): number {
+    return pricingVisibleItems.value
+        .filter((item) => pricingSelected.value[item.key])
+        .reduce((sum, item) => sum + lifeValueOf(item, cityName), 0);
+}
+
+const bestPricingCities = computed(() => {
+    const values = tradeCities.map((c) => cityPricingTotal(c.name));
+    const max = values.length ? Math.max(...values) : 0;
+    const names = new Set<string>();
+    if (max > 0) {
+        tradeCities.forEach((c, i) => {
+            if (values[i] === max) names.add(c.name);
+        });
+    }
+    return names;
+});
+
 const showLifeBatch = ref(false);
+const lifeBatchMode = ref<"single" | "multi">("multi");
+const lifeBatchItemKey = ref("");
 const lifeBatchText = ref("");
 
-function applyLifeBatch() {
+// 支援中文「萬」簡寫，例如 "16萬3486" -> 163486、"16萬" -> 160000
+function parseTradeNumber(raw: string): number {
+    const s = raw.trim();
+    if (!s) return 0;
+    const m = s.match(/^(-?\d+(?:\.\d+)?)萬(\d+)?$/);
+    if (m) {
+        return Math.round(parseFloat(m[1]) * 10000) + (m[2] ? parseInt(m[2], 10) : 0);
+    }
+    const n = Number(s.replace(/,/g, ""));
+    return Number.isFinite(n) ? n : 0;
+}
+
+// 單項商品：每列對應一座城鎮（依 12 城鎮順序）的單一數值，套用到選定的商品
+function applyLifeBatchSingle() {
+    const item = pricingVisibleItems.value.find((i) => i.key === lifeBatchItemKey.value);
+    if (!item) return;
     const lines = lifeBatchText.value.split("\n").map((l) => l.trim()).filter(Boolean);
     lines.forEach((line, i) => {
-        const item = flatLifeItems[i];
-        if (!item) return;
+        const city = tradeCities[i];
+        if (!city) return;
+        lifePrices.value[lifePriceKey(item, city.name)] = parseTradeNumber(line);
+    });
+}
+
+// 多項商品（轉置後）：每列對應一座城鎮（依 12 城鎮順序），欄位依序對應目前顯示的商品
+function applyLifeBatchMulti() {
+    const lines = lifeBatchText.value.split("\n").map((l) => l.trim()).filter(Boolean);
+    lines.forEach((line, i) => {
+        const city = tradeCities[i];
+        if (!city) return;
         const cells = line.split(/\t+|\s{2,}/).map((c) => c.trim());
-        tradeCities.forEach((c, j) => {
+        pricingVisibleItems.value.forEach((item, j) => {
             const val = cells[j];
             if (val !== undefined && val !== "") {
-                lifePrices.value[lifePriceKey(item, c.name)] = Number(val) || 0;
+                lifePrices.value[lifePriceKey(item, city.name)] = parseTradeNumber(val);
             }
         });
     });
+}
+
+function applyLifeBatch() {
+    if (lifeBatchMode.value === "single") applyLifeBatchSingle();
+    else applyLifeBatchMulti();
+}
+
+// ===== 斯卡哈貿易 =====
+// 單一據點商品，沒有等級／每週上限概念，可交易數量僅取決於交通工具容量
+function skahaQtyCap(good: SkahaGood): number {
+    if (!visibleVehicles.value.length) return 0;
+    return Math.max(...visibleVehicles.value.map((v) => qtyOf(good, v)));
+}
+
+const skahaSelected = ref<Record<string, boolean>>(
+    Object.fromEntries(skahaGoods.map((g) => [g.name, true])),
+);
+const skahaQty = ref<Record<string, number>>(
+    Object.fromEntries(skahaGoods.map((g) => [g.name, skahaQtyCap(g)])),
+);
+
+function skahaQtyOf(good: SkahaGood): number {
+    return skahaQty.value[good.name] ?? skahaQtyCap(good);
+}
+
+const skahaPrices = ref<Record<string, number>>({});
+
+function skahaPriceKey(good: SkahaGood, cityName: string) {
+    return `${good.name}-${cityName}`;
+}
+
+function skahaValueOf(good: SkahaGood, cityName: string): number {
+    const price = Number(skahaPrices.value[skahaPriceKey(good, cityName)]) || 0;
+    return Math.floor(price * skahaQtyOf(good));
+}
+
+function bestSkahaCities(good: SkahaGood): Set<string> {
+    const values = tradeCities.map((c) => skahaValueOf(good, c.name));
+    const max = values.length ? Math.max(...values) : 0;
+    const names = new Set<string>();
+    if (max > 0) {
+        tradeCities.forEach((c, i) => {
+            if (values[i] === max) names.add(c.name);
+        });
+    }
+    return names;
+}
+
+function citySkahaTotal(cityName: string): number {
+    return skahaGoods
+        .filter((g) => skahaSelected.value[g.name])
+        .reduce((sum, g) => sum + skahaValueOf(g, cityName), 0);
+}
+
+const bestSkahaTotalCities = computed(() => {
+    const values = tradeCities.map((c) => citySkahaTotal(c.name));
+    const max = values.length ? Math.max(...values) : 0;
+    const names = new Set<string>();
+    if (max > 0) {
+        tradeCities.forEach((c, i) => {
+            if (values[i] === max) names.add(c.name);
+        });
+    }
+    return names;
+});
+
+const showSkahaBatch = ref(false);
+const skahaBatchMode = ref<"single" | "multi">("multi");
+const skahaBatchItemName = ref("");
+const skahaBatchText = ref("");
+
+function applySkahaBatchSingle() {
+    const good = skahaGoods.find((g) => g.name === skahaBatchItemName.value);
+    if (!good) return;
+    const lines = skahaBatchText.value.split("\n").map((l) => l.trim()).filter(Boolean);
+    lines.forEach((line, i) => {
+        const city = tradeCities[i];
+        if (!city) return;
+        skahaPrices.value[skahaPriceKey(good, city.name)] = parseTradeNumber(line);
+    });
+}
+
+function applySkahaBatchMulti() {
+    const lines = skahaBatchText.value.split("\n").map((l) => l.trim()).filter(Boolean);
+    lines.forEach((line, i) => {
+        const city = tradeCities[i];
+        if (!city) return;
+        const cells = line.split(/\t+|\s{2,}/).map((c) => c.trim());
+        skahaGoods.forEach((good, j) => {
+            const val = cells[j];
+            if (val !== undefined && val !== "") {
+                skahaPrices.value[skahaPriceKey(good, city.name)] = parseTradeNumber(val);
+            }
+        });
+    });
+}
+
+function applySkahaBatch() {
+    if (skahaBatchMode.value === "single") applySkahaBatchSingle();
+    else applySkahaBatchMulti();
 }
 </script>
 
@@ -470,10 +670,150 @@ function applyLifeBatch() {
             </el-card>
 
             <el-tabs v-model="mode" type="border-card" class="mode-tabs">
+                <el-tab-pane label="生活貿易" name="life">
+                    <p class="text-sm text-gray-400 mb-4">
+                        生活貿易的出發地不在下列 12 城鎮之中，換得的商品每座城鎮都可收購——與只能賣往「非出發地」的個人貿易不同。輸入各城鎮收購價即可比較利潤，支援批次貼上。
+                    </p>
+                    <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
+                        <div class="setting-row wrap mb-2">
+                            <span class="setting-label">顯示地點</span>
+                            <el-checkbox v-for="loc in lifeTradeLocations" :key="loc.name" v-model="pricingVisibleLocations[loc.name]">
+                                {{ loc.name }}
+                            </el-checkbox>
+                        </div>
+                        <div class="setting-row mb-3">
+                            <el-checkbox v-model="pricingMaxQtyMode">選定項目數量最大</el-checkbox>
+                            <span class="text-xs text-gray-500">已勾選商品直接帶入最大可交易數量</span>
+                        </div>
+                        <div class="mb-3">
+                            <p class="text-xs text-gray-500 mb-2">本週高難度商品（每地點同時僅開放一種，未設定則不顯示）</p>
+                            <div class="hard-item-picker-row">
+                                <span v-for="loc in lifeTradeLocations" :key="loc.name" class="hard-item-picker">
+                                    <span class="text-xs text-gray-500">{{ loc.name }}</span>
+                                    <el-select v-model="activeHardItem[loc.name]" size="small" clearable placeholder="未設定" style="width: 170px">
+                                        <el-option v-for="hi in hardItemsByLocation[loc.name]" :key="hi.name" :label="hi.name" :value="hi.name" />
+                                    </el-select>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <el-button size="small" plain @click="showLifeBatch = !showLifeBatch">
+                                {{ showLifeBatch ? "收起批次輸入" : "批次輸入價格" }}
+                            </el-button>
+                        </div>
+                        <div v-if="showLifeBatch" class="mb-4">
+                            <el-radio-group v-model="lifeBatchMode" size="small" class="mb-2">
+                                <el-radio-button value="single">單項商品</el-radio-button>
+                                <el-radio-button value="multi">多項商品</el-radio-button>
+                            </el-radio-group>
+
+                            <template v-if="lifeBatchMode === 'single'">
+                                <div class="mb-2">
+                                    <el-select v-model="lifeBatchItemKey" placeholder="選擇商品" filterable style="width: 260px">
+                                        <el-option
+                                            v-for="item in pricingVisibleItems"
+                                            :key="item.key"
+                                            :label="`${item.hard ? '高難度' : 'LV' + item.level} ${item.name}（${item.location}）`"
+                                            :value="item.key"
+                                        />
+                                    </el-select>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">
+                                    每列對應 12 座城鎮（堤爾克那～巴雷斯，依序由上至下）的單一數值，套用到上面選定的商品；支援「萬」簡寫，例如 16萬3486。
+                                </p>
+                            </template>
+                            <template v-else>
+                                <p class="text-xs text-gray-500 mb-1">
+                                    每列對應 12 座城鎮（堤爾克那～巴雷斯，依序由上至下），欄位依序為下表由左至右目前顯示的商品，以 Tab 或連續空白分隔，可直接從試算表貼上；支援「萬」簡寫，例如 16萬3486。
+                                </p>
+                            </template>
+
+                            <el-input
+                                v-model="lifeBatchText"
+                                type="textarea"
+                                :rows="6"
+                                placeholder="貼上價格表…"
+                                class="life-batch-input"
+                            />
+                            <el-button
+                                class="mt-2"
+                                type="warning"
+                                size="small"
+                                :disabled="lifeBatchMode === 'single' && !lifeBatchItemKey"
+                                @click="applyLifeBatch"
+                            >
+                                套用
+                            </el-button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm trade-table">
+                                <thead>
+                                    <tr class="text-gray-400 border-b border-gray-700 text-xs">
+                                        <th class="text-left py-2 pr-3 font-normal">城鎮</th>
+                                        <th
+                                            v-for="item in pricingVisibleItems"
+                                            :key="item.key"
+                                            class="text-center py-2 px-2 font-normal whitespace-nowrap"
+                                        >
+                                            <el-checkbox v-model="pricingSelected[item.key]" />
+                                            <img v-if="item.icon" :src="iconSrc(item.icon)" :alt="item.name" class="header-icon pixelated" />
+                                            <div class="text-gray-200">
+                                                <span class="life-level-badge mr-1" :class="{ 'life-level-badge-hard': item.hard }">
+                                                    {{ item.hard ? "高難度" : `LV${item.level}` }}
+                                                </span>{{ item.name }}
+                                            </div>
+                                            <div class="text-[10px] text-gray-500">（{{ item.location }}）</div>
+                                            <el-input-number
+                                                v-model="pricingQty[item.key]"
+                                                :min="0"
+                                                :max="lifeQtyCap(item.level)"
+                                                size="small"
+                                                style="width: 100px"
+                                            />
+                                            <div class="text-[10px] text-gray-500">上限 {{ lifeQtyCap(item.level) }}</div>
+                                        </th>
+                                        <th class="text-center py-2 px-2 font-normal">總計</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="city in tradeCities" :key="city.name" class="border-b border-gray-800/60">
+                                        <th class="text-left py-2 pr-3 font-normal text-gray-200 whitespace-nowrap">
+                                            {{ city.name }}
+                                        </th>
+                                        <td
+                                            v-for="item in pricingVisibleItems"
+                                            :key="item.key"
+                                            class="text-center py-1 px-2"
+                                            :class="bestLifeCities(item).has(city.name) ? 'bg-accent/10' : ''"
+                                        >
+                                            <el-input
+                                                v-model="lifePrices[lifePriceKey(item, city.name)]"
+                                                size="small"
+                                                style="width: 90px"
+                                                placeholder="單價"
+                                                class="life-price-input"
+                                            />
+                                            <div v-if="lifeValueOf(item, city.name) > 0" class="text-[10px] opacity-70">
+                                                {{ lifeValueOf(item, city.name).toLocaleString() }}
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="text-center py-1 px-2 whitespace-nowrap"
+                                            :class="bestPricingCities.has(city.name) ? 'bg-accent/20 text-accent font-semibold' : 'text-gray-300'"
+                                        >
+                                            {{ cityPricingTotal(city.name).toLocaleString() }} 杜卡
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </el-card>
+                </el-tab-pane>
+
                 <el-tab-pane label="個人貿易" name="personal">
                     <!-- 城鎮分頁 -->
             <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
-                <el-tabs v-model="activeCity" type="border-card" class="city-tabs">
+                <el-tabs v-model="activeCity" type="border-card" class="city-tabs personal-city-tabs">
                     <el-tab-pane v-for="city in personalCities" :key="city.name" :name="city.name">
                         <template #label>
                             <span class="flex items-center gap-1">
@@ -597,66 +937,107 @@ function applyLifeBatch() {
                     </el-card>
                 </el-tab-pane>
 
-                <el-tab-pane label="生活貿易" name="life">
+                <el-tab-pane label="斯卡哈貿易" name="skaha">
                     <p class="text-sm text-gray-400 mb-4">
-                        生活貿易的出發地不在下列 12 城鎮之中，換得的商品每座城鎮都可收購——與只能賣往「非出發地」的個人貿易不同。輸入各城鎮收購價即可比較利潤，支援批次貼上。
+                        斯卡哈的商品每座城鎮都可收購，輸入各城鎮收購價即可比較利潤，支援批次貼上。
                     </p>
                     <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
                         <div class="mb-3">
-                            <el-button size="small" plain @click="showLifeBatch = !showLifeBatch">
-                                {{ showLifeBatch ? "收起批次輸入" : "批次輸入價格" }}
+                            <el-button size="small" plain @click="showSkahaBatch = !showSkahaBatch">
+                                {{ showSkahaBatch ? "收起批次輸入" : "批次輸入價格" }}
                             </el-button>
                         </div>
-                        <div v-if="showLifeBatch" class="mb-4">
-                            <p class="text-xs text-gray-500 mb-1">
-                                每列對應下表由上至下的商品，欄位依序為 12 座城鎮（堤爾克那～巴雷斯），以 Tab 或連續空白分隔，可直接從試算表貼上。
-                            </p>
+                        <div v-if="showSkahaBatch" class="mb-4">
+                            <el-radio-group v-model="skahaBatchMode" size="small" class="mb-2">
+                                <el-radio-button value="single">單項商品</el-radio-button>
+                                <el-radio-button value="multi">多項商品</el-radio-button>
+                            </el-radio-group>
+
+                            <template v-if="skahaBatchMode === 'single'">
+                                <div class="mb-2">
+                                    <el-select v-model="skahaBatchItemName" placeholder="選擇商品" filterable style="width: 200px">
+                                        <el-option v-for="good in skahaGoods" :key="good.name" :label="good.name" :value="good.name" />
+                                    </el-select>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">
+                                    每列對應 12 座城鎮（堤爾克那～巴雷斯，依序由上至下）的單一數值，套用到上面選定的商品；支援「萬」簡寫，例如 16萬3486。
+                                </p>
+                            </template>
+                            <template v-else>
+                                <p class="text-xs text-gray-500 mb-1">
+                                    每列對應 12 座城鎮（堤爾克那～巴雷斯，依序由上至下），欄位依序為下表由左至右的商品，以 Tab 或連續空白分隔，可直接從試算表貼上；支援「萬」簡寫，例如 16萬3486。
+                                </p>
+                            </template>
+
                             <el-input
-                                v-model="lifeBatchText"
+                                v-model="skahaBatchText"
                                 type="textarea"
                                 :rows="6"
                                 placeholder="貼上價格表…"
                                 class="life-batch-input"
                             />
-                            <el-button class="mt-2" type="warning" size="small" @click="applyLifeBatch">套用</el-button>
+                            <el-button
+                                class="mt-2"
+                                type="warning"
+                                size="small"
+                                :disabled="skahaBatchMode === 'single' && !skahaBatchItemName"
+                                @click="applySkahaBatch"
+                            >
+                                套用
+                            </el-button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm trade-table">
                                 <thead>
                                     <tr class="text-gray-400 border-b border-gray-700 text-xs">
-                                        <th class="text-left py-2 pr-3 font-normal">商品</th>
-                                        <th class="text-right py-2 pr-3 font-normal">可交易數量</th>
+                                        <th class="text-left py-2 pr-3 font-normal">城鎮</th>
                                         <th
-                                            v-for="c in tradeCities"
-                                            :key="c.name"
-                                            class="text-center py-2 px-1 font-normal whitespace-nowrap"
+                                            v-for="good in skahaGoods"
+                                            :key="good.name"
+                                            class="text-center py-2 px-2 font-normal whitespace-nowrap"
                                         >
-                                            {{ c.name }}
+                                            <el-checkbox v-model="skahaSelected[good.name]" />
+                                            <img :src="iconSrc(good.icon)" :alt="good.name" class="header-icon pixelated" />
+                                            <div class="text-gray-200">{{ good.name }}</div>
+                                            <el-input-number
+                                                v-model="skahaQty[good.name]"
+                                                :min="0"
+                                                :max="skahaQtyCap(good)"
+                                                size="small"
+                                                style="width: 100px"
+                                            />
+                                            <div class="text-[10px] text-gray-500">上限 {{ skahaQtyCap(good) }}</div>
                                         </th>
+                                        <th class="text-center py-2 px-2 font-normal">總計</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="item in flatLifeItems" :key="item.key" class="border-b border-gray-800/60">
+                                    <tr v-for="city in tradeCities" :key="city.name" class="border-b border-gray-800/60">
                                         <th class="text-left py-2 pr-3 font-normal text-gray-200 whitespace-nowrap">
-                                            <span class="life-level-badge mr-1">LV{{ item.level }}</span>
-                                            {{ item.name }}
-                                            <span class="text-[10px] text-gray-500">（{{ item.location }}）</span>
+                                            {{ city.name }}
                                         </th>
-                                        <td class="text-right py-2 pr-3 text-gray-300">{{ lifeQtyOf(item.level) }}</td>
                                         <td
-                                            v-for="c in tradeCities"
-                                            :key="c.name"
-                                            class="text-center py-1 px-1"
-                                            :class="bestLifeCities(item).has(c.name) ? 'bg-accent/10' : ''"
+                                            v-for="good in skahaGoods"
+                                            :key="good.name"
+                                            class="text-center py-1 px-2"
+                                            :class="bestSkahaCities(good).has(city.name) ? 'bg-accent/10' : ''"
                                         >
                                             <el-input
-                                                v-model="lifePrices[lifePriceKey(item, c.name)]"
+                                                v-model="skahaPrices[skahaPriceKey(good, city.name)]"
                                                 size="small"
-                                                style="width: 64px"
+                                                style="width: 90px"
+                                                placeholder="單價"
+                                                class="life-price-input"
                                             />
-                                            <div v-if="lifeValueOf(item, c.name) > 0" class="text-[10px] opacity-70">
-                                                {{ lifeValueOf(item, c.name).toLocaleString() }}
+                                            <div v-if="skahaValueOf(good, city.name) > 0" class="text-[10px] opacity-70">
+                                                {{ skahaValueOf(good, city.name).toLocaleString() }}
                                             </div>
+                                        </td>
+                                        <td
+                                            class="text-center py-1 px-2 whitespace-nowrap"
+                                            :class="bestSkahaTotalCities.has(city.name) ? 'bg-accent/20 text-accent font-semibold' : 'text-gray-300'"
+                                        >
+                                            {{ citySkahaTotal(city.name).toLocaleString() }} 杜卡
                                         </td>
                                     </tr>
                                 </tbody>
@@ -696,46 +1077,57 @@ function applyLifeBatch() {
                                     </div>
 
                                     <div v-for="loc in visibleLifeLocationsList" :key="loc.name" class="life-location-section">
-                                        <h3 class="life-location-title">{{ loc.name }}</h3>
+                                        <div class="life-location-header">
+                                            <h3 class="life-location-title">{{ loc.name }}</h3>
+                                            <span v-if="hardItemsByLocation[loc.name]?.length" class="hard-item-picker">
+                                                <span class="text-xs text-gray-500">本週高難度</span>
+                                                <el-select v-model="activeHardItem[loc.name]" size="small" clearable placeholder="未設定" style="width: 160px">
+                                                    <el-option v-for="hi in hardItemsByLocation[loc.name]" :key="hi.name" :label="hi.name" :value="hi.name" />
+                                                </el-select>
+                                            </span>
+                                        </div>
                                         <div class="life-grid">
                                             <div
-                                                v-for="item in loc.items"
-                                                :key="item.level"
+                                                v-for="item in loc.items.filter((i) => isActiveHardItem({ location: loc.name, name: i.name, hard: i.hard }))"
+                                                :key="item.name"
                                                 class="life-item-card"
-                                                :class="{ 'life-item-card-selected': isLifeItemChecked(itemKey(loc.name, item.level)) }"
-                                                @click="toggleLifeItem(loc.name, item.level)"
+                                                :class="{ 'life-item-card-selected': isLifeItemChecked(itemKey(loc.name, item.name)) }"
+                                                @click="toggleLifeItem(loc.name, item.name, item.level)"
                                             >
                                                 <div class="life-item-header">
                                                     <el-checkbox
-                                                        :model-value="isLifeItemChecked(itemKey(loc.name, item.level))"
-                                                        @change="(val) => setLifeItemChecked(itemKey(loc.name, item.level), Boolean(val), item.level)"
+                                                        :model-value="isLifeItemChecked(itemKey(loc.name, item.name))"
+                                                        @change="(val) => setLifeItemChecked(itemKey(loc.name, item.name), Boolean(val), item.level)"
                                                         @click.stop
                                                     />
-                                                    <span class="life-level-badge">LV{{ item.level }}</span>
+                                                    <img v-if="item.icon" :src="iconSrc(item.icon)" :alt="item.name" class="inline-icon pixelated" />
+                                                    <span class="life-level-badge" :class="{ 'life-level-badge-hard': item.hard }">
+                                                        {{ item.hard ? "高難度" : `LV${item.level}` }}
+                                                    </span>
                                                     <span class="text-gray-200 font-semibold">{{ item.name }}</span>
                                                 </div>
                                                 <div
-                                                    v-if="isLifeItemChecked(itemKey(loc.name, item.level))"
+                                                    v-if="isLifeItemChecked(itemKey(loc.name, item.name))"
                                                     class="life-item-qty"
                                                     @click.stop
                                                 >
                                                     <span class="text-xs text-gray-400">數量</span>
                                                     <el-input-number
-                                                        v-model="lifeItemCounts[itemKey(loc.name, item.level)]"
+                                                        v-model="lifeItemCounts[itemKey(loc.name, item.name)]"
                                                         :min="1"
                                                         :max="lifeTradeLevelStats[item.level].weeklyLimit"
                                                         size="small"
                                                         style="width: 110px"
                                                     />
                                                     <span class="text-[10px] text-gray-500">
-                                                        / 週上限 {{ lifeTradeLevelStats[item.level].weeklyLimit }}
+                                                        / 上限 {{ lifeTradeLevelStats[item.level].weeklyLimit }}
                                                     </span>
                                                 </div>
                                                 <ul class="life-req-list">
                                                     <li v-for="req in item.requirements" :key="req.name">
                                                         {{ req.name }}
                                                         <span class="text-gray-500">
-                                                            x{{ displayReqQty(req.qty, item.level, itemKey(loc.name, item.level)) }}
+                                                            x{{ displayReqQty(req.qty, item.level, itemKey(loc.name, item.name)) }}
                                                         </span>
                                                         <span
                                                             v-if="showLifeCategory && lifeTradeMaterialCategories[req.name]"
@@ -817,6 +1209,19 @@ function applyLifeBatch() {
     padding-top: 0.75rem;
 }
 
+/* 個人貿易城鎮分頁固定分成兩排：前 8 座一排，克拉／比路里亞／科爾／巴雷斯另成一排 */
+.personal-city-tabs :deep(.el-tabs__nav-wrap),
+.personal-city-tabs :deep(.el-tabs__nav-scroll),
+.personal-city-tabs :deep(.el-tabs__nav) {
+    overflow: visible;
+}
+
+.personal-city-tabs :deep(.el-tabs__nav) {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    row-gap: 0.4rem;
+}
+
 .mode-tabs :deep(.el-tabs__content) {
     padding-top: 1rem;
 }
@@ -875,13 +1280,34 @@ function applyLifeBatch() {
     margin-bottom: 0;
 }
 
+.life-location-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px dashed #374151;
+}
+
 .life-location-title {
     font-size: 0.95rem;
     font-weight: 700;
     color: #d1d5db;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.3rem;
-    border-bottom: 1px dashed #374151;
+    margin: 0;
+}
+
+.hard-item-picker-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.25rem;
+}
+
+.hard-item-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .life-grid {
@@ -905,6 +1331,12 @@ function applyLifeBatch() {
     border-radius: 6px;
     padding: 0.1rem 0.4rem;
     flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.life-level-badge-hard {
+    color: #fff;
+    background: #dc2626;
 }
 
 .life-req-list {
@@ -985,6 +1417,17 @@ function applyLifeBatch() {
     border: 1px solid #374151;
     border-radius: 8px;
     padding: 0.4rem 0.6rem;
+}
+
+/* 表格內以百分比撐開的 el-input 在多欄表格中常被瀏覽器算錯寬度，改用固定像素寬度 */
+.life-price-input,
+.life-price-input :deep(.el-input__wrapper),
+.life-price-input :deep(.el-input__inner) {
+    width: 90px !important;
+}
+
+.life-price-input :deep(.el-input__inner) {
+    text-align: right;
 }
 
 .life-batch-input :deep(textarea) {
