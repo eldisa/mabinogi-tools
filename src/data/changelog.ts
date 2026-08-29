@@ -12,6 +12,7 @@ export interface TodoItem {
 }
 
 export const announcements: Announcement[] = [
+    { date: "2026-08-29", type: "new", text: "新增 貿易計算機：個人貿易／商團貿易／生活貿易／生活貿易材料計算／斯卡哈貿易，計算載貨量與利潤，支援批次貼上價格" },
     { date: "2026-08-10", type: "fix", text: "賦予資料大量校正：修正 22 筆接頭/接尾判斷錯誤、補齊 147 筆缺漏賦予、修正負傷率屬性誤判為傷害的解析錯誤、修正部分翻譯錯字與一筆重複資料" },
     { date: "2026-07-16", type: "new", text: "新增 破防練習：練習維持破防條件同時在場，含技能／寵物施加與隨機出題 10 關" },
     { date: "2026-07-16", type: "update", text: "符文模擬器：目標詞條最低等級改為預設滿等、移除最多次數設定" },
@@ -40,6 +41,5 @@ export const announcements: Announcement[] = [
 export const todoItems: TodoItem[] = [
     { title: "頂裝差距", status: "in_progress" },
     { title: "普洛貓計算機整合", status: "planned" },
-    { title: "跑商計算", status: "planned" },
     { title: "名片系統", status: "planned" },
 ];

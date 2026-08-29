@@ -17,6 +17,7 @@ import {
     Headset,
     Coffee,
     ArrowDown,
+    Van,
 } from "@element-plus/icons-vue";
 
 defineProps<{
@@ -48,6 +49,7 @@ const menuGroups = ref([
             { name: "娃娃背包查詢", path: "/doll-bag", icon: markRaw(Handbag) },
             { name: "農場模型查詢", path: "/farmModel", icon: markRaw(HomeFilled) },
             { name: "魔法陣查詢", path: "/magic-circle", icon: markRaw(MagicStick) },
+            { name: "貿易計算機", path: "/trade-calculator", icon: markRaw(Van) },
             { name: "符文", path: "/ogham", icon: markRaw(MagicStick), note: "暫譯・台服未實裝" },
         ],
     },
