@@ -34,6 +34,7 @@ interface TradeSettings {
     hasWeightVoucher: boolean;
     hasSlotVoucher: boolean;
     vehicles: Record<string, boolean>;
+    vehiclePrinciple: "maxQty" | "efficiency";
 }
 
 // 飛行帆船僅商團貿易使用（克拉／比路里亞／科爾／巴雷斯），不列入個人貿易／生活貿易的一般載具
@@ -54,6 +55,7 @@ const settings = useLocalStorage<TradeSettings>("trade-calculator-settings", {
     hasWeightVoucher: false,
     hasSlotVoucher: false,
     vehicles: Object.fromEntries(toggleableVehicles.map((v) => [v.name, true])),
+    vehiclePrinciple: "maxQty",
 });
 
 // 個人貿易（羊駝／夥伴＋交通工具馱運）、商團貿易（商團馬車配送）與生活貿易（材料兌換）是三套不同機制，分開呈現
@@ -181,13 +183,20 @@ function profitOf(city: TradeCity, good: TradeGood, vehicle: TradeVehicle) {
 }
 
 function bestVehicleNames(good: TradeGood): Set<string> {
-    const values = visibleVehicles.value.map((v) => qtyOf(good, v));
-    const max = values.length ? Math.max(...values) : 0;
-    const names = new Set<string>();
-    visibleVehicles.value.forEach((v, i) => {
-        if (values[i] === max) names.add(v.name);
-    });
-    return names;
+    const withQty = visibleVehicles.value.map((v) => ({ v, qty: qtyOf(good, v) }));
+    let candidates = withQty;
+    if (settings.value.vehiclePrinciple === "efficiency") {
+        // 效率＝利潤÷所需時間；同一商品下價格/加成係數為固定常數，等同比較「載貨量×速度」
+        const scores = withQty.map((x) => x.qty * x.v.speed);
+        const maxScore = scores.length ? Math.max(...scores) : 0;
+        candidates = withQty.filter((_, i) => scores[i] === maxScore);
+    } else {
+        const maxQty = withQty.length ? Math.max(...withQty.map((x) => x.qty)) : 0;
+        candidates = withQty.filter((x) => x.qty === maxQty);
+        const maxSpeed = candidates.length ? Math.max(...candidates.map((x) => x.v.speed)) : 0;
+        candidates = candidates.filter((x) => x.v.speed === maxSpeed);
+    }
+    return new Set(candidates.map((x) => x.v.name));
 }
 
 // ===== 商團貿易：飛行帆船配送 =====
@@ -657,9 +666,12 @@ function applySkahaBatch() {
                                     {{ v.name }}
                                 </el-checkbox>
                             </div>
-                            <div class="setting-row">
+                            <div class="setting-row wrap">
                                 <span class="setting-label">交通工具選擇原則</span>
-                                <span class="text-sm text-gray-300">最大載貨量</span>
+                                <el-radio-group v-model="settings.vehiclePrinciple" size="small">
+                                    <el-radio-button value="maxQty">最大載貨量（相同時比速度）</el-radio-button>
+                                    <el-radio-button value="efficiency">最高效率（利潤÷所需時間）</el-radio-button>
+                                </el-radio-group>
                             </div>
                         </div>
                         <p class="mt-3 px-1 text-xs text-gray-500">
