@@ -584,35 +584,19 @@ const itemDb = [
         }
     },
     {
-        id: 5100331,
+        id: 5300217,
         name: {
             "en": "Coin",
             "kr": "브리 레흐 구슬",
-            "tw": "布里萊赫的珠子"
+            "tw": "布里萊赫珠子"
         }
     },
     {
-        id: 5040986,
-        name: {
-            "en": "Holywater Effect Memory Scroll",
-            "kr": "무리아스의 성수 효과 기억의 스크롤",
-            "tw": "布里萊赫的珠子"
-        }
-    },
-    {
-        "id": 5040986,
+        "id": 5040787,
         "name": {
-            "en": "Holywater Effect Memory Scroll",
-            "kr": "무리아스의 성수 효과 기억의 스크롤",
-            "tw": "穆利亞斯聖水效果記憶卷軸"
-        },
-    },
-    {
-        "id": 5040985,
-        "name": {
-            "en": "Murias Treasure Platinum Hammer of Durability",
-            "kr": "무리아스의 유물 내구도 상승의 플래티넘 망치",
-            "tw": "穆利亞斯的遺物裝備耐久度提升的白金鐵鎚"
+            "en": "Lumila Blue Upgrade Stone",
+            "kr": "8단계 푸른 개조석",
+            "tw": "第8階段水藍改造石"
         },
     },
     {
@@ -624,11 +608,19 @@ const itemDb = [
         },
     },
     {
-        "id": 5040787,
+        "id": 5040985,
         "name": {
-            "en": "Lumila Blue Upgrade Stone",
-            "kr": "8단계 푸른 개조석",
-            "tw": "第8階段水藍改造石"
+            "en": "Murias Treasure Platinum Hammer of Durability",
+            "kr": "무리아스의 유물 내구도 상승의 플래티넘 망치",
+            "tw": "穆利亞斯的遺物裝備耐久度提升的白金鐵鎚"
+        },
+    },
+    {
+        "id": 5040986,
+        "name": {
+            "en": "Holywater Effect Memory Scroll",
+            "kr": "무리아스의 성수 효과 기억의 스크롤",
+            "tw": "穆利亞斯聖水效果記憶卷軸"
         },
     },
     {
@@ -695,6 +687,7 @@ const enchantDb = [
         "name": {
             "tw": "渴望的",
             "en": "Longing",
+            "kr": "갈망하는",
             "tw2": "渴望的"
         }
     },
@@ -703,6 +696,7 @@ const enchantDb = [
         "name": {
             "tw": "殷切希望的",
             "en": "Anxious",
+            "kr": "열망하는",
             "tw2": "殷切希望的"
         }
     },
@@ -711,6 +705,7 @@ const enchantDb = [
         "name": {
             "tw": "盼望的",
             "en": "Desirous",
+            "kr": "소망하는",
             "tw2": "盼望的"
         }
     },
@@ -719,6 +714,7 @@ const enchantDb = [
         "name": {
             "tw": "沉沒的",
             "en": "Subdued",
+            "kr": "가라앉은",
             "tw2": "沉沒的"
         }
     },
@@ -727,6 +723,7 @@ const enchantDb = [
         "name": {
             "tw": "消失的",
             "en": "Vanished",
+            "kr": "사라진",
             "tw2": "消失的"
         }
     },
@@ -735,6 +732,7 @@ const enchantDb = [
         "name": {
             "tw": "被覆蓋的",
             "en": "Extinct",
+            "kr": "뒤덮인",
             "tw2": "被覆蓋的"
         }
     },
@@ -743,6 +741,7 @@ const enchantDb = [
         "name": {
             "tw": "逃跑的",
             "en": "Runaway",
+            "kr": "달아나는",
             "tw2": "逃跑的"
         }
     },
@@ -751,6 +750,7 @@ const enchantDb = [
         "name": {
             "tw": "觀望的",
             "en": "Watchful",
+            "kr": "관망하는",
             "tw2": "觀望的"
         }
     },
@@ -759,6 +759,7 @@ const enchantDb = [
         "name": {
             "tw": "迴轉的",
             "en": "Spinning",
+            "kr": "회전하는",
             "tw2": "迴轉的"
         }
     },
@@ -767,6 +768,7 @@ const enchantDb = [
         "name": {
             "tw": "囚禁的",
             "en": "Confining",
+            "kr": "가두는",
             "tw2": "囚禁的"
         }
     },
@@ -775,6 +777,7 @@ const enchantDb = [
         "name": {
             "tw": "停滯的",
             "en": "Immovable",
+            "kr": "부동의",
             "tw2": "停滯的"
         }
     },
@@ -783,6 +786,7 @@ const enchantDb = [
         "name": {
             "tw": "結冰的",
             "en": "Iced",
+            "kr": "결빙된",
             "tw2": "結冰的"
         }
     },
@@ -1097,6 +1101,7 @@ const enchantDb = [
         "name": {
             "tw": "凱撒兔",
             "en": "Seizure Rabbit",
+            "kr": "시저 래빗",
             "tw2": "凱撒兔"
         }
     },
@@ -1105,6 +1110,7 @@ const enchantDb = [
         "name": {
             "tw": "夜靈",
             "en": "Gwyllion",
+            "kr": "구일리온",
             "tw2": "夜靈"
         }
     },
@@ -1113,6 +1119,7 @@ const enchantDb = [
         "name": {
             "tw": "冰脊野狼",
             "en": "Gwyllgi",
+            "kr": "구이쉬기",
             "tw2": "冰脊野狼"
         }
     },
@@ -1121,6 +1128,7 @@ const enchantDb = [
         "name": {
             "tw": "蹤跡",
             "en": "Trail",
+            "kr": "자취",
             "tw2": "蹤跡"
         }
     },
@@ -1129,6 +1137,7 @@ const enchantDb = [
         "name": {
             "tw": "軌跡",
             "en": "Trajectory",
+            "kr": "궤적",
             "tw2": "軌跡"
         }
     },
@@ -1137,6 +1146,7 @@ const enchantDb = [
         "name": {
             "tw": "痕跡",
             "en": "Trace",
+            "kr": "흔적",
             "tw2": "痕跡"
         }
     },
@@ -1145,6 +1155,7 @@ const enchantDb = [
         "name": {
             "tw": "霜紋靈貓",
             "en": "Folach Catt",
+            "kr": "폴라하 카트",
             "tw2": "霜紋靈貓"
         }
     },
@@ -1153,6 +1164,7 @@ const enchantDb = [
         "name": {
             "tw": "斯奈塔",
             "en": "Sneachta",
+            "kr": "스넷타",
             "tw2": "斯奈塔"
         }
     },
@@ -1161,6 +1173,7 @@ const enchantDb = [
         "name": {
             "tw": "冰花之靈",
             "en": "Snow Sling",
+            "kr": "스노우 슬링",
             "tw2": "冰花之靈"
         }
     },
@@ -1169,6 +1182,7 @@ const enchantDb = [
         "name": {
             "tw": "白樺樹",
             "en": "Birch",
+            "kr": "자작나무",
             "tw2": "白樺樹"
         }
     },
@@ -1177,6 +1191,7 @@ const enchantDb = [
         "name": {
             "tw": "波紋",
             "en": "Wave",
+            "kr": "물결",
             "tw2": "波紋"
         }
     },
@@ -1185,6 +1200,7 @@ const enchantDb = [
         "name": {
             "tw": "鏡子",
             "en": "Mirror",
+            "kr": "거울",
             "tw2": "鏡子"
         }
     },
