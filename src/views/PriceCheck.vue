@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { Search, Loading, InfoFilled } from "@element-plus/icons-vue";
+import { Search, Loading, InfoFilled, Filter } from "@element-plus/icons-vue";
 import {
     fetchDungeonItemPrices,
     fetchMuriasRelicPrices,
@@ -348,6 +348,27 @@ onMounted(loadPrices);
                                     <span class="text-xs text-gray-500">(尚無資料)</span>
                                 </el-checkbox>
                             </template>
+
+                            <el-popover v-else trigger="click" placement="bottom-start" :width="240">
+                                <template #reference>
+                                    <el-button :icon="Filter" circle />
+                                </template>
+                                <div class="flex flex-col gap-3">
+                                    <el-select v-model="itemTypeFilter" placeholder="依照類型" clearable style="width: 100%">
+                                        <el-option
+                                            v-for="t in availableTypes"
+                                            :key="t"
+                                            :label="translateType(t)"
+                                            :value="t"
+                                        />
+                                    </el-select>
+                                    <el-checkbox v-model="showBriLeith">布本</el-checkbox>
+                                    <el-checkbox v-model="showSnow">
+                                        雪本
+                                        <span class="text-xs text-gray-500">(尚無資料)</span>
+                                    </el-checkbox>
+                                </div>
+                            </el-popover>
                         </div>
 
                         <el-table
