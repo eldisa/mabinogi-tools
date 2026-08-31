@@ -532,10 +532,10 @@ onMounted(loadPrices);
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="等級" width="80" align="center" sortable prop="level">
+                            <el-table-column label="等級" width="80" align="center" prop="level">
                                 <template #default="{ row }: { row: FlatRelicRow }">{{ row.level }}</template>
                             </el-table-column>
-                            <el-table-column label="價格" width="150" align="right" sortable prop="price">
+                            <el-table-column label="價格" width="150" align="right" prop="price">
                                 <template #default="{ row }: { row: FlatRelicRow }">
                                     <span class="text-accent font-semibold">{{ displayRelicPrice(row.price) }}</span>
                                 </template>
