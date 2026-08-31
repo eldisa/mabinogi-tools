@@ -6,11 +6,17 @@
 // itemDb / enchantDb 資料庫直接從 GitHub 上的 scraper.js 抓，避免手動複製一份容易對不齊。
 //
 // 用法：
-// 1. 瀏覽器開 https://mabi.labanyu.com/dungeon/brie-lech，正常操作通過驗證、等頁面load完
-// 2. F12 開 DevTools → Console
-// 3. 把整份檔案內容貼進去，Enter
-// 4. 結果會自動印出表格預覽，並觸發下載 prices.json（用 Blob，不依賴瀏覽器專屬的 copy()）
-// 5. 把下載的 prices.json 移到 data/ 資料夾，或直接貼給推送腳本用
+// 1. 瀏覽器開對應副本頁面（布里萊赫 https://mabi.labanyu.com/dungeon/brie-lech，
+//    雪本開對應頁面），正常操作通過驗證、等頁面load完
+// 2. 貼之前先把下面 DUNGEON_SOURCE 改成這次爬的副本（'brie-lech' 或 'snow'）
+// 3. F12 開 DevTools → Console，把整份檔案內容貼進去，Enter
+// 4. 結果會自動印出表格預覽，並觸發下載 prices-<來源>.json（用 Blob，不依賴瀏覽器專屬的 copy()）
+// 5. 如果只爬一個副本，直接存成 data/prices.json 推送即可；
+//    如果布本、雪本都爬了，兩份都下載後用 spider/mergeDungeonItems.js 合併成一份再推送
+//    （PUT 是整包覆蓋，兩份沒合併直接分開推的話，後面推的會蓋掉前面的）
+
+// 這次爬的副本來源
+const DUNGEON_SOURCE = 'brie-lech'; // 雪本改成 'snow'
 
 (async () => {
     // itemDb / enchantDb 跟著 scraper.js 走，用 fetch 抓最新版本，避免兩邊資料對不齊
@@ -70,6 +76,7 @@
             },
             price: price,
             type: match?.category || 'unknown',
+            source: DUNGEON_SOURCE,
         };
     });
 
@@ -89,12 +96,12 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'prices.json';
+        a.download = `prices-${DUNGEON_SOURCE}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        console.log(`已觸發下載 prices.json，共 ${finalResults.length} 筆資料，請移到 data/ 資料夾。`);
+        console.log(`已觸發下載 prices-${DUNGEON_SOURCE}.json，共 ${finalResults.length} 筆資料。`);
     } catch (e) {
         console.log('自動下載失敗，請手動複製下面這段 JSON：');
         console.log(json);

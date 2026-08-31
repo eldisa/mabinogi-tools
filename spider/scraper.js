@@ -2,6 +2,9 @@ import { chromium } from 'playwright';
 import fs from 'fs';
 import { pushPrices } from './pushPrices.js';
 
+// 這支爬的副本來源，跟著要爬的頁面改（'brie-lech' 或 'snow'）
+const DUNGEON_SOURCE = 'brie-lech';
+
 // 1. 準備資料庫 (你可以考慮之後抽出來放在獨立的 json 檔案)
 const itemDb = [
     {
@@ -716,7 +719,7 @@ const enchantDb = [
     await page.waitForSelector('.item-card-box');
 
     // 2. 將邏輯與資料傳入瀏覽器環境執行
-    const finalResults = await page.evaluate(({ itemDb, enchantDb }) => {
+    const finalResults = await page.evaluate(({ itemDb, enchantDb, dungeonSource }) => {
 
         // 內部的查詢 Map 建立
         const universalMap = new Map();
@@ -765,10 +768,11 @@ const enchantDb = [
                     en: match?.name?.en || ""
                 },
                 price: price,
-                type: match?.category || 'unknown'
+                type: match?.category || 'unknown',
+                source: dungeonSource
             };
         });
-    }, { itemDb, enchantDb }); // 傳入外部參數
+    }, { itemDb, enchantDb, dungeonSource: DUNGEON_SOURCE }); // 傳入外部參數
 
     // 3. 輸出結果
     console.table(finalResults.filter(item => !item.name?.kr?.includes('특수한 옷본')).map(item => ({

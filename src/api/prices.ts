@@ -1,11 +1,15 @@
 // api/prices.ts
 import { API_BASE } from "./base";
 
+export type DungeonSource = "brie-lech" | "snow";
+
 export interface DungeonItemPrice {
     id: number | null;
     name: { tw: string; kr: string; en?: string };
     price: number;
     type: string;
+    /** 掉落副本來源；舊資料（爬蟲補上這個欄位之前）沒有這個欄位，一律視為布里萊赫地城 */
+    source?: DungeonSource;
 }
 
 export interface MuriasRelicLevelPrice {

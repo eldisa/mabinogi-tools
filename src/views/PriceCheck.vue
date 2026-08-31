@@ -162,17 +162,20 @@ const availableTypes = computed(() => Array.from(new Set(mappedItemPrices.value.
 
 const itemSearch = ref("");
 const itemTypeFilter = ref("");
-// 目前資料全部來自布里萊赫地城；雪本尚未有爬蟲資料，checkbox 先做起來，等資料補上再串
 const showBriLeith = ref(true);
 const showSnow = ref(true);
 
+// 舊資料（爬蟲補上 source 欄位之前）沒有這個欄位，一律視為布里萊赫地城
+const getItemSource = (item: DungeonItemPrice) => item.source ?? "brie-lech";
+
 const filteredItemPrices = computed(() => {
     const q = itemSearch.value.trim();
-    if (!showBriLeith.value) return []; // 目前所有資料都算布本，取消勾選就清空
     return mappedItemPrices.value.filter((item) => {
+        const source = getItemSource(item);
+        const matchesSource = (source === "brie-lech" && showBriLeith.value) || (source === "snow" && showSnow.value);
         const matchesQuery = !q || item.name.tw.includes(q) || item.name.kr.includes(q);
         const matchesType = !itemTypeFilter.value || item.type === itemTypeFilter.value;
-        return matchesQuery && matchesType;
+        return matchesSource && matchesQuery && matchesType;
     });
 });
 
@@ -389,10 +392,7 @@ onMounted(loadPrices);
                                     />
                                 </el-select>
                                 <el-checkbox v-model="showBriLeith">布本</el-checkbox>
-                                <el-checkbox v-model="showSnow">
-                                    雪本
-                                    <span class="text-xs text-gray-500">(尚無資料)</span>
-                                </el-checkbox>
+                                <el-checkbox v-model="showSnow">雪本</el-checkbox>
                             </template>
 
                             <el-popover v-else trigger="click" placement="bottom-start" :width="240">
