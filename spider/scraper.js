@@ -802,15 +802,6 @@ const enchantDb = [
     {
         id: 21640,
         name: {
-            tw: "朦朧的",
-            en: "Dusky",
-            kr: "어스름한",
-            tw2: "朦朧的"
-        }
-    },
-    {
-        id: 21641,
-        name: {
             tw: "無窮的",
             en: "Enduring",
             kr: "무궁한",
@@ -818,7 +809,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21642,
+        id: 21641,
         name: {
             tw: "無盡的",
             en: "Endless",
@@ -827,7 +818,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21643,
+        id: 21642,
         name: {
             tw: "堅強的",
             en: "Resolute",
@@ -835,7 +826,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21644,
+        id: 21643,
         name: {
             tw: "銳不可擋的",
             en: "Unyielding",
@@ -843,7 +834,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21645,
+        id: 21644,
         name: {
             tw: "破壞性的",
             en: "Destructive",
@@ -851,7 +842,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21646,
+        id: 21645,
         name: {
             tw: "解放的",
             en: "Freed",
@@ -859,7 +850,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21647,
+        id: 21646,
         name: {
             tw: "含蓄的",
             en: "Subtle",
@@ -867,7 +858,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21648,
+        id: 21649,
         name: {
             tw: "甦醒的",
             en: "Roused",
@@ -875,7 +866,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21649,
+        id: 21650,
         name: {
             tw: "威脅性的",
             en: "Menacing",
@@ -883,7 +874,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21650,
+        id: 21651,
         name: {
             tw: "關鍵的",
             en: "Decisive",
@@ -891,7 +882,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21651,
+        id: 21652,
         name: {
             tw: "束縛的",
             en: "Bound",
@@ -899,7 +890,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21652,
+        id: 21653,
         name: {
             tw: "暗沉的",
             en: "Dim",
@@ -907,7 +898,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21653,
+        id: 21654,
         name: {
             tw: "傳說中的",
             en: "Legend’s",
@@ -915,7 +906,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21654,
+        id: 21655,
         name: {
             tw: "被遺忘的",
             en: "Forgotten",
@@ -923,7 +914,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21655,
+        id: 21656,
         name: {
             tw: "複調",
             en: "Polyphony",
@@ -931,7 +922,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21656,
+        id: 31735,
         name: {
             tw: "成果",
             en: "Harvest",
@@ -939,7 +930,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21657,
+        id: 31736,
         name: {
             tw: "羈絆",
             en: "Shackle",
@@ -947,7 +938,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21658,
+        id: 31737,
         name: {
             tw: "投射",
             en: "Striker",
@@ -955,7 +946,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21659,
+        id: 31738,
         name: {
             tw: "暴走",
             en: "Rampage",
@@ -963,7 +954,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21660,
+        id: 31739,
         name: {
             tw: "鬥志",
             en: "valor",
@@ -971,7 +962,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21661,
+        id: 31740,
         name: {
             tw: "靈魂",
             en: "Soul",
@@ -979,7 +970,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21662,
+        id: 31743,
         name: {
             tw: "遺產",
             en: "Legacy",
@@ -987,7 +978,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21663,
+        id: 31744,
         name: {
             tw: "銅像",
             tw2: "凍傷",
@@ -996,7 +987,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21664,
+        id: 31745,
         name: {
             tw: "重現",
             en: "Revive",
@@ -1004,7 +995,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21665,
+        id: 31746,
         name: {
             tw: "痛擊",
             en: "Smite",
@@ -1012,7 +1003,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21666,
+        id: 31747,
         name: {
             tw: "殘渣",
             en: "Remnant",
@@ -1020,7 +1011,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21667,
+        id: 31748,
         name: {
             tw: "殘影",
             en: "Echo",
@@ -1028,7 +1019,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21668,
+        id: 31749,
         name: {
             tw: "防守者",
             en: "Defender",
@@ -1036,7 +1027,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21669,
+        id: 31750,
         name: {
             tw: "空間",
             en: "space",
@@ -1044,7 +1035,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21670,
+        id: 31751,
         name: {
             tw: "節拍",
             en: "Tempo",
@@ -1052,7 +1043,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21671,
+        id: 21692,
         name: {
             tw: "受信賴的",
             en: "faithful",
@@ -1061,7 +1052,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21672,
+        id: 21693,
         name: {
             tw: "累積的",
             en: "accumulating",
@@ -1070,7 +1061,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21673,
+        id: 21694,
         name: {
             tw: "記憶的",
             en: "memorial",
@@ -1079,7 +1070,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21674,
+        id: 21695,
         name: {
             tw: "被蠶食的",
             en: "overwhelmed",
@@ -1088,7 +1079,7 @@ const enchantDb = [
         }
     },
     {
-        id: 21675,
+        id: 21696,
         name: {
             tw: "單純的",
             en: "genuine ",
