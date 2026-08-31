@@ -327,20 +327,27 @@ onMounted(loadPrices);
                                     <el-icon><Search /></el-icon>
                                 </template>
                             </el-input>
-                            <el-select
-                                v-model="itemTypeFilter"
-                                placeholder="依照類型"
-                                clearable
-                                size="large"
-                                style="width: 140px"
-                            >
-                                <el-option v-for="t in availableTypes" :key="t" :label="translateType(t)" :value="t" />
-                            </el-select>
-                            <el-checkbox v-model="showBriLeith">布本</el-checkbox>
-                            <el-checkbox v-model="showSnow">
-                                雪本
-                                <span class="text-xs text-gray-500">(尚無資料)</span>
-                            </el-checkbox>
+                            <template v-if="!layoutStore.isMobile">
+                                <el-select
+                                    v-model="itemTypeFilter"
+                                    placeholder="依照類型"
+                                    clearable
+                                    size="large"
+                                    style="width: 140px"
+                                >
+                                    <el-option
+                                        v-for="t in availableTypes"
+                                        :key="t"
+                                        :label="translateType(t)"
+                                        :value="t"
+                                    />
+                                </el-select>
+                                <el-checkbox v-model="showBriLeith">布本</el-checkbox>
+                                <el-checkbox v-model="showSnow">
+                                    雪本
+                                    <span class="text-xs text-gray-500">(尚無資料)</span>
+                                </el-checkbox>
+                            </template>
                         </div>
 
                         <el-table
@@ -351,7 +358,7 @@ onMounted(loadPrices);
                             :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
                             empty-text="查無資料"
                         >
-                            <el-table-column label="圖片" width="70" align="center">
+                            <el-table-column label="圖片" :width="layoutStore.isMobile ? 50 : 70" align="center">
                                 <template #default="{ row }: { row: DungeonItemPrice }">
                                     <img
                                         v-if="getItemImageId(row)"
@@ -361,7 +368,7 @@ onMounted(loadPrices);
                                     />
                                 </template>
                             </el-table-column>
-                            <el-table-column label="名稱" min-width="220">
+                            <el-table-column label="名稱" :min-width="layoutStore.isMobile ? 140 : 220">
                                 <template #default="{ row }: { row: DungeonItemPrice }">
                                     <span class="font-semibold text-gray-100">{{ row.name.tw }}</span>
                                     <el-popover
@@ -432,7 +439,13 @@ onMounted(loadPrices);
                                     </el-popover>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="type" label="類型" width="100" align="center">
+                            <el-table-column
+                                v-if="!layoutStore.isMobile"
+                                prop="type"
+                                label="類型"
+                                width="100"
+                                align="center"
+                            >
                                 <template #default="{ row }: { row: DungeonItemPrice }">
                                     <el-tag
                                         size="small"
@@ -443,9 +456,15 @@ onMounted(loadPrices);
                                     </el-tag>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="價格" width="150" align="right" sortable prop="price">
+                            <el-table-column
+                                label="價格"
+                                :width="layoutStore.isMobile ? 90 : 150"
+                                align="right"
+                                sortable
+                                prop="price"
+                            >
                                 <template #default="{ row }: { row: DungeonItemPrice }">
-                                    <span class="text-accent font-semibold">{{ row.price.toLocaleString() }}</span>
+                                    <span class="text-accent font-semibold">{{ formatCompactPrice(row.price) }}</span>
                                 </template>
                             </el-table-column>
                         </el-table>
