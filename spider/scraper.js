@@ -687,6 +687,9 @@ const enchantDb = [
         "name": {
             "tw": "渴望的",
             "en": "Longing",
+            cn: "渴望的",
+            jp: "切望する",
+            us: "Longing",
             "kr": "갈망하는",
             "tw2": "渴望的"
         }
@@ -696,6 +699,9 @@ const enchantDb = [
         "name": {
             "tw": "殷切希望的",
             "en": "Anxious",
+            cn: "盼望的",
+            jp: "熱望する",
+            us: "Desirous",
             "kr": "열망하는",
             "tw2": "殷切希望的"
         }
@@ -705,6 +711,9 @@ const enchantDb = [
         "name": {
             "tw": "盼望的",
             "en": "Desirous",
+            cn: "期盼的",
+            jp: "素願する",
+            us: "Wishing",
             "kr": "소망하는",
             "tw2": "盼望的"
         }
@@ -714,6 +723,9 @@ const enchantDb = [
         "name": {
             "tw": "沉沒的",
             "en": "Subdued",
+            cn: "沉没的",
+            jp: "沈んだ",
+            us: "Sunken",
             "kr": "가라앉은",
             "tw2": "沉沒的"
         }
@@ -723,6 +735,9 @@ const enchantDb = [
         "name": {
             "tw": "消失的",
             "en": "Vanished",
+            cn: "消失的",
+            jp: "消えた",
+            us: "Vanished",
             "kr": "사라진",
             "tw2": "消失的"
         }
@@ -732,6 +747,9 @@ const enchantDb = [
         "name": {
             "tw": "被覆蓋的",
             "en": "Extinct",
+            cn: "被覆盖的",
+            jp: "覆い被さった",
+            us: "Covered",
             "kr": "뒤덮인",
             "tw2": "被覆蓋的"
         }
@@ -741,6 +759,9 @@ const enchantDb = [
         "name": {
             "tw": "逃跑的",
             "en": "Runaway",
+            cn: "逃跑的",
+            jp: "逃げる",
+            us: "Fleeing",
             "kr": "달아나는",
             "tw2": "逃跑的"
         }
@@ -750,6 +771,9 @@ const enchantDb = [
         "name": {
             "tw": "觀望的",
             "en": "Watchful",
+            cn: "观望的",
+            jp: "見守る",
+            us: "Onlooking",
             "kr": "관망하는",
             "tw2": "觀望的"
         }
@@ -759,6 +783,9 @@ const enchantDb = [
         "name": {
             "tw": "迴轉的",
             "en": "Spinning",
+            cn: "旋转的",
+            jp: "回転する",
+            us: "Rotating",
             "kr": "회전하는",
             "tw2": "迴轉的"
         }
@@ -768,6 +795,9 @@ const enchantDb = [
         "name": {
             "tw": "囚禁的",
             "en": "Confining",
+            cn: "囚禁的",
+            jp: "閉じ込める",
+            us: "Imprisoning",
             "kr": "가두는",
             "tw2": "囚禁的"
         }
@@ -777,6 +807,9 @@ const enchantDb = [
         "name": {
             "tw": "停滯的",
             "en": "Immovable",
+            cn: "不动之",
+            jp: "不動の",
+            us: "Immovable",
             "kr": "부동의",
             "tw2": "停滯的"
         }
@@ -786,6 +819,9 @@ const enchantDb = [
         "name": {
             "tw": "結冰的",
             "en": "Iced",
+            cn: "结冰的",
+            jp: "結氷した",
+            us: "Frostbitten",
             "kr": "결빙된",
             "tw2": "結冰的"
         }
@@ -795,6 +831,9 @@ const enchantDb = [
         name: {
             tw: "薄暮的",
             en: "Dusky",
+            cn: "暮色",
+            jp: "小暗い",
+            us: "Dusky",
             kr: "어스름한",
             tw2: "朦朧的",
         },
@@ -804,6 +843,9 @@ const enchantDb = [
         name: {
             tw: "無窮的",
             en: "Enduring",
+            cn: "无穷的",
+            jp: "限りない",
+            us: "Unflagging",
             kr: "무궁한",
             tw2: "無窮的"
         }
@@ -813,6 +855,9 @@ const enchantDb = [
         name: {
             tw: "無盡的",
             en: "Endless",
+            cn: "无尽的",
+            jp: "果てしない",
+            us: "Endless",
             kr: "끝없는",
             tw2: "無盡的"
         }
@@ -822,6 +867,9 @@ const enchantDb = [
         name: {
             tw: "堅強的",
             en: "Resolute",
+            cn: "坚毅的",
+            jp: "不屈の",
+            us: "Tough",
             kr: "굳센"
         }
     },
@@ -830,6 +878,9 @@ const enchantDb = [
         name: {
             tw: "銳不可擋的",
             en: "Unyielding",
+            cn: "一往无前的",
+            jp: "ワイルドな",
+            us: "Inexorable",
             kr: "거침없는"
         }
     },
@@ -838,6 +889,9 @@ const enchantDb = [
         name: {
             tw: "破壞性的",
             en: "Destructive",
+            cn: "破坏性的",
+            jp: "破壊的な",
+            us: "Subversive",
             kr: "파괴적인"
         }
     },
@@ -846,6 +900,9 @@ const enchantDb = [
         name: {
             tw: "解放的",
             en: "Freed",
+            cn: "解放的",
+            jp: "開放された",
+            us: "Liberated",
             kr: "해방된"
         }
     },
@@ -854,6 +911,9 @@ const enchantDb = [
         name: {
             tw: "含蓄的",
             en: "Subtle",
+            cn: "幽暗的",
+            jp: "ほのかな",
+            us: "Dim",
             kr: "은은한"
         }
     },
@@ -862,6 +922,9 @@ const enchantDb = [
         name: {
             tw: "甦醒的",
             en: "Roused",
+            cn: "醒来的",
+            jp: "目覚めた",
+            us: "Animated",
             kr: "깨어난"
         }
     },
@@ -870,6 +933,9 @@ const enchantDb = [
         name: {
             tw: "威脅性的",
             en: "Menacing",
+            cn: "威胁的",
+            jp: "脅威的な",
+            us: "Menacing",
             kr: "위협적인"
         }
     },
@@ -878,6 +944,9 @@ const enchantDb = [
         name: {
             tw: "關鍵的",
             en: "Decisive",
+            cn: "决定性的",
+            jp: "決定的な",
+            us: "Crucial",
             kr: "결정적인"
         }
     },
@@ -886,6 +955,9 @@ const enchantDb = [
         name: {
             tw: "束縛的",
             en: "Bound",
+            cn: "被束缚的",
+            jp: "束縛された",
+            us: "Shackled",
             kr: "속박된"
         }
     },
@@ -894,6 +966,9 @@ const enchantDb = [
         name: {
             tw: "暗沉的",
             en: "Dim",
+            cn: "黑暗的",
+            jp: "暗い",
+            us: "Dark",
             kr: "어두운"
         }
     },
@@ -902,6 +977,9 @@ const enchantDb = [
         name: {
             tw: "傳說中的",
             en: "Legend’s",
+            cn: "传说中的",
+            jp: "伝説の",
+            us: "Fabled",
             kr: "전설의"
         }
     },
@@ -910,6 +988,9 @@ const enchantDb = [
         name: {
             tw: "被遺忘的",
             en: "Forgotten",
+            cn: "被遗忘的",
+            jp: "忘れられた",
+            us: "Forgotten",
             kr: "잊혀진"
         }
     },
@@ -918,6 +999,9 @@ const enchantDb = [
         name: {
             tw: "複調",
             en: "Polyphony",
+            cn: "复调",
+            jp: "ポリフォニー",
+            us: "Polyphony",
             kr: "폴리포니"
         }
     },
@@ -926,6 +1010,9 @@ const enchantDb = [
         name: {
             tw: "成果",
             en: "Harvest",
+            cn: "果实",
+            jp: "結実",
+            us: "Fruition",
             kr: "결실"
         }
     },
@@ -934,6 +1021,9 @@ const enchantDb = [
         name: {
             tw: "羈絆",
             en: "Shackle",
+            cn: "束缚",
+            jp: "束縛",
+            us: "Fetters",
             kr: "굴레"
         }
     },
@@ -942,6 +1032,9 @@ const enchantDb = [
         name: {
             tw: "投射",
             en: "Striker",
+            cn: "斗士",
+            jp: "闘士",
+            us: "Striker",
             kr: "투사"
         }
     },
@@ -950,6 +1043,9 @@ const enchantDb = [
         name: {
             tw: "暴走",
             en: "Rampage",
+            cn: "暴走",
+            jp: "暴走",
+            us: "Deluge",
             kr: "폭주"
         }
     },
@@ -958,6 +1054,9 @@ const enchantDb = [
         name: {
             tw: "鬥志",
             en: "valor",
+            cn: "斗志",
+            jp: "闘志",
+            us: "Determination",
             kr: "투지"
         }
     },
@@ -966,6 +1065,9 @@ const enchantDb = [
         name: {
             tw: "靈魂",
             en: "Soul",
+            cn: "灵魂",
+            jp: "魂",
+            us: "Psyche",
             kr: "영혼"
         }
     },
@@ -974,6 +1076,9 @@ const enchantDb = [
         name: {
             tw: "遺產",
             en: "Legacy",
+            cn: "遗产",
+            jp: "遺産",
+            us: "Legacy",
             kr: "유산"
         }
     },
@@ -983,6 +1088,9 @@ const enchantDb = [
             tw: "銅像",
             tw2: "凍傷",
             en: "bronze statue",
+            cn: "塑像",
+            jp: "銅像",
+            us: "Statue",
             kr: "동상"
         }
     },
@@ -991,6 +1099,9 @@ const enchantDb = [
         name: {
             tw: "重現",
             en: "Revive",
+            cn: "重现",
+            jp: "再現",
+            us: "Reenactment",
             kr: "재현"
         }
     },
@@ -999,6 +1110,9 @@ const enchantDb = [
         name: {
             tw: "痛擊",
             en: "Smite",
+            cn: "强击",
+            jp: "強打",
+            us: "Impact",
             kr: "강타"
         }
     },
@@ -1007,6 +1121,9 @@ const enchantDb = [
         name: {
             tw: "殘渣",
             en: "Remnant",
+            cn: "残骸",
+            jp: "残滓",
+            us: "Remnant",
             kr: "잔재"
         }
     },
@@ -1015,6 +1132,9 @@ const enchantDb = [
         name: {
             tw: "殘影",
             en: "Echo",
+            cn: "残影",
+            jp: "残像",
+            us: "Afterimage",
             kr: "잔상"
         }
     },
@@ -1023,6 +1143,9 @@ const enchantDb = [
         name: {
             tw: "防守者",
             en: "Defender",
+            cn: "守卫者",
+            jp: "ディフェンダー",
+            us: "Defender",
             kr: "디펜더"
         }
     },
@@ -1031,6 +1154,9 @@ const enchantDb = [
         name: {
             tw: "空間",
             en: "space",
+            cn: "空间",
+            jp: "空間",
+            us: "Space",
             kr: "공간"
         }
     },
@@ -1039,6 +1165,9 @@ const enchantDb = [
         name: {
             tw: "節拍",
             en: "Tempo",
+            cn: "节奏",
+            jp: "テンポ",
+            us: "Tempo",
             kr: "템포"
         }
     },
@@ -1047,6 +1176,9 @@ const enchantDb = [
         name: {
             tw: "受信賴的",
             en: "faithful",
+            cn: "坚信的",
+            jp: "信頼する",
+            us: "Trusted",
             tw2: "受信賴的",
             kr: "신뢰하는"
         }
@@ -1056,6 +1188,9 @@ const enchantDb = [
         name: {
             tw: "累積的",
             en: "accumulating",
+            cn: "累积的",
+            jp: "積み重なる",
+            us: "Piling",
             tw2: "累積的",
             kr: "쌓여가는"
         }
@@ -1065,6 +1200,9 @@ const enchantDb = [
         name: {
             tw: "記憶的",
             en: "memorial",
+            cn: "记忆的",
+            jp: "記憶の",
+            us: "Memorial",
             tw2: "記憶的",
             kr: "기억의"
         }
@@ -1074,6 +1212,9 @@ const enchantDb = [
         name: {
             tw: "被蠶食的",
             en: "overwhelmed",
+            cn: "侵蚀的",
+            jp: "浸食された",
+            us: "Encroached",
             tw2: "被蠶食的",
             kr: "잠식된"
         }
@@ -1083,6 +1224,9 @@ const enchantDb = [
         name: {
             tw: "單純的",
             en: "genuine ",
+            cn: "纯净的",
+            jp: "純粋な",
+            us: "Chaste",
             tw2: "單純的",
             kr: "순수한"
         }
@@ -1092,6 +1236,9 @@ const enchantDb = [
         "name": {
             "tw": "凱撒兔",
             "en": "Seizure Rabbit",
+            cn: "兔猿人",
+            jp: "シージャーラビット",
+            us: "Abominable Rabbit",
             "kr": "시저 래빗",
             "tw2": "凱撒兔"
         }
@@ -1101,6 +1248,9 @@ const enchantDb = [
         "name": {
             "tw": "夜靈",
             "en": "Gwyllion",
+            cn: "极地骷髅战士",
+            jp: "グウィリオン",
+            us: "Gwyllion",
             "kr": "구일리온",
             "tw2": "夜靈"
         }
@@ -1110,6 +1260,9 @@ const enchantDb = [
         "name": {
             "tw": "冰脊野狼",
             "en": "Gwyllgi",
+            cn: "极地冰狼",
+            jp: "グイシュギ",
+            us: "Gwyllgi",
             "kr": "구이쉬기",
             "tw2": "冰脊野狼"
         }
@@ -1119,6 +1272,9 @@ const enchantDb = [
         "name": {
             "tw": "蹤跡",
             "en": "Trail",
+            cn: "踪迹",
+            jp: "跡形",
+            us: "Trail",
             "kr": "자취",
             "tw2": "蹤跡"
         }
@@ -1128,6 +1284,9 @@ const enchantDb = [
         "name": {
             "tw": "軌跡",
             "en": "Trajectory",
+            cn: "轨迹",
+            jp: "軌跡",
+            us: "Trajectory",
             "kr": "궤적",
             "tw2": "軌跡"
         }
@@ -1137,6 +1296,9 @@ const enchantDb = [
         "name": {
             "tw": "痕跡",
             "en": "Trace",
+            cn: "痕迹",
+            jp: "痕跡",
+            us: "Trace",
             "kr": "흔적",
             "tw2": "痕跡"
         }
@@ -1146,6 +1308,9 @@ const enchantDb = [
         "name": {
             "tw": "霜紋靈貓",
             "en": "Folach Catt",
+            cn: "符文猫",
+            jp: "フォラハキャット",
+            us: "Folach Catt",
             "kr": "폴라하 카트",
             "tw2": "霜紋靈貓"
         }
@@ -1155,6 +1320,9 @@ const enchantDb = [
         "name": {
             "tw": "斯奈塔",
             "en": "Sneachta",
+            cn: "斯内塔",
+            jp: "スネッター",
+            us: "Snuggly Sneachta",
             "kr": "스넷타",
             "tw2": "斯奈塔"
         }
@@ -1164,6 +1332,9 @@ const enchantDb = [
         "name": {
             "tw": "冰花之靈",
             "en": "Snow Sling",
+            cn: "冰雪索灵",
+            jp: "スノースリング",
+            us: "Frostwork Soul",
             "kr": "스노우 슬링",
             "tw2": "冰花之靈"
         }
@@ -1173,6 +1344,9 @@ const enchantDb = [
         "name": {
             "tw": "白樺樹",
             "en": "Birch",
+            cn: "白桦树",
+            jp: "シラカバ",
+            us: "Birch Tree",
             "kr": "자작나무",
             "tw2": "白樺樹"
         }
@@ -1182,6 +1356,9 @@ const enchantDb = [
         "name": {
             "tw": "波紋",
             "en": "Wave",
+            cn: "波纹",
+            jp: "波",
+            us: "Tide",
             "kr": "물결",
             "tw2": "波紋"
         }
@@ -1191,19 +1368,28 @@ const enchantDb = [
         "name": {
             "tw": "鏡子",
             "en": "Mirror",
+            cn: "镜子",
+            jp: "鏡",
+            us: "Mirror",
             "kr": "거울",
             "tw2": "鏡子"
         }
     },
     {
         id: 31788,
-        name: { tw: "管理者", en: "Administrator", tw2: "管理者", kr: "관리자" },
+        name: { tw: "管理者", en: "Administrator",
+            cn: "掌管者",
+            jp: "管理者",
+            us: "Caretaker", tw2: "管理者", kr: "관리자" },
     },
     {
         id: 31789,
         name: {
             tw: "後悔",
             en: "Regret",
+            cn: "后悔",
+            jp: "後悔",
+            us: "Remorse",
             tw2: "後悔",
             kr: "후회"
         }
@@ -1213,6 +1399,9 @@ const enchantDb = [
         name: {
             tw: "片段",
             en: "Fragment",
+            cn: "断片",
+            jp: "片鱗",
+            us: "Snippet",
             tw2: "片段",
             kr: "편린"
         }
@@ -1222,6 +1411,9 @@ const enchantDb = [
         name: {
             tw: "自我",
             en: "Ego",
+            cn: "自我",
+            jp: "自我",
+            us: "Ego",
             tw2: "自我",
             kr: "자아"
         }
@@ -1231,6 +1423,9 @@ const enchantDb = [
         name: {
             tw: "禮物",
             en: "Present",
+            cn: "礼物",
+            jp: "贈り物",
+            us: "Gift",
             tw2: "禮物",
             kr: "선물"
         }
