@@ -79,11 +79,6 @@ const hideBrokenImage = (e: Event) => {
 const loading = ref(true);
 const loadError = ref(false);
 
-const toggleStringValue = (arr: string[], value: string): string[] =>
-    arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
-const toggleNumberValue = (arr: number[], value: number): number[] =>
-    arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
-
 const itemPrices = ref<DungeonItemPrice[]>([]);
 const relicPrices = ref<MuriasRelicJobPrice[]>([]);
 const dungeonItemsUpdatedAt = ref<string | null>(null);
@@ -447,27 +442,29 @@ onMounted(loadPrices);
                             <el-checkbox v-model="relicGroupBySkill">依技能分類（取消則依職業分類）</el-checkbox>
                         </div>
 
-                        <div class="mt-3 flex items-center flex-wrap gap-1">
-                            <span class="text-xs text-gray-500 mr-1">職業</span>
-                            <el-check-tag
-                                v-for="job in availableRelicJobs"
-                                :key="job.kr"
-                                :checked="relicJobFilter.includes(job.kr)"
-                                @change="relicJobFilter = toggleStringValue(relicJobFilter, job.kr)"
+                        <div class="mt-3 flex flex-wrap items-center gap-3">
+                            <el-select
+                                v-model="relicJobFilter"
+                                multiple
+                                collapse-tags
+                                collapse-tags-tooltip
+                                placeholder="篩選職業"
+                                clearable
+                                style="min-width: 220px"
                             >
-                                {{ job.tw }}
-                            </el-check-tag>
-                        </div>
-                        <div class="mt-2 flex items-center flex-wrap gap-1">
-                            <span class="text-xs text-gray-500 mr-1">等級</span>
-                            <el-check-tag
-                                v-for="lv in RELIC_LEVELS"
-                                :key="lv"
-                                :checked="relicLevelFilter.includes(lv)"
-                                @change="relicLevelFilter = toggleNumberValue(relicLevelFilter, lv)"
+                                <el-option v-for="job in availableRelicJobs" :key="job.kr" :label="job.tw" :value="job.kr" />
+                            </el-select>
+                            <el-select
+                                v-model="relicLevelFilter"
+                                multiple
+                                collapse-tags
+                                collapse-tags-tooltip
+                                placeholder="篩選等級"
+                                clearable
+                                style="min-width: 180px"
                             >
-                                {{ lv }}
-                            </el-check-tag>
+                                <el-option v-for="lv in RELIC_LEVELS" :key="lv" :label="`等級 ${lv}`" :value="lv" />
+                            </el-select>
                         </div>
 
                         <div class="mt-3 p-3 rounded-lg bg-gray-900/50 border border-gray-700">
