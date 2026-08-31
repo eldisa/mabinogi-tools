@@ -76,10 +76,13 @@ const hideBrokenImage = (e: Event) => {
     (e.target as HTMLImageElement).style.display = "none";
 };
 
-const search = ref("");
-const typeFilter = ref("");
 const loading = ref(true);
 const loadError = ref(false);
+
+const toggleStringValue = (arr: string[], value: string): string[] =>
+    arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
+const toggleNumberValue = (arr: number[], value: number): number[] =>
+    arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
 
 const itemPrices = ref<DungeonItemPrice[]>([]);
 const relicPrices = ref<MuriasRelicJobPrice[]>([]);
@@ -114,15 +117,23 @@ const mappedItemPrices = computed(() => itemPrices.value.filter((item) => item.n
 
 const availableTypes = computed(() => Array.from(new Set(mappedItemPrices.value.map((item) => item.type))));
 
+const itemSearch = ref("");
+const itemTypeFilter = ref("");
+// 目前資料全部來自布里萊赫地城；雪本尚未有爬蟲資料，checkbox 先做起來，等資料補上再串
+const showBriLeith = ref(true);
+const showSnow = ref(true);
+
 const filteredItemPrices = computed(() => {
-    const q = search.value.trim();
+    const q = itemSearch.value.trim();
+    if (!showBriLeith.value) return []; // 目前所有資料都算布本，取消勾選就清空
     return mappedItemPrices.value.filter((item) => {
         const matchesQuery = !q || item.name.tw.includes(q) || item.name.kr.includes(q);
-        const matchesType = !typeFilter.value || item.type === typeFilter.value;
+        const matchesType = !itemTypeFilter.value || item.type === itemTypeFilter.value;
         return matchesQuery && matchesType;
     });
 });
 
+// 未對應到中文翻譯的選項不顯示，並攤平成 職業/技能/等級/價格 一列一筆
 const mappedRelicPrices = computed(() =>
     relicPrices.value.map((job) => ({
         ...job,
@@ -130,15 +141,67 @@ const mappedRelicPrices = computed(() =>
     })),
 );
 
-const filteredRelicPrices = computed(() => {
-    const q = search.value.trim();
-    if (!q) return mappedRelicPrices.value;
-    return mappedRelicPrices.value
-        .map((job) => ({
-            ...job,
-            options: job.options.filter((opt) => opt.name.tw.includes(q) || opt.name.kr.includes(q)),
-        }))
-        .filter((job) => translateJob(job.job.kr).includes(q) || job.job.kr.includes(q) || job.options.length > 0);
+interface FlatRelicRow {
+    jobKr: string;
+    jobTw: string;
+    skillId: number | null;
+    skillTw: string;
+    skillKr: string;
+    max: string;
+    level: number;
+    price: number;
+}
+
+const flatRelicRows = computed<FlatRelicRow[]>(() => {
+    const rows: FlatRelicRow[] = [];
+    for (const job of mappedRelicPrices.value) {
+        const jobTw = translateJob(job.job.kr);
+        for (const opt of job.options) {
+            for (const lv of opt.levels) {
+                rows.push({
+                    jobKr: job.job.kr,
+                    jobTw,
+                    skillId: opt.skillId,
+                    skillTw: opt.name.tw,
+                    skillKr: opt.name.kr,
+                    max: opt.max,
+                    level: lv.level,
+                    price: lv.price,
+                });
+            }
+        }
+    }
+    return rows;
+});
+
+const availableRelicJobs = computed(() =>
+    mappedRelicPrices.value.map((job) => ({ kr: job.job.kr, tw: translateJob(job.job.kr) })),
+);
+const RELIC_LEVELS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+const relicSearch = ref("");
+const relicJobFilter = ref<string[]>([]);
+const relicLevelFilter = ref<number[]>([]);
+const relicGroupBySkill = ref(false);
+
+const filteredFlatRelicRows = computed(() => {
+    const q = relicSearch.value.trim();
+    let rows = flatRelicRows.value;
+    if (relicJobFilter.value.length > 0) rows = rows.filter((r) => relicJobFilter.value.includes(r.jobKr));
+    if (relicLevelFilter.value.length > 0) rows = rows.filter((r) => relicLevelFilter.value.includes(r.level));
+    if (q) {
+        rows = rows.filter(
+            (r) => r.skillTw.includes(q) || r.skillKr.includes(q) || r.jobTw.includes(q) || r.jobKr.includes(q),
+        );
+    }
+
+    const sorted = [...rows];
+    if (relicGroupBySkill.value) {
+        sorted.sort((a, b) => a.skillTw.localeCompare(b.skillTw) || b.level - a.level);
+    } else {
+        sorted.sort((a, b) => a.jobTw.localeCompare(b.jobTw) || a.skillTw.localeCompare(b.skillTw) || b.level - a.level);
+    }
+    return sorted;
 });
 
 // 遺物價格台服換算：用「穆利亞斯的遺物(理念)」的韓服/台服價格算出倍率，套用在遺物選項價格上
@@ -216,31 +279,6 @@ onMounted(loadPrices);
             </el-alert>
 
             <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
-                <div class="mb-4 flex flex-wrap gap-3">
-                    <el-input
-                        v-model="search"
-                        placeholder="搜尋物品或選項名稱…"
-                        clearable
-                        size="large"
-                        style="max-width: 360px"
-                        :disabled="loading || loadError"
-                    >
-                        <template #prefix>
-                            <el-icon><Search /></el-icon>
-                        </template>
-                    </el-input>
-                    <el-select
-                        v-model="typeFilter"
-                        placeholder="依照類型"
-                        clearable
-                        size="large"
-                        style="width: 140px"
-                        :disabled="loading || loadError"
-                    >
-                        <el-option v-for="t in availableTypes" :key="t" :label="translateType(t)" :value="t" />
-                    </el-select>
-                </div>
-
                 <div v-if="loading" class="flex flex-col items-center justify-center py-16 text-gray-400">
                     <el-icon :size="32" class="animate-spin mb-3"><Loading /></el-icon>
                     載入價格資料中…
@@ -252,8 +290,37 @@ onMounted(loadPrices);
                 </div>
 
                 <el-tabs v-else type="border-card">
-                    <el-tab-pane label="布里萊赫地城">
+                    <el-tab-pane label="副本掉落">
                         <p class="text-xs text-gray-500 mt-3">更新於 {{ formatUpdatedAt(dungeonItemsUpdatedAt) }}</p>
+
+                        <div class="mt-2 flex flex-wrap items-center gap-3">
+                            <el-input
+                                v-model="itemSearch"
+                                placeholder="搜尋物品名稱…"
+                                clearable
+                                size="large"
+                                style="max-width: 300px"
+                            >
+                                <template #prefix>
+                                    <el-icon><Search /></el-icon>
+                                </template>
+                            </el-input>
+                            <el-select
+                                v-model="itemTypeFilter"
+                                placeholder="依照類型"
+                                clearable
+                                size="large"
+                                style="width: 140px"
+                            >
+                                <el-option v-for="t in availableTypes" :key="t" :label="translateType(t)" :value="t" />
+                            </el-select>
+                            <el-checkbox v-model="showBriLeith">布本</el-checkbox>
+                            <el-checkbox v-model="showSnow">
+                                雪本
+                                <span class="text-xs text-gray-500">(尚無資料)</span>
+                            </el-checkbox>
+                        </div>
+
                         <el-table
                             :data="filteredItemPrices"
                             border
@@ -365,6 +432,44 @@ onMounted(loadPrices);
                     <el-tab-pane label="穆利亞斯遺物">
                         <p class="text-xs text-gray-500 mt-3">更新於 {{ formatUpdatedAt(muriasRelicUpdatedAt) }}</p>
 
+                        <div class="mt-2 flex flex-wrap items-center gap-3">
+                            <el-input
+                                v-model="relicSearch"
+                                placeholder="搜尋職業或技能名稱…"
+                                clearable
+                                size="large"
+                                style="max-width: 300px"
+                            >
+                                <template #prefix>
+                                    <el-icon><Search /></el-icon>
+                                </template>
+                            </el-input>
+                            <el-checkbox v-model="relicGroupBySkill">依技能分類（取消則依職業分類）</el-checkbox>
+                        </div>
+
+                        <div class="mt-3 flex items-center flex-wrap gap-1">
+                            <span class="text-xs text-gray-500 mr-1">職業</span>
+                            <el-check-tag
+                                v-for="job in availableRelicJobs"
+                                :key="job.kr"
+                                :checked="relicJobFilter.includes(job.kr)"
+                                @change="relicJobFilter = toggleStringValue(relicJobFilter, job.kr)"
+                            >
+                                {{ job.tw }}
+                            </el-check-tag>
+                        </div>
+                        <div class="mt-2 flex items-center flex-wrap gap-1">
+                            <span class="text-xs text-gray-500 mr-1">等級</span>
+                            <el-check-tag
+                                v-for="lv in RELIC_LEVELS"
+                                :key="lv"
+                                :checked="relicLevelFilter.includes(lv)"
+                                @change="relicLevelFilter = toggleNumberValue(relicLevelFilter, lv)"
+                            >
+                                {{ lv }}
+                            </el-check-tag>
+                        </div>
+
                         <div class="mt-3 p-3 rounded-lg bg-gray-900/50 border border-gray-700">
                             <el-checkbox v-model="relicConvertEnabled">換算為台服價格參考</el-checkbox>
 
@@ -400,50 +505,42 @@ onMounted(loadPrices);
                             </el-alert>
                         </div>
 
-                        <el-collapse class="mt-2">
-                            <el-collapse-item v-for="job in filteredRelicPrices" :key="job.job.kr" :name="job.job.kr">
-                                <template #title>
-                                    <span class="font-semibold text-gray-100">{{ translateJob(job.job.kr) }}</span>
+                        <el-table
+                            :data="filteredFlatRelicRows"
+                            border
+                            class="rounded-lg overflow-hidden mt-2"
+                            :header-cell-style="{ background: '#374151', color: '#d1d5db' }"
+                            :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
+                            empty-text="查無資料"
+                        >
+                            <el-table-column label="職業" width="110">
+                                <template #default="{ row }: { row: FlatRelicRow }">{{ row.jobTw }}</template>
+                            </el-table-column>
+                            <el-table-column label="技能" min-width="220">
+                                <template #default="{ row }: { row: FlatRelicRow }">
+                                    <div class="flex items-center gap-2">
+                                        <img
+                                            v-if="row.skillId"
+                                            :src="getSkillImageUrl(row.skillId)"
+                                            class="w-6 h-6 object-contain flex-shrink-0"
+                                            @error="hideBrokenImage"
+                                        />
+                                        <div>
+                                            <span class="font-semibold text-gray-100">{{ row.skillTw }}</span>
+                                            <span class="text-xs text-gray-500 ml-2">上限 {{ row.max }}</span>
+                                        </div>
+                                    </div>
                                 </template>
-
-                                <el-table
-                                    v-for="opt in job.options"
-                                    :key="opt.name.kr"
-                                    :data="opt.levels"
-                                    border
-                                    size="small"
-                                    class="rounded-lg overflow-hidden mb-3"
-                                    :header-cell-style="{ background: '#374151', color: '#d1d5db' }"
-                                    :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
-                                >
-                                    <template #empty>查無資料</template>
-                                    <el-table-column width="220">
-                                        <template #header>
-                                            <div class="flex items-center gap-2">
-                                                <img
-                                                    v-if="opt.skillId"
-                                                    :src="getSkillImageUrl(opt.skillId)"
-                                                    class="w-6 h-6 object-contain flex-shrink-0"
-                                                    @error="hideBrokenImage"
-                                                />
-                                                <div>
-                                                    <span class="font-semibold text-gray-100">{{ opt.name.tw }}</span>
-                                                    <span class="text-xs text-gray-500 ml-2">上限 {{ opt.max }}</span>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        <template #default="{ row }">等級 {{ row.level }}</template>
-                                    </el-table-column>
-                                    <el-table-column label="價格" align="right">
-                                        <template #default="{ row }">
-                                            <span class="text-accent font-semibold">
-                                                {{ displayRelicPrice(row.price) }}
-                                            </span>
-                                        </template>
-                                    </el-table-column>
-                                </el-table>
-                            </el-collapse-item>
-                        </el-collapse>
+                            </el-table-column>
+                            <el-table-column label="等級" width="80" align="center" sortable prop="level">
+                                <template #default="{ row }: { row: FlatRelicRow }">{{ row.level }}</template>
+                            </el-table-column>
+                            <el-table-column label="價格" width="150" align="right" sortable prop="price">
+                                <template #default="{ row }: { row: FlatRelicRow }">
+                                    <span class="text-accent font-semibold">{{ displayRelicPrice(row.price) }}</span>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-tab-pane>
                 </el-tabs>
             </el-card>
