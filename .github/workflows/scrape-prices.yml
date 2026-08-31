@@ -1,0 +1,37 @@
+name: Scrape and push prices
+
+on:
+  schedule:
+    - cron: '0 18 * * *'  # 每日 UTC 18:00（台灣時間 02:00）
+
+  # 允許手動觸發 workflow
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run dungeon item price scraper
+        run: node spider/scraper.js
+        env:
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+
+      - name: Run murias relic price scraper
+        run: node spider/scraper-murias-relic.js
+        env:
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}

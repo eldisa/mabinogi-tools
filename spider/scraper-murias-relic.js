@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { pushPrices } from './pushPrices.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -110,4 +111,6 @@ const parseKoreanPrice = (s) => {
     fs.writeFileSync(`${outputDir}/murias-relic-prices.json`, JSON.stringify(finalResults, null, 2));
 
     console.log(`\n抓取完成，共 ${finalResults.length} 個職業資料已存至 ./data/murias-relic-prices.json`);
+
+    await pushPrices('/internal/prices/murias-relic', finalResults);
 })();

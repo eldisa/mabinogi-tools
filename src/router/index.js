@@ -31,8 +31,16 @@ import ArmorBreakTraining from '../views/ArmorBreakTraining.vue';
 import SponsorView from '../views/SponsorView.vue';
 import Changelog from '../views/Changelog.vue';
 import TradeCalculator from '../views/TradeCalculator.vue';
+import PriceCheck from '../views/PriceCheck.vue';
+import AuthCallback from '../views/AuthCallback.vue';
+import Settings from '../views/Settings.vue';
 
 const routes = [
+    {
+        path: '/auth/callback',
+        name: 'AuthCallback',
+        component: AuthCallback,
+    },
     {
         path: '/',
         name: 'GridDemo',
@@ -186,6 +194,16 @@ const routes = [
             path: '/trade-calculator',
             name: '貿易計算機',
             component: TradeCalculator,
+        },
+        {
+            path: '/price-check',
+            name: '物價',
+            component: PriceCheck,
+        },
+        {
+            path: '/settings',
+            name: '帳號設定',
+            component: Settings,
         },]
     },
 
@@ -223,6 +241,8 @@ const pageTitles = {
     '回音石模擬器': '回音石模擬器 | 瑪奇小工具',
     '贊助': '贊助 | 瑪奇小工具',
     '貿易計算機': '貿易計算機 | 瑪奇小工具',
+    '物價': '物價（測試中） | 瑪奇小工具',
+    '帳號設定': '帳號設定 | 瑪奇小工具',
     '關於': '關於 | 瑪奇小工具',
 };
 
