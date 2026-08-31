@@ -32,15 +32,9 @@ import SponsorView from '../views/SponsorView.vue';
 import Changelog from '../views/Changelog.vue';
 import TradeCalculator from '../views/TradeCalculator.vue';
 import PriceCheck from '../views/PriceCheck.vue';
-import AuthCallback from '../views/AuthCallback.vue';
 import Settings from '../views/Settings.vue';
 
 const routes = [
-    {
-        path: '/auth/callback',
-        name: 'AuthCallback',
-        component: AuthCallback,
-    },
     {
         path: '/',
         name: 'GridDemo',
