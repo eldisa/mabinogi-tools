@@ -8,6 +8,336 @@ const DUNGEON_SOURCE = 'brie-lech';
 // 1. 準備資料庫 (你可以考慮之後抽出來放在獨立的 json 檔案)
 const itemDb = [
     {
+        id: 86469,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Icebolt Enhancement +1 Scroll",
+            cn: "套装效果冰箭强化+1咒语书",
+            jp: "セット効果アイスボルト強化+1呪文書",
+            kr: "세트 효과 아이스 볼트 강화 +1 주문서",
+            tw: "組合效果冰矛強化 +1 卷軸",
+        },
+    },
+    {
+        id: 86470,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Firebolt Enhancement +1 Scroll",
+            cn: "套装效果火箭强化+1咒语书",
+            jp: "セット効果ファイアボルト強化+1呪文書",
+            kr: "세트 효과 파이어 볼트 강화 +1 주문서",
+            tw: "組合效果火焰強化 +1 卷軸",
+        },
+    },
+    {
+        id: 86471,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Flame Burst Enhancement +1 Scroll",
+            cn: "套装效果火焰喷射强化+1咒语书",
+            jp: "セット効果フレイマー強化+1呪文書",
+            kr: "세트 효과 플레이머 강화 +1 주문서",
+            tw: "組合效果火焰噴射強化 +1 卷軸",
+        },
+    },
+    {
+        id: 86472,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Water Cannon Enhancement +1 Scroll",
+            cn: "套装效果水炮强化+1咒语书",
+            jp: "セット効果ウォーターキャノン強化+1呪文書",
+            kr: "세트 효과 워터 캐논 강화 +1 주문서",
+            tw: "組合效果水炮強化 +1 卷軸",
+        },
+    },
+    {
+        id: 86473,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Life Drain Enhancement +1 Scroll",
+            cn: "套装效果吸取生命强化+1咒语书",
+            jp: "セット効果ライフドレイン強化+1呪文書",
+            kr: "세트 효과 라이프 드레인 강화 +1 주문서",
+            tw: "組合效果吸取生命強化 +1 卷軸",
+        },
+    },
+    {
+        id: 3160099,
+        name: {
+            en: "Unfinished Desire's Crown Halo",
+            us: "Unfinished Reverie's Diadem Halo",
+            cn: "不完整的空像王冠光环",
+            jp: "不完全な空想の王冠ヘイロー ",
+            kr: "불완전한 공상의 왕관 헤일로",
+            tw: "不完美的空想王冠光環",
+        }
+    }
+    {
+        id: 5030526,
+        name: {
+            en: "Cailleach's Trap Miniature",
+            us: "Homestead Cailleach's Barrier Figure",
+            cn: "浪漫农田凯莱赫的结界模型",
+            jp: "カリアフの結界ミニチュア",
+            kr: "낭만 농장 칼리아흐의 결계 미니어처",
+            tw: "浪漫農場卡莉亞赫的結界模型",
+        },
+    },
+    {
+        id: 5100074,
+        name: {
+            en: "Crystalized Debris of Winter",
+            us: "Crystallized Remnants of Winter",
+            cn: "凛冬残骸结晶",
+            jp: "結晶化した冬の残骸",
+            kr: "결정화된 겨울의 잔해",
+            tw: "結晶的冬之殘骸",
+        },
+    },
+    {
+        id: 5100083,
+        name: {
+            en: "Shard of Severed Winter Dream",
+            us: "Winter Dream Terminus Crystal",
+            cn: "被斩断的凛冬之梦结晶",
+            jp: "切られた冬の夢の結晶",
+            kr: "잘려 나간 겨울의 꿈 결정",
+            tw: "被截斷的冬之夢結晶",
+        },
+    },
+    {
+        id: 5550000,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Attack Speed Increase +1 Scroll",
+            cn: "套装效果攻击速度增加+1咒语书",
+            jp: "セット効果攻撃速度+1呪文書",
+            kr: "세트 효과 공격 속도 증가 +1 주문서",
+            tw: "組合效果攻擊速度增加 +1 卷軸",
+        },
+    },
+    {
+        id: 5550001,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Max Damage Increase +1 Scroll",
+            cn: "套装效果最大伤害增加+1咒语书",
+            jp: "セット効果最大ダメージ増加+1呪文書",
+            kr: "세트 효과 최대 대미지 증가 +1 주문서",
+            tw: "組合效果最大傷害增加 +1 卷軸",
+        },
+    },
+    {
+        id: 5550003,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Critical Damage Increase +1 Scroll",
+            cn: "套装效果暴击伤害增加+1咒语书",
+            jp: "セット効果クリティカルダメージ増加+1呪文書",
+            kr: "세트 효과 크리티컬 대미지 증가 +1 주문서",
+            tw: "組合效果暴擊傷害增加 +1 卷軸",
+        },
+    },
+    {
+        id: 5550004,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Magnum Shot Enhancement +1 Scroll",
+            cn: "套装效果穿心箭强化+1咒语书",
+            jp: "セット効果マグナムショット強化+1呪文書",
+            kr: "세트 효과 매그넘 샷 강화 +1 주문서",
+            tw: "組合效果穿心箭強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550005,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Bash Enhancement +1 Scroll",
+            cn: "套装效果无限连击强化+1咒语书",
+            jp: "セット効果バッシュ強化+1呪文書",
+            kr: "세트 효과 배쉬 강화 +1 주문서",
+            tw: "組合效果猛擊強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550006,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Support Shot Enhancement +1 Scroll",
+            cn: "套装效果助攻箭强化+1咒语书",
+            jp: "セット効果サポートショット強化+1呪文書",
+            kr: "세트 효과 서포트 샷 강화 +1 주문서",
+            tw: "組合效果支援箭強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550007,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Shock Absorb Enhancement +1 Scroll",
+            cn: "套装效果吸收伤害强化+1咒语书",
+            jp: "セット効果衝撃吸収強化+1呪文書",
+            kr: "세트 효과 충격 흡수 강화 +1 주문서",
+            tw: "組合效果衝擊吸收強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550008,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Poison Immunity +1 Scroll",
+            cn: "套装效果毒免疫+1咒语书",
+            jp: "セット効果毒に対する免疫+1呪文書",
+            kr: "세트 효과 독 면역 +1 주문서",
+            tw: "組合效果毒免疫 +1 卷軸",
+        },
+    },
+    {
+        id: 5550009,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Smash Enhancement +1 Scroll",
+            cn: "套装效果重击强化+1咒语书",
+            jp: "セット効果スマッシュ強化+1呪文書",
+            kr: "세트 효과 스매시 강화 +1 주문서",
+            tw: "組合效果重擊強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550010,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Windmill Enhancement +1 Scroll",
+            cn: "套装效果风车强化+1咒语书",
+            jp: "セット効果ウィンドミル強化+1呪文書",
+            kr: "세트 효과 윈드밀 강화 +1 주문서",
+            tw: "組合效果旋風擺蓮腿強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550011,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Charge Enhancement +1 Scroll",
+            cn: "套装效果冲撞强化+1咒语书",
+            jp: "セット効果突進強化+1呪文書",
+            kr: "세트 효과 돌진 강화 +1 주문서",
+            tw: "組合效果突擊強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550012,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Demigod Enhancement +1 Scroll",
+            cn: "套装效果半神化强化+1咒语书",
+            jp: "セット効果半神化強化+1呪文書",
+            kr: "세트 효과 반신화 강화 +1 주문서",
+            tw: "組合效果半神化強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550013,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Fishing Enhancement +1 Scroll",
+            cn: "套装效果钓鱼强化+1咒语书",
+            jp: "セット効果釣り強化+1呪文書",
+            kr: "세트 효과 낚시 강화 +1 주문서",
+            tw: "組合效果釣魚強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550014,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Refining Enhancement +1 Scroll",
+            cn: "套装效果冶炼强化+1咒语书",
+            jp: "セット効果製錬強化+1呪文書",
+            kr: "세트 효과 제련 강화 +1 주문서",
+            tw: "組合效果冶煉強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550015,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Blacksmith Enhancement +1 Scroll",
+            cn: "套装效果打铁强化+1咒语书",
+            jp: "セット効果鍛冶強化+1呪文書",
+            kr: "세트 효과 블랙 스미스 강화 +1 주문서",
+            tw: "組合效果打鐵強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550016,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Metallurgy Enhancement +1 Scroll",
+            cn: "套装效果淘金术强化+1咒语书",
+            jp: "セット効果鉱物採取強化+1呪文書",
+            kr: "세트 효과 야금술 강화 +1 주문서",
+            tw: "組合效果淘金術強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550017,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Gold Strike Enhancement +1 Scroll",
+            cn: "套装效果千金一掷强化+1咒语书",
+            jp: "セット効果ゴールドストライク強化+1呪文書",
+            kr: "세트 효과 골드 스트라이크 강화 +1 주문서",
+            tw: "組合效果金幣攻擊強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550018,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect MP Usage Reduction +1 Scroll",
+            cn: "套装效果魔法消耗减少+1咒语书",
+            jp: "セット効果マナ消費減少+1呪文書",
+            kr: "세트 효과 마나 소비 감소 +1 주문서",
+            tw: "組合效果魔力消耗減少 +1 卷軸",
+        },
+    },
+    {
+        id: 5550019,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Healing Enhancement +1 Scroll",
+            cn: "套装效果治疗强化+1咒语书",
+            jp: "セット効果ヒーリング強化+1呪文書",
+            kr: "세트 효과 힐링 강화 +1 주문서",
+            tw: "組合效果治癒強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550020,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Assault Slash Enhancement +1 Scroll",
+            cn: "套装效果跳斩强化+1咒语书",
+            jp: "セット効果ダウンアタック強化+1呪文書",
+            kr: "세트 효과 다운 어택 강화 +1 주문서",
+            tw: "組合效果躍擊強化 +1 卷軸",
+        },
+    },
+    {
+        id: 5550022,
+        name: {
+            en: "SetItem Enhance Scroll",
+            us: "Set Effect Ladeca Movement Speed Boost +1 Scroll",
+            cn: "套装效果拉蒂卡移动速度增加+1咒语书",
+            jp: "セット効果ラデカ移動速度+1呪文書",
+            kr: "세트 효과 라데카 이동 속도 증가 + 1 주문서",
+            tw: "組合效果拉狄卡移動速度增加 +1 卷軸",
+        },
+    },
+    {
         id: 5040665,
         name: {
             en: "Stardust Shape Energy",
@@ -361,6 +691,102 @@ const itemDb = [
 
 const enchantDb = [
     {
+        "id": 21602,
+        "name": {
+            "tw": "渴望的",
+            "en": "Longing",
+            "tw2": "渴望的"
+        }
+    },
+    {
+        "id": 21603,
+        "name": {
+            "tw": "殷切希望的",
+            "en": "Anxious",
+            "tw2": "殷切希望的"
+        }
+    },
+    {
+        "id": 21604,
+        "name": {
+            "tw": "盼望的",
+            "en": "Desirous",
+            "tw2": "盼望的"
+        }
+    },
+    {
+        "id": 21605,
+        "name": {
+            "tw": "沉沒的",
+            "en": "Subdued",
+            "tw2": "沉沒的"
+        }
+    },
+    {
+        "id": 21606,
+        "name": {
+            "tw": "消失的",
+            "en": "Vanished",
+            "tw2": "消失的"
+        }
+    },
+    {
+        "id": 21607,
+        "name": {
+            "tw": "被覆蓋的",
+            "en": "Extinct",
+            "tw2": "被覆蓋的"
+        }
+    },
+    {
+        "id": 21608,
+        "name": {
+            "tw": "逃跑的",
+            "en": "Runaway",
+            "tw2": "逃跑的"
+        }
+    },
+    {
+        "id": 21609,
+        "name": {
+            "tw": "觀望的",
+            "en": "Watchful",
+            "tw2": "觀望的"
+        }
+    },
+    {
+        "id": 21610,
+        "name": {
+            "tw": "迴轉的",
+            "en": "Spinning",
+            "tw2": "迴轉的"
+        }
+    },
+    {
+        "id": 21611,
+        "name": {
+            "tw": "囚禁的",
+            "en": "Confining",
+            "tw2": "囚禁的"
+        }
+    },
+    {
+        "id": 21612,
+        "name": {
+            "tw": "停滯的",
+            "en": "Immovable",
+            "tw2": "停滯的"
+        }
+    },
+    {
+        "id": 21613,
+        "name": {
+            "tw": "結冰的",
+            "en": "Iced",
+            "tw2": "結冰的"
+        }
+    },
+    {
         id: 21639,
         name: {
             tw: "薄暮的",
@@ -666,6 +1092,102 @@ const enchantDb = [
             kr: "순수한"
         }
     },
+    {
+        "id": 31690,
+        "name": {
+            "tw": "凱撒兔",
+            "en": "Seizure Rabbit",
+            "tw2": "凱撒兔"
+        }
+    },
+    {
+        "id": 31691,
+        "name": {
+            "tw": "夜靈",
+            "en": "Gwyllion",
+            "tw2": "夜靈"
+        }
+    },
+    {
+        "id": 31692,
+        "name": {
+            "tw": "冰脊野狼",
+            "en": "Gwyllgi",
+            "tw2": "冰脊野狼"
+        }
+    },
+    {
+        "id": 31693,
+        "name": {
+            "tw": "蹤跡",
+            "en": "Trail",
+            "tw2": "蹤跡"
+        }
+    },
+    {
+        "id": 31694,
+        "name": {
+            "tw": "軌跡",
+            "en": "Trajectory",
+            "tw2": "軌跡"
+        }
+    },
+    {
+        "id": 31695,
+        "name": {
+            "tw": "痕跡",
+            "en": "Trace",
+            "tw2": "痕跡"
+        }
+    },
+    {
+        "id": 31696,
+        "name": {
+            "tw": "霜紋靈貓",
+            "en": "Folach Catt",
+            "tw2": "霜紋靈貓"
+        }
+    },
+    {
+        "id": 31697,
+        "name": {
+            "tw": "斯奈塔",
+            "en": "Sneachta",
+            "tw2": "斯奈塔"
+        }
+    },
+    {
+        "id": 31698,
+        "name": {
+            "tw": "冰花之靈",
+            "en": "Snow Sling",
+            "tw2": "冰花之靈"
+        }
+    },
+    {
+        "id": 31699,
+        "name": {
+            "tw": "白樺樹",
+            "en": "Birch",
+            "tw2": "白樺樹"
+        }
+    },
+    {
+        "id": 31700,
+        "name": {
+            "tw": "波紋",
+            "en": "Wave",
+            "tw2": "波紋"
+        }
+    },
+    {
+        "id": 31701,
+        "name": {
+            "tw": "鏡子",
+            "en": "Mirror",
+            "tw2": "鏡子"
+        }
+    }
     {
         id: 31788,
         name: { tw: "管理者", en: "Administrator", tw2: "管理者", kr: "관리자" },
