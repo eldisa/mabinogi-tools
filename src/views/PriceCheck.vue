@@ -176,14 +176,14 @@ const RELIC_LEVELS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 
 const relicSearch = ref("");
 const relicJobFilter = ref<string[]>([]);
-const relicLevelFilter = ref<number[]>([]);
+const relicMinLevel = ref<number | null>(null);
 const relicGroupBySkill = ref(false);
 
 const filteredFlatRelicRows = computed(() => {
     const q = relicSearch.value.trim();
     let rows = flatRelicRows.value;
     if (relicJobFilter.value.length > 0) rows = rows.filter((r) => relicJobFilter.value.includes(r.jobKr));
-    if (relicLevelFilter.value.length > 0) rows = rows.filter((r) => relicLevelFilter.value.includes(r.level));
+    if (relicMinLevel.value) rows = rows.filter((r) => r.level >= relicMinLevel.value!);
     if (q) {
         rows = rows.filter(
             (r) => r.skillTw.includes(q) || r.skillKr.includes(q) || r.jobTw.includes(q) || r.jobKr.includes(q),
@@ -454,16 +454,8 @@ onMounted(loadPrices);
                             >
                                 <el-option v-for="job in availableRelicJobs" :key="job.kr" :label="job.tw" :value="job.kr" />
                             </el-select>
-                            <el-select
-                                v-model="relicLevelFilter"
-                                multiple
-                                collapse-tags
-                                collapse-tags-tooltip
-                                placeholder="篩選等級"
-                                clearable
-                                style="min-width: 180px"
-                            >
-                                <el-option v-for="lv in RELIC_LEVELS" :key="lv" :label="`等級 ${lv}`" :value="lv" />
+                            <el-select v-model="relicMinLevel" placeholder="最低等級" clearable style="min-width: 140px">
+                                <el-option v-for="lv in RELIC_LEVELS" :key="lv" :label="`Lv.${lv} 以上`" :value="lv" />
                             </el-select>
                         </div>
 
