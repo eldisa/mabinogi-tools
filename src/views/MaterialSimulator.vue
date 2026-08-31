@@ -549,7 +549,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { Option } from "../types";
 import { CraftableItem, CraftTreeNode, MaterialSource, MaterialUsage, AmountByID } from "../types/CraftItem";
 import { materials, G27bossDropsUsage } from "../data/materials";
@@ -558,8 +558,12 @@ import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTooltip, ElIcon, ElMessage } from "element-plus";
 import { InfoFilled, QuestionFilled } from "@element-plus/icons-vue";
 import { useLayoutStore } from "../stores/layout";
+import { useAuthStore } from "../stores/auth";
+import { fetchMaterialStock, saveMaterialStock, type MaterialStockMap } from "../api/materialStock";
+import { fetchMaterialPriceFeed } from "../api/materials";
 
 const layoutStore = useLayoutStore();
+const authStore = useAuthStore();
 
 interface MaterialSummary {
     id: number;
@@ -620,8 +624,60 @@ const materialPrices = ref<MaterialPriceEntry[]>(loadMaterialPrices());
 const materialPriceMap = computed(() => new Map(materialPrices.value.map((e) => [e.id, e])));
 const materialsMap = new Map(materials.map((m) => [m.id, m]));
 
-const saveMaterialPrices = () => {
+const buildStockPayload = (): MaterialStockMap => {
+    const payload: MaterialStockMap = {};
+    for (const entry of materialPrices.value) {
+        if (entry.stock > 0) payload[entry.id] = entry.stock;
+    }
+    return payload;
+};
+
+// 帳號庫存同步：只同步 stock，method 與手動改過的 price 留在本機 localStorage
+const syncStockFromAccount = async () => {
+    if (!authStore.token) return;
+    try {
+        const remoteStock = await fetchMaterialStock(authStore.token);
+        if (Object.keys(remoteStock).length === 0) {
+            // 雲端還沒有資料：把本機庫存當初始值上傳一次
+            const localStock = buildStockPayload();
+            if (Object.keys(localStock).length > 0) {
+                await saveMaterialStock(authStore.token, localStock);
+            }
+            return;
+        }
+        for (const entry of materialPrices.value) {
+            entry.stock = remoteStock[String(entry.id)] ?? 0;
+        }
+    } catch {
+        // 網路錯誤，維持本機顯示的庫存
+    }
+};
+
+watch(() => authStore.isLoggedIn, (loggedIn) => loggedIn && syncStockFromAccount(), { immediate: true });
+
+onMounted(async () => {
+    try {
+        const feed = await fetchMaterialPriceFeed();
+        const feedMap = new Map(feed.map((e) => [e.id, e.price]));
+        for (const entry of materialPrices.value) {
+            if (entry.price > 0) continue; // 已有值（含使用者手動設定），不覆蓋
+            const apiPrice = feedMap.get(entry.id);
+            if (apiPrice && apiPrice > 0) entry.price = apiPrice;
+        }
+    } catch {
+        // API 無法取得就沿用內建預設價格
+    }
+});
+
+const saveMaterialPrices = async () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(materialPrices.value));
+
+    if (!authStore.isLoggedIn || !authStore.token) return;
+    try {
+        await saveMaterialStock(authStore.token, buildStockPayload());
+    } catch {
+        ElMessage.warning("帳號庫存同步失敗，已儲存在本機");
+    }
 };
 
 const resetMaterialPrices = () => {
