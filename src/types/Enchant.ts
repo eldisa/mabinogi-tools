@@ -15,6 +15,9 @@ export interface Enchant {
         tw2?: string;
         kr?: string;
         en: string;
+        cn?: string;
+        jp?: string;
+        us?: string;
     };
     limit: string[];
     effect: EnchantAbility[];
