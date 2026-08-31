@@ -4,8 +4,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from "vue";
 import { useLayoutStore } from "./stores/layout";
+import { useAuthStore } from "./stores/auth";
 
 const layoutStore = useLayoutStore();
+const authStore = useAuthStore();
 
 const handleResize = () => {
     layoutStore.updateScreenSize(window.innerWidth);
@@ -14,6 +16,7 @@ const handleResize = () => {
 onMounted(() => {
     layoutStore.initializeScreenSize();
     window.addEventListener("resize", handleResize);
+    authStore.loadUser();
 });
 
 onUnmounted(() => {
