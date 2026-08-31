@@ -539,7 +539,7 @@ onMounted(loadPrices);
                             <el-table-column v-if="!layoutStore.isMobile" label="職業" width="110">
                                 <template #default="{ row }: { row: FlatRelicRow }">{{ row.jobTw }}</template>
                             </el-table-column>
-                            <el-table-column label="技能" min-width="220">
+                            <el-table-column label="技能" :min-width="layoutStore.isMobile ? 130 : 220">
                                 <template #default="{ row }: { row: FlatRelicRow }">
                                     <div class="flex items-center gap-2">
                                         <img
@@ -552,10 +552,20 @@ onMounted(loadPrices);
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="等級" width="80" align="center" prop="level">
+                            <el-table-column
+                                label="等級"
+                                :width="layoutStore.isMobile ? 55 : 80"
+                                align="center"
+                                prop="level"
+                            >
                                 <template #default="{ row }: { row: FlatRelicRow }">{{ row.level }}</template>
                             </el-table-column>
-                            <el-table-column label="價格" width="150" align="right" prop="price">
+                            <el-table-column
+                                label="價格"
+                                :width="layoutStore.isMobile ? 90 : 150"
+                                align="right"
+                                prop="price"
+                            >
                                 <template #default="{ row }: { row: FlatRelicRow }">
                                     <span class="text-accent font-semibold">{{ displayRelicPrice(row.price) }}</span>
                                 </template>
