@@ -10,6 +10,7 @@ import {
 } from "../api/prices";
 
 const search = ref("");
+const typeFilter = ref("");
 const loading = ref(true);
 const loadError = ref(false);
 
@@ -20,10 +21,30 @@ const muriasRelicUpdatedAt = ref<string | null>(null);
 
 const formatUpdatedAt = (iso: string | null) => (iso ? new Date(iso).toLocaleString("zh-TW") : "尚未更新");
 
+// 穆利亞斯遺物職業韓文對照繁中，順序依 mabi.labanyu.com 頁面上的排列
+const RELIC_JOB_NAME_MAP: Record<string, string> = {
+    "엘레멘탈 나이트": "元素騎士",
+    "세인트 바드": "聖詠者",
+    "다크 메이지": "縛魂者",
+    "알케믹 스팅어": "秘術遊俠",
+    "세이크리드 가드": "聖盾騎士",
+    "블래스트 랜서": "爆裂槍兵",
+    "배리어블 거너": "幻變槍手",
+    "포비든 알케미스트": "禁忌煉金士",
+    "멜로딕 퍼피티어": "旋律人偶師",
+    "퓨리 파이터": "狂怒鬥士",
+};
+const translateJob = (kr: string) => RELIC_JOB_NAME_MAP[kr] ?? kr;
+
+const availableTypes = computed(() => Array.from(new Set(itemPrices.value.map((item) => item.type))));
+
 const filteredItemPrices = computed(() => {
     const q = search.value.trim();
-    if (!q) return itemPrices.value;
-    return itemPrices.value.filter((item) => item.name.tw.includes(q) || item.name.kr.includes(q));
+    return itemPrices.value.filter((item) => {
+        const matchesQuery = !q || item.name.tw.includes(q) || item.name.kr.includes(q);
+        const matchesType = !typeFilter.value || item.type === typeFilter.value;
+        return matchesQuery && matchesType;
+    });
 });
 
 const filteredRelicPrices = computed(() => {
@@ -34,7 +55,7 @@ const filteredRelicPrices = computed(() => {
             ...job,
             options: job.options.filter((opt) => opt.name.tw.includes(q) || opt.name.kr.includes(q)),
         }))
-        .filter((job) => job.job.kr.includes(q) || job.options.length > 0);
+        .filter((job) => translateJob(job.job.kr).includes(q) || job.job.kr.includes(q) || job.options.length > 0);
 });
 
 const loadPrices = async () => {
@@ -84,7 +105,7 @@ onMounted(loadPrices);
             </el-alert>
 
             <el-card class="bg-gray-800 border-2 border-accent/30 shadow-lg rounded-xl p-4 sm:p-6">
-                <div class="mb-4">
+                <div class="mb-4 flex flex-wrap gap-3">
                     <el-input
                         v-model="search"
                         placeholder="搜尋物品或選項名稱…"
@@ -97,6 +118,16 @@ onMounted(loadPrices);
                             <el-icon><Search /></el-icon>
                         </template>
                     </el-input>
+                    <el-select
+                        v-model="typeFilter"
+                        placeholder="依照類型"
+                        clearable
+                        size="large"
+                        style="width: 140px"
+                        :disabled="loading || loadError"
+                    >
+                        <el-option v-for="t in availableTypes" :key="t" :label="t" :value="t" />
+                    </el-select>
                 </div>
 
                 <div v-if="loading" class="flex flex-col items-center justify-center py-16 text-gray-400">
@@ -146,10 +177,7 @@ onMounted(loadPrices);
                         <el-collapse class="mt-2">
                             <el-collapse-item v-for="job in filteredRelicPrices" :key="job.job.kr" :name="job.job.kr">
                                 <template #title>
-                                    <span class="font-semibold text-gray-100">{{ job.job.kr }}</span>
-                                    <span class="text-xs text-gray-500 ml-2">
-                                        全選項滿 10 級：{{ job.allLevel10Price.toLocaleString() }}
-                                    </span>
+                                    <span class="font-semibold text-gray-100">{{ translateJob(job.job.kr) }}</span>
                                 </template>
 
                                 <el-table
@@ -171,9 +199,6 @@ onMounted(loadPrices);
                                             <span class="text-xs text-gray-500 ml-2">上限 {{ opt.max }}</span>
                                         </template>
                                         <template #default="{ row }">等級 {{ row.level }}</template>
-                                    </el-table-column>
-                                    <el-table-column label="所需數量" align="center">
-                                        <template #default="{ row }">{{ row.count }}</template>
                                     </el-table-column>
                                     <el-table-column label="價格" align="right">
                                         <template #default="{ row }">
