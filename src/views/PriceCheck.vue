@@ -71,6 +71,12 @@ const RELIC_JOB_NAME_MAP: Record<string, string> = {
 };
 const translateJob = (kr: string) => RELIC_JOB_NAME_MAP[kr] ?? kr;
 
+const TYPE_LABEL_MAP: Record<string, string> = {
+    item: "道具",
+    enchant: "賦予",
+};
+const translateType = (type: string) => TYPE_LABEL_MAP[type] ?? type;
+
 // 未對應到中文翻譯的資料不顯示
 const mappedItemPrices = computed(() => itemPrices.value.filter((item) => item.name.tw !== "未對應"));
 
@@ -169,7 +175,7 @@ onMounted(loadPrices);
                 <p class="text-base text-gray-400 mt-3">布里萊赫地城掉落物與穆利亞斯遺物選項的市場價格</p>
             </header>
 
-            <el-alert type="warning" :closable="false" show-icon class="mb-4">
+            <el-alert type="warning" effect="dark" :closable="false" show-icon class="mb-4">
                 <template #title>
                     <span class="text-sm">
                         資料來源為韓服拍賣場，僅供參考，可能與台服實際行情有落差，且非即時更新。
@@ -199,7 +205,7 @@ onMounted(loadPrices);
                         style="width: 140px"
                         :disabled="loading || loadError"
                     >
-                        <el-option v-for="t in availableTypes" :key="t" :label="t" :value="t" />
+                        <el-option v-for="t in availableTypes" :key="t" :label="translateType(t)" :value="t" />
                     </el-select>
                 </div>
 
@@ -241,6 +247,7 @@ onMounted(loadPrices);
                                         v-if="row.type === 'enchant' && getEnchantInfo(row.name.tw)"
                                         effect="dark"
                                         placement="right"
+                                        :popper-style="{ maxWidth: '360px', whiteSpace: 'normal' }"
                                     >
                                         <template #content>
                                             <div
@@ -256,7 +263,13 @@ onMounted(loadPrices);
                             </el-table-column>
                             <el-table-column prop="type" label="類型" width="100" align="center">
                                 <template #default="{ row }: { row: DungeonItemPrice }">
-                                    <el-tag size="small">{{ row.type }}</el-tag>
+                                    <el-tag
+                                        size="small"
+                                        effect="dark"
+                                        :type="row.type === 'enchant' ? 'warning' : 'success'"
+                                    >
+                                        {{ translateType(row.type) }}
+                                    </el-tag>
                                 </template>
                             </el-table-column>
                             <el-table-column label="價格" width="150" align="right" sortable prop="price">
@@ -291,7 +304,14 @@ onMounted(loadPrices);
                                 </span>
                             </div>
 
-                            <el-alert v-if="relicConvertEnabled" type="warning" :closable="false" show-icon class="mt-2">
+                            <el-alert
+                                v-if="relicConvertEnabled"
+                                type="warning"
+                                effect="dark"
+                                :closable="false"
+                                show-icon
+                                class="mt-2"
+                            >
                                 <template #title>
                                     <span class="text-sm">因版本與環境不同，所以價格可能有差距，僅供參考。</span>
                                 </template>
