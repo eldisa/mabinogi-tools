@@ -42,25 +42,34 @@ const descLines = (desc: string): string[] =>
         .split("\n")
         .filter((l) => l.trim() !== "");
 
-// desc 是空字串時，退回用 effect 陣列組出可讀的效果行（跟 Enchant.vue 的 formatEnchantEffects 同邏輯）
-const formatEffectLines = (enchant: (typeof enchants)[number]): string[] => {
-    const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
-    return enchant.effect.map((eff) => {
-        const name = abilitiesMap[eff.id] ?? eff.id;
-        const pct = abilitiesValueWithPercentArray.includes(eff.id) ? "%" : "";
-        return eff.min === eff.max
-            ? `${name} ${sign(eff.max)}${pct}`
-            : `${name} ${sign(eff.min)}~${sign(eff.max)}${pct}`;
-    });
+// 格式化賦予等級顯示 (1-6 => F-A, 7-15 => 9-1)，跟 Enchant.vue 的 formatRank 一致
+const formatRank = (level: number): string => {
+    if (level >= 1 && level <= 6) {
+        const ranks = ["F", "E", "D", "C", "B", "A"];
+        return ranks[level - 1];
+    } else if (level >= 7 && level <= 15) {
+        return String(16 - level);
+    }
+    return String(level);
 };
 
-const getEnchantTooltipLines = (tw: string): string[] => {
-    const info = getEnchantInfo(tw);
-    if (!info) return [];
-    const lines = descLines(info.desc);
-    if (lines.length > 0) return lines;
-    const effectLines = formatEffectLines(info);
-    return effectLines.length > 0 ? effectLines : ["無效果說明資料"];
+// 渲染能力效果，跟 Enchant.vue 的 renderAbilities 一致
+const renderAbilities = (enchant: (typeof enchants)[number]): string => {
+    const format = (num: number): string => {
+        const color = num < 0 ? "#ef4444" : "#60a5fa";
+        const sign = num >= 0 ? "+" : "";
+        return `<span style="color:${color}; font-weight: 600;">${sign}${num}</span>`;
+    };
+
+    return enchant.effect
+        .map(({ id, min, max }) => {
+            const abilityName = abilitiesMap[id] || id;
+            const suffix = abilitiesValueWithPercentArray.includes(id) ? "%" : "";
+            return min !== max
+                ? `<div style="margin: 2px 0;">${abilityName}: ${format(min)} ~ ${format(max)}${suffix}</div>`
+                : `<div style="margin: 2px 0;">${abilityName}: ${format(min)}${suffix}</div>`;
+        })
+        .join("");
 };
 
 const hideBrokenImage = (e: Event) => {
@@ -273,14 +282,62 @@ onMounted(loadPrices);
                                         :width="300"
                                         :show-after="150"
                                         :hide-after="80"
-                                        popper-class="pc-popover"
+                                        popper-class="qv-popover"
                                     >
                                         <template #reference>
                                             <el-icon class="ml-1 text-gray-400 align-middle"><InfoFilled /></el-icon>
                                         </template>
-                                        <div class="pc-detail-desc">
-                                            <div v-for="(line, i) in getEnchantTooltipLines(row.name.tw)" :key="i">
-                                                {{ line }}
+                                        <div class="qv-detail">
+                                            <div class="qv-detail-header">
+                                                <span class="qv-rank">
+                                                    {{ formatRank(getEnchantInfo(row.name.tw)!.level) }}
+                                                </span>
+                                                <span class="font-medium text-sm">{{ row.name.tw }}</span>
+                                                <el-tag
+                                                    size="small"
+                                                    :type="getEnchantInfo(row.name.tw)!.type === 'prefix' ? 'danger' : 'success'"
+                                                    class="ml-1 !py-0"
+                                                >
+                                                    {{ getEnchantInfo(row.name.tw)!.type === 'prefix' ? '接頭' : '接尾' }}
+                                                </el-tag>
+                                                <el-tag
+                                                    v-if="getEnchantInfo(row.name.tw)!.personalize"
+                                                    size="small"
+                                                    type="warning"
+                                                    class="!py-0"
+                                                >
+                                                    專
+                                                </el-tag>
+                                            </div>
+                                            <div
+                                                v-if="getEnchantInfo(row.name.tw)!.limit.some((l) => l)"
+                                                class="qv-detail-limit"
+                                            >
+                                                <el-tag
+                                                    v-for="l in getEnchantInfo(row.name.tw)!.limit.filter((l) => l)"
+                                                    :key="l"
+                                                    type="info"
+                                                    size="small"
+                                                    class="mr-1 mb-1"
+                                                >
+                                                    {{ l }}
+                                                </el-tag>
+                                            </div>
+                                            <div
+                                                class="qv-detail-effects"
+                                                v-html="renderAbilities(getEnchantInfo(row.name.tw)!)"
+                                            ></div>
+                                            <div
+                                                v-if="descLines(getEnchantInfo(row.name.tw)!.desc).length"
+                                                class="qv-detail-desc"
+                                            >
+                                                <div
+                                                    v-for="(line, i) in descLines(getEnchantInfo(row.name.tw)!.desc)"
+                                                    :key="i"
+                                                    :class="line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'"
+                                                >
+                                                    {{ line }}
+                                                </div>
                                             </div>
                                         </div>
                                     </el-popover>
@@ -393,31 +450,3 @@ onMounted(loadPrices);
         </div>
     </div>
 </template>
-
-<style>
-/* 賦予效果 popover，樣式對齊 Enchant.vue 的「快速檢視」(qv-popover)；未加 scoped 因為 el-popover 會 teleport 到 body */
-.pc-popover.el-popper {
-    background: #1a2535 !important;
-    border: 1px solid #4a5568 !important;
-    color: #e2e8f0 !important;
-    padding: 10px 12px !important;
-}
-.pc-popover .el-popper__arrow::before {
-    background: #1a2535 !important;
-    border-color: #4a5568 !important;
-}
-.pc-detail-desc {
-    max-height: 200px;
-    overflow-y: auto;
-    font-size: 0.78rem;
-    line-height: 1.7;
-    color: #e2e8f0;
-}
-.pc-detail-desc::-webkit-scrollbar {
-    width: 4px;
-}
-.pc-detail-desc::-webkit-scrollbar-thumb {
-    background: #4a5568;
-    border-radius: 2px;
-}
-</style>
