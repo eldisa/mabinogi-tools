@@ -1,8 +1,10 @@
 name: Scrape and push prices
 
 on:
-  schedule:
-    - cron: '0 18 * * *'  # 每日 UTC 18:00（台灣時間 02:00）
+  # 目標網站 mabi.labanyu.com 目前有 Cloudflare 機器人驗證擋爬蟲，排程先關閉，
+  # 只保留手動觸發；找到可行的資料來源後再重新打開 schedule。
+  # schedule:
+  #   - cron: '0 18 * * *'  # 每日 UTC 18:00（台灣時間 02:00）
 
   # 允許手動觸發 workflow
   workflow_dispatch:
