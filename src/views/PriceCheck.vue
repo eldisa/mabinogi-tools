@@ -10,6 +10,7 @@ import {
 } from "../api/prices";
 import { materials } from "../data/materials";
 import { enchants } from "../data/enchants";
+import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 
 const baseUrl = import.meta.env.BASE_URL;
 const ENCHANT_SCROLL_IMAGE_ID = 62025; // 賦予捲軸統一用這張圖，不分實際詞條
@@ -39,6 +40,27 @@ const descLines = (desc: string): string[] =>
         .replace(/\\+n/g, "\n")
         .split("\n")
         .filter((l) => l.trim() !== "");
+
+// desc 是空字串時，退回用 effect 陣列組出可讀的效果行（跟 Enchant.vue 的 formatEnchantEffects 同邏輯）
+const formatEffectLines = (enchant: (typeof enchants)[number]): string[] => {
+    const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
+    return enchant.effect.map((eff) => {
+        const name = abilitiesMap[eff.id] ?? eff.id;
+        const pct = abilitiesValueWithPercentArray.includes(eff.id) ? "%" : "";
+        return eff.min === eff.max
+            ? `${name} ${sign(eff.max)}${pct}`
+            : `${name} ${sign(eff.min)}~${sign(eff.max)}${pct}`;
+    });
+};
+
+const getEnchantTooltipLines = (tw: string): string[] => {
+    const info = getEnchantInfo(tw);
+    if (!info) return [];
+    const lines = descLines(info.desc);
+    if (lines.length > 0) return lines;
+    const effectLines = formatEffectLines(info);
+    return effectLines.length > 0 ? effectLines : ["無效果說明資料"];
+};
 
 const hideBrokenImage = (e: Event) => {
     (e.target as HTMLImageElement).style.display = "none";
@@ -250,10 +272,7 @@ onMounted(loadPrices);
                                         :popper-style="{ maxWidth: '360px', whiteSpace: 'normal' }"
                                     >
                                         <template #content>
-                                            <div
-                                                v-for="(line, i) in descLines(getEnchantInfo(row.name.tw)!.desc)"
-                                                :key="i"
-                                            >
+                                            <div v-for="(line, i) in getEnchantTooltipLines(row.name.tw)" :key="i">
                                                 {{ line }}
                                             </div>
                                         </template>
