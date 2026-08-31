@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { Search, Loading, InfoFilled } from "@element-plus/icons-vue";
 import {
     fetchDungeonItemPrices,
@@ -102,6 +102,34 @@ const filteredRelicPrices = computed(() => {
         }))
         .filter((job) => translateJob(job.job.kr).includes(q) || job.job.kr.includes(q) || job.options.length > 0);
 });
+
+// 遺物價格台服換算：用「穆利亞斯的遺物(理念)」的韓服/台服價格算出倍率，套用在遺物選項價格上
+const IDEA_ITEM_TW_NAME = "穆利亞斯的遺物(理念)";
+const TW_IDEA_PRICE_KEY = "mabinogi-price-check-tw-idea-price";
+
+const loadTwIdeaPrice = (): number | null => {
+    const saved = localStorage.getItem(TW_IDEA_PRICE_KEY);
+    return saved ? Number(saved) : null;
+};
+
+const relicConvertEnabled = ref(false);
+const twIdeaPrice = ref<number | null>(loadTwIdeaPrice());
+watch(twIdeaPrice, (v) => {
+    if (v) localStorage.setItem(TW_IDEA_PRICE_KEY, String(v));
+    else localStorage.removeItem(TW_IDEA_PRICE_KEY);
+});
+
+const ideaKrPrice = computed(() => itemPrices.value.find((i) => i.name.tw === IDEA_ITEM_TW_NAME)?.price ?? null);
+
+const relicConvertRatio = computed(() => {
+    if (!relicConvertEnabled.value || !twIdeaPrice.value || !ideaKrPrice.value) return null;
+    return twIdeaPrice.value / ideaKrPrice.value;
+});
+
+const displayRelicPrice = (price: number) => {
+    const ratio = relicConvertRatio.value;
+    return ratio ? Math.round(price * ratio).toLocaleString() : price.toLocaleString();
+};
 
 const loadPrices = async () => {
     loading.value = true;
@@ -241,6 +269,35 @@ onMounted(loadPrices);
 
                     <el-tab-pane label="穆利亞斯遺物">
                         <p class="text-xs text-gray-500 mt-3">更新於 {{ formatUpdatedAt(muriasRelicUpdatedAt) }}</p>
+
+                        <div class="mt-3 p-3 rounded-lg bg-gray-900/50 border border-gray-700">
+                            <el-checkbox v-model="relicConvertEnabled">換算為台服價格參考</el-checkbox>
+
+                            <div v-if="relicConvertEnabled" class="mt-2 flex flex-wrap items-center gap-3">
+                                <span class="text-sm text-gray-400">台服「{{ IDEA_ITEM_TW_NAME }}」價格</span>
+                                <el-input-number
+                                    v-model="twIdeaPrice"
+                                    :min="0"
+                                    :step="1000"
+                                    controls-position="right"
+                                    style="width: 180px"
+                                />
+                                <span v-if="ideaKrPrice" class="text-xs text-gray-500">
+                                    韓服理念價格：{{ ideaKrPrice.toLocaleString() }}
+                                    <template v-if="relicConvertRatio">，換算倍率 {{ relicConvertRatio.toFixed(3) }}</template>
+                                </span>
+                                <span v-else class="text-xs text-red-400">
+                                    找不到韓服「{{ IDEA_ITEM_TW_NAME }}」價格，無法換算
+                                </span>
+                            </div>
+
+                            <el-alert v-if="relicConvertEnabled" type="warning" :closable="false" show-icon class="mt-2">
+                                <template #title>
+                                    <span class="text-sm">因版本與環境不同，所以價格可能有差距，僅供參考。</span>
+                                </template>
+                            </el-alert>
+                        </div>
+
                         <el-collapse class="mt-2">
                             <el-collapse-item v-for="job in filteredRelicPrices" :key="job.job.kr" :name="job.job.kr">
                                 <template #title>
@@ -278,7 +335,7 @@ onMounted(loadPrices);
                                     <el-table-column label="價格" align="right">
                                         <template #default="{ row }">
                                             <span class="text-accent font-semibold">
-                                                {{ row.price.toLocaleString() }}
+                                                {{ displayRelicPrice(row.price) }}
                                             </span>
                                         </template>
                                     </el-table-column>
