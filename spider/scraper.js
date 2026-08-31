@@ -1187,7 +1187,7 @@ const enchantDb = [
             "en": "Mirror",
             "tw2": "鏡子"
         }
-    }
+    },
     {
         id: 31788,
         name: { tw: "管理者", en: "Administrator", tw2: "管理者", kr: "관리자" },
