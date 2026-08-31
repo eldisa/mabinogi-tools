@@ -11,7 +11,9 @@ import {
 import { materials } from "../data/materials";
 import { enchants } from "../data/enchants";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
+import { useLayoutStore } from "../stores/layout";
 
+const layoutStore = useLayoutStore();
 const baseUrl = import.meta.env.BASE_URL;
 const ENCHANT_SCROLL_IMAGE_ID = 62025; // 賦予捲軸統一用這張圖，不分實際詞條
 
@@ -238,9 +240,18 @@ const relicConvertRatio = computed(() => {
     return twIdeaPrice.value / ideaKrPrice.value;
 });
 
+// 精簡顯示大數字：破億用「億」、破萬用「萬」，避免手機版欄位太寬
+const formatCompactPrice = (price: number): string => {
+    const trim = (n: number, digits: number) => n.toFixed(digits).replace(/\.?0+$/, "");
+    if (price >= 1e8) return `${trim(price / 1e8, 2)}億`;
+    if (price >= 1e4) return `${trim(price / 1e4, 1)}萬`;
+    return price.toLocaleString();
+};
+
 const displayRelicPrice = (price: number) => {
     const ratio = relicConvertRatio.value;
-    return ratio ? Math.round(price * ratio).toLocaleString() : price.toLocaleString();
+    const value = ratio ? Math.round(price * ratio) : price;
+    return formatCompactPrice(value);
 };
 
 const loadPrices = async () => {
@@ -525,7 +536,7 @@ onMounted(loadPrices);
                             :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
                             empty-text="查無資料"
                         >
-                            <el-table-column label="職業" width="110">
+                            <el-table-column v-if="!layoutStore.isMobile" label="職業" width="110">
                                 <template #default="{ row }: { row: FlatRelicRow }">{{ row.jobTw }}</template>
                             </el-table-column>
                             <el-table-column label="技能" min-width="220">
@@ -537,10 +548,7 @@ onMounted(loadPrices);
                                             class="w-6 h-6 object-contain flex-shrink-0"
                                             @error="hideBrokenImage"
                                         />
-                                        <div>
-                                            <span class="font-semibold text-gray-100">{{ row.skillTw }}</span>
-                                            <span class="text-xs text-gray-500 ml-2">上限 {{ row.max }}</span>
-                                        </div>
+                                        <span class="font-semibold text-gray-100">{{ row.skillTw }}</span>
                                     </div>
                                 </template>
                             </el-table-column>
