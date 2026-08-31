@@ -177,7 +177,15 @@ const RELIC_LEVELS = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 const relicSearch = ref("");
 const relicJobFilter = ref<string[]>([]);
 const relicMinLevel = ref<number | null>(null);
-const relicGroupBySkill = ref(false);
+
+type RelicSortMode = "job" | "skill" | "price-asc" | "price-desc";
+const relicSortMode = ref<RelicSortMode>("job");
+const RELIC_SORT_OPTIONS: { value: RelicSortMode; label: string }[] = [
+    { value: "job", label: "依職業" },
+    { value: "skill", label: "依技能" },
+    { value: "price-asc", label: "價格低到高" },
+    { value: "price-desc", label: "價格高到低" },
+];
 
 const filteredFlatRelicRows = computed(() => {
     const q = relicSearch.value.trim();
@@ -191,10 +199,18 @@ const filteredFlatRelicRows = computed(() => {
     }
 
     const sorted = [...rows];
-    if (relicGroupBySkill.value) {
-        sorted.sort((a, b) => a.skillTw.localeCompare(b.skillTw) || b.level - a.level);
-    } else {
-        sorted.sort((a, b) => a.jobTw.localeCompare(b.jobTw) || a.skillTw.localeCompare(b.skillTw) || b.level - a.level);
+    switch (relicSortMode.value) {
+        case "skill":
+            sorted.sort((a, b) => a.skillTw.localeCompare(b.skillTw) || b.level - a.level);
+            break;
+        case "price-asc":
+            sorted.sort((a, b) => a.price - b.price);
+            break;
+        case "price-desc":
+            sorted.sort((a, b) => b.price - a.price);
+            break;
+        default:
+            sorted.sort((a, b) => a.jobTw.localeCompare(b.jobTw) || a.skillTw.localeCompare(b.skillTw) || b.level - a.level);
     }
     return sorted;
 });
@@ -439,7 +455,14 @@ onMounted(loadPrices);
                                     <el-icon><Search /></el-icon>
                                 </template>
                             </el-input>
-                            <el-checkbox v-model="relicGroupBySkill">依技能分類（取消則依職業分類）</el-checkbox>
+                            <el-select v-model="relicSortMode" placeholder="排序方式" style="min-width: 140px">
+                                <el-option
+                                    v-for="opt in RELIC_SORT_OPTIONS"
+                                    :key="opt.value"
+                                    :label="opt.label"
+                                    :value="opt.value"
+                                />
+                            </el-select>
                         </div>
 
                         <div class="mt-3 flex flex-wrap items-center gap-3">
