@@ -9,8 +9,8 @@
 // 1. 瀏覽器開 https://mabi.labanyu.com/dungeon/brie-lech/murias-relic，正常操作通過驗證、等頁面load完
 // 2. F12 開 DevTools → Console
 // 3. 貼上這整份程式碼，Enter
-// 4. 結果會自動複製到剪貼簿（JSON），也會印出表格預覽
-// 5. 把剪貼簿內容存成 data/murias-relic-prices.json，或直接貼給推送用的腳本
+// 4. 結果會自動印出表格預覽，並觸發下載 murias-relic-prices.json（用 Blob，不依賴瀏覽器專屬的 copy()）
+// 5. 把下載的檔案移到 data/ 資料夾，或直接貼給推送用的腳本
 
 (async () => {
     const parseKoreanPrice = (s) => {
@@ -105,11 +105,19 @@
     );
 
     const json = JSON.stringify(finalResults, null, 2);
-    if (typeof copy === 'function') {
-        copy(json); // Chrome/Edge DevTools 內建的剪貼簿複製函式
-        console.log(`已複製到剪貼簿，共 ${finalResults.length} 個職業資料。`);
-    } else {
-        console.log('此瀏覽器沒有 copy()，請手動複製下面這段 JSON：');
+    try {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'murias-relic-prices.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log(`已觸發下載 murias-relic-prices.json，共 ${finalResults.length} 個職業資料，請移到 data/ 資料夾。`);
+    } catch (e) {
+        console.log('自動下載失敗，請手動複製下面這段 JSON：');
         console.log(json);
     }
 })();

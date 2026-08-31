@@ -10,6 +10,8 @@ import {
 } from "../api/prices";
 import { materials } from "../data/materials";
 import { enchants } from "../data/enchants";
+import { farmModel } from "../data/farmModel";
+import titleJsonData from "../data/title.json";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
 import { useLayoutStore } from "../stores/layout";
 
@@ -33,6 +35,33 @@ const getItemImageId = (item: DungeonItemPrice): number | null => {
 };
 
 const getEnchantInfo = (tw: string) => enchantByTw.get(tw);
+
+// 農場模型 tw -> 資料，用來顯示模型加成
+const farmModelByTw = new Map(farmModel.map((f) => [f.name.tw, f]));
+const getFarmModelInfo = (tw: string) => farmModelByTw.get(tw);
+
+// 稱號取得券 tw（去掉「第2稱號取得券」後綴）-> 稱號資料，用來顯示稱號效果
+interface TitleAbility {
+    id: string;
+    value: number;
+}
+interface TitleEntry {
+    ID: string;
+    DefaultName: string;
+    EffectDescription: string;
+    abilities: TitleAbility[];
+}
+const TITLE_COUPON_SUFFIX = "第2稱號取得券";
+const titleByDefaultName = new Map<string, TitleEntry>();
+(titleJsonData.data as TitleEntry[]).forEach((t) => {
+    if (t.DefaultName && t.DefaultName !== "none" && !titleByDefaultName.has(t.DefaultName)) {
+        titleByDefaultName.set(t.DefaultName, t);
+    }
+});
+const getTitleInfo = (tw: string) => {
+    if (!tw.endsWith(TITLE_COUPON_SUFFIX)) return undefined;
+    return titleByDefaultName.get(tw.slice(0, -TITLE_COUPON_SUFFIX.length));
+};
 
 const getSkillImageUrl = (skillId: number) =>
     `https://cdn.jsdelivr.net/gh/eldisa/mabinogiImage@main/SkillImage/${skillId}.png`;
@@ -70,6 +99,23 @@ const renderAbilities = (enchant: (typeof enchants)[number]): string => {
             return min !== max
                 ? `<div style="margin: 2px 0;">${abilityName}: ${format(min)} ~ ${format(max)}${suffix}</div>`
                 : `<div style="margin: 2px 0;">${abilityName}: ${format(min)}${suffix}</div>`;
+        })
+        .join("");
+};
+
+// 渲染單一數值的能力（農場模型、稱號用），跟 renderAbilities 同一套配色
+const renderSingleValueAbilities = (abilities: { id: string; value: number }[]): string => {
+    const format = (num: number): string => {
+        const color = num < 0 ? "#ef4444" : "#60a5fa";
+        const sign = num >= 0 ? "+" : "";
+        return `<span style="color:${color}; font-weight: 600;">${sign}${num}</span>`;
+    };
+
+    return abilities
+        .map(({ id, value }) => {
+            const abilityName = abilitiesMap[id] || id;
+            const suffix = abilitiesValueWithPercentArray.includes(id) ? "%" : "";
+            return `<div style="margin: 2px 0;">${abilityName}: ${format(value)}${suffix}</div>`;
         })
         .join("");
 };
@@ -116,17 +162,20 @@ const availableTypes = computed(() => Array.from(new Set(mappedItemPrices.value.
 
 const itemSearch = ref("");
 const itemTypeFilter = ref("");
-// 目前資料全部來自布里萊赫地城；雪本尚未有爬蟲資料，checkbox 先做起來，等資料補上再串
 const showBriLeith = ref(true);
 const showSnow = ref(true);
 
+// 舊資料（爬蟲補上 source 欄位之前）沒有這個欄位，一律視為布里萊赫地城
+const getItemSource = (item: DungeonItemPrice) => item.source ?? "brie-lech";
+
 const filteredItemPrices = computed(() => {
     const q = itemSearch.value.trim();
-    if (!showBriLeith.value) return []; // 目前所有資料都算布本，取消勾選就清空
     return mappedItemPrices.value.filter((item) => {
+        const source = getItemSource(item);
+        const matchesSource = (source === "brie-lech" && showBriLeith.value) || (source === "snow" && showSnow.value);
         const matchesQuery = !q || item.name.tw.includes(q) || item.name.kr.includes(q);
         const matchesType = !itemTypeFilter.value || item.type === itemTypeFilter.value;
-        return matchesQuery && matchesType;
+        return matchesSource && matchesQuery && matchesType;
     });
 });
 
@@ -343,10 +392,7 @@ onMounted(loadPrices);
                                     />
                                 </el-select>
                                 <el-checkbox v-model="showBriLeith">布本</el-checkbox>
-                                <el-checkbox v-model="showSnow">
-                                    雪本
-                                    <span class="text-xs text-gray-500">(尚無資料)</span>
-                                </el-checkbox>
+                                <el-checkbox v-model="showSnow">雪本</el-checkbox>
                             </template>
 
                             <el-popover v-else trigger="click" placement="bottom-start" :width="240">
@@ -452,6 +498,69 @@ onMounted(loadPrices);
                                                     v-for="(line, i) in descLines(getEnchantInfo(row.name.tw)!.desc)"
                                                     :key="i"
                                                     :class="line.startsWith('[') ? 'qv-desc-neg' : 'qv-desc-pos'"
+                                                >
+                                                    {{ line }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </el-popover>
+
+                                    <el-popover
+                                        v-if="getFarmModelInfo(row.name.tw)"
+                                        trigger="hover"
+                                        placement="right"
+                                        :width="280"
+                                        :show-after="150"
+                                        :hide-after="80"
+                                        popper-class="qv-popover"
+                                    >
+                                        <template #reference>
+                                            <el-icon class="ml-1 text-gray-400 align-middle"><InfoFilled /></el-icon>
+                                        </template>
+                                        <div class="qv-detail">
+                                            <div class="qv-detail-header">
+                                                <span class="font-medium text-sm">{{ row.name.tw }}</span>
+                                                <el-tag size="small" type="info" class="ml-1 !py-0">農場模型</el-tag>
+                                            </div>
+                                            <div
+                                                class="qv-detail-effects"
+                                                v-html="renderSingleValueAbilities(getFarmModelInfo(row.name.tw)!.abilities)"
+                                            ></div>
+                                        </div>
+                                    </el-popover>
+
+                                    <el-popover
+                                        v-if="getTitleInfo(row.name.tw)"
+                                        trigger="hover"
+                                        placement="right"
+                                        :width="300"
+                                        :show-after="150"
+                                        :hide-after="80"
+                                        popper-class="qv-popover"
+                                    >
+                                        <template #reference>
+                                            <el-icon class="ml-1 text-gray-400 align-middle"><InfoFilled /></el-icon>
+                                        </template>
+                                        <div class="qv-detail">
+                                            <div class="qv-detail-header">
+                                                <span class="font-medium text-sm">
+                                                    {{ getTitleInfo(row.name.tw)!.DefaultName }}
+                                                </span>
+                                                <el-tag size="small" type="info" class="ml-1 !py-0">稱號效果</el-tag>
+                                            </div>
+                                            <div
+                                                v-if="getTitleInfo(row.name.tw)!.abilities.length"
+                                                class="qv-detail-effects"
+                                                v-html="renderSingleValueAbilities(getTitleInfo(row.name.tw)!.abilities)"
+                                            ></div>
+                                            <div
+                                                v-else-if="descLines(getTitleInfo(row.name.tw)!.EffectDescription).length"
+                                                class="qv-detail-desc"
+                                            >
+                                                <div
+                                                    v-for="(line, i) in descLines(getTitleInfo(row.name.tw)!.EffectDescription)"
+                                                    :key="i"
+                                                    class="qv-desc-pos"
                                                 >
                                                     {{ line }}
                                                 </div>
