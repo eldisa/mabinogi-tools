@@ -26,6 +26,7 @@ enchants.forEach((e) => {
 
 const getItemImageId = (item: DungeonItemPrice): number | null => {
     if (item.type === "enchant") return ENCHANT_SCROLL_IMAGE_ID;
+    if (item.id) return item.id;
     return materialIdByKr.get(item.name.kr) ?? null;
 };
 
@@ -265,19 +266,24 @@ onMounted(loadPrices);
                             <el-table-column label="名稱" min-width="220">
                                 <template #default="{ row }: { row: DungeonItemPrice }">
                                     <span class="font-semibold text-gray-100">{{ row.name.tw }}</span>
-                                    <el-tooltip
+                                    <el-popover
                                         v-if="row.type === 'enchant' && getEnchantInfo(row.name.tw)"
-                                        effect="dark"
+                                        trigger="hover"
                                         placement="right"
-                                        :popper-style="{ maxWidth: '360px', whiteSpace: 'normal' }"
+                                        :width="300"
+                                        :show-after="150"
+                                        :hide-after="80"
+                                        popper-class="pc-popover"
                                     >
-                                        <template #content>
+                                        <template #reference>
+                                            <el-icon class="ml-1 text-gray-400 align-middle"><InfoFilled /></el-icon>
+                                        </template>
+                                        <div class="pc-detail-desc">
                                             <div v-for="(line, i) in getEnchantTooltipLines(row.name.tw)" :key="i">
                                                 {{ line }}
                                             </div>
-                                        </template>
-                                        <el-icon class="ml-1 text-gray-400 align-middle"><InfoFilled /></el-icon>
-                                    </el-tooltip>
+                                        </div>
+                                    </el-popover>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="type" label="類型" width="100" align="center">
@@ -387,3 +393,31 @@ onMounted(loadPrices);
         </div>
     </div>
 </template>
+
+<style>
+/* 賦予效果 popover，樣式對齊 Enchant.vue 的「快速檢視」(qv-popover)；未加 scoped 因為 el-popover 會 teleport 到 body */
+.pc-popover.el-popper {
+    background: #1a2535 !important;
+    border: 1px solid #4a5568 !important;
+    color: #e2e8f0 !important;
+    padding: 10px 12px !important;
+}
+.pc-popover .el-popper__arrow::before {
+    background: #1a2535 !important;
+    border-color: #4a5568 !important;
+}
+.pc-detail-desc {
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: #e2e8f0;
+}
+.pc-detail-desc::-webkit-scrollbar {
+    width: 4px;
+}
+.pc-detail-desc::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 2px;
+}
+</style>
