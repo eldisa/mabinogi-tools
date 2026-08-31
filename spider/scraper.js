@@ -5,6 +5,17 @@ import { pushPrices } from './pushPrices.js';
 // 1. 準備資料庫 (你可以考慮之後抽出來放在獨立的 json 檔案)
 const itemDb = [
     {
+        id: 5040665,
+        name: {
+            en: "Stardust Shape Energy",
+            us: "Shard of Solace Stardust",
+            cn: "安乐碎片星尘形象",
+            jp: "安らぎの破片スターダストの形",
+            kr: "안락의 파편 스타더스트의 형상",
+            tw: "安樂的碎片星塵形象",
+        },
+    },
+    {
         id: 5100303,
         name: {
             en: "Bri Leith's Core",
