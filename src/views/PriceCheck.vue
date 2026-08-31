@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { Search, Loading } from "@element-plus/icons-vue";
+import { Search, Loading, InfoFilled } from "@element-plus/icons-vue";
 import {
     fetchDungeonItemPrices,
     fetchMuriasRelicPrices,
@@ -8,6 +8,41 @@ import {
     type DungeonItemPrice,
     type MuriasRelicJobPrice,
 } from "../api/prices";
+import { materials } from "../data/materials";
+import { enchants } from "../data/enchants";
+
+const baseUrl = import.meta.env.BASE_URL;
+const ENCHANT_SCROLL_IMAGE_ID = 62025; // 賦予捲軸統一用這張圖，不分實際詞條
+
+// 名稱(kr) -> 素材 id，用來找 public/itemImage 裡對應的圖片
+const materialIdByKr = new Map(materials.map((m) => [m.name.kr, m.id]));
+// 賦予詞條 tw/tw2 -> 賦予資料，用來顯示效果說明
+const enchantByTw = new Map<string, (typeof enchants)[number]>();
+enchants.forEach((e) => {
+    if (!enchantByTw.has(e.name.tw)) enchantByTw.set(e.name.tw, e);
+    if (e.name.tw2 && !enchantByTw.has(e.name.tw2)) enchantByTw.set(e.name.tw2, e);
+});
+
+const getItemImageId = (item: DungeonItemPrice): number | null => {
+    if (item.type === "enchant") return ENCHANT_SCROLL_IMAGE_ID;
+    return materialIdByKr.get(item.name.kr) ?? null;
+};
+
+const getEnchantInfo = (tw: string) => enchantByTw.get(tw);
+
+const getSkillImageUrl = (skillId: number) =>
+    `https://cdn.jsdelivr.net/gh/eldisa/mabinogiImage@main/SkillImage/${skillId}.png`;
+
+// desc 換行處理：相容舊格式（\\n 兩個字元）與新格式（真換行 \n）
+const descLines = (desc: string): string[] =>
+    desc
+        .replace(/\\+n/g, "\n")
+        .split("\n")
+        .filter((l) => l.trim() !== "");
+
+const hideBrokenImage = (e: Event) => {
+    (e.target as HTMLImageElement).style.display = "none";
+};
 
 const search = ref("");
 const typeFilter = ref("");
@@ -36,21 +71,31 @@ const RELIC_JOB_NAME_MAP: Record<string, string> = {
 };
 const translateJob = (kr: string) => RELIC_JOB_NAME_MAP[kr] ?? kr;
 
-const availableTypes = computed(() => Array.from(new Set(itemPrices.value.map((item) => item.type))));
+// 未對應到中文翻譯的資料不顯示
+const mappedItemPrices = computed(() => itemPrices.value.filter((item) => item.name.tw !== "未對應"));
+
+const availableTypes = computed(() => Array.from(new Set(mappedItemPrices.value.map((item) => item.type))));
 
 const filteredItemPrices = computed(() => {
     const q = search.value.trim();
-    return itemPrices.value.filter((item) => {
+    return mappedItemPrices.value.filter((item) => {
         const matchesQuery = !q || item.name.tw.includes(q) || item.name.kr.includes(q);
         const matchesType = !typeFilter.value || item.type === typeFilter.value;
         return matchesQuery && matchesType;
     });
 });
 
+const mappedRelicPrices = computed(() =>
+    relicPrices.value.map((job) => ({
+        ...job,
+        options: job.options.filter((opt) => opt.name.tw !== "未對應"),
+    })),
+);
+
 const filteredRelicPrices = computed(() => {
     const q = search.value.trim();
-    if (!q) return relicPrices.value;
-    return relicPrices.value
+    if (!q) return mappedRelicPrices.value;
+    return mappedRelicPrices.value
         .map((job) => ({
             ...job,
             options: job.options.filter((opt) => opt.name.tw.includes(q) || opt.name.kr.includes(q)),
@@ -151,12 +196,34 @@ onMounted(loadPrices);
                             :row-style="{ background: '#1f2937', color: '#e5e7eb' }"
                             empty-text="查無資料"
                         >
+                            <el-table-column label="圖片" width="70" align="center">
+                                <template #default="{ row }: { row: DungeonItemPrice }">
+                                    <img
+                                        v-if="getItemImageId(row)"
+                                        :src="`${baseUrl}itemImage/${getItemImageId(row)}.png`"
+                                        class="w-8 h-8 object-contain mx-auto"
+                                        @error="hideBrokenImage"
+                                    />
+                                </template>
+                            </el-table-column>
                             <el-table-column label="名稱" min-width="220">
                                 <template #default="{ row }: { row: DungeonItemPrice }">
                                     <span class="font-semibold text-gray-100">{{ row.name.tw }}</span>
-                                    <span v-if="row.name.tw === '未對應'" class="text-xs text-gray-500 ml-2">
-                                        {{ row.name.kr }}
-                                    </span>
+                                    <el-tooltip
+                                        v-if="row.type === 'enchant' && getEnchantInfo(row.name.tw)"
+                                        effect="dark"
+                                        placement="right"
+                                    >
+                                        <template #content>
+                                            <div
+                                                v-for="(line, i) in descLines(getEnchantInfo(row.name.tw)!.desc)"
+                                                :key="i"
+                                            >
+                                                {{ line }}
+                                            </div>
+                                        </template>
+                                        <el-icon class="ml-1 text-gray-400 align-middle"><InfoFilled /></el-icon>
+                                    </el-tooltip>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="type" label="類型" width="100" align="center">
@@ -193,10 +260,18 @@ onMounted(loadPrices);
                                     <template #empty>查無資料</template>
                                     <el-table-column width="220">
                                         <template #header>
-                                            <span class="font-semibold text-gray-100">
-                                                {{ opt.name.tw === "未對應" ? opt.name.kr : opt.name.tw }}
-                                            </span>
-                                            <span class="text-xs text-gray-500 ml-2">上限 {{ opt.max }}</span>
+                                            <div class="flex items-center gap-2">
+                                                <img
+                                                    v-if="opt.skillId"
+                                                    :src="getSkillImageUrl(opt.skillId)"
+                                                    class="w-6 h-6 object-contain flex-shrink-0"
+                                                    @error="hideBrokenImage"
+                                                />
+                                                <div>
+                                                    <span class="font-semibold text-gray-100">{{ opt.name.tw }}</span>
+                                                    <span class="text-xs text-gray-500 ml-2">上限 {{ opt.max }}</span>
+                                                </div>
+                                            </div>
                                         </template>
                                         <template #default="{ row }">等級 {{ row.level }}</template>
                                     </el-table-column>
