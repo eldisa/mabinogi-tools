@@ -559,7 +559,7 @@ import { ElTooltip, ElIcon, ElMessage } from "element-plus";
 import { InfoFilled, QuestionFilled } from "@element-plus/icons-vue";
 import { useLayoutStore } from "../stores/layout";
 import { useAuthStore } from "../stores/auth";
-import { fetchMaterialStock, saveMaterialStock, type MaterialStockMap } from "../api/materialStock";
+import { fetchMaterialStock, saveMaterialStock, type MaterialAccountMap } from "../api/materialStock";
 import { fetchMaterialPriceFeed } from "../api/materials";
 
 const layoutStore = useLayoutStore();
@@ -624,36 +624,42 @@ const materialPrices = ref<MaterialPriceEntry[]>(loadMaterialPrices());
 const materialPriceMap = computed(() => new Map(materialPrices.value.map((e) => [e.id, e])));
 const materialsMap = new Map(materials.map((m) => [m.id, m]));
 
-const buildStockPayload = (): MaterialStockMap => {
-    const payload: MaterialStockMap = {};
+const buildAccountPayload = (): MaterialAccountMap => {
+    const payload: MaterialAccountMap = {};
     for (const entry of materialPrices.value) {
-        if (entry.stock > 0) payload[entry.id] = entry.stock;
+        // 有庫存或有填價格才上傳，避免整包塞滿 0
+        if (entry.stock > 0 || entry.price > 0) {
+            payload[entry.id] = { stock: entry.stock, price: entry.price };
+        }
     }
     return payload;
 };
 
-// 帳號庫存同步：只同步 stock，method 與手動改過的 price 留在本機 localStorage
-const syncStockFromAccount = async () => {
+// 帳號同步：庫存與價格都同步（method 留在本機 localStorage）。
+// 價格優先序：帳號價格(>0) > 公開 feed(onMounted 補) > 內建預設。
+const syncFromAccount = async () => {
     if (!authStore.token) return;
     try {
-        const remoteStock = await fetchMaterialStock(authStore.token);
-        if (Object.keys(remoteStock).length === 0) {
-            // 雲端還沒有資料：把本機庫存當初始值上傳一次
-            const localStock = buildStockPayload();
-            if (Object.keys(localStock).length > 0) {
-                await saveMaterialStock(authStore.token, localStock);
+        const remote = await fetchMaterialStock(authStore.token);
+        if (Object.keys(remote).length === 0) {
+            // 雲端還沒有資料：把本機庫存與價格當初始值上傳一次
+            const local = buildAccountPayload();
+            if (Object.keys(local).length > 0) {
+                await saveMaterialStock(authStore.token, local);
             }
             return;
         }
         for (const entry of materialPrices.value) {
-            entry.stock = remoteStock[String(entry.id)] ?? 0;
+            const r = remote[String(entry.id)];
+            entry.stock = r?.stock ?? 0; // 雲端為庫存的權威來源
+            if (r && r.price > 0) entry.price = r.price; // 帳號價格覆蓋；沒填則保留本機/feed/預設
         }
     } catch {
-        // 網路錯誤，維持本機顯示的庫存
+        // 網路錯誤，維持本機顯示的庫存與價格
     }
 };
 
-watch(() => authStore.isLoggedIn, (loggedIn) => loggedIn && syncStockFromAccount(), { immediate: true });
+watch(() => authStore.isLoggedIn, (loggedIn) => loggedIn && syncFromAccount(), { immediate: true });
 
 onMounted(async () => {
     try {
@@ -674,9 +680,9 @@ const saveMaterialPrices = async () => {
 
     if (!authStore.isLoggedIn || !authStore.token) return;
     try {
-        await saveMaterialStock(authStore.token, buildStockPayload());
+        await saveMaterialStock(authStore.token, buildAccountPayload());
     } catch {
-        ElMessage.warning("帳號庫存同步失敗，已儲存在本機");
+        ElMessage.warning("帳號同步失敗，已儲存在本機");
     }
 };
 
