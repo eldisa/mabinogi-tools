@@ -460,6 +460,8 @@
                             <div class="mb-3 flex items-center gap-4">
                                 <el-checkbox v-model="showOnlyTokenMaterials">只顯示珠子兌換項目</el-checkbox>
                                 <el-divider direction="vertical" />
+                                <el-checkbox v-model="showOnlyNeeded">僅顯示目標需要的材料</el-checkbox>
+                                <el-divider direction="vertical" />
                                 <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
                             </div>
                             <el-table
@@ -825,10 +827,29 @@ const editingPrices = ref<Record<number, string>>({});
 
 const materialPriceFilter = ref("");
 const showOnlyTokenMaterials = ref(false);
+const showOnlyNeeded = ref(false);
+
+// 目前選擇的武器展開後實際會用到的材料 id（含中間加工品，以及匯總列如珠子）
+const neededMaterialIds = computed(() => {
+    const ids = new Set<number>();
+    const walk = (nodes: CraftTreeNode[]) => {
+        for (const n of nodes) {
+            ids.add(n.id);
+            if (n.children?.length) walk(n.children);
+        }
+    };
+    walk(displayData.value);
+    for (const row of materialSummaryTable.value) ids.add(row.id);
+    return ids;
+});
+
 const filteredMaterialPrices = computed(() => {
     const q = materialPriceFilter.value.trim();
     const filtered = materialPrices.value.filter((entry) => {
         if (q && !getMaterialName(entry.id).includes(q)) return false;
+        // 沒選武器時不套用（否則需要清單為空會清光整張表）
+        if (showOnlyNeeded.value && selectedWeapons.value.length > 0 && !neededMaterialIds.value.has(entry.id))
+            return false;
         if (showOnlyTokenMaterials.value) {
             const source = materials.find((m) => m.id === entry.id)?.source;
             const token = source && "token" in source ? source.token : undefined;
