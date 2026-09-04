@@ -270,7 +270,7 @@
                                                         class="w-10 h-10 object-contain"
                                                     />
                                                     <span v-if="!layoutStore.isMobile">{{ row.name }}</span>
-                                                    <el-tooltip placement="top">
+                                                    <el-tooltip v-if="!layoutStore.isMobile" placement="top">
                                                         <template #content>
                                                             <div v-if="row.source.type === 'craft'">
                                                                 生產製作{{
@@ -326,26 +326,63 @@
                             <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
                             <div class="mt-4">
                                 <el-table :data="materialUsageData" style="width: 100%" border lazy>
-                                    <el-table-column label="名稱" width="300">
+                                    <el-table-column label="名稱" :width="layoutStore.isMobile ? 80 : 300">
                                         <template #default="{ row }">
                                             <div class="flex items-center gap-3 h-full">
-                                                <img
-                                                    :src="`${baseUrl}itemImage/${row.id}.png`"
-                                                    class="w-10 h-10 object-contain"
-                                                />
-                                                <span>{{ row.name }}</span>
+                                                <!-- 手機版：名稱不顯示，點圖片才顯示 -->
+                                                <el-tooltip
+                                                    v-if="layoutStore.isMobile"
+                                                    trigger="click"
+                                                    placement="top"
+                                                    :content="row.name"
+                                                >
+                                                    <img
+                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                        class="w-10 h-10 object-contain cursor-pointer"
+                                                    />
+                                                </el-tooltip>
+                                                <template v-else>
+                                                    <img
+                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                        class="w-10 h-10 object-contain"
+                                                    />
+                                                    <span>{{ row.name }}</span>
+                                                </template>
                                             </div>
                                         </template>
                                     </el-table-column>
                                     <el-table-column align="left" label="需求數量">
                                         <template #default="{ row }">
                                             <template v-if="renderDetailUsage(row.usedInDetail).length > 0">
-                                                <div
-                                                    v-for="group in renderDetailUsage(row.usedInDetail)"
-                                                    :key="group.total"
-                                                >
-                                                    {{ group.total }}：{{ group.names.join("、") }}
-                                                </div>
+                                                <!-- 手機版：折疊成「數量：K種」，點擊看完整裝備名單 -->
+                                                <template v-if="layoutStore.isMobile">
+                                                    <el-tooltip
+                                                        v-for="group in renderDetailUsage(row.usedInDetail)"
+                                                        :key="group.total"
+                                                        trigger="click"
+                                                        placement="top"
+                                                    >
+                                                        <template #content>
+                                                            <div
+                                                                style="max-width: 220px"
+                                                                class="whitespace-normal leading-relaxed"
+                                                            >
+                                                                {{ group.names.join("、") }}
+                                                            </div>
+                                                        </template>
+                                                        <div class="cursor-pointer text-accent whitespace-nowrap">
+                                                            {{ group.total }} 個 · {{ group.names.length }} 種裝備
+                                                        </div>
+                                                    </el-tooltip>
+                                                </template>
+                                                <template v-else>
+                                                    <div
+                                                        v-for="group in renderDetailUsage(row.usedInDetail)"
+                                                        :key="group.total"
+                                                    >
+                                                        {{ group.total }}：{{ group.names.join("、") }}
+                                                    </div>
+                                                </template>
                                             </template>
                                             <span v-else>—</span>
                                         </template>
@@ -358,13 +395,26 @@
                             <el-table :data="craftedItemsData" border style="width: 100%" :row-key="'id'">
                                 <el-table-column label="圖片" width="70" align="center" fixed="left">
                                     <template #default="{ row }">
+                                        <!-- 手機版：點圖片顯示名稱 -->
+                                        <el-tooltip
+                                            v-if="layoutStore.isMobile"
+                                            trigger="click"
+                                            placement="top"
+                                            :content="row.name"
+                                        >
+                                            <img
+                                                :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                class="w-8 h-8 object-contain mx-auto cursor-pointer"
+                                            />
+                                        </el-tooltip>
                                         <img
+                                            v-else
                                             :src="`${baseUrl}itemImage/${row.id}.png`"
                                             class="w-8 h-8 object-contain mx-auto"
                                         />
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="名稱" min-width="200" fixed="left">
+                                <el-table-column v-if="!layoutStore.isMobile" label="名稱" min-width="200" fixed="left">
                                     <template #default="{ row }">
                                         <span>{{ row.name }}</span>
                                     </template>
@@ -486,35 +536,39 @@
                             >
                                 <el-table-column label="圖片" width="70" align="center" fixed="left">
                                     <template #default="{ row }">
+                                        <!-- 手機版：點圖片顯示名稱 -->
+                                        <el-tooltip
+                                            v-if="layoutStore.isMobile"
+                                            trigger="click"
+                                            placement="top"
+                                            :content="getMaterialName(row.id)"
+                                        >
+                                            <img
+                                                :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                class="w-8 h-8 object-contain mx-auto cursor-pointer"
+                                            />
+                                        </el-tooltip>
                                         <img
+                                            v-else
                                             :src="`${baseUrl}itemImage/${row.id}.png`"
                                             class="w-8 h-8 object-contain mx-auto"
                                         />
+                                        <span
+                                            v-if="layoutStore.isMobile && showTokenCount && getRowTokenCount(row.id) > 0"
+                                            class="block text-xs text-yellow-400 whitespace-nowrap"
+                                        >
+                                            ×{{ getRowTokenCount(row.id) }}
+                                        </span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column
-                                    label="名稱"
-                                    :min-width="layoutStore.isMobile ? 56 : 200"
-                                    :fixed="layoutStore.isMobile ? false : 'left'"
-                                    :align="layoutStore.isMobile ? 'center' : 'left'"
-                                >
+                                <el-table-column v-if="!layoutStore.isMobile" label="名稱" min-width="200" fixed="left">
                                     <template #default="{ row }">
-                                        <!-- 手機版：文字收進 info icon，省空間 -->
-                                        <el-tooltip
-                                            v-if="layoutStore.isMobile"
-                                            effect="dark"
-                                            :content="getMaterialName(row.id)"
-                                            placement="top"
-                                        >
-                                            <el-icon class="text-gray-400 cursor-help"><InfoFilled /></el-icon>
-                                        </el-tooltip>
-                                        <span v-else>{{ getMaterialName(row.id) }}</span>
+                                        <span>{{ getMaterialName(row.id) }}</span>
                                         <span
                                             v-if="showTokenCount && getRowTokenCount(row.id) > 0"
                                             class="text-xs text-yellow-400 whitespace-nowrap ml-1"
                                         >
-                                            {{ layoutStore.isMobile ? "×" : ": " }}{{ getRowTokenCount(row.id)
-                                            }}{{ layoutStore.isMobile ? "" : " 珠子" }}
+                                            : {{ getRowTokenCount(row.id) }} 珠子
                                         </span>
                                     </template>
                                 </el-table-column>
