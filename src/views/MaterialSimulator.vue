@@ -59,7 +59,7 @@
                 </el-card>
                 <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
-                        <el-tab-pane label="Total 材料總計">
+                        <el-tab-pane :label="layoutStore.isMobile ? '總計' : 'Total 材料總計'">
                             <div class="flex justify-between items-center mb-2">
                                 <h2 class="text-lg font-semibold text-accent">庫存與所需材料</h2>
                                 <div v-if="!layoutStore.isMobile" class="flex gap-2">
@@ -227,7 +227,7 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="Roadmap 製作路線">
+                        <el-tab-pane :label="layoutStore.isMobile ? '路線' : 'Roadmap 製作路線'">
                             <template v-if="displayData.length > 0">
                                 <div class="flex items-center gap-4">
                                     <h2 class="text-lg font-semibold">
@@ -309,7 +309,7 @@
                                 </div>
                             </template>
                         </el-tab-pane>
-                        <el-tab-pane label="Usage 材料用途">
+                        <el-tab-pane :label="layoutStore.isMobile ? '用途' : 'Usage 材料用途'">
                             <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
                             <div class="mt-4">
                                 <el-table :data="materialUsageData" style="width: 100%" border lazy>
@@ -340,7 +340,7 @@
                                 </el-table>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="加工物估價">
+                        <el-tab-pane :label="layoutStore.isMobile ? '估價' : '加工物估價'">
                             <h2 class="text-lg font-semibold text-accent mb-4">加工物成本與利潤估算</h2>
                             <el-table :data="craftedItemsData" border style="width: 100%" :row-key="'id'">
                                 <el-table-column label="圖片" width="70" align="center" fixed="left">
@@ -426,10 +426,10 @@
                             </el-table>
                         </el-tab-pane>
 
-                        <el-tab-pane label="材料與庫存價格設定">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-lg font-semibold text-accent">材料庫存與價格設定</h2>
-                                <div class="flex gap-2">
+                        <el-tab-pane :label="layoutStore.isMobile ? '價格設定' : '材料與庫存價格設定'">
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
+                                <h2 class="text-lg font-semibold text-accent whitespace-nowrap">材料庫存與價格設定</h2>
+                                <div class="flex gap-2 flex-wrap">
                                     <el-input
                                         v-model="materialPriceFilter"
                                         placeholder="搜尋名稱..."
@@ -479,14 +479,29 @@
                                         />
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="名稱" min-width="200" fixed="left">
+                                <el-table-column
+                                    label="名稱"
+                                    :min-width="layoutStore.isMobile ? 56 : 200"
+                                    :fixed="layoutStore.isMobile ? false : 'left'"
+                                    :align="layoutStore.isMobile ? 'center' : 'left'"
+                                >
                                     <template #default="{ row }">
-                                        <span>{{ getMaterialName(row.id) }}</span>
+                                        <!-- 手機版：文字收進 info icon，省空間 -->
+                                        <el-tooltip
+                                            v-if="layoutStore.isMobile"
+                                            effect="dark"
+                                            :content="getMaterialName(row.id)"
+                                            placement="top"
+                                        >
+                                            <el-icon class="text-gray-400 cursor-help"><InfoFilled /></el-icon>
+                                        </el-tooltip>
+                                        <span v-else>{{ getMaterialName(row.id) }}</span>
                                         <span
                                             v-if="showTokenCount && getRowTokenCount(row.id) > 0"
                                             class="text-xs text-yellow-400 whitespace-nowrap ml-1"
                                         >
-                                            : {{ getRowTokenCount(row.id) }} 珠子
+                                            {{ layoutStore.isMobile ? "×" : ": " }}{{ getRowTokenCount(row.id)
+                                            }}{{ layoutStore.isMobile ? "" : " 珠子" }}
                                         </span>
                                     </template>
                                 </el-table-column>
