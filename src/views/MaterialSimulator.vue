@@ -59,7 +59,7 @@
                 </el-card>
                 <el-card class="rounded-xl shadow-lg border border-gray-700 bg-gray-800">
                     <el-tabs type="border-card">
-                        <el-tab-pane label="Total 材料總計">
+                        <el-tab-pane :label="layoutStore.isMobile ? '總計' : 'Total 材料總計'">
                             <div class="flex justify-between items-center mb-2">
                                 <h2 class="text-lg font-semibold text-accent">庫存與所需材料</h2>
                                 <div v-if="!layoutStore.isMobile" class="flex gap-2">
@@ -227,10 +227,10 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="Roadmap 製作路線">
+                        <el-tab-pane :label="layoutStore.isMobile ? '路線' : 'Roadmap 製作路線'">
                             <template v-if="displayData.length > 0">
-                                <div class="flex items-center gap-4">
-                                    <h2 class="text-lg font-semibold">
+                                <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                                    <h2 class="text-lg font-semibold whitespace-nowrap">
                                         {{ displayData[selectedDisplayDataIndex].name }}
                                     </h2>
                                     <el-checkbox v-model="useCostEstimate">
@@ -249,15 +249,28 @@
                                             children: 'children',
                                         }"
                                     >
-                                        <el-table-column label="名稱" min-width="250">
+                                        <el-table-column label="名稱" :min-width="layoutStore.isMobile ? 90 : 250">
                                             <template #default="{ row }">
                                                 <div class="flex items-center gap-3 h-full">
+                                                    <!-- 手機版：名稱不顯示，點圖片才顯示 -->
+                                                    <el-tooltip
+                                                        v-if="layoutStore.isMobile"
+                                                        trigger="click"
+                                                        placement="top"
+                                                        :content="row.name"
+                                                    >
+                                                        <img
+                                                            :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                            class="w-10 h-10 object-contain cursor-pointer"
+                                                        />
+                                                    </el-tooltip>
                                                     <img
+                                                        v-else
                                                         :src="`${baseUrl}itemImage/${row.id}.png`"
                                                         class="w-10 h-10 object-contain"
                                                     />
-                                                    <span>{{ row.name }}</span>
-                                                    <el-tooltip placement="top">
+                                                    <span v-if="!layoutStore.isMobile">{{ row.name }}</span>
+                                                    <el-tooltip v-if="!layoutStore.isMobile" placement="top">
                                                         <template #content>
                                                             <div v-if="row.source.type === 'craft'">
                                                                 生產製作{{
@@ -309,30 +322,67 @@
                                 </div>
                             </template>
                         </el-tab-pane>
-                        <el-tab-pane label="Usage 材料用途">
+                        <el-tab-pane :label="layoutStore.isMobile ? '用途' : 'Usage 材料用途'">
                             <h2 class="text-lg font-semibold">這個材料可以做什麼裝備</h2>
                             <div class="mt-4">
                                 <el-table :data="materialUsageData" style="width: 100%" border lazy>
-                                    <el-table-column label="名稱" width="300">
+                                    <el-table-column label="名稱" :width="layoutStore.isMobile ? 80 : 300">
                                         <template #default="{ row }">
                                             <div class="flex items-center gap-3 h-full">
-                                                <img
-                                                    :src="`${baseUrl}itemImage/${row.id}.png`"
-                                                    class="w-10 h-10 object-contain"
-                                                />
-                                                <span>{{ row.name }}</span>
+                                                <!-- 手機版：名稱不顯示，點圖片才顯示 -->
+                                                <el-tooltip
+                                                    v-if="layoutStore.isMobile"
+                                                    trigger="click"
+                                                    placement="top"
+                                                    :content="row.name"
+                                                >
+                                                    <img
+                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                        class="w-10 h-10 object-contain cursor-pointer"
+                                                    />
+                                                </el-tooltip>
+                                                <template v-else>
+                                                    <img
+                                                        :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                        class="w-10 h-10 object-contain"
+                                                    />
+                                                    <span>{{ row.name }}</span>
+                                                </template>
                                             </div>
                                         </template>
                                     </el-table-column>
                                     <el-table-column align="left" label="需求數量">
                                         <template #default="{ row }">
                                             <template v-if="renderDetailUsage(row.usedInDetail).length > 0">
-                                                <div
-                                                    v-for="group in renderDetailUsage(row.usedInDetail)"
-                                                    :key="group.total"
-                                                >
-                                                    {{ group.total }}：{{ group.names.join("、") }}
-                                                </div>
+                                                <!-- 手機版：折疊成「數量：K種」，點擊看完整裝備名單 -->
+                                                <template v-if="layoutStore.isMobile">
+                                                    <el-tooltip
+                                                        v-for="group in renderDetailUsage(row.usedInDetail)"
+                                                        :key="group.total"
+                                                        trigger="click"
+                                                        placement="top"
+                                                    >
+                                                        <template #content>
+                                                            <div
+                                                                style="max-width: 220px"
+                                                                class="whitespace-normal leading-relaxed"
+                                                            >
+                                                                {{ group.names.join("、") }}
+                                                            </div>
+                                                        </template>
+                                                        <div class="cursor-pointer text-accent whitespace-nowrap">
+                                                            {{ group.total }} 個 · {{ group.names.length }} 種裝備
+                                                        </div>
+                                                    </el-tooltip>
+                                                </template>
+                                                <template v-else>
+                                                    <div
+                                                        v-for="group in renderDetailUsage(row.usedInDetail)"
+                                                        :key="group.total"
+                                                    >
+                                                        {{ group.total }}：{{ group.names.join("、") }}
+                                                    </div>
+                                                </template>
                                             </template>
                                             <span v-else>—</span>
                                         </template>
@@ -340,18 +390,31 @@
                                 </el-table>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="加工物估價">
+                        <el-tab-pane :label="layoutStore.isMobile ? '估價' : '加工物估價'">
                             <h2 class="text-lg font-semibold text-accent mb-4">加工物成本與利潤估算</h2>
                             <el-table :data="craftedItemsData" border style="width: 100%" :row-key="'id'">
                                 <el-table-column label="圖片" width="70" align="center" fixed="left">
                                     <template #default="{ row }">
+                                        <!-- 手機版：點圖片顯示名稱 -->
+                                        <el-tooltip
+                                            v-if="layoutStore.isMobile"
+                                            trigger="click"
+                                            placement="top"
+                                            :content="row.name"
+                                        >
+                                            <img
+                                                :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                class="w-8 h-8 object-contain mx-auto cursor-pointer"
+                                            />
+                                        </el-tooltip>
                                         <img
+                                            v-else
                                             :src="`${baseUrl}itemImage/${row.id}.png`"
                                             class="w-8 h-8 object-contain mx-auto"
                                         />
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="名稱" min-width="200" fixed="left">
+                                <el-table-column v-if="!layoutStore.isMobile" label="名稱" min-width="200" fixed="left">
                                     <template #default="{ row }">
                                         <span>{{ row.name }}</span>
                                     </template>
@@ -426,10 +489,10 @@
                             </el-table>
                         </el-tab-pane>
 
-                        <el-tab-pane label="材料與庫存價格設定">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-lg font-semibold text-accent">材料庫存與價格設定</h2>
-                                <div class="flex gap-2">
+                        <el-tab-pane :label="layoutStore.isMobile ? '價格設定' : '材料與庫存價格設定'">
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
+                                <h2 class="text-lg font-semibold text-accent whitespace-nowrap">材料庫存與價格設定</h2>
+                                <div class="flex gap-2 flex-wrap">
                                     <el-input
                                         v-model="materialPriceFilter"
                                         placeholder="搜尋名稱..."
@@ -460,6 +523,8 @@
                             <div class="mb-3 flex items-center gap-4">
                                 <el-checkbox v-model="showOnlyTokenMaterials">只顯示珠子兌換項目</el-checkbox>
                                 <el-divider direction="vertical" />
+                                <el-checkbox v-model="showOnlyNeeded">僅顯示目標需要的材料</el-checkbox>
+                                <el-divider direction="vertical" />
                                 <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
                             </div>
                             <el-table
@@ -471,13 +536,32 @@
                             >
                                 <el-table-column label="圖片" width="70" align="center" fixed="left">
                                     <template #default="{ row }">
+                                        <!-- 手機版：點圖片顯示名稱 -->
+                                        <el-tooltip
+                                            v-if="layoutStore.isMobile"
+                                            trigger="click"
+                                            placement="top"
+                                            :content="getMaterialName(row.id)"
+                                        >
+                                            <img
+                                                :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                class="w-8 h-8 object-contain mx-auto cursor-pointer"
+                                            />
+                                        </el-tooltip>
                                         <img
+                                            v-else
                                             :src="`${baseUrl}itemImage/${row.id}.png`"
                                             class="w-8 h-8 object-contain mx-auto"
                                         />
+                                        <span
+                                            v-if="layoutStore.isMobile && showTokenCount && getRowTokenCount(row.id) > 0"
+                                            class="block text-xs text-yellow-400 whitespace-nowrap"
+                                        >
+                                            ×{{ getRowTokenCount(row.id) }}
+                                        </span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="名稱" min-width="200" fixed="left">
+                                <el-table-column v-if="!layoutStore.isMobile" label="名稱" min-width="200" fixed="left">
                                     <template #default="{ row }">
                                         <span>{{ getMaterialName(row.id) }}</span>
                                         <span
@@ -559,7 +643,7 @@ import { ElTooltip, ElIcon, ElMessage } from "element-plus";
 import { InfoFilled, QuestionFilled } from "@element-plus/icons-vue";
 import { useLayoutStore } from "../stores/layout";
 import { useAuthStore } from "../stores/auth";
-import { fetchMaterialStock, saveMaterialStock, type MaterialStockMap } from "../api/materialStock";
+import { fetchMaterialStock, saveMaterialStock, type MaterialAccountMap } from "../api/materialStock";
 import { fetchMaterialPriceFeed } from "../api/materials";
 
 const layoutStore = useLayoutStore();
@@ -624,36 +708,42 @@ const materialPrices = ref<MaterialPriceEntry[]>(loadMaterialPrices());
 const materialPriceMap = computed(() => new Map(materialPrices.value.map((e) => [e.id, e])));
 const materialsMap = new Map(materials.map((m) => [m.id, m]));
 
-const buildStockPayload = (): MaterialStockMap => {
-    const payload: MaterialStockMap = {};
+const buildAccountPayload = (): MaterialAccountMap => {
+    const payload: MaterialAccountMap = {};
     for (const entry of materialPrices.value) {
-        if (entry.stock > 0) payload[entry.id] = entry.stock;
+        // 有庫存或有填價格才上傳，避免整包塞滿 0
+        if (entry.stock > 0 || entry.price > 0) {
+            payload[entry.id] = { stock: entry.stock, price: entry.price };
+        }
     }
     return payload;
 };
 
-// 帳號庫存同步：只同步 stock，method 與手動改過的 price 留在本機 localStorage
-const syncStockFromAccount = async () => {
+// 帳號同步：庫存與價格都同步（method 留在本機 localStorage）。
+// 價格優先序：帳號價格(>0) > 公開 feed(onMounted 補) > 內建預設。
+const syncFromAccount = async () => {
     if (!authStore.token) return;
     try {
-        const remoteStock = await fetchMaterialStock(authStore.token);
-        if (Object.keys(remoteStock).length === 0) {
-            // 雲端還沒有資料：把本機庫存當初始值上傳一次
-            const localStock = buildStockPayload();
-            if (Object.keys(localStock).length > 0) {
-                await saveMaterialStock(authStore.token, localStock);
+        const remote = await fetchMaterialStock(authStore.token);
+        if (Object.keys(remote).length === 0) {
+            // 雲端還沒有資料：把本機庫存與價格當初始值上傳一次
+            const local = buildAccountPayload();
+            if (Object.keys(local).length > 0) {
+                await saveMaterialStock(authStore.token, local);
             }
             return;
         }
         for (const entry of materialPrices.value) {
-            entry.stock = remoteStock[String(entry.id)] ?? 0;
+            const r = remote[String(entry.id)];
+            entry.stock = r?.stock ?? 0; // 雲端為庫存的權威來源
+            if (r && r.price > 0) entry.price = r.price; // 帳號價格覆蓋；沒填則保留本機/feed/預設
         }
     } catch {
-        // 網路錯誤，維持本機顯示的庫存
+        // 網路錯誤，維持本機顯示的庫存與價格
     }
 };
 
-watch(() => authStore.isLoggedIn, (loggedIn) => loggedIn && syncStockFromAccount(), { immediate: true });
+watch(() => authStore.isLoggedIn, (loggedIn) => loggedIn && syncFromAccount(), { immediate: true });
 
 onMounted(async () => {
     try {
@@ -674,9 +764,9 @@ const saveMaterialPrices = async () => {
 
     if (!authStore.isLoggedIn || !authStore.token) return;
     try {
-        await saveMaterialStock(authStore.token, buildStockPayload());
+        await saveMaterialStock(authStore.token, buildAccountPayload());
     } catch {
-        ElMessage.warning("帳號庫存同步失敗，已儲存在本機");
+        ElMessage.warning("帳號同步失敗，已儲存在本機");
     }
 };
 
@@ -819,10 +909,29 @@ const editingPrices = ref<Record<number, string>>({});
 
 const materialPriceFilter = ref("");
 const showOnlyTokenMaterials = ref(false);
+const showOnlyNeeded = ref(false);
+
+// 目前選擇的武器展開後實際會用到的材料 id（含中間加工品，以及匯總列如珠子）
+const neededMaterialIds = computed(() => {
+    const ids = new Set<number>();
+    const walk = (nodes: CraftTreeNode[]) => {
+        for (const n of nodes) {
+            ids.add(n.id);
+            if (n.children?.length) walk(n.children);
+        }
+    };
+    walk(displayData.value);
+    for (const row of materialSummaryTable.value) ids.add(row.id);
+    return ids;
+});
+
 const filteredMaterialPrices = computed(() => {
     const q = materialPriceFilter.value.trim();
     const filtered = materialPrices.value.filter((entry) => {
         if (q && !getMaterialName(entry.id).includes(q)) return false;
+        // 沒選武器時不套用（否則需要清單為空會清光整張表）
+        if (showOnlyNeeded.value && selectedWeapons.value.length > 0 && !neededMaterialIds.value.has(entry.id))
+            return false;
         if (showOnlyTokenMaterials.value) {
             const source = materials.find((m) => m.id === entry.id)?.source;
             const token = source && "token" in source ? source.token : undefined;
