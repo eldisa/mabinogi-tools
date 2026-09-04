@@ -229,8 +229,8 @@
                         </el-tab-pane>
                         <el-tab-pane :label="layoutStore.isMobile ? '路線' : 'Roadmap 製作路線'">
                             <template v-if="displayData.length > 0">
-                                <div class="flex items-center gap-4">
-                                    <h2 class="text-lg font-semibold">
+                                <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                                    <h2 class="text-lg font-semibold whitespace-nowrap">
                                         {{ displayData[selectedDisplayDataIndex].name }}
                                     </h2>
                                     <el-checkbox v-model="useCostEstimate">
@@ -249,14 +249,27 @@
                                             children: 'children',
                                         }"
                                     >
-                                        <el-table-column label="名稱" min-width="250">
+                                        <el-table-column label="名稱" :min-width="layoutStore.isMobile ? 90 : 250">
                                             <template #default="{ row }">
                                                 <div class="flex items-center gap-3 h-full">
+                                                    <!-- 手機版：名稱不顯示，點圖片才顯示 -->
+                                                    <el-tooltip
+                                                        v-if="layoutStore.isMobile"
+                                                        trigger="click"
+                                                        placement="top"
+                                                        :content="row.name"
+                                                    >
+                                                        <img
+                                                            :src="`${baseUrl}itemImage/${row.id}.png`"
+                                                            class="w-10 h-10 object-contain cursor-pointer"
+                                                        />
+                                                    </el-tooltip>
                                                     <img
+                                                        v-else
                                                         :src="`${baseUrl}itemImage/${row.id}.png`"
                                                         class="w-10 h-10 object-contain"
                                                     />
-                                                    <span>{{ row.name }}</span>
+                                                    <span v-if="!layoutStore.isMobile">{{ row.name }}</span>
                                                     <el-tooltip placement="top">
                                                         <template #content>
                                                             <div v-if="row.source.type === 'craft'">
