@@ -12331,6 +12331,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["騎槍"],
         effect: [
+            { id: "lance_piercing", min: 1, max: 1 },
             {
                 id: "critical",
                 min: 2,
@@ -13336,6 +13337,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["騎槍"],
         effect: [
+            { id: "lance_piercing", min: 2, max: 2 },
             {
                 id: "critical",
                 min: 7,
@@ -19187,6 +19189,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["騎槍"],
         effect: [
+            { id: "lance_piercing", min: 2, max: 2 },
             { id: "attack_min", min: 7, max: 14 },
             { id: "attack_max", min: 7, max: 14 },
             { id: "SP", min: 100, max: 100 },
@@ -19482,6 +19485,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["騎槍"],
         effect: [
+            { id: "lance_piercing", min: 3, max: 3 },
             {
                 id: "lance_piercing",
                 min: 3,
@@ -28134,6 +28138,7 @@ export const enchants: Enchant[] = [
         type: "suffix",
         limit: ["騎槍"],
         effect: [
+            { id: "lance_piercing", min: 2, max: 2 },
             {
                 id: "attack_max",
                 min: 6,
@@ -31849,6 +31854,7 @@ export const enchants: Enchant[] = [
                 min: 24,
                 max: 34,
             },
+            { id: "lance_piercing", min: 3, max: 3 },
         ],
         personalize: true,
     },
@@ -31864,6 +31870,7 @@ export const enchants: Enchant[] = [
             { id: "attack_min", min: 20, max: 30 },
             { id: "attack_max", min: 28, max: 36 },
             { id: "critical", min: 5, max: 5 },
+            { id: "lance_piercing", min: 1, max: 1 },
         ],
         personalize: true,
     },
@@ -32022,6 +32029,7 @@ export const enchants: Enchant[] = [
         type: "suffix",
         limit: ["騎槍"],
         effect: [
+            { id: "lance_piercing", min: 2, max: 2 },
             {
                 id: "attack_max",
                 min: 6,
@@ -32812,6 +32820,7 @@ export const enchants: Enchant[] = [
         type: "suffix",
         limit: ["騎槍"],
         effect: [
+            { id: "lance_piercing", min: 1, max: 1 },
             {
                 id: "critical",
                 min: 6,
@@ -36636,6 +36645,7 @@ export const enchants: Enchant[] = [
                 min: 15,
                 max: 15,
             },
+            { id: "lance_piercing", min: 1, max: 3 },
         ],
         personalize: true,
     },
@@ -38707,6 +38717,7 @@ export const enchants: Enchant[] = [
                 min: 5,
                 max: 5,
             },
+            { id: "lance_piercing", min: 1, max: 3 },
         ],
         personalize: true,
     },
@@ -38741,6 +38752,7 @@ export const enchants: Enchant[] = [
                 min: 5,
                 max: 5,
             },
+            { id: "lance_piercing", min: 1, max: 3 },
         ],
         personalize: true,
     },
@@ -38775,6 +38787,7 @@ export const enchants: Enchant[] = [
                 min: 20,
                 max: 20,
             },
+            { id: "lance_piercing", min: 1, max: 3 },
         ],
         personalize: true,
     },
@@ -39445,6 +39458,7 @@ export const enchants: Enchant[] = [
             { id: "attack_min", min: 30, max: 30 },
             { id: "attack_max", min: 36, max: 36 },
             { id: "critical", min: 5, max: 5 },
+            { id: "lance_piercing", min: 1, max: 1 },
         ],
         personalize: true,
     },
@@ -40414,6 +40428,7 @@ export const enchants: Enchant[] = [
             { id: "attack_min", min: 30, max: 30 },
             { id: "attack_max", min: 36, max: 36 },
             { id: "critical", min: 5, max: 5 },
+            { id: "lance_piercing", min: 1, max: 1 },
         ],
         personalize: false,
     },
@@ -40475,6 +40490,7 @@ export const enchants: Enchant[] = [
         effect: [
             { id: "attack_min", min: 25, max: 25 },
             { id: "attack_max", min: 34, max: 34 },
+            { id: "lance_piercing", min: 3, max: 3 },
         ],
         personalize: false,
     },
@@ -40667,6 +40683,7 @@ export const enchants: Enchant[] = [
         effect: [
             { id: "attack_min", min: 25, max: 25 },
             { id: "attack_max", min: 34, max: 34 },
+            { id: "lance_piercing", min: 3, max: 3 },
         ],
         personalize: false,
     },
