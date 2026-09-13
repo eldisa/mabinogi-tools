@@ -21099,6 +21099,11 @@ export const enchants: Enchant[] = [
         limit: ["盾牌"],
         effect: [
             {
+                id: "attack_max",
+                min: 18,
+                max: 18,
+            },
+            {
                 id: "defense",
                 min: 30,
                 max: 70,
@@ -21114,7 +21119,7 @@ export const enchants: Enchant[] = [
                 max: 100,
             },
         ],
-        list: ":IsGreaterEqualSkillLv(23016,15) : SetParamOnEquip(Def, +(30~70));\n: : SetParamOnEquip(LifeMax, +100);\n: : SetParamOnEquip(ManaMax, +100);: : setpersonalize(true);",
+        list: ": : SetParamOnEquip(AttMax, +18);\n:IsGreaterEqualSkillLv(23016,15) : SetParamOnEquip(Def, +(30~70));\n:IsGreaterEqualSkillLv(23016,15) : SetParamOnEquip(MagicDefence, +50);\n: : SetParamOnEquip(LifeMax, +100);\n: : SetParamOnEquip(ManaMax, +100);: : setpersonalize(true);",
         desc: "",
         level: 10,
         personalize: true,
@@ -39979,11 +39984,11 @@ export const enchants: Enchant[] = [
         limit: ["單手魔杖、集魔杖"],
         effect: [
             { id: "lance_piercing", min: 1, max: 1 },
-            { id: "magic_attack", min: 50, max: 60 },
+            { id: "magic_attack", min: 100, max: 110 },
             { id: "manause_revised_set", min: 4, max: 8 },
             { id: "HP", min: 100, max: 100 }, // 補充:原本漏掉 list 中的 LifeMax
         ],
-        list: ": : SetItemOption(lance_piercing, +1);\n: IsGreaterEqualSkillLv(30202,18) : SetParamOnEquip(MagicAttack, +(50~60));\n: : SetSetItemEffectOnEquip(mana_saving, +(4~8));\n: : SetParamOnEquip(LifeMax, +100);\n: : setpersonalize(true);",
+        list: ": : SetItemOption(lance_piercing, +1);\n: IsGreaterEqualSkillLv(30202,18) : SetParamOnEquip(MagicAttack, +(100~110));\n: : SetSetItemEffectOnEquip(mana_saving, +(4~8));\n: : SetParamOnEquip(LifeMax, +100);\n: : setpersonalize(true);",
         desc: "",
         level: 10,
         personalize: true,
@@ -40338,6 +40343,11 @@ export const enchants: Enchant[] = [
         limit: ["盾牌"],
         effect: [
             {
+                id: "attack_max",
+                min: 7,
+                max: 7,
+            },
+            {
                 id: "protection",
                 min: 3,
                 max: 5,
@@ -40353,7 +40363,7 @@ export const enchants: Enchant[] = [
                 max: 150,
             },
         ],
-        list: ":IsGreaterEqualSkillLv(20001,15) : SetParamOnEquip(Prot, +(3~5));\n: : SetParamOnEquip(MagicProtect, +(1~2));\n: : SetParamOnEquip(LifeMax, +150);\n: : setpersonalize(true);",
+        list: ": : SetParamOnEquip(AttMax, +7);\n:IsGreaterEqualSkillLv(20001,15) : SetParamOnEquip(Prot, +(3~5));\n: : SetParamOnEquip(MagicProtect, +(1~2));\n: : SetParamOnEquip(LifeMax, +250);\n: : setpersonalize(true);",
         desc: "",
         level: 10,
         personalize: true,
