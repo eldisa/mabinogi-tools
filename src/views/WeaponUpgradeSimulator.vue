@@ -994,8 +994,17 @@ const quickPresets: QuickPreset[] = [
         category: "weapon_specific",
         weaponCategories: ["healing_wand"],
         abilityWeights: {
-            healing: 1,
-            party_healing: 1,
+            healing_skill: 1,
+        },
+    },
+    {
+        id: "party-healing-focus",
+        name: "組隊治癒優先",
+        description: "治癒杖專用：隊伍治癒效果最大化",
+        category: "weapon_specific",
+        weaponCategories: ["healing_wand"],
+        abilityWeights: {
+            party_healing_skill: 1,
         },
     },
     // 盾牌系

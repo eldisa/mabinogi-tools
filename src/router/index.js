@@ -34,6 +34,7 @@ import TradeCalculator from '../views/TradeCalculator.vue';
 import PriceCheck from '../views/PriceCheck.vue';
 import Settings from '../views/Settings.vue';
 import AuthCallback from '../views/AuthCallback.vue';
+import HealCalculator from '../views/HealCalculator.vue';
 
 const routes = [
     {
@@ -114,6 +115,11 @@ const routes = [
             path: '/music-calculator',
             name: '音樂計算機',
             component: MusicCalculator,
+        },
+        {
+            path: '/heal-calculator',
+            name: '治癒計算機',
+            component: HealCalculator,
         },
         {
             path: '/reforge',
@@ -230,6 +236,7 @@ const pageTitles = {
     '頂裝差距': '頂裝差距 | 瑪奇小工具',
     '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
     '音樂計算機': '音樂計算機 | 瑪奇小工具',
+    '治癒計算機': '治癒計算機 | 瑪奇小工具',
     '魔法陣查詢': '魔法陣查詢 | 瑪奇小工具',
     '符文': '符文 | 瑪奇小工具',
     '符文模擬器': '符文模擬器 | 瑪奇小工具',

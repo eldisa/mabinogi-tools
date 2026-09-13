@@ -309,6 +309,14 @@ const customWeights = ref<Record<string, number>>({
 
 // obsoleteTitleIds / isTimedTitle / isRankingTitle 來自 ../utils/titleFilters
 
+// 稱號資料中的能力 id 有時是未正規化的原始別名（例如 HealingUp），
+// 這裡透過 abilitiesMap/reverseAbilitiesMap 轉換成統一的 canonical key 再比對
+const canonicalAbilityId = (id: string): string => {
+    const displayName = abilitiesMap[id];
+    if (!displayName) return id;
+    return reverseAbilitiesMap[displayName] ?? id;
+};
+
 // === 能力匹配邏輯 ===
 interface MatchResult {
     level: 1 | 2 | 3 | null;
@@ -552,7 +560,7 @@ const filteredTitles = computed(() => {
     if (activeAbilityKey.value) {
         result = result.filter((title) => {
             if (!title.abilities || title.abilities.length === 0) return false;
-            return title.abilities.some((ability) => ability.id === activeAbilityKey.value);
+            return title.abilities.some((ability) => canonicalAbilityId(ability.id) === activeAbilityKey.value);
         });
     }
 
@@ -579,8 +587,8 @@ const filteredTitles = computed(() => {
     } else if (activeAbilityKey.value) {
         // 依該能力數值排序
         result = [...result].sort((a, b) => {
-            const abilityA = a.abilities?.find((ability) => ability.id === activeAbilityKey.value);
-            const abilityB = b.abilities?.find((ability) => ability.id === activeAbilityKey.value);
+            const abilityA = a.abilities?.find((ability) => canonicalAbilityId(ability.id) === activeAbilityKey.value);
+            const abilityB = b.abilities?.find((ability) => canonicalAbilityId(ability.id) === activeAbilityKey.value);
             const valueA = abilityA ? abilityA.value : 0;
             const valueB = abilityB ? abilityB.value : 0;
             return Math.abs(valueB) - Math.abs(valueA);

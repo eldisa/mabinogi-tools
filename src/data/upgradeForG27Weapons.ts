@@ -1085,7 +1085,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                 abilities: [
                     {
                         id: "attack_max",
-                        value: 17,
+                        value: 19,
                     },
                     {
                         id: "balance",
@@ -1418,7 +1418,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                     },
                     {
                         id: "attack_max",
-                        value: 49,
+                        value: 65,
                     },
                     {
                         id: "critical",
@@ -1474,7 +1474,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
                     },
                     {
                         id: "attack_max",
-                        value: 26,
+                        value: 40,
                     },
                 ],
                 progress: [1],

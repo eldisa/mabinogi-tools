@@ -1189,8 +1189,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "damage_reduction_rate",
-                min: 35,
-                max: 35,
+                min: 40,
+                max: 40,
             },
             {
                 id: "HP",
@@ -1242,8 +1242,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "HP",
-                min: 500,
-                max: 500,
+                min: 1000,
+                max: 1000,
             },
         ],
     },
@@ -1578,6 +1578,21 @@ export const infoForG27Weapon = [
                 id: "party_healing_skill",
                 min: 10,
                 max: 10,
+            },
+            {
+                id: "sb_sncb_def_bonus",
+                min: 2,
+                max: 2,
+            },
+            {
+                id: "sb_sncb_prot_bonus",
+                min: 0.8,
+                max: 0.8,
+            },
+            {
+                id: "sb_barrier_damage_reduce",
+                min: 2,
+                max: 2,
             },
         ],
     },

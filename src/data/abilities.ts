@@ -211,6 +211,9 @@ export const abilitiesMap: Record<string, string> = {
     arcana_skill_bonus_damage_rate: "秘法技能額外傷害增加",
     music_buff_bonus_rate: "戰場的序曲,活潑板攻擊力增加",
     item_durability_loss_dec_rate: "套用魔力賦予的道具耐久度減少量減少",
+    sb_barrier_damage_reduce: "生命的帷幕傷害減免率",
+    sb_sncb_prot_bonus: "不諧和音 每層降雙保效果增加",
+    sb_sncb_def_bonus: "不諧和音 每層降雙防效果增加",
 };
 
 export const reverseAbilitiesMap: Record<string, string> = {
@@ -471,6 +474,7 @@ export const abilitiesValueWithPercentArray: string[] = [
     "music_buff_bonus_rate",
     "item_durability_loss_dec_rate",
     "healing_skill",
+    "sb_barrier_damage_reduce",
 ];
 
 export const abilitiesValueWithRangeArray: string[] = [
