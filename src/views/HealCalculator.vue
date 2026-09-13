@@ -56,6 +56,20 @@ const fmtRange = (r: RangeValue | undefined): string => {
     return r.min === r.max ? r.max.toLocaleString("zh-Hant") : `${r.min.toLocaleString("zh-Hant")} ~ ${r.max.toLocaleString("zh-Hant")}`;
 };
 
+/** 聚能（Erg）等級快速套用：對應遊戲內 A 等級50 / S 等級50 / S 等級100 三個常見檢查點 */
+const applyErgA50 = () => {
+    settings.ergRecovery = 16;
+};
+const applyErgS50 = () => {
+    settings.ergRecovery = 20;
+    settings.ergHealEfficiency = 20;
+};
+const applyErgS100 = () => {
+    settings.ergRecovery = 20;
+    settings.ergHealEfficiency = 20;
+    settings.darkErgLevel = 50;
+};
+
 const skillIcon = (id: number) => `https://cdn.jsdelivr.net/gh/eldisa/mabinogiImage@main/SkillImage/${id}.png`;
 const conditionIcon = (id: number) => `https://cdn.jsdelivr.net/gh/eldisa/mabinogiImage@main/ConditionImage/${id}.png`;
 const ICON_HEAL = skillIcon(30006);
@@ -623,6 +637,12 @@ function topAll() {
                                 <el-select v-model="settings.darkErgLevel" size="small" class="field-select">
                                     <el-option v-for="o in DARK_ERG_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
+                            </div>
+                            <div class="field-row">
+                                <el-button size="small" plain @click="applyErgA50">A50</el-button>
+                                <el-button size="small" plain @click="applyErgS50">S50</el-button>
+                                <el-button size="small" plain @click="applyErgS100">S100</el-button>
+                                <span class="field-hint">A50：聚能 魔力恢復效果 +16／S50：聚能 提高治癒效率＋魔力恢復效果 皆拉滿／S100：S50 + 黑暗聚能 治癒效率 拉滿</span>
                             </div>
 
                             <div class="field-section-label">防具</div>
