@@ -16,6 +16,7 @@ const dismiss = () => {
             <span class="marquee-text">🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　</span>
             <span class="marquee-text" aria-hidden="true">🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　</span>
         </div>
+        <span class="marquee-static">🎂 憨比生日快樂 🎉</span>
         <button class="marquee-close" type="button" aria-label="關閉公告" @click="dismiss">✕</button>
     </div>
 </template>
@@ -27,7 +28,7 @@ const dismiss = () => {
     align-items: center;
     overflow: hidden;
     margin-bottom: 1.5rem;
-    padding: 0.5rem 2.5rem 0.5rem 0;
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
     border: 1px solid var(--color-border-accent, rgba(251, 191, 36, 0.3));
     border-radius: var(--radius-lg, 12px);
     background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(59, 130, 246, 0.12));
@@ -43,6 +44,14 @@ const dismiss = () => {
 .marquee-text {
     flex-shrink: 0;
     padding-right: 2rem;
+    color: var(--color-accent-primary, #fbbf24);
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.marquee-static {
+    display: none;
     color: var(--color-accent-primary, #fbbf24);
     font-weight: 700;
     font-size: 1rem;
@@ -76,9 +85,24 @@ const dismiss = () => {
     }
 }
 
+@keyframes marquee-glow {
+    0%,
+    100% {
+        text-shadow: 0 0 0 rgba(251, 191, 36, 0);
+    }
+    50% {
+        text-shadow: 0 0 12px rgba(251, 191, 36, 0.85);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .marquee-track {
-        animation: none;
+        display: none;
+    }
+
+    .marquee-static {
+        display: inline-block;
+        animation: marquee-glow 2.4s ease-in-out infinite;
     }
 }
 </style>
