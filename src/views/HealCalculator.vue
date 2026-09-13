@@ -613,6 +613,7 @@ function topAll() {
                             <div class="field-row" v-if="isNightbringer">
                                 <label class="field-label">治癒效率 %</label>
                                 <el-input-number v-model="settings.nightbringerHealingEfficiency" :min="0" :max="84" :step="0.1" :precision="1" size="small" class="field-select" />
+                                <span class="field-hint">依實際裝備狀況浮動，範圍 0 ~ 84%，請填入遊戲內實測值</span>
                             </div>
                             <div class="field-row" v-if="isNightbringer || isMasterGradeWeapon">
                                 <label class="field-label">特別改造階段</label>
