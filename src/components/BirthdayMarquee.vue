@@ -96,6 +96,10 @@ const dismiss = () => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .birthday-marquee {
+        justify-content: center;
+    }
+
     .marquee-track {
         display: none;
     }
