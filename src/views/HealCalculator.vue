@@ -46,6 +46,8 @@ const isNightbringer = computed(() => settings.weaponId === "nightbringer_savior
 const isMasterGradeWeapon = computed(() => settings.weaponId === "soul_liberate_healing_wand");
 const isNightbringerClassWeapon = computed(() => isNightbringer.value || isMasterGradeWeapon.value);
 const upgradeOptions = computed(() => (isNightbringer.value ? NIGHTBRINGER_UPGRADE_OPTIONS : WEAPON_UPGRADE_OPTIONS));
+/** 靈魂解放者治癴魔杖僅存在大師等級（已對照 itsmabi.com 原站確認：等級下拉只會出現「大師」一個選項） */
+const masterGradeOnlyOptions = computed(() => WEAPON_GRADE_OPTIONS.filter((g) => g.id === "master"));
 
 const result = computed(() => calculateAll(settings));
 
@@ -245,7 +247,7 @@ const improveItems = computed<ImproveRow[]>(() => {
         { key: "oghamPartyHealingMaxRecovery", label: "符文 · 組隊治療最大回復量", max: 50 },
         { key: "spiritMatBuffLevel", label: "精靈實體化強化階段", max: 5, visible: () => settings.isSpiritImplementationActive },
         { key: "specialUpgradeStage", label: "特別改造階段", max: 8, visible: () => isNightbringerClassWeapon.value },
-        { key: "nightbringerHealingEfficiency", label: "暗夜使者救贖者 · 治癒效率 %", max: 30, visible: () => isNightbringer.value },
+        { key: "nightbringerHealingEfficiency", label: "暗夜使者救贖者 · 治癒效率 %", max: 84, visible: () => isNightbringer.value },
     ];
     LEVEL_FIELDS.forEach((f) => {
         if (f.visible && !f.visible()) return;
@@ -426,7 +428,7 @@ function topEquipment() {
             weaponGrade: grade,
             weaponUpgradeOptionId: upgradeId,
             specialUpgradeStage: isNbClass ? 8 : settings.specialUpgradeStage,
-            nightbringerHealingEfficiency: isNb ? 30 : settings.nightbringerHealingEfficiency,
+            nightbringerHealingEfficiency: isNb ? 84 : settings.nightbringerHealingEfficiency,
         };
         const score = scoreFor(combo);
         if (score > bestScore) {
@@ -585,7 +587,7 @@ function topAll() {
                             <div class="field-row" v-if="isMasterGradeWeapon">
                                 <label class="field-label">等級</label>
                                 <el-select v-model="settings.weaponGrade" size="small" class="field-select">
-                                    <el-option v-for="g in WEAPON_GRADE_OPTIONS" :key="g.id" :value="g.id" :label="g.name" />
+                                    <el-option v-for="g in masterGradeOnlyOptions" :key="g.id" :value="g.id" :label="g.name" />
                                 </el-select>
                             </div>
                             <div class="field-row">
@@ -596,7 +598,7 @@ function topAll() {
                             </div>
                             <div class="field-row" v-if="isNightbringer">
                                 <label class="field-label">治癒效率 %</label>
-                                <el-input-number v-model="settings.nightbringerHealingEfficiency" :min="0" :max="30" size="small" class="field-select" />
+                                <el-input-number v-model="settings.nightbringerHealingEfficiency" :min="0" :max="84" :step="0.1" :precision="1" size="small" class="field-select" />
                             </div>
                             <div class="field-row" v-if="isNightbringer || isMasterGradeWeapon">
                                 <label class="field-label">特別改造階段</label>
