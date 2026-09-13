@@ -54,6 +54,14 @@ const fmtRange = (r: RangeValue | undefined): string => {
     return r.min === r.max ? r.max.toLocaleString("zh-Hant") : `${r.min.toLocaleString("zh-Hant")} ~ ${r.max.toLocaleString("zh-Hant")}`;
 };
 
+const skillIcon = (id: number) => `https://cdn.jsdelivr.net/gh/eldisa/mabinogiImage@main/SkillImage/${id}.png`;
+const conditionIcon = (id: number) => `https://cdn.jsdelivr.net/gh/eldisa/mabinogiImage@main/ConditionImage/${id}.png`;
+const ICON_HEAL = skillIcon(30006);
+const ICON_PARTY_HEAL = skillIcon(30008);
+const ICON_CHISON = skillIcon(59000);
+const ICON_GUME = skillIcon(59001);
+const ICON_WARMTH = conditionIcon(874);
+
 const resetAll = () => {
     Object.assign(settings, DEFAULT_HEAL_CALC_SETTINGS);
 };
@@ -918,6 +926,10 @@ function topAll() {
                     <div class="result-card-header">
                         <span class="grade-name">組隊治癒 · 救贖的迴聲</span>
                     </div>
+                    <div class="result-group-label">
+                        <img :src="ICON_PARTY_HEAL" alt="組隊治癒" class="skill-icon" />
+                        <span>組隊治癒</span>
+                    </div>
                     <div class="result-row">
                         <span class="result-label">一般</span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.normal) }}</span>
@@ -926,21 +938,30 @@ function topAll() {
                         <span class="result-label">一般 + 暴擊</span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.critical) }}</span>
                     </div>
-                    <div class="result-group-label">救贖的迴聲</div>
+                    <div class="result-group-label">
+                        <img :src="ICON_GUME" alt="救贖的迴聲" class="skill-icon" />
+                        <span>救贖的迴聲</span>
+                    </div>
                     <div class="result-row">
-                        <span class="result-label">救贖的迴聲</span>
+                        <span class="result-label">一般</span>
                         <span class="result-value">{{ fmtRange(result.partyHealing.gume) }}</span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">救贖的迴聲 + 暴擊</span>
+                        <span class="result-label">+ 暴擊</span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeCritical) }}</span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">救贖的迴聲 + 生命的溫度5層</span>
+                        <span class="result-label">
+                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
+                            + 生命的溫度5層
+                        </span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeWarmth5) }}</span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">救贖的迴聲 + 生命的溫度5層 + 暴擊</span>
+                        <span class="result-label">
+                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
+                            + 生命的溫度5層 + 暴擊
+                        </span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeCriticalWarmth5) }}</span>
                     </div>
                 </div>
@@ -948,6 +969,10 @@ function topAll() {
                 <div class="result-card grade-excellent">
                     <div class="result-card-header">
                         <span class="grade-name">治癒 · 治癒之手</span>
+                    </div>
+                    <div class="result-group-label">
+                        <img :src="ICON_HEAL" alt="治癒" class="skill-icon" />
+                        <span>治癒</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">一般</span>
@@ -957,21 +982,30 @@ function topAll() {
                         <span class="result-label">一般 + 暴擊</span>
                         <span class="result-value sub">{{ fmtRange(result.healing.critical) }}</span>
                     </div>
-                    <div class="result-group-label">治癒之手</div>
+                    <div class="result-group-label">
+                        <img :src="ICON_CHISON" alt="治癒之手" class="skill-icon" />
+                        <span>治癒之手</span>
+                    </div>
                     <div class="result-row">
-                        <span class="result-label">治癒之手</span>
+                        <span class="result-label">一般</span>
                         <span class="result-value">{{ fmtRange(result.healing.chison) }}</span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">治癒之手 + 暴擊</span>
+                        <span class="result-label">+ 暴擊</span>
                         <span class="result-value sub">{{ fmtRange(result.healing.chisonCritical) }}</span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">治癒之手 + 生命的溫度5層</span>
+                        <span class="result-label">
+                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
+                            + 生命的溫度5層
+                        </span>
                         <span class="result-value sub">{{ fmtRange(result.healing.chisonWarmth5) }}</span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">治癒之手 + 生命的溫度5層 + 暴擊</span>
+                        <span class="result-label">
+                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
+                            + 生命的溫度5層 + 暴擊
+                        </span>
                         <span class="result-value sub">{{ fmtRange(result.healing.chisonCriticalWarmth5) }}</span>
                     </div>
                 </div>
@@ -1230,6 +1264,9 @@ function topAll() {
     color: var(--color-accent-hover, #fcd34d);
 }
 .result-group-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     margin-top: 0.5rem;
     padding-top: 0.5rem;
     border-top: 1px dashed var(--color-border-primary, #374151);
@@ -1237,6 +1274,18 @@ function topAll() {
     font-weight: 600;
     letter-spacing: 0.03em;
     color: var(--color-text-disabled, #6b7280);
+}
+.skill-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.condition-icon {
+    width: 14px;
+    height: 14px;
+    vertical-align: text-bottom;
+    margin-right: 0.15rem;
 }
 .result-row {
     display: flex;
@@ -1246,6 +1295,8 @@ function topAll() {
     gap: 0.5rem;
 }
 .result-label {
+    display: inline-flex;
+    align-items: center;
     font-size: 0.85rem;
     color: var(--color-text-muted, #9ca3af);
 }
