@@ -73,6 +73,7 @@ const menuGroups = ref([
         items: [
             { name: "頂裝差距", path: "/gear-gap", icon: markRaw(TrendCharts) },
             { name: "音樂計算機", path: "/music-calculator", icon: markRaw(Headset) },
+            { name: "治癒計算機", path: "/heal-calculator", icon: markRaw(MagicStick), note: "暫譯・公式還原自第三方網站" },
         ],
     },
     {
