@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { announcements } from "../data/changelog";
+import BirthdayMarquee from "../components/BirthdayMarquee.vue";
 
 const router = useRouter();
 
@@ -72,6 +73,8 @@ const navigateTo = (path: string) => {
 
 <template>
     <div class="home-container">
+        <BirthdayMarquee />
+
         <section class="hero">
             <h1 class="title">
                 <span class="text-gradient">瑪奇小工具</span>
