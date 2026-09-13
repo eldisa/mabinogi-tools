@@ -952,15 +952,19 @@ function topAll() {
                     </div>
                     <div class="result-row">
                         <span class="result-label">
-                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
-                            + 生命的溫度5層
+                            <el-tooltip content="生命的溫度5層" placement="top">
+                                <img :src="ICON_WARMTH" alt="生命的溫度5層" class="condition-icon" />
+                            </el-tooltip>
+                            +
                         </span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeWarmth5) }}</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">
-                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
-                            + 生命的溫度5層 + 暴擊
+                            <el-tooltip content="生命的溫度5層" placement="top">
+                                <img :src="ICON_WARMTH" alt="生命的溫度5層" class="condition-icon" />
+                            </el-tooltip>
+                            + 暴擊
                         </span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeCriticalWarmth5) }}</span>
                     </div>
@@ -996,15 +1000,19 @@ function topAll() {
                     </div>
                     <div class="result-row">
                         <span class="result-label">
-                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
-                            + 生命的溫度5層
+                            <el-tooltip content="生命的溫度5層" placement="top">
+                                <img :src="ICON_WARMTH" alt="生命的溫度5層" class="condition-icon" />
+                            </el-tooltip>
+                            +
                         </span>
                         <span class="result-value sub">{{ fmtRange(result.healing.chisonWarmth5) }}</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">
-                            <img :src="ICON_WARMTH" alt="生命的溫度" class="condition-icon" />
-                            + 生命的溫度5層 + 暴擊
+                            <el-tooltip content="生命的溫度5層" placement="top">
+                                <img :src="ICON_WARMTH" alt="生命的溫度5層" class="condition-icon" />
+                            </el-tooltip>
+                            + 暴擊
                         </span>
                         <span class="result-value sub">{{ fmtRange(result.healing.chisonCriticalWarmth5) }}</span>
                     </div>
