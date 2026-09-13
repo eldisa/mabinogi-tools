@@ -496,7 +496,7 @@ function topAll() {
     <div class="heal-calc">
         <h1 class="page-title">
             <span class="text-gradient">治癒計算機</span>
-            <span class="page-subtitle">治癒的手 / 組隊治療（救贖回聲）效果計算</span>
+            <span class="page-subtitle">治癒之手 / 組隊治癒（救贖的迴聲）效果計算</span>
         </h1>
 
         <div class="sim-layout">
@@ -807,8 +807,8 @@ function topAll() {
                     <el-tab-pane label="提升效益分析" name="analysis">
                         <div class="tab-body">
                             <div class="analysis-targets">
-                                <el-checkbox v-model="analysisTargets.party">組隊治療 · 救贖回聲</el-checkbox>
-                                <el-checkbox v-model="analysisTargets.heal">治癒 · 治癒的手</el-checkbox>
+                                <el-checkbox v-model="analysisTargets.party">組隊治癒 · 救贖的迴聲</el-checkbox>
+                                <el-checkbox v-model="analysisTargets.heal">治癒 · 治癒之手</el-checkbox>
                                 <el-checkbox v-model="analysisTargets.sonic">音波洗禮（每 1 疊）</el-checkbox>
                             </div>
                             <p class="analysis-hint">
@@ -820,10 +820,10 @@ function topAll() {
                             <div class="magic-attack-rate">
                                 <span class="magic-attack-rate-label">魔攻每 +1 點（取樣自目前設定）：</span>
                                 <span v-if="analysisTargets.party" class="magic-attack-rate-value col-party">
-                                    救贖回聲 +{{ magicAttackRate.party.toFixed(2) }}
+                                    救贖的迴聲 +{{ magicAttackRate.party.toFixed(2) }}
                                 </span>
                                 <span v-if="analysisTargets.heal" class="magic-attack-rate-value col-heal">
-                                    治癒的手 +{{ magicAttackRate.heal.toFixed(2) }}
+                                    治癒之手 +{{ magicAttackRate.heal.toFixed(2) }}
                                 </span>
                                 <span v-if="analysisTargets.sonic" class="magic-attack-rate-value col-sonic">
                                     音波洗禮 +{{ magicAttackRate.sonic.toFixed(4) }}
@@ -836,8 +836,8 @@ function topAll() {
                                         <th class="ana-apply">選取</th>
                                         <th class="ana-name-h">項目</th>
                                         <th class="ana-diff-h">差異</th>
-                                        <th v-if="analysisTargets.party" class="ana-gain-h col-party">救贖回聲</th>
-                                        <th v-if="analysisTargets.heal" class="ana-gain-h col-heal">治癒的手</th>
+                                        <th v-if="analysisTargets.party" class="ana-gain-h col-party">救贖的迴聲</th>
+                                        <th v-if="analysisTargets.heal" class="ana-gain-h col-heal">治癒之手</th>
                                         <th v-if="analysisTargets.sonic" class="ana-gain-h col-sonic">音波洗禮</th>
                                     </tr>
                                 </thead>
@@ -891,11 +891,11 @@ function topAll() {
                                 </div>
                                 <div class="ana-proj-grid">
                                     <div v-if="analysisTargets.party" class="ana-proj-cell col-party">
-                                        救贖回聲 {{ Math.round(projection.party).toLocaleString("zh-Hant") }}
+                                        救贖的迴聲 {{ Math.round(projection.party).toLocaleString("zh-Hant") }}
                                         <span class="ana-proj-delta">(+{{ Math.round(projection.dParty).toLocaleString("zh-Hant") }})</span>
                                     </div>
                                     <div v-if="analysisTargets.heal" class="ana-proj-cell col-heal">
-                                        治癒的手 {{ Math.round(projection.heal).toLocaleString("zh-Hant") }}
+                                        治癒之手 {{ Math.round(projection.heal).toLocaleString("zh-Hant") }}
                                         <span class="ana-proj-delta">(+{{ Math.round(projection.dHeal).toLocaleString("zh-Hant") }})</span>
                                     </div>
                                     <div v-if="analysisTargets.sonic" class="ana-proj-cell col-sonic">
@@ -916,45 +916,63 @@ function topAll() {
             <div class="dashboard-panel">
                 <div class="result-card grade-inspiring">
                     <div class="result-card-header">
-                        <span class="grade-name">組隊治療 · 救贖回聲</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">救贖回聲</span>
-                        <span class="result-value">{{ fmtRange(result.partyHealing.gume) }}</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">救贖回聲 + 暴擊</span>
-                        <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeCritical) }}</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">+ 暴擊 + 溫暖5</span>
-                        <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeCriticalWarmth5) }}</span>
+                        <span class="grade-name">組隊治癒 · 救贖的迴聲</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">一般</span>
                         <span class="result-value sub">{{ fmtRange(result.partyHealing.normal) }}</span>
                     </div>
+                    <div class="result-row">
+                        <span class="result-label">一般 + 暴擊</span>
+                        <span class="result-value sub">{{ fmtRange(result.partyHealing.critical) }}</span>
+                    </div>
+                    <div class="result-group-label">救贖的迴聲</div>
+                    <div class="result-row">
+                        <span class="result-label">救贖的迴聲</span>
+                        <span class="result-value">{{ fmtRange(result.partyHealing.gume) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">救贖的迴聲 + 暴擊</span>
+                        <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeCritical) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">救贖的迴聲 + 生命的溫度5層</span>
+                        <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeWarmth5) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">救贖的迴聲 + 生命的溫度5層 + 暴擊</span>
+                        <span class="result-value sub">{{ fmtRange(result.partyHealing.gumeCriticalWarmth5) }}</span>
+                    </div>
                 </div>
 
                 <div class="result-card grade-excellent">
                     <div class="result-card-header">
-                        <span class="grade-name">治癒 · 治癒的手</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">治癒的手</span>
-                        <span class="result-value">{{ fmtRange(result.healing.chison) }}</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">治癒的手 + 暴擊</span>
-                        <span class="result-value sub">{{ fmtRange(result.healing.chisonCritical) }}</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">+ 暴擊 + 溫暖5</span>
-                        <span class="result-value sub">{{ fmtRange(result.healing.chisonCriticalWarmth5) }}</span>
+                        <span class="grade-name">治癒 · 治癒之手</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">一般</span>
                         <span class="result-value sub">{{ fmtRange(result.healing.normal) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">一般 + 暴擊</span>
+                        <span class="result-value sub">{{ fmtRange(result.healing.critical) }}</span>
+                    </div>
+                    <div class="result-group-label">治癒之手</div>
+                    <div class="result-row">
+                        <span class="result-label">治癒之手</span>
+                        <span class="result-value">{{ fmtRange(result.healing.chison) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">治癒之手 + 暴擊</span>
+                        <span class="result-value sub">{{ fmtRange(result.healing.chisonCritical) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">治癒之手 + 生命的溫度5層</span>
+                        <span class="result-value sub">{{ fmtRange(result.healing.chisonWarmth5) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">治癒之手 + 生命的溫度5層 + 暴擊</span>
+                        <span class="result-value sub">{{ fmtRange(result.healing.chisonCriticalWarmth5) }}</span>
                     </div>
                 </div>
 
@@ -1210,6 +1228,15 @@ function topAll() {
 }
 .grade-inspiring .grade-name {
     color: var(--color-accent-hover, #fcd34d);
+}
+.result-group-label {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-border-primary, #374151);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--color-text-disabled, #6b7280);
 }
 .result-row {
     display: flex;
