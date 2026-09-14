@@ -83,7 +83,7 @@
                                 <div v-if="layoutStore.isMobile">
                                     <div class="md:hidden space-y-3 p-4">
                                         <el-table
-                                            :data="sortedData"
+                                            :data="filteredSortedData"
                                             :row-key="'id'"
                                             border
                                             class="material-table"
@@ -91,10 +91,19 @@
                                             <el-table-column type="expand">
                                                 <template #default="{ row }">
                                                     <div>{{ row.name }}</div>
+                                                    <div class="text-sm text-gray-400">
+                                                        缺少
+                                                        {{
+                                                            Math.max(
+                                                                0,
+                                                                row.total - (materialPriceMap.get(row.id)?.stock ?? 0),
+                                                            )
+                                                        }}
+                                                    </div>
                                                     <span class="text-sm">{{ row.source.description || "—" }}</span>
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column prop="id" label="素材" align="center">
+                                            <el-table-column prop="id" label="素材" align="center" width="56">
                                                 <template #default="{ row }">
                                                     <img
                                                         :src="`${baseUrl}itemImage/${row.id}.png`"
@@ -102,7 +111,21 @@
                                                     />
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column prop="total" label="數量" align="center" sortable />
+                                            <el-table-column prop="total" label="數量" align="center" sortable width="64" />
+                                            <el-table-column label="庫存" align="center">
+                                                <template #default="{ row }">
+                                                    <el-input-number
+                                                        :model-value="materialPriceMap.get(row.id)?.stock ?? 0"
+                                                        :min="0"
+                                                        :controls="false"
+                                                        size="small"
+                                                        style="width: 72px"
+                                                        @update:model-value="
+                                                            (v: number) => setMaterialStock(row.id, v)
+                                                        "
+                                                    />
+                                                </template>
+                                            </el-table-column>
                                         </el-table>
                                     </div>
                                 </div>
