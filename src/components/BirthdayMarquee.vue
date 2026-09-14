@@ -16,7 +16,6 @@ const dismiss = () => {
             <span class="marquee-text">🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　</span>
             <span class="marquee-text" aria-hidden="true">🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　🎂 憨比生日快樂 🎉　</span>
         </div>
-        <span class="marquee-static">🎂 憨比生日快樂 🎉</span>
         <button class="marquee-close" type="button" aria-label="關閉公告" @click="dismiss">✕</button>
     </div>
 </template>
@@ -50,14 +49,6 @@ const dismiss = () => {
     white-space: nowrap;
 }
 
-.marquee-static {
-    display: none;
-    color: var(--color-accent-primary, #fbbf24);
-    font-weight: 700;
-    font-size: 1rem;
-    white-space: nowrap;
-}
-
 .marquee-close {
     position: absolute;
     right: 0.5rem;
@@ -82,31 +73,6 @@ const dismiss = () => {
     }
     to {
         transform: translateX(-50%);
-    }
-}
-
-@keyframes marquee-glow {
-    0%,
-    100% {
-        text-shadow: 0 0 0 rgba(251, 191, 36, 0);
-    }
-    50% {
-        text-shadow: 0 0 12px rgba(251, 191, 36, 0.85);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .birthday-marquee {
-        justify-content: center;
-    }
-
-    .marquee-track {
-        display: none;
-    }
-
-    .marquee-static {
-        display: inline-block;
-        animation: marquee-glow 2.4s ease-in-out infinite;
     }
 }
 </style>

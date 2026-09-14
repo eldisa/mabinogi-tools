@@ -279,6 +279,7 @@
 
 * 新增 `BirthdayMarquee` 元件：首頁與贊助頁面隨機（30% 機率）顯示「憨比生日快樂」跑馬燈公告，可手動關閉，支援 `prefers-reduced-motion`（sponsor 需求）
 * `BirthdayMarquee` 調整減少動態時的替代效果：由完全靜止改為原地文字輕微發光閃爍（無左右位移），避免許多使用者因效能考量關閉系統動畫而完全看不到慶祝效果
+* `BirthdayMarquee` 移除 `prefers-reduced-motion` 分支，改為一律跑動：sponsor 需求本身就是要跑馬燈滾動效果，靜止/閃爍版本無法達成目的，改為不論系統設定一律播放捲動動畫
 
 ### 2026-09-12
 
