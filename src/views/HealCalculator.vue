@@ -46,12 +46,28 @@ const isNightbringer = computed(() => settings.weaponId === "nightbringer_savior
 const isMasterGradeWeapon = computed(() => settings.weaponId === "soul_liberate_healing_wand");
 const isNightbringerClassWeapon = computed(() => isNightbringer.value || isMasterGradeWeapon.value);
 const upgradeOptions = computed(() => (isNightbringer.value ? NIGHTBRINGER_UPGRADE_OPTIONS : WEAPON_UPGRADE_OPTIONS));
+/** 靈魂解放者治癴魔杖僅存在大師等級（已對照 itsmabi.com 原站確認：等級下拉只會出現「大師」一個選項） */
+const masterGradeOnlyOptions = computed(() => WEAPON_GRADE_OPTIONS.filter((g) => g.id === "master"));
 
 const result = computed(() => calculateAll(settings));
 
 const fmtRange = (r: RangeValue | undefined): string => {
     if (!r) return "-";
     return r.min === r.max ? r.max.toLocaleString("zh-Hant") : `${r.min.toLocaleString("zh-Hant")} ~ ${r.max.toLocaleString("zh-Hant")}`;
+};
+
+/** 聚能（Erg）等級快速套用：對應遊戲內 A 等級50 / S 等級50 / S 等級100 三個常見檢查點 */
+const applyErgA50 = () => {
+    settings.ergRecovery = 16;
+};
+const applyErgS50 = () => {
+    settings.ergRecovery = 20;
+    settings.ergHealEfficiency = 20;
+};
+const applyErgS100 = () => {
+    settings.ergRecovery = 20;
+    settings.ergHealEfficiency = 20;
+    settings.darkErgLevel = 50;
 };
 
 const skillIcon = (id: number) => `https://cdn.jsdelivr.net/gh/eldisa/mabinogiImage@main/SkillImage/${id}.png`;
@@ -245,7 +261,7 @@ const improveItems = computed<ImproveRow[]>(() => {
         { key: "oghamPartyHealingMaxRecovery", label: "符文 · 組隊治療最大回復量", max: 50 },
         { key: "spiritMatBuffLevel", label: "精靈實體化強化階段", max: 5, visible: () => settings.isSpiritImplementationActive },
         { key: "specialUpgradeStage", label: "特別改造階段", max: 8, visible: () => isNightbringerClassWeapon.value },
-        { key: "nightbringerHealingEfficiency", label: "暗夜使者救贖者 · 治癒效率 %", max: 30, visible: () => isNightbringer.value },
+        { key: "nightbringerHealingEfficiency", label: "暗夜使者救贖者 · 治癒效率 %", max: 84, visible: () => isNightbringer.value },
     ];
     LEVEL_FIELDS.forEach((f) => {
         if (f.visible && !f.visible()) return;
@@ -426,7 +442,7 @@ function topEquipment() {
             weaponGrade: grade,
             weaponUpgradeOptionId: upgradeId,
             specialUpgradeStage: isNbClass ? 8 : settings.specialUpgradeStage,
-            nightbringerHealingEfficiency: isNb ? 30 : settings.nightbringerHealingEfficiency,
+            nightbringerHealingEfficiency: isNb ? 84 : settings.nightbringerHealingEfficiency,
         };
         const score = scoreFor(combo);
         if (score > bestScore) {
@@ -585,7 +601,7 @@ function topAll() {
                             <div class="field-row" v-if="isMasterGradeWeapon">
                                 <label class="field-label">等級</label>
                                 <el-select v-model="settings.weaponGrade" size="small" class="field-select">
-                                    <el-option v-for="g in WEAPON_GRADE_OPTIONS" :key="g.id" :value="g.id" :label="g.name" />
+                                    <el-option v-for="g in masterGradeOnlyOptions" :key="g.id" :value="g.id" :label="g.name" />
                                 </el-select>
                             </div>
                             <div class="field-row">
@@ -596,7 +612,8 @@ function topAll() {
                             </div>
                             <div class="field-row" v-if="isNightbringer">
                                 <label class="field-label">治癒效率 %</label>
-                                <el-input-number v-model="settings.nightbringerHealingEfficiency" :min="0" :max="30" size="small" class="field-select" />
+                                <el-input-number v-model="settings.nightbringerHealingEfficiency" :min="0" :max="84" :step="0.1" :precision="1" size="small" class="field-select" />
+                                <span class="field-hint">依實際裝備狀況浮動，範圍 0 ~ 84%，請填入遊戲內實測值</span>
                             </div>
                             <div class="field-row" v-if="isNightbringer || isMasterGradeWeapon">
                                 <label class="field-label">特別改造階段</label>
@@ -621,6 +638,12 @@ function topAll() {
                                 <el-select v-model="settings.darkErgLevel" size="small" class="field-select">
                                     <el-option v-for="o in DARK_ERG_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
+                            </div>
+                            <div class="field-row">
+                                <el-button size="small" plain @click="applyErgA50">A50</el-button>
+                                <el-button size="small" plain @click="applyErgS50">S50</el-button>
+                                <el-button size="small" plain @click="applyErgS100">S100</el-button>
+                                <span class="field-hint">A50：聚能 魔力恢復效果 +16／S50：聚能 提高治癒效率＋魔力恢復效果 皆拉滿／S100：S50 + 黑暗聚能 治癒效率 拉滿</span>
                             </div>
 
                             <div class="field-section-label">防具</div>

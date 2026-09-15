@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SponsorThanks from "../components/SponsorThanks.vue";
+import BirthdayMarquee from "../components/BirthdayMarquee.vue";
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -17,6 +18,8 @@ const kofiUrl = "https://ko-fi.com/eldisa";
 
 <template>
     <div class="sponsor">
+        <BirthdayMarquee />
+
         <img :src="bannerSrc" alt="感謝贊助 — Mabinogi Tools" class="banner" />
 
         <div class="content">
