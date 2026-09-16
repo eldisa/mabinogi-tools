@@ -30,13 +30,16 @@ function cheatDisplay(n: number): string {
     return cheatMode.value === "arrow" ? (CLOCK_TO_ARROW[n] ?? String(n)) : String(n);
 }
 
+// 聖盾改版本局實際套用的安全區表（開局隨機二選一，僅用場地分區編號 1~8 表示，不套用時鐘箭頭）
+const holyShieldTable = ref<number[][]>([]);
+
+function holyShieldCellText(zones: number[]): string {
+    return zones.length ? zones.join("、") : "-";
+}
+
 const startBtnText = ref("開始機制");
 const startBtnDisabled = ref(false);
 const statusTextContent = ref("");
-const willVisible = ref(false);
-const willCountDisplay = ref(0);
-const willBorderStyle = ref("gold");
-const willBgStyle = ref("#c0392b");
 const hintVisible = ref(false);
 
 let _startGame: (() => void) | null = null;
@@ -66,13 +69,9 @@ onMounted(() => {
         playerY = 0;
     let targetX = 0,
         targetY = 0;
-    let attackCooldown = 0,
-        attackStopTimer = 0;
     let allyX = 0,
         allyY = 0;
     let allyActive = true;
-    let willStacks = 0;
-    let hasWillImmunity = false;
     let phaseIndex = 0;
     let totalPhases = 9;
     let safeZonesList: number[][] = [];
@@ -154,6 +153,13 @@ onMounted(() => {
     function getSafeZonesForMode(mode: number): number[][] {
         if (mode === 1) return [[1, 3, 5, 7], [4, 5, 6], [3, 7], [1], [7], [5], [3], [2], [1]];
         if (mode === 2) return [[1], [6], [4], [1], [5], [8], [1], [5], [3]];
+        if (mode === 3) {
+            const tables = [
+                [[1, 2], [8], [7], [6], [5], [4], [3], [2], [1]],
+                [[1, 8], [2], [3], [4], [5], [6], [7], [8], [1]],
+            ];
+            return tables[Math.floor(Math.random() * tables.length)];
+        }
         return [];
     }
 
@@ -199,7 +205,7 @@ onMounted(() => {
         ctx.textAlign = "center";
         ctx.fillText("佩塔克", centerX, centerY + 5);
 
-        if (allyActive && (currentMode === 1 || currentMode === 2)) {
+        if (allyActive) {
             ctx.beginPath();
             ctx.arc(allyX, allyY, 12, 0, Math.PI * 2);
             ctx.fillStyle = "#4da6ff";
@@ -263,43 +269,24 @@ onMounted(() => {
         playerMarked = false;
     }
 
-    function updateWillDisplay() {
-        willCountDisplay.value = willStacks;
-        if (willStacks >= 5) {
-            hasWillImmunity = true;
-            willBorderStyle.value = "#fbbf24";
-            willBgStyle.value = "#27ae60";
-        } else {
-            hasWillImmunity = false;
-            willBorderStyle.value = "#fbbf24";
-            willBgStyle.value = "#c0392b";
-        }
-        if (currentMode === 3) willVisible.value = true;
-    }
-
     function resetGame() {
         stopAllTimers();
         gameState = "idle";
         phaseIndex = 0;
-        willStacks = 0;
-        hasWillImmunity = false;
-        attackCooldown = 0;
-        attackStopTimer = 0;
         dangerZones = [];
         currentSafeZones = [];
-        playerInvulnerable = currentMode === 1 || currentMode === 2;
-        allyActive = currentMode === 1 || currentMode === 2;
-        totalPhases = currentMode === 3 ? 10 : 9;
-        safeZonesList = currentMode === 3 ? [] : getSafeZonesForMode(currentMode);
+        playerInvulnerable = true;
+        allyActive = true;
+        totalPhases = 9;
+        safeZonesList = getSafeZonesForMode(currentMode);
+        if (currentMode === 3) holyShieldTable.value = safeZonesList;
         playerMarked = false;
         dangerAnimation = 0;
         fixedPlayerAngle = 0;
-        updateWillDisplay();
         statusTextContent.value = "";
         startBtnDisabled.value = false;
         startBtnText.value = "開始機制";
         hintVisible.value = true;
-        willVisible.value = false;
         playerX = centerX;
         playerY = centerY + fieldRadius * 0.3;
         targetX = playerX;
@@ -342,11 +329,7 @@ onMounted(() => {
             playerMarked = false;
             fixedPlayerAngle = getPlayerAngle();
 
-            if (currentMode === 3) {
-                currentSafeZones = phaseIndex === 9 ? [] : [Math.random() < 0.5 ? 2 : 8];
-            } else {
-                currentSafeZones = safeZonesList[phaseIndex] || [];
-            }
+            currentSafeZones = safeZonesList[phaseIndex] || [];
 
             dangerZones = [];
             for (let z = 1; z <= 8; z++) {
@@ -358,35 +341,9 @@ onMounted(() => {
                 if (gameState !== "active") return;
                 dangerAnimation = 0;
 
-                const playerInDanger = dangerZones.some((z) => isPointInSector(playerX, playerY, fixedPlayerAngle, z));
-
-                if (currentMode === 1 || currentMode === 2) {
-                    if (isAllyInDanger(fixedPlayerAngle)) {
-                        failGame("隊友被擊中");
-                        return;
-                    }
-                }
-                if (currentMode === 3) {
-                    if (playerInDanger) {
-                        if (hasWillImmunity && willStacks >= 5) {
-                            willStacks = 0;
-                            hasWillImmunity = false;
-                            updateWillDisplay();
-                            statusTextContent.value = "意志抵擋了即死！";
-                        } else {
-                            failGame("你被擊中");
-                            return;
-                        }
-                    }
-                }
-
-                if (currentMode === 3 && willStacks > 0) {
-                    if (Math.hypot(playerX - centerX, playerY - centerY) < bossRadius) {
-                        willStacks = 0;
-                        hasWillImmunity = false;
-                        updateWillDisplay();
-                        statusTextContent.value = "意志被剝奪！";
-                    }
+                if (isAllyInDanger(fixedPlayerAngle)) {
+                    failGame("隊友被擊中");
+                    return;
                 }
 
                 phaseIndex++;
@@ -419,27 +376,20 @@ onMounted(() => {
         startBtnDisabled.value = true;
         startBtnText.value = "進行中...";
         hintVisible.value = false;
-        if (currentMode === 3) {
-            willVisible.value = true;
-            updateWillDisplay();
-        } else {
-            willVisible.value = false;
-        }
-        statusTextContent.value = "準備階段 (3秒)";
-        phaseTimer = setTimeout(() => {
-            if (gameState !== "active") return;
-            startPhase();
-        }, 3000);
-    }
 
-    function performAttack() {
-        if (currentMode !== 3 || gameState !== "active") return;
-        if (attackCooldown > 0 || willStacks >= 5) return;
-        attackCooldown = 1000;
-        attackStopTimer = 700;
-        willStacks++;
-        updateWillDisplay();
-        statusTextContent.value = willStacks >= 5 ? "意志已充滿！" : `攻擊！意志層數 ${willStacks}/5`;
+        let countdown = 3;
+        statusTextContent.value = `準備階段 (${countdown}秒)`;
+        const tickCountdown = () => {
+            if (gameState !== "active") return;
+            countdown--;
+            if (countdown > 0) {
+                statusTextContent.value = `準備階段 (${countdown}秒)`;
+                phaseTimer = setTimeout(tickCountdown, 1000);
+            } else {
+                startPhase();
+            }
+        };
+        phaseTimer = setTimeout(tickCountdown, 1000);
     }
 
     function handleCanvasClick(e: MouseEvent) {
@@ -465,13 +415,6 @@ onMounted(() => {
         targetY = clamped.y;
     }
 
-    function handleKeydown(e: KeyboardEvent) {
-        if (e.key === "1") {
-            e.preventDefault();
-            performAttack();
-        }
-    }
-
     function handleResize() {
         resizeCanvas();
         if (gameState === "idle") {
@@ -487,10 +430,7 @@ onMounted(() => {
         const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
         lastTimestamp = timestamp;
 
-        if (attackCooldown > 0) attackCooldown = Math.max(0, attackCooldown - dt * 1000);
-        if (attackStopTimer > 0) attackStopTimer = Math.max(0, attackStopTimer - dt * 1000);
-
-        if ((gameState === "active" || gameState === "idle") && attackStopTimer <= 0) {
+        if (gameState === "active" || gameState === "idle") {
             const dx = targetX - playerX;
             const dy = targetY - playerY;
             const dist = Math.hypot(dx, dy);
@@ -516,12 +456,10 @@ onMounted(() => {
     window.addEventListener("resize", handleResize);
     canvas.addEventListener("click", handleCanvasClick);
     canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
-    window.addEventListener("keydown", handleKeydown);
     _cleanup = () => {
         window.removeEventListener("resize", handleResize);
         canvas.removeEventListener("click", handleCanvasClick);
         canvas.removeEventListener("touchstart", handleTouchStart);
-        window.removeEventListener("keydown", handleKeydown);
     };
 
     resizeCanvas();
@@ -602,16 +540,9 @@ onUnmounted(() => {
             <!-- 狀態訊息 -->
             <div class="status-overlay" v-show="statusTextContent">{{ statusTextContent }}</div>
 
-            <!-- 意志 badge -->
-            <div v-if="willVisible" class="will-badge" :style="{ borderColor: willBorderStyle }">
-                ⚡ 意志層數
-                <span class="will-layer" :style="{ background: willBgStyle }">{{ willCountDisplay }}</span>
-                / 5
-            </div>
-
             <!-- 提示 -->
             <div v-if="hintVisible" class="hint-text">
-                點擊場內移動 · 模式3下按 1 鍵模擬攻擊，攻擊5次獲得意志
+                點擊場內移動 · 保護隊友避開危險區
             </div>
 
             <!-- 小抄（pointer-events:none 不影響畫布操作） -->
@@ -626,15 +557,23 @@ onUnmounted(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr v-if="currentModeRef === 1">
                                 <td class="cheat-label">55%</td>
                                 <td v-for="(v, i) in CHEAT_55" :key="i"
                                     :class="cheatMode === 'arrow' ? 'cheat-arrow' : ''">{{ cheatDisplay(v) }}</td>
                             </tr>
-                            <tr>
+                            <tr v-else-if="currentModeRef === 2">
                                 <td class="cheat-label">15%</td>
                                 <td v-for="(v, i) in CHEAT_15" :key="i"
                                     :class="cheatMode === 'arrow' ? 'cheat-arrow' : ''">{{ cheatDisplay(v) }}</td>
+                            </tr>
+                            <tr v-else-if="currentModeRef === 3 && holyShieldTable.length">
+                                <td class="cheat-label">聖盾</td>
+                                <td v-for="(zones, i) in holyShieldTable" :key="i">{{ holyShieldCellText(zones) }}</td>
+                            </tr>
+                            <tr v-else-if="currentModeRef === 3">
+                                <td class="cheat-label">聖盾</td>
+                                <td colspan="9">開始機制後才會知道本局的安全區</td>
                             </tr>
                         </tbody>
                     </table>
@@ -830,35 +769,6 @@ canvas {
     white-space: nowrap;
     color: #f9fafb;
     border: 1px solid #374151;
-}
-
-.will-badge {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    background: rgba(31, 41, 55, 0.88);
-    backdrop-filter: blur(6px);
-    color: #fbbf24;
-    padding: 6px 14px;
-    border-radius: 30px;
-    font-weight: bold;
-    font-size: 15px;
-    z-index: 12;
-    border: 1px solid #fbbf24;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.will-layer {
-    color: white;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
 }
 
 .hint-text {
