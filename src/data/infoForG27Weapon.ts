@@ -191,8 +191,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "attack_max",
-                min: 94,
-                max: 104,
+                min: 96,
+                max: 106,
             },
             {
                 id: "critical",
@@ -216,8 +216,8 @@ export const infoForG27Weapon = [
             },
             {
                 id: "attack_range",
-                min: 2000,
-                max: 2000,
+                min: 2100,
+                max: 2100,
             },
             {
                 id: "magnum_shot_damage",
