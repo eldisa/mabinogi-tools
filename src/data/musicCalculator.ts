@@ -83,12 +83,10 @@ export const instrumentBaseOptions: Option[] = [
 
 export const instrumentPrefixOptions: Option[] = [
     { value: 0, label: "無" },
-    { value: 9, label: "複調 (+9)(6/11韓國測服調整)" },
-    { value: 8, label: "複調 (+8)(6/11韓國測服調整)" },
+    { value: 9, label: "複調 (+9)" },
+    { value: 8, label: "複調 (+8)" },
     { value: 7, label: "複調 (+7)" },
     { value: 6, label: "複調 (+6)" },
-    { value: 5, label: "複調/融合 (+5)" },
-    { value: 4, label: "複調 (+4)" },
     { value: 3, label: "快板 / 開心的 (+3)" },
     { value: 2, label: "中板 (+2)" },
     { value: 1, label: "行板 (+1)" },
@@ -96,10 +94,8 @@ export const instrumentPrefixOptions: Option[] = [
 
 export const instrumentSuffixOptions: Option[] = [
     { value: 0, label: "無" },
-    { value: 5, label: "節拍 (+5)(6/11韓國測服調整)" },
-    { value: 4, label: "節拍 (+4)(6/11韓國測服調整)" },
-    { value: 3, label: "節拍 (+3)" },
-    { value: 2, label: "節拍 (+2)" },
+    { value: 5, label: "節拍 (+5)" },
+    { value: 4, label: "節拍 (+4)" },
     { value: 1, label: "和音 (+1)" },
 ];
 
@@ -229,8 +225,7 @@ export const relicSuffixOptions: Option[] = [
 export const titleOptions: Option[] = [
     { value: 0, label: "無" },
     { value: 8, label: "戰場的序曲大師 (+8)" },
-    { value: 8, label: "音樂家 (+8)(改版後)" },
-    { value: 5, label: "音樂家 (+5)" },
+    { value: 8, label: "音樂家 (+8)" },
 ];
 
 export const secondTitleOptions: Option[] = [

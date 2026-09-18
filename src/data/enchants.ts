@@ -21080,7 +21080,7 @@ export const enchants: Enchant[] = [
                 max: 30,
             },
         ],
-        list: ":IsGreaterEqualSkillLv(27010,18) : SetParamOnEquip(AttMax, +(50~60));\n: : SetParamOnEquip(AttMin, +30);\n: : SetParamOnEquip(Luck, +(10~30));\n: : setpersonalize(true);",
+        list: ": : SetParamOnEquip(AttMax, +18);\n:IsGreaterEqualSkillLv(23016,15) : SetParamOnEquip(Def, +(30~70));\n:IsGreaterEqualSkillLv(23016,15) : SetParamOnEquip(MagicDefence, +50);\n: : SetParamOnEquip(LifeMax, +100);\n: : SetParamOnEquip(ManaMax, +100);: : setpersonalize(true);",
         desc: "",
         level: 10,
         personalize: true,
@@ -21163,8 +21163,8 @@ export const enchants: Enchant[] = [
         effect: [
             {
                 id: "music_buff_bonus",
-                min: 4,
-                max: 7,
+                min: 6,
+                max: 9,
             },
             {
                 id: "INT",
@@ -21177,7 +21177,7 @@ export const enchants: Enchant[] = [
                 max: 30,
             },
         ],
-        list: ":IsGreaterEqualSkillLv(53002,15) :SetParamOnEquip(musicbuff_bonus, +(4~7));\n: : SetParamOnEquip(Int, +30);\n: : SetParamOnEquip(Luck, +30);\n: : setpersonalize(true);",
+        list: ":IsGreaterEqualSkillLv(53002,15) :SetParamOnEquip(musicbuff_bonus, +(6~9));\n: : SetParamOnEquip(Int, +30);\n: : SetParamOnEquip(Luck, +30);\n: : setpersonalize(true);",
         desc: "",
         level: 10,
         personalize: true,
@@ -40407,8 +40407,8 @@ export const enchants: Enchant[] = [
         effect: [
             {
                 id: "music_buff_bonus",
-                min: 2,
-                max: 3,
+                min: 4,
+                max: 5,
             },
             {
                 id: "HP",
@@ -40421,7 +40421,7 @@ export const enchants: Enchant[] = [
                 max: 100,
             },
         ],
-        list: ":IsGreaterEqualSkillLv(53102,15) :SetParamOnEquip(musicbuff_bonus, +(2~3));\n: : SetParamOnEquip(LifeMax, +100);\n: : SetParamOnEquip(ManaMax, +100);\n: : setpersonalize(true);",
+        list: ":IsGreaterEqualSkillLv(53102,15) :SetParamOnEquip(musicbuff_bonus, +(4~5));\n: : SetParamOnEquip(LifeMax, +100);\n: : SetParamOnEquip(ManaMax, +100);\n: : setpersonalize(true);",
         desc: "",
         level: 10,
         personalize: true,
