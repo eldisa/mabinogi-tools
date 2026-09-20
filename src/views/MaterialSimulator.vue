@@ -778,6 +778,9 @@ const materialPrices = ref<MaterialPriceEntry[]>(loadMaterialPrices());
 
 const materialPriceMap = computed(() => new Map(materialPrices.value.map((e) => [e.id, e])));
 const materialsMap = new Map(materials.map((m) => [m.id, m]));
+// materials + 武器：供 MRP 淨需求展開查找（武器本身不在 materials 內）
+const craftItemLookup = new Map<number, CraftableItem>(materialsMap);
+for (const w of G27Weapons) craftItemLookup.set(w.id, w);
 
 // 設定材料庫存；找不到 entry 則建立，讓 Total 與價格設定分頁共用同一份 materialPrices（雙向同步）
 const setMaterialStock = (id: number, value: number) => {
@@ -1032,22 +1035,65 @@ const filteredMaterialPrices = computed(() => {
         return b.id - a.id;
     });
 });
-// 依「選擇的武器」+「當前庫存」展開製作樹。
-// 用 computed 而非在 watch 內賦值：庫存(stock)變動時才會重算——
-// 否則更新中間加工品（如高純度力量結晶）的持有量，其扣減效果不會反映，造價不變。
+// 多層淨需求(MRP)：以拓撲順序(父在子前)彙總每個中階的總需求、扣一次庫存後再往下展開，
+// 避免同一中階在多個分支各自扣掉整份庫存而過度扣減。回傳各「葉材料(非加工品)」的總需求量。
+const computeMaterialTotals = (
+    targetIds: number[],
+    stockLookup: Map<number, MaterialPriceEntry>,
+): Map<number, number> => {
+    const gross = new Map<number, number>();
+    for (const id of targetIds) gross.set(id, (gross.get(id) ?? 0) + 1);
+
+    // 拓撲排序：DFS 後序反轉，確保處理某節點時其所有上游需求已彙總完畢
+    const order: number[] = [];
+    const visited = new Set<number>();
+    const visiting = new Set<number>();
+    const dfs = (id: number) => {
+        if (visited.has(id) || visiting.has(id)) return; // visiting：防環
+        visiting.add(id);
+        const item = craftItemLookup.get(id);
+        if (item?.source.type === "craft") {
+            for (const mat of item.source.materials) dfs(mat.id);
+        }
+        visiting.delete(id);
+        visited.add(id);
+        order.push(id);
+    };
+    targetIds.forEach(dfs);
+    order.reverse();
+
+    const leafTotals = new Map<number, number>();
+    for (const id of order) {
+        const grossReq = gross.get(id) ?? 0;
+        if (grossReq <= 0) continue;
+        const item = craftItemLookup.get(id);
+        if (item?.source.type === "craft") {
+            const net = Math.max(0, grossReq - (stockLookup.get(id)?.stock ?? 0));
+            for (const mat of item.source.materials) {
+                gross.set(mat.id, (gross.get(mat.id) ?? 0) + net * mat.amount);
+            }
+        } else {
+            leafTotals.set(id, (leafTotals.get(id) ?? 0) + grossReq);
+        }
+    }
+    return leafTotals;
+};
+
+const selectedCraftTargetIds = computed(() =>
+    G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id)).map((w) => w.id),
+);
+
+// 顯示樹（Roadmap）：呈現完整配方量；庫存淨算交由 computeMaterialTotals 全域處理。
 const craftResult = computed(() => {
     const craftTarget = G27Weapons.filter((weapon) => selectedWeapons.value.includes(weapon.id));
-    const accMap = new Map<number, number>();
-    const trees = craftTarget.map(
-        (target) => buildCraftTree(target, materials, 1, "", accMap, materialPriceMap.value).node,
-    );
-    return {
-        trees,
-        materialMap: Array.from(accMap.entries()).map(([id, total]) => ({ id, total })),
-    };
+    return { trees: craftTarget.map((target) => buildCraftTree(target, materials, 1, "")) };
 });
 const displayData = computed(() => craftResult.value.trees);
-const materialMap = computed(() => craftResult.value.materialMap);
+const materialMap = computed(() =>
+    Array.from(computeMaterialTotals(selectedCraftTargetIds.value, materialPriceMap.value).entries()).map(
+        ([id, total]) => ({ id, total }),
+    ),
+);
 
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
 const selectedDisplayDataIndex = ref(0);
@@ -1101,23 +1147,19 @@ const materialSummaryTable = computed(() => {
     return result;
 });
 
+// 只負責建 Roadmap 顯示樹（完整配方量）；材料總量的庫存淨算在 computeMaterialTotals。
 const buildCraftTree = (
     item: CraftableItem,
     allItems: CraftableItem[],
     multiplier: number = 1,
     path = "",
-    accMap: Map<number, number> = new Map(),
-    stockLookup: Map<number, MaterialPriceEntry> = new Map(),
-): { node: CraftTreeNode; accMap: Map<number, number> } => {
-    const unitAmount = 1;
-    const totalAmount = multiplier * unitAmount;
+): CraftTreeNode => {
     const currentPath = `${path}-${item.id}`;
-
     const node: CraftTreeNode = {
         id: item.id,
         name: item.name.tw || item.name.en,
-        amount: totalAmount,
-        unitAmount: unitAmount,
+        amount: multiplier,
+        unitAmount: 1,
         source: item.source,
         uniqueKey: currentPath,
         children: [],
@@ -1127,46 +1169,30 @@ const buildCraftTree = (
         node.children = item.source.materials.map((mat) => {
             const matched = allItems.find((x) => x.id === mat.id);
             const fullAmount = mat.amount * multiplier;
-
             if (matched) {
-                // 若子材料本身也是加工品，扣除庫存後再遞迴計算子材料需求
-                // 方案B：node 仍顯示完整需求量，只有子材料的累計受庫存影響
-                let effectiveAmount = fullAmount;
-                if (matched.source.type === "craft") {
-                    const matStock = stockLookup.get(mat.id)?.stock ?? 0;
-                    effectiveAmount = Math.max(0, fullAmount - matStock);
-                }
-                const childResult = buildCraftTree(matched, allItems, effectiveAmount, currentPath, accMap, stockLookup);
-                childResult.node.amount = fullAmount; // 還原顯示用的完整數量
-                return childResult.node;
-            } else {
-                const fallback = {
-                    id: mat.id,
-                    name: `未知素材 #${mat.id}`,
-                    amount: fullAmount,
-                    unitAmount: mat.amount,
-                    source: { type: "" } as MaterialSource,
-                    uniqueKey: currentPath,
-                    children: [],
-                };
-                accMap.set(mat.id, (accMap.get(mat.id) ?? 0) + fallback.amount);
-                return fallback;
+                return buildCraftTree(matched, allItems, fullAmount, currentPath);
             }
+            return {
+                id: mat.id,
+                name: `未知素材 #${mat.id}`,
+                amount: fullAmount,
+                unitAmount: mat.amount,
+                source: { type: "" } as MaterialSource,
+                uniqueKey: currentPath,
+                children: [],
+            };
         });
-    } else {
-        accMap.set(item.id, (accMap.get(item.id) ?? 0) + totalAmount);
     }
 
-    return { node, accMap };
+    return node;
 };
 
 // 「原始所需數量」＝不扣除中階持有時的需求，並記錄造成扣減的上游中階材料。
 // 用於在 Total 表標示：某基礎材料因持有中階（如高純度力量結晶）而被扣減前的原始量。
 const reductionRaw = computed(() => {
-    const craftTarget = G27Weapons.filter((w) => selectedWeapons.value.includes(w.id));
-    // stockLookup 傳空 Map → buildCraftTree 不做中階扣減，得到原始總量
-    const originalAcc = new Map<number, number>();
-    craftTarget.forEach((t) => buildCraftTree(t, materials, 1, "", originalAcc, new Map()));
+    const targetIds = selectedCraftTargetIds.value;
+    // 原始總量＝傳空庫存，不做任何中階扣減
+    const originalAcc = computeMaterialTotals(targetIds, new Map());
 
     // 走訪製作樹，收集每個葉材料上游「有持有(stock>0)的中階材料」及其持有量
     const sources = new Map<number, Map<number, number>>();
@@ -1184,7 +1210,10 @@ const reductionRaw = computed(() => {
             }
         }
     };
-    craftTarget.forEach((t) => walk(t, []));
+    for (const id of targetIds) {
+        const t = craftItemLookup.get(id);
+        if (t) walk(t, []);
+    }
     return { originalAcc, sources };
 });
 
