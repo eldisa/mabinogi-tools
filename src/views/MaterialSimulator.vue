@@ -100,6 +100,16 @@
                                                             )
                                                         }}
                                                     </div>
+                                                    <div
+                                                        v-if="reductionInfoById.get(row.id)"
+                                                        class="text-sm text-yellow-400"
+                                                    >
+                                                        原始需求 {{ reductionInfoById.get(row.id)!.original }}（因持有上游中階<span
+                                                            v-for="(s, i) in reductionInfoById.get(row.id)!.sources"
+                                                            :key="s.name"
+                                                            >{{ i ? "、" : "：" }}{{ s.name }}×{{ s.stock }}</span
+                                                        >）
+                                                    </div>
                                                     <span class="text-sm">{{ row.source.description || "—" }}</span>
                                                 </template>
                                             </el-table-column>
@@ -174,10 +184,41 @@
                                         <el-table-column
                                             prop="total"
                                             label="所需數量"
-                                            width="120"
+                                            width="130"
                                             align="center"
                                             sortable
-                                        />
+                                        >
+                                            <template #default="{ row }">
+                                                <span>{{ row.total }}</span>
+                                                <el-tooltip v-if="reductionInfoById.get(row.id)" placement="top">
+                                                    <template #content>
+                                                        <div class="text-xs leading-relaxed">
+                                                            <div>原始需求：{{ reductionInfoById.get(row.id)!.original }}</div>
+                                                            <div>
+                                                                扣中階持有：−{{ reductionInfoById.get(row.id)!.reduced }}
+                                                            </div>
+                                                            <div>最終所需：{{ reductionInfoById.get(row.id)!.final }}</div>
+                                                            <template
+                                                                v-if="reductionInfoById.get(row.id)!.sources.length"
+                                                            >
+                                                                <div class="mt-1 opacity-80">持有的上游中階：</div>
+                                                                <div
+                                                                    v-for="s in reductionInfoById.get(row.id)!.sources"
+                                                                    :key="s.name"
+                                                                >
+                                                                    ・{{ s.name }} ×{{ s.stock }}
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                    <el-icon
+                                                        class="ml-1 text-yellow-400 cursor-help align-middle"
+                                                    >
+                                                        <InfoFilled />
+                                                    </el-icon>
+                                                </el-tooltip>
+                                            </template>
+                                        </el-table-column>
 
                                         <el-table-column label="庫存" width="120" align="center">
                                             <template #default="{ row }">
@@ -1118,6 +1159,57 @@ const buildCraftTree = (
 
     return { node, accMap };
 };
+
+// 「原始所需數量」＝不扣除中階持有時的需求，並記錄造成扣減的上游中階材料。
+// 用於在 Total 表標示：某基礎材料因持有中階（如高純度力量結晶）而被扣減前的原始量。
+const reductionRaw = computed(() => {
+    const craftTarget = G27Weapons.filter((w) => selectedWeapons.value.includes(w.id));
+    // stockLookup 傳空 Map → buildCraftTree 不做中階扣減，得到原始總量
+    const originalAcc = new Map<number, number>();
+    craftTarget.forEach((t) => buildCraftTree(t, materials, 1, "", originalAcc, new Map()));
+
+    // 走訪製作樹，收集每個葉材料上游「有持有(stock>0)的中階材料」及其持有量
+    const sources = new Map<number, Map<number, number>>();
+    const walk = (item: CraftableItem, held: Array<{ id: number; stock: number }>) => {
+        if (item.source.type !== "craft") return;
+        for (const mat of item.source.materials) {
+            const matched = materialsMap.get(mat.id);
+            if (matched && matched.source.type === "craft") {
+                const stock = materialPriceMap.value.get(mat.id)?.stock ?? 0;
+                walk(matched, stock > 0 ? [...held, { id: mat.id, stock }] : held);
+            } else if (held.length) {
+                let m = sources.get(mat.id);
+                if (!m) sources.set(mat.id, (m = new Map()));
+                for (const h of held) m.set(h.id, h.stock);
+            }
+        }
+    };
+    craftTarget.forEach((t) => walk(t, []));
+    return { originalAcc, sources };
+});
+
+// 每個材料 id → 扣減資訊（僅原始 > 最終才有值），供 tooltip / 手機展開列顯示
+const reductionInfoById = computed(() => {
+    const { originalAcc, sources } = reductionRaw.value;
+    const map = new Map<
+        number,
+        { original: number; final: number; reduced: number; sources: Array<{ name: string; stock: number }> }
+    >();
+    for (const row of materialSummaryTable.value) {
+        const original = originalAcc.get(row.id) ?? row.total;
+        if (original <= row.total) continue;
+        const srcMap = sources.get(row.id);
+        map.set(row.id, {
+            original,
+            final: row.total,
+            reduced: original - row.total,
+            sources: srcMap
+                ? [...srcMap.entries()].map(([intId, stock]) => ({ name: getMaterialName(intId), stock }))
+                : [],
+        });
+    }
+    return map;
+});
 
 const sortState = ref<{ key: string; order: "ascending" | "descending" | null }>({
     key: "total",
