@@ -488,6 +488,7 @@ function topMisc() {
     settings.arcanaAwakeningHealingPercent = 20;
     settings.healingMiniatureId = HEALING_MINIATURES.reduce((a, b) => (b.healingEffectPercent > a.healingEffectPercent ? b : a)).id;
     settings.hasJeongwhaGodong = true;
+    settings.hasIncompleteFantasyCrownAura = true;
     settings.oghamHealingMaxRecovery = 50;
     settings.oghamPartyHealingMaxRecovery = 50;
     settings.spiritYuksungLevel = 5;
@@ -805,6 +806,10 @@ function topAll() {
                                 <el-switch v-model="settings.hasJeongwhaGodong" />
                                 <span class="switch-label">淨化的鼓動發動中（+20%）</span>
                             </div>
+                            <div class="field-row">
+                                <el-switch v-model="settings.hasIncompleteFantasyCrownAura" />
+                                <span class="switch-label">不完美的空想王冠光環（生命的帳幕 +10%）</span>
+                            </div>
 
                             <div class="field-section-label">未實裝</div>
                             <div class="field-row">
@@ -1052,6 +1057,16 @@ function topAll() {
                     <div class="result-row">
                         <span class="result-label">保護 / 魔保 減少</span>
                         <span class="result-value sub">{{ result.sonicBaptism.protectionPerStack.toFixed(2) }}</span>
+                    </div>
+                </div>
+
+                <div class="result-card grade-normal">
+                    <div class="result-card-header">
+                        <span class="grade-name">生命的帳幕</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">受到傷害減少率</span>
+                        <span class="result-value sub">{{ result.lifeCurtain.damageReductionPercent.toFixed(2) }}%</span>
                     </div>
                 </div>
 
