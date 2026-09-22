@@ -87,6 +87,7 @@ export const instrumentPrefixOptions: Option[] = [
     { value: 8, label: "複調 (+8)" },
     { value: 7, label: "複調 (+7)" },
     { value: 6, label: "複調 (+6)" },
+    { value: 5, label: "融合 (+5)" },
     { value: 3, label: "快板 / 開心的 (+3)" },
     { value: 2, label: "中板 (+2)" },
     { value: 1, label: "行板 (+1)" },
