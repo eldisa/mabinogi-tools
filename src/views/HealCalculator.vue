@@ -1058,6 +1058,17 @@ function topAll() {
                         <span class="result-label">保護 / 魔保 減少</span>
                         <span class="result-value sub">{{ result.sonicBaptism.protectionPerStack.toFixed(2) }}</span>
                     </div>
+                    <div class="result-group-label">
+                        <span>5 層（最大）</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">防禦 / 魔防 減少</span>
+                        <span class="result-value">{{ (result.sonicBaptism.defensePerStack * 5).toFixed(2) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">保護 / 魔保 減少</span>
+                        <span class="result-value sub">{{ (result.sonicBaptism.protectionPerStack * 5).toFixed(2) }}</span>
+                    </div>
                 </div>
 
                 <div class="result-card grade-normal">
