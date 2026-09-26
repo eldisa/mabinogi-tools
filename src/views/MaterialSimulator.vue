@@ -1317,37 +1317,49 @@ const filteredSortedData = computed(() => {
     });
 });
 
-// 遞迴取得材料的有效單價（用於估算成本）：
-// 1. 優先用 entry.price（直接市價，不受 token/buy method 影響）
-// 2. 無市價且為加工品 → 遞迴算製作成本
+// 遞迴取得材料的「最便宜且可靠」單價與其製作成本是否完整（用於估算成本）：
+// - 市價(entry.price>0)恆可靠
+// - 製作成本：需其所有子材料都能取得可靠價才算「完整」，否則視為不可靠（避免未設定材料
+//   被當成 0 而低估）
+// - 市價與完整製作成本皆有 → 取 min（能做又較便宜就自製）；只有一個 → 用它；都無 → 0
 // 注意：不使用快取，確保 materialPrices 變動後立即反映
-const getEffectiveCost = (id: number, visited = new Set<number>()): number => {
-    if (visited.has(id)) return 0; // 防止循環依賴
-
-    // 直接取 price（不透過 getUnitCost，避免 token method 讓價格變 0）
+const getCostInfo = (id: number, visited = new Set<number>()): { cost: number; complete: boolean } => {
     const entry = materialPrices.value.find((e) => e.id === id);
     const marketPrice = entry?.price ?? 0;
-    if (marketPrice > 0) return marketPrice;
+    const hasMarket = marketPrice > 0;
 
-    // 無市價 → 嘗試遞迴計算製作成本
-    const mat = materials.find((m) => m.id === id);
-    if (mat?.source?.type === "craft") {
-        const src = mat.source as {
-            type: "craft";
-            materials: { id: number; amount: number }[];
-            yield?: number;
-        };
-        const newVisited = new Set(visited);
-        newVisited.add(id);
-        const craftTotal = src.materials.reduce((sum, sub) => {
-            return sum + getEffectiveCost(sub.id, newVisited) * sub.amount;
-        }, 0);
-        const yieldAmt = src.yield || 1;
-        if (craftTotal > 0) return craftTotal / yieldAmt;
+    // 防環：遇循環時此路不可靠，退回市價（若有）
+    if (visited.has(id)) {
+        return hasMarket ? { cost: marketPrice, complete: true } : { cost: 0, complete: false };
     }
 
-    return 0;
+    // 嘗試遞迴計算製作成本；任一子材料不可靠 → 整條製作成本視為不完整
+    let craftCost = 0;
+    let craftComplete = false;
+    const mat = materials.find((m) => m.id === id);
+    if (mat?.source?.type === "craft") {
+        const src = mat.source as { type: "craft"; materials: { id: number; amount: number }[]; yield?: number };
+        const newVisited = new Set(visited);
+        newVisited.add(id);
+        let sum = 0;
+        let allComplete = true;
+        for (const sub of src.materials) {
+            const info = getCostInfo(sub.id, newVisited);
+            sum += info.cost * sub.amount;
+            if (!info.complete) allComplete = false;
+        }
+        craftCost = sum / (src.yield || 1);
+        craftComplete = allComplete;
+    }
+    const hasCraft = craftComplete && craftCost > 0;
+
+    if (hasMarket && hasCraft) return { cost: Math.min(marketPrice, craftCost), complete: true };
+    if (hasMarket) return { cost: marketPrice, complete: true };
+    if (hasCraft) return { cost: craftCost, complete: true };
+    return { cost: 0, complete: false };
 };
+
+const getEffectiveCost = (id: number): number => getCostInfo(id).cost;
 
 // 加工物估價
 const craftedItemsData = computed(() => {
