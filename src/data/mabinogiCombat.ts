@@ -474,7 +474,7 @@ export interface ArcaneSkillDamageInput {
     /** 採計的才能技能目標傷害：借用某個才能技能的目標傷害（用 calculateTalentSkillTargetDamage 算好、已含「採計」比例權重後傳入） */
     countedTalentSkillTargetDamage: number;
     /**
-     * 秘法技能自己的傷害加總（不含借用才能技能的那部分項目，例如基礎傷害/防護/最大生命等 ratio×stat 加總），
+     * 秘法技能自己的傷害加總（不含借用才能技能的那部分項目，例如基礎傷害/加護力/最大生命等 ratio×stat 加總），
      * 尚未乘暴擊傷害期望值
      */
     arcaneOnlyRawDamage: number;

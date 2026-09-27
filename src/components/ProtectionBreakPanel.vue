@@ -244,6 +244,7 @@ const emit = defineEmits<{
             critDamagePercent: number;
             protBeforePierce: number;
             pierceResist: number;
+            meleePercent: number;
         },
     ];
 }>();
@@ -255,6 +256,7 @@ const resultA = computed(() => {
         critDamagePercent: r.crit,
         protBeforePierce: protBeforePierce(protCalc.value.monster, r.pct, r.fixed),
         pierceResist: findMonster(protCalc.value.monster).pierceResist,
+        meleePercent: r.melee, // 近戰技能傷害 +%（憤怒衝擊）
     };
 });
 watch(resultA, (v) => emit("result", v), { immediate: true });
@@ -275,7 +277,7 @@ const sides = computed(() =>
                 { label: "保護減少", a: `-${fmt(a.pct)}% / -${fmt(a.fixed)}`, b: `-${fmt(b.pct)}% / -${fmt(b.fixed)}`, diff: "" },
                 { label: "保護", a: `${a.before} → ${a.after}`, b: `${b.before} → ${b.after}`, diff: signed(b.after - a.after) },
                 { label: "減傷率", a: `${a.rateBefore}% → ${a.rateAfter}%`, b: `${b.rateBefore}% → ${b.rateAfter}%`, diff: signed(b.rateAfter - a.rateAfter, "%") },
-                { label: "保護倍率", a: `×${a.mult}`, b: `×${b.mult}`, diff: "" },
+                { label: "破防後傷害倍數", a: `×${a.mult}`, b: `×${b.mult}`, diff: "" },
                 { label: "所受傷害", a: `+${fmt(a.dmgInc)}%`, b: `+${fmt(b.dmgInc)}%`, diff: signed(b.dmgInc - a.dmgInc, "%") },
                 { label: "總傷害倍率", a: `×${a.total}`, b: `×${b.total}`, diff, strong: true },
                 { label: "近戰技能傷害＊", a: `+${fmt(a.melee)}%`, b: `+${fmt(b.melee)}%`, diff: signed(b.melee - a.melee, "%"), minor: true },

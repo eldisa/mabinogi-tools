@@ -37,6 +37,8 @@ import {
     calculateTotalOutput,
     calculateDamageEfficiency,
     calculateHolyWaterComparison,
+    getEffectiveSharpLevel,
+    MAX_DAMAGE_TO_DEFENSE_POWER_RATE,
     SET_EFFECT_TAG_LABELS,
     type ShieldKnightSettings,
     type HolyWaterSlotKey,
@@ -101,6 +103,13 @@ function fillAllHolyWater(abilityId: HolyWaterAbilityId) {
 
 const calcResult = computed(() => calculateAll(settings));
 const finalStats = computed(() => calcResult.value.finalStats);
+const defensePowerParts = computed(() => [
+    { label: "防禦", value: finalStats.value.defense },
+    { label: "保護", value: finalStats.value.protection },
+    { label: "魔法防禦", value: finalStats.value.magicDefense },
+    { label: "魔法保護", value: finalStats.value.magicProtection },
+    { label: `最大傷害 × ${MAX_DAMAGE_TO_DEFENSE_POWER_RATE * 100}%（職業被動）`, value: finalStats.value.maxDamage * MAX_DAMAGE_TO_DEFENSE_POWER_RATE },
+]);
 const abilities = computed(() => calcResult.value.abilities);
 const activeSetEffectLabels = computed(() => calcResult.value.activeTags.map((t) => SET_EFFECT_TAG_LABELS[t]));
 
@@ -109,6 +118,7 @@ const skills = computed(() => allSkills.value.filter((skill) => settings[SKILL_V
 const totalOutput = computed(() => calculateTotalOutput(settings, settings.skillUsageCounts));
 const hasAnyUsageCount = computed(() => ALL_SKILL_META.some((s) => settings.skillUsageCounts[s.id] > 0));
 const efficiencyItems = computed(() => calculateDamageEfficiency(settings));
+const effectiveSharpLevel = computed(() => getEffectiveSharpLevel(settings));
 const holyWaterComparison = computed(() => calculateHolyWaterComparison(settings));
 const bestHolyWaterId = computed(() => holyWaterComparison.value.reduce((best, x) => (x.deltaOutput > best.deltaOutput ? x : best), holyWaterComparison.value[0])?.id);
 
@@ -147,7 +157,7 @@ const RESULT_DETAILS: Record<string, string> = {
     protection: "保護 = 角色基本數值.保護 + 高潔誓約加成（若數值基準=原始面板）。",
     magicDefense: "魔法防禦 = 角色基本數值.魔法防禦 + 高潔誓約加成（若數值基準=原始面板）。",
     magicProtection: "魔法保護 = 角色基本數值.魔法保護 + 高潔誓約加成（若數值基準=原始面板）。",
-    defensePower: "防護 = 防禦 + 保護 + 魔法防禦 + 魔法保護 + 最終最大傷害 × 3%（職業被動：最大傷害轉化為防護）。",
+    defensePower: "加護力（遊戲內稱防禦力）= 防禦 + 保護 + 魔法防禦 + 魔法保護（玩家實測為四項相加），再加最終最大傷害 × 3%（聖盾職業被動：最大傷害的 3% 增加加護力）。",
     shieldDamageReduction: "盾牌減傷率 = 目前裝備的盾牌自帶減傷率，見「裝備」分頁的盾牌選單。",
     criticalRatePercent: "暴擊率 = 暴擊率基準值 + 道具加成（+1%），見「暴擊與額外傷害」分頁。",
     criticalDamagePercent:
@@ -254,10 +264,8 @@ function buildMergedSettings(data: Partial<ShieldKnightSettings> | undefined): S
     merged.extraDamage = { ...defaults.extraDamage, ...(data.extraDamage ?? {}) };
     merged.arcaneExtraDamage = { ...defaults.arcaneExtraDamage, ...(data.arcaneExtraDamage ?? {}) };
     merged.finalIncreaseDamage = {
-        ...defaults.finalIncreaseDamage,
-        ...(data.finalIncreaseDamage ?? {}),
-        deathBrand: { ...defaults.finalIncreaseDamage.deathBrand, ...(data.finalIncreaseDamage?.deathBrand ?? {}) },
-        insightEye: { ...defaults.finalIncreaseDamage.insightEye, ...(data.finalIncreaseDamage?.insightEye ?? {}) },
+        combatServiceBuffActive: data.finalIncreaseDamage?.combatServiceBuffActive ?? defaults.finalIncreaseDamage.combatServiceBuffActive,
+        dakotaGlowActive: data.finalIncreaseDamage?.dakotaGlowActive ?? defaults.finalIncreaseDamage.dakotaGlowActive,
     };
     merged.skillUsageCounts = { ...defaults.skillUsageCounts, ...(data.skillUsageCounts ?? {}) };
     merged.muliasRelic = { ...defaults.muliasRelic, ...(data.muliasRelic ?? {}) };
@@ -265,7 +273,7 @@ function buildMergedSettings(data: Partial<ShieldKnightSettings> | undefined): S
     return merged;
 }
 
-type ArmorBreakResult = { protBeforePierce: number; pierceResist: number; damageTakenPercent: number; critDamagePercent: number };
+type ArmorBreakResult = { protBeforePierce: number; pierceResist: number; damageTakenPercent: number; critDamagePercent: number; meleePercent: number };
 // 面板在頁面 onMounted 還原自動存檔之前就會發第一次結果，這裡留一份，還原後再套一次，避免被舊存檔蓋掉
 let latestArmorBreakResult: ArmorBreakResult | null = null;
 function onArmorBreakResult(r: ArmorBreakResult) {
@@ -274,6 +282,7 @@ function onArmorBreakResult(r: ArmorBreakResult) {
     settings.armorBreak.pierceResist = r.pierceResist;
     settings.armorBreak.damageTakenPercent = r.damageTakenPercent;
     settings.armorBreak.critDamagePercent = r.critDamagePercent;
+    settings.armorBreak.meleePercent = r.meleePercent;
 }
 
 function loadPreset(idx: number) {
@@ -455,11 +464,12 @@ onMounted(() => {
                                 </el-radio-group>
                             </div>
                             <div class="field-hint">
-                                「上完buff」只影響最大生命值／防禦／保護／魔法防禦／魔法保護（高潔誓約的加成不會再重複套用）；攻擊力的面板最大傷害不受影響，仍維持原始面板語意。
+                                預設為「上完buff」：下方最大生命值／防禦／保護／魔法防禦／魔法保護請填開啟高潔誓約後的面板數值，計算時會先還原成誓約前的原始值，再依「技能設定」的高潔誓約開關（預設開啟）重新套用，聖水的 HP／防禦／魔防會先加進原始值再吃誓約加成（含上限：HP 最大 +3000、防禦／魔防最大 +150、保護／魔保最大 +15）。選「原始面板」則填未開啟高潔誓約的數值。攻擊力的面板最大傷害不受影響，仍維持原始面板語意。
                             </div>
                             <div class="field-hint">
                                 備註：防禦和血量有許多疊加方式，且每個條件都遠比大傷複雜，所以聖水部分的加乘只會算進高潔誓約（聖水的 HP／防禦會先加進基礎值再吃誓約加成）。建議自行填寫面板。
                             </div>
+                            <div class="field-hint">備註：加護力（遊戲內稱防禦力，為避免和「防禦」混淆而改稱）= 防禦 + 保護 + 魔法防禦 + 魔法保護（玩家實測結果），另加職業被動「最大傷害的 3% 增加加護力」；技能公式裡的「加護力」項用這個值。</div>
                             <div class="field-row">
                                 <label class="field-label">最大生命值</label>
                                 <el-input-number v-model="settings.character.maxHp" :min="0" size="small" class="field-select" />
@@ -520,7 +530,7 @@ onMounted(() => {
                             <div class="field-row">
                                 <label class="field-label">銳利等級</label>
                                 <el-input-number v-model="settings.sharpLevel" :min="0" :max="11" size="small" class="field-select" />
-                                <span class="switch-label">武器／裝備各自不同，手動輸入；套用破防結果時每級 −5 怪物保護（扣除怪物銳利抵抗）</span>
+                                <span class="switch-label">武器／裝備各自不同，手動輸入（不含職業被動）；單手武器搭配盾牌時職業被動自動 +3，目前實際 {{ effectiveSharpLevel }}；套用破防結果時每級 −5 怪物保護（扣除怪物銳利抵抗）</span>
                             </div>
 
                             <div class="field-section-label">聚能</div>
@@ -860,8 +870,8 @@ onMounted(() => {
                             </div>
 
                             <div class="field-section-label">最終增加傷害（乘算）</div>
-                            <div v-if="settings.armorBreak.enabled" class="field-hint">
-                                已套用「破防」結果：死神烙印、命運編織．倒吊人、洞察之眼、幸運草標記已包含在破防的「所受傷害增加」，以下四項停用（改在「破防」分頁調整）。
+                            <div class="field-hint">
+                                死神烙印、憤怒衝擊、命運編織．倒吊人、洞察之眼、幸運草標記等增傷已由「破防」分頁提供（所受傷害增加、近戰技能傷害），這裡只保留戰鬥服務與強力威光；穆利亞斯遺物的「反射的痕跡」在「技能設定」分頁。
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.finalIncreaseDamage.combatServiceBuffActive" />
@@ -870,43 +880,6 @@ onMounted(() => {
                             <div class="field-row">
                                 <el-checkbox v-model="settings.finalIncreaseDamage.dakotaGlowActive" />
                                 <span class="switch-label">達可達的強力威光（+5%）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.finalIncreaseDamage.deathBrand.active" :disabled="settings.armorBreak.enabled" />
-                                <span class="switch-label">死神烙印（基礎 53%）</span>
-                            </div>
-                            <template v-if="settings.finalIncreaseDamage.deathBrand.active && !settings.armorBreak.enabled">
-                                <div class="field-row">
-                                    <el-checkbox v-model="settings.finalIncreaseDamage.deathBrand.setBonusActive" />
-                                    <span class="switch-label">死神烙印套裝加成（+3%）</span>
-                                    <label class="field-label">細工等級</label>
-                                    <el-input-number v-model="settings.finalIncreaseDamage.deathBrand.reforgeLevel" :min="0" :max="25" size="small" class="field-select-sm" />
-                                    <span class="switch-label">（×0.25%/級，21~25 突破限定）</span>
-                                </div>
-                            </template>
-                            <div class="field-row">
-                                <label class="field-label">憤怒衝擊魔法陣</label>
-                                <el-input-number v-model="settings.finalIncreaseDamage.rageImpactMagicCircleLevel" :min="0" :max="10" size="small" class="field-select" />
-                            </div>
-                            <div class="field-hint">
-                                憤怒衝擊本體開關在「技能設定」分頁的「近距離額外傷害中」；公式 = 15% + 魔法陣等級×0.3%。
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.finalIncreaseDamage.destinyWeaveActive" :disabled="settings.armorBreak.enabled" />
-                                <span class="switch-label">命運編織．倒吊人（+5%，60 秒內）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.finalIncreaseDamage.insightEye.active" :disabled="settings.armorBreak.enabled" />
-                                <span class="switch-label">特性．洞察之眼（+3%）</span>
-                            </div>
-                            <div class="field-row" v-if="settings.finalIncreaseDamage.insightEye.active && !settings.armorBreak.enabled">
-                                <label class="field-label">指揮官的徽章等級</label>
-                                <el-input-number v-model="settings.finalIncreaseDamage.insightEye.commanderBadgeLevel" :min="0" :max="5" size="small" class="field-select-sm" />
-                                <span class="switch-label">（×0.4%/級，最高 +2%）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.finalIncreaseDamage.cloverMarkActive" :disabled="settings.armorBreak.enabled" />
-                                <span class="switch-label">幸運草標記（+15%）</span>
                             </div>
                             <div class="field-hint">最終增加傷害倍率：{{ fmtMultiplier(calcResult.finalIncreaseDamageMultiplier) }}</div>
                         </div>
@@ -969,7 +942,7 @@ onMounted(() => {
                             </div>
                             <div class="field-row">
                                 <el-switch v-model="settings.rageImpactBuffActive" />
-                                <span class="switch-label">近距離額外傷害中（憤怒衝擊，觸發後 7 秒內；詳細數值在「暴擊與額外傷害」分頁調整）</span>
+                                <span class="switch-label">近距離額外傷害中（憤怒衝擊，觸發後 7 秒內；數值在「破防」分頁的憤怒衝擊來源調整，需套用破防結果才生效）</span>
                             </div>
 
                             <div class="field-section-label">穆利亞斯的遺物（3 件，各自獨立 Lv0~10）</div>
@@ -1159,15 +1132,15 @@ onMounted(() => {
                                 <el-checkbox v-model="settings.armorBreak.enabled" />
                                 <span class="switch-label">
                                     套用破防結果到傷害計算（物理側：保護減算 ×{{ calcResult.protectionReduction.toFixed(2) }}、所受傷害
-                                    +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊傷害 +{{ fmtRatio(settings.armorBreak.critDamagePercent) }}%）
+                                    +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊傷害 +{{ fmtRatio(settings.armorBreak.critDamagePercent) }}%、近戰技能傷害 +{{ fmtRatio(settings.armorBreak.meleePercent) }}%）
                                 </span>
                             </div>
                             <div class="field-hint">
-                                聖盾騎士傷害全為物理。近戰技能傷害 debuff 已由「憤怒衝擊」計入最終增加傷害，這裡不重複套用；追加傷害尚未實作，也未接入。
+                                聖盾騎士傷害全為物理。所受傷害增加（死神烙印、倒吊人、洞察之眼、幸運草等）與近戰技能傷害（憤怒衝擊，需開啟「技能設定」的「近距離額外傷害中」）都由這裡提供，最終增加傷害不再另外設定；追加傷害尚未實作，也未接入。
                             </div>
                         </div>
                         <div class="pb-embed">
-                            <ProtectionBreakPanel single :pierce="settings.sharpLevel" @result="onArmorBreakResult" />
+                            <ProtectionBreakPanel single :pierce="effectiveSharpLevel" @result="onArmorBreakResult" />
                         </div>
                     </el-tab-pane>
 
@@ -1270,9 +1243,19 @@ onMounted(() => {
                     </div>
                     <div class="result-row">
                         <span class="result-label">
-                            防護
+                            加護力
                             <el-popover trigger="click" :width="280" popper-class="detail-popover">
                                 <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                <div class="detail-breakdown">
+                                    <div v-for="p in defensePowerParts" :key="p.label" class="detail-breakdown-row">
+                                        <span>{{ p.label }}</span>
+                                        <span>{{ fmtDecimal(p.value) }}</span>
+                                    </div>
+                                    <div class="detail-breakdown-row detail-breakdown-total">
+                                        <span>加護力</span>
+                                        <span>{{ fmtDecimal(finalStats.defensePower) }}</span>
+                                    </div>
+                                </div>
                                 {{ RESULT_DETAILS.defensePower }}
                             </el-popover>
                         </span>
@@ -1975,5 +1958,19 @@ onMounted(() => {
 .detail-popover {
     font-size: 0.78rem;
     line-height: 1.6;
+}
+.detail-breakdown {
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+.detail-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.6rem;
+}
+.detail-breakdown-total {
+    margin-top: 0.2rem;
+    font-weight: 700;
 }
 </style>

@@ -13,7 +13,7 @@
  * 聖盾騎士現有 7 個秘法技能（聖域展開、盾崩強襲…）都已經正式套用
  * `calculateArcaneSkillDamage`：借用風車/突擊傷害（才能技能目標傷害，見
  * `calculateTalentSkillTargetDamage`）當「採計的才能技能目標傷害」的技能（盾崩強襲/
- * 審判重擊/光輝斷罪借風車、盾擊衝鋒借突擊），其餘基礎/防護/生命是純秘法部分；
+ * 審判重擊/光輝斷罪借風車、盾擊衝鋒借突擊），其餘基礎/加護力/生命是純秘法部分；
  * 沒有借用任何才能技能的技能（聖域展開/零秒嘲諷/犧牲懲戒）則把「採計的才能技能
  * 目標傷害」傳 0，退化成純秘法技能。各技能既有的職業被動倍率（如審判重擊 +20%、
  * 犧牲懲戒 +15%、盾牌減傷）比照套用到才能與秘法兩部分。
@@ -29,7 +29,6 @@ import {
     calculateCriticalDamageExpected,
     calculateGeneralExtraDamageMultiplier,
     calculateTalentIncreaseDamageMultiplier,
-    calculateFinalIncreaseDamageMultiplier,
     calculateTalentSkillTargetDamage,
     calculateTalentSkillDamage,
     calculateArcaneSkillDamage,
@@ -46,7 +45,6 @@ import {
     type WeaponSpecialReforgeTier,
     type CriticalDamageSetTier,
     type TotemChoice,
-    type FinalIncreaseDamageState,
     type ArcaneExtraDamageState,
     type CriticalRateState,
     type RaceId,
@@ -79,7 +77,7 @@ export interface CharacterStats {
     /** 面板數值是否已經含聖水加成；含的話就不會再自動把聖水加總進去（避免重複計算） */
     panelIncludesHolyWater: boolean;
     /**
-     * 面板數值是「原始面板」（未套用高潔誓約等buff，預設）還是「上完buff」（高潔誓約已經套用在數值裡）。
+     * 面板數值是「原始面板」（未套用高潔誓約等buff）還是「上完buff」（高潔誓約已經套用在數值裡，預設）。
      * 目前只影響最大生命值/防禦/保護/魔法防禦/魔法保護，攻擊力的面板最大傷害維持原本「原始面板」語意不受影響。
      */
     statBaseline: CharacterStatBaseline;
@@ -92,7 +90,7 @@ export const DEFAULT_CHARACTER_STATS: CharacterStats = {
     magicDefense: 0,
     magicProtection: 0,
     panelIncludesHolyWater: false,
-    statBaseline: "raw",
+    statBaseline: "buffed",
 };
 
 // ═══════════════════════════════════════════════════════
@@ -181,7 +179,7 @@ export function getShieldPreset(shieldId: string): ShieldPreset {
 //  聖水（8 個部位，各自選一種能力＋填數值，上限依能力）
 // ═══════════════════════════════════════════════════════
 
-export type HolyWaterAbilityId = "maxDamage" | "maxHp" | "defense" | "criticalDamage";
+export type HolyWaterAbilityId = "maxDamage" | "maxHp" | "defense" | "magicDefense" | "criticalDamage";
 
 export interface HolyWaterAbility {
     id: HolyWaterAbilityId;
@@ -193,6 +191,7 @@ export const HOLY_WATER_ABILITIES: HolyWaterAbility[] = [
     { id: "maxDamage", label: "大傷", max: 30 },
     { id: "maxHp", label: "HP", max: 300 },
     { id: "defense", label: "防禦", max: 100 },
+    { id: "magicDefense", label: "魔法防禦", max: 100 },
     { id: "criticalDamage", label: "爆擊傷害 %", max: 4 },
 ];
 
@@ -355,27 +354,49 @@ export const MAGIC_CIRCLE_LIMIT = 3;
 //  高潔誓約 / 職業被動 常數
 // ═══════════════════════════════════════════════════════
 
-const NOBLE_OATH_HP_PERCENT = 0.15;
-const NOBLE_OATH_HP_CAP = 3000;
-const NOBLE_OATH_HP_FLAT = 1000;
+type OathStatKey = "maxHp" | "defense" | "magicDefense" | "protection" | "magicProtection";
 
-const NOBLE_OATH_DEF_PERCENT = 0.1;
-const NOBLE_OATH_DEF_CAP = 150;
-const NOBLE_OATH_DEF_FLAT = 100;
+/**
+ * 高潔誓約：最大生命值 +15%（最大 3000）；防禦／保護／魔法防禦／魔法保護 +10%（防禦／魔防最大 150，保護／魔保最大 15）。
+ * 另外發動中生命值 +1000、防禦／魔防 +100（不包含在上面的百分比基礎裡，直接加在百分比加成之後）。
+ */
+const NOBLE_OATH_RULES: Record<OathStatKey, { percent: number; cap: number; flat: number }> = {
+    maxHp: { percent: 0.15, cap: 3000, flat: 1000 },
+    defense: { percent: 0.1, cap: 150, flat: 100 },
+    magicDefense: { percent: 0.1, cap: 150, flat: 100 },
+    protection: { percent: 0.1, cap: 15, flat: 0 },
+    magicProtection: { percent: 0.1, cap: 15, flat: 0 },
+};
 
-// Spec 原文僅寫「魔防／魔保同理」，沒有給出精確數字；此處假設魔防上限比照防禦、魔保上限比照保護，
-// 待日後用實測數據校正。
-const NOBLE_OATH_MAGIC_DEF_PERCENT = 0.1;
-const NOBLE_OATH_MAGIC_DEF_CAP = 150;
-const NOBLE_OATH_MAGIC_DEF_FLAT = 100;
+/** 原始值 → 套用高潔誓約後的值 */
+function applyNobleOath(key: OathStatKey, raw: number): number {
+    const r = NOBLE_OATH_RULES[key];
+    return raw + Math.min(raw * r.percent, r.cap) + r.flat;
+}
 
-const NOBLE_OATH_PROTECTION_PERCENT = 0.1;
-const NOBLE_OATH_PROTECTION_CAP = 15;
+/** 「上完buff」面板 → 還原成套用高潔誓約前的原始值（applyNobleOath 的反函數，含上限分段） */
+function removeNobleOath(key: OathStatKey, buffed: number): number {
+    const r = NOBLE_OATH_RULES[key];
+    const x = Math.max(0, buffed - r.flat);
+    const capStart = (r.cap * (1 + r.percent)) / r.percent;
+    return x <= capStart ? x / (1 + r.percent) : x - r.cap;
+}
 
-const NOBLE_OATH_MAGIC_PROTECTION_PERCENT = 0.1;
-const NOBLE_OATH_MAGIC_PROTECTION_CAP = 15;
+/** 把「上完buff」的角色面板換算成原始面板（原始面板則原樣回傳），供以「誓約前基礎值」為單位的計算使用 */
+export function toRawCharacterStats(character: CharacterStats): CharacterStats {
+    if (character.statBaseline === "raw") return character;
+    return {
+        ...character,
+        maxHp: removeNobleOath("maxHp", character.maxHp),
+        defense: removeNobleOath("defense", character.defense),
+        protection: removeNobleOath("protection", character.protection),
+        magicDefense: removeNobleOath("magicDefense", character.magicDefense),
+        magicProtection: removeNobleOath("magicProtection", character.magicProtection),
+        statBaseline: "raw",
+    };
+}
 
-/** 職業被動：最大傷害轉化為防護的比例，未來版本改動時只需改這個常數 */
+/** 職業被動：最大傷害的 3% 增加加護力（官方職業被動說明），未來版本改動時只需改這個常數 */
 export const MAX_DAMAGE_TO_DEFENSE_POWER_RATE = 0.03;
 
 export const SACRIFICE_CAP = 100;
@@ -455,6 +476,8 @@ export interface ArmorBreakSettings {
     pierceResist: number;
     /** 所受傷害增加%，乘進最終增加傷害 */
     damageTakenPercent: number;
+    /** 近戰技能傷害 +%（憤怒衝擊），「近距離額外傷害中」開啟時乘進最終增加傷害 */
+    meleePercent: number;
     /** 暴擊傷害 debuff %，加到暴擊傷害 */
     critDamagePercent: number;
 }
@@ -487,9 +510,11 @@ export interface ExtraDamageSettings {
 /** 秘法額外傷害（不完美的空想王冠光環/布里萊赫的硬幣/穆利亞斯的遺物，加總），已套用到 7 個秘法技能的傷害公式。 */
 export type ArcaneExtraDamageSettings = ArcaneExtraDamageState;
 
-export interface FinalIncreaseDamageSettings extends Omit<FinalIncreaseDamageState, "rageImpact"> {
-    /** 憤怒衝擊魔法陣等級 0~10，每級 0.3% */
-    rageImpactMagicCircleLevel: number;
+export interface FinalIncreaseDamageSettings {
+    /** 戰鬥服務 buff +1% */
+    combatServiceBuffActive: boolean;
+    /** 達可達的強力威光 +5% */
+    dakotaGlowActive: boolean;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -503,7 +528,7 @@ export interface FinalStats {
     protection: number;
     magicDefense: number;
     magicProtection: number;
-    /** 防護 = 防禦 + 保護 + 魔防 + 魔保 + 職業被動(最大傷害 × 3%) */
+    /** 加護力（遊戲內稱防禦力）= 防禦 + 保護 + 魔防 + 魔保（玩家實測）+ 職業被動(最大傷害 × 3%) */
     defensePower: number;
     shieldDamageReduction: number;
 }
@@ -557,6 +582,18 @@ function collectActiveTags(weapon: WeaponPreset, shield: ShieldPreset): Set<SetE
     return tags;
 }
 
+/** 職業被動：裝備單手武器和盾牌時，銳利增加 3 */
+const ONE_HAND_AND_SHIELD_SHARP_BONUS = 3;
+
+/** 實際銳利等級 = 手動輸入的裝備銳利 + 單手武器搭配盾牌的職業被動（雙手劍且無法配盾時盾牌視為無） */
+export function getEffectiveSharpLevel(settings: ShieldKnightSettings): number {
+    const build = getCharacterBuild(settings.characterBuildId);
+    const shieldEquipped =
+        settings.shieldId !== "none" && !(settings.weaponType === "two_hand_sword" && !build.allowTwoHandSwordWithShield);
+    const passive = settings.weaponType === "one_hand_axe" && shieldEquipped ? ONE_HAND_AND_SHIELD_SHARP_BONUS : 0;
+    return settings.sharpLevel + passive;
+}
+
 /**
  * 計算順序：
  * 面板最大傷害 → 髒髒/乾淨 → 攻擊係數/常數攻擊力 → 最終最大傷害
@@ -606,7 +643,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const armorBreak = settings.armorBreak.enabled ? settings.armorBreak : null;
     // 保護：先扣%、再扣固定（面板已算好 protBeforePierce）、最後扣銳利（每級 −5，扣除怪物銳利抵抗），無條件捨去後查減傷表
     const protectionReduction = armorBreak
-        ? 1 - protRate(Math.max(0, armorBreak.protBeforePierce - Math.max(0, settings.sharpLevel - armorBreak.pierceResist) * 5))
+        ? 1 - protRate(Math.max(0, armorBreak.protBeforePierce - Math.max(0, getEffectiveSharpLevel(settings) - armorBreak.pierceResist) * 5))
         : 1;
 
     // ── 暴擊傷害% ──
@@ -642,23 +679,13 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     // ── 最終增加傷害（乘算） ──
     // 穆利亞斯的遺物：犧牲之懲戒觸發反射的痕跡時，聖盾技能傷害（最終增加傷害）+0.5%/級
     const reflectionTracePercent = settings.muliasRelic.reflectionTraceActive ? settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL : 0;
+    // 死神烙印／憤怒衝擊／命運編織（倒吊人）／洞察之眼／幸運草標記都改由「破防」面板提供（所受傷害增加、近戰技能傷害），這裡只留戰鬥服務與強力威光
     const finalIncreaseDamageMultiplier =
-        calculateFinalIncreaseDamageMultiplier({
-            combatServiceBuffActive: settings.finalIncreaseDamage.combatServiceBuffActive,
-            dakotaGlowActive: settings.finalIncreaseDamage.dakotaGlowActive,
-            // 套用破防結果時，死神烙印／命運編織（倒吊人）／洞察之眼／幸運草已包含在破防的「所受傷害增加」，這裡停用避免重複計算
-            deathBrand: armorBreak ? { ...settings.finalIncreaseDamage.deathBrand, active: false } : settings.finalIncreaseDamage.deathBrand,
-            destinyWeaveActive: !armorBreak && settings.finalIncreaseDamage.destinyWeaveActive,
-            insightEye: armorBreak ? { ...settings.finalIncreaseDamage.insightEye, active: false } : settings.finalIncreaseDamage.insightEye,
-            cloverMarkActive: !armorBreak && settings.finalIncreaseDamage.cloverMarkActive,
-            rageImpact: {
-                active: settings.rageImpactBuffActive,
-                magicCircleLevel: settings.finalIncreaseDamage.rageImpactMagicCircleLevel,
-                imperialGauntletTagActive: false,
-            },
-        }) *
+        (1 + (settings.finalIncreaseDamage.combatServiceBuffActive ? 1 : 0) / 100) *
+        (1 + (settings.finalIncreaseDamage.dakotaGlowActive ? 5 : 0) / 100) *
         (1 + reflectionTracePercent / 100) *
-        (1 + (armorBreak?.damageTakenPercent ?? 0) / 100);
+        (1 + (armorBreak?.damageTakenPercent ?? 0) / 100) *
+        (1 + (armorBreak && settings.rageImpactBuffActive ? armorBreak.meleePercent : 0) / 100);
 
     // 穆利亞斯的遺物：高潔誓約每秒犧牲恢復量 +0.05/級（純顯示用，目前無基準值可疊加）
     const sacrificeRegenPerSecond = settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL;
@@ -716,23 +743,16 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
 
     // ── 生命值 / 防禦 ──
     // 面板已含聖水時不再自動加總聖水（避免重複計算）；鍋子等盾牌固定加成跟聖水無關，維持自動加總
-    const holyWaterMaxHp = settings.character.panelIncludesHolyWater ? 0 : sumHolyWater(settings.holyWater, "maxHp");
-    const holyWaterDefense = settings.character.panelIncludesHolyWater ? 0 : sumHolyWater(settings.holyWater, "defense");
-    let maxHp = settings.character.maxHp + holyWaterMaxHp + (shield.hpFlat ?? 0);
-
-    let defense = settings.character.defense + holyWaterDefense;
-    let protection = settings.character.protection;
-    let magicDefense = settings.character.magicDefense;
-    let magicProtection = settings.character.magicProtection;
-
-    // 面板已經是「上完buff」的數值時，高潔誓約的加成不再重複套用（避免重複計算）
-    if (settings.nobleOathEnabled && settings.character.statBaseline === "raw") {
-        maxHp += Math.min(maxHp * NOBLE_OATH_HP_PERCENT, NOBLE_OATH_HP_CAP) + NOBLE_OATH_HP_FLAT;
-        defense += Math.min(defense * NOBLE_OATH_DEF_PERCENT, NOBLE_OATH_DEF_CAP) + NOBLE_OATH_DEF_FLAT;
-        magicDefense += Math.min(magicDefense * NOBLE_OATH_MAGIC_DEF_PERCENT, NOBLE_OATH_MAGIC_DEF_CAP) + NOBLE_OATH_MAGIC_DEF_FLAT;
-        protection += Math.min(protection * NOBLE_OATH_PROTECTION_PERCENT, NOBLE_OATH_PROTECTION_CAP);
-        magicProtection += Math.min(magicProtection * NOBLE_OATH_MAGIC_PROTECTION_PERCENT, NOBLE_OATH_MAGIC_PROTECTION_CAP);
-    }
+    // 「上完buff」面板先還原成高潔誓約前的原始值，再加聖水與盾牌固定值，最後依目前是否發動高潔誓約重新套用（含上限），
+    // 這樣聖水的 HP／防禦／魔防會吃到高潔誓約的加乘，也會受上限限制
+    const rawCharacter = toRawCharacterStats(settings.character);
+    const holyWater = (id: HolyWaterAbilityId) => (settings.character.panelIncludesHolyWater ? 0 : sumHolyWater(settings.holyWater, id));
+    const withOath = (key: OathStatKey, base: number) => (settings.nobleOathEnabled ? applyNobleOath(key, base) : base);
+    const maxHp = withOath("maxHp", rawCharacter.maxHp + holyWater("maxHp") + (shield.hpFlat ?? 0));
+    const defense = withOath("defense", rawCharacter.defense + holyWater("defense"));
+    const magicDefense = withOath("magicDefense", rawCharacter.magicDefense + holyWater("magicDefense"));
+    const protection = withOath("protection", rawCharacter.protection);
+    const magicProtection = withOath("magicProtection", rawCharacter.magicProtection);
 
     const passiveDefensePower = maxDamage * MAX_DAMAGE_TO_DEFENSE_POWER_RATE;
     const defensePower = defense + protection + magicDefense + magicProtection + passiveDefensePower;
@@ -891,7 +911,7 @@ function finalizeArcaneSkill(
 export function calculateHolySanctuary(finalStats: FinalStats, shared: ArcaneSharedParams): SkillDamageResult {
     const terms = [
         makeTerm("基礎傷害", 300, finalStats.maxDamage),
-        makeTerm("防護", 150, finalStats.defensePower),
+        makeTerm("加護力", 150, finalStats.defensePower),
         makeTerm("最大生命", 20, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
@@ -916,7 +936,7 @@ export function calculateHolySanctuary(finalStats: FinalStats, shared: ArcaneSha
 export function calculateInstantTaunt(finalStats: FinalStats, shared: ArcaneSharedParams): SkillDamageResult {
     const terms = [
         makeTerm("基礎傷害", 0, finalStats.maxDamage),
-        makeTerm("防護", 200, finalStats.defensePower),
+        makeTerm("加護力", 200, finalStats.defensePower),
         makeTerm("最大生命", 15, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
@@ -938,7 +958,7 @@ export function calculateShieldCharge(finalStats: FinalStats, chargeDamage: numb
     const terms = [
         makeTerm("衝撞傷害", chargeRatio, chargeDamage),
         makeTerm("基礎傷害", 800, finalStats.maxDamage),
-        makeTerm("防護", 600, finalStats.defensePower),
+        makeTerm("加護力", 600, finalStats.defensePower),
         makeTerm("最大生命", 50, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
@@ -962,7 +982,7 @@ export function calculateIronWallStrike(finalStats: FinalStats, windmillDamage: 
     const terms = [
         makeTerm("風車傷害", windmillRatio, windmillDamage),
         makeTerm("基礎傷害", 1200, finalStats.maxDamage),
-        makeTerm("防護", 600, finalStats.defensePower),
+        makeTerm("加護力", 600, finalStats.defensePower),
         makeTerm("最大生命", 100, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
@@ -996,7 +1016,7 @@ export function calculateJudgementStrike(
     const terms = [
         makeTerm("風車傷害", windmillRatio, windmillDamage),
         makeTerm("基礎傷害", baseRatio, finalStats.maxDamage),
-        makeTerm("防護", 2000, finalStats.defensePower),
+        makeTerm("加護力", 2000, finalStats.defensePower),
         makeTerm("最大生命", 500, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
@@ -1023,7 +1043,7 @@ export function calculateJudgementStrike(
 export function calculateSacrificePunishment(finalStats: FinalStats, currentSacrifice: number, shared: ArcaneSharedParams): SkillDamageResult {
     const terms = [
         makeTerm("基礎傷害", 6000, finalStats.maxDamage),
-        makeTerm("防護", 4000, finalStats.defensePower),
+        makeTerm("加護力", 4000, finalStats.defensePower),
         makeTerm("最大生命", 1500, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
@@ -1060,7 +1080,7 @@ const RADIANT_JUDGEMENT_WINDMILL_RATIO = 175;
 
 /**
  * 光輝之審判已正式套用秘法技能公式：借用風車傷害的 175%（風車目標傷害，尚未乘才能增加/最終增加傷害）
- * 當「採計的才能技能目標傷害」，基礎/防護/最大生命 3 項是純秘法部分。
+ * 當「採計的才能技能目標傷害」，基礎/加護力/最大生命 3 項是純秘法部分。
  */
 export function calculateRadiantJudgement(
     finalStats: FinalStats,
@@ -1085,7 +1105,7 @@ export function calculateRadiantJudgement(
     const terms = [
         makeTerm("風車傷害", RADIANT_JUDGEMENT_WINDMILL_RATIO, windmillDamage),
         makeTerm("基礎傷害", currentRatios.base, finalStats.maxDamage),
-        makeTerm("防護", currentRatios.defensePower, finalStats.defensePower),
+        makeTerm("加護力", currentRatios.defensePower, finalStats.defensePower),
         makeTerm("最大生命", currentRatios.maxHp, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
@@ -1442,8 +1462,10 @@ export function calculateHolyWaterComparison(settings: ShieldKnightSettings): Ho
     const { baseLevers, compute, baseTotal } = buildLeverContext(settings);
     const maxDamageDelta = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + 1 }) - baseTotal;
     // HP／防禦加在高潔誓約之前的基礎值，整段重算，誓約的 %（HP 15%、防禦 10%）與上限會自動套用
-    const withBaseStat = (key: "maxHp" | "defense", value: number) =>
-        calculateTotalOutput({ ...settings, character: { ...settings.character, [key]: settings.character[key] + value } }, settings.skillUsageCounts);
+    const withBaseStat = (key: "maxHp" | "defense" | "magicDefense", value: number) => {
+        const raw = toRawCharacterStats(settings.character);
+        return calculateTotalOutput({ ...settings, character: { ...raw, [key]: raw[key] + value } }, settings.skillUsageCounts);
+    };
     return HOLY_WATER_ABILITIES.map((a) => {
         let total: number;
         if (a.id === "maxDamage") total = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + a.max });
@@ -1759,11 +1781,6 @@ export function createDefaultSettings(): ShieldKnightSettings {
         finalIncreaseDamage: {
             combatServiceBuffActive: true,
             dakotaGlowActive: true,
-            deathBrand: { active: true, setBonusActive: false, reforgeLevel: 0 },
-            destinyWeaveActive: false,
-            insightEye: { active: false, commanderBadgeLevel: 0 },
-            cloverMarkActive: true,
-            rageImpactMagicCircleLevel: 0,
         },
         muliasRelic: {
             sacrificeRegenLevel: 0,
@@ -1771,14 +1788,14 @@ export function createDefaultSettings(): ShieldKnightSettings {
             reflectionTraceActive: true,
             judgementStrikeLevel: 0,
         },
-        armorBreak: { enabled: false, protBeforePierce: 0, pierceResist: 0, damageTakenPercent: 0, critDamagePercent: 0 },
+        armorBreak: { enabled: true, protBeforePierce: 0, pierceResist: 0, damageTakenPercent: 0, critDamagePercent: 0, meleePercent: 0 },
         sharpLevel: 11,
 
         ergActive: false,
         darkErgActive: false,
         magicCircleIds: [],
         rageImpactBuffActive: false,
-        nobleOathEnabled: false,
+        nobleOathEnabled: true,
         currentSacrifice: 0,
         radiantJudgementStage: 1,
         ironWallHitCount: 0,
