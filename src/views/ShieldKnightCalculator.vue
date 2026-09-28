@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, computed, watch, onMounted } from "vue";
+import { reactive, ref, computed, watch, onMounted, nextTick } from "vue";
 import { useAccountSync, mergeByTimestamp } from "../composables/useAccountSync";
 import { useNamedPresetList } from "../composables/useNamedPresets";
 import { InfoFilled } from "@element-plus/icons-vue";
@@ -48,6 +48,7 @@ import {
     type SkillUsageCounts,
     type ArmorBreakSettings,
     type DamageEfficiencyItem,
+    type CritDisplayMode,
 } from "../data/shieldKnightCalculator";
 import { getSkillIcon } from "../utils/image";
 import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
@@ -69,9 +70,13 @@ const transformationReforgeEnabled = computed({
 const weaponOptions = computed(() => WEAPON_PRESETS[settings.weaponType]);
 const shieldLocked = computed(() => settings.weaponType === "two_hand_sword" && !currentBuild.value.allowTwoHandSwordWithShield);
 
+// 讀取存檔／自動存檔時（見 applyLoadedSettings）整批覆蓋 settings，此時這些 watch 只是在「還原」資料，
+// 不是使用者手動切換，必須跳過下面的重設邏輯，否則會在整批賦值跑完後才觸發、把剛還原好的值又蓋掉
+const isLoadingSettings = ref(false);
 watch(
     () => settings.weaponType,
     (weaponType) => {
+        if (isLoadingSettings.value) return;
         settings.weaponId = "none";
         const max = getReforgeLevelMax("weapon", weaponType);
         (["smash", "windmill", "charge"] as const).forEach((t) => {
@@ -80,11 +85,21 @@ watch(
     },
 );
 watch(shieldLocked, (locked) => {
+    if (isLoadingSettings.value) return;
     if (locked) settings.shieldId = "none";
 });
 watch(transformationReforgeLocked, (locked) => {
+    if (isLoadingSettings.value) return;
     if (locked) settings.transformationReforgeLevel = 0;
 });
+
+function applyLoadedSettings(data: Partial<ShieldKnightSettings> | undefined) {
+    isLoadingSettings.value = true;
+    Object.assign(settings, buildMergedSettings(data));
+    nextTick(() => {
+        isLoadingSettings.value = false;
+    });
+}
 
 function holyWaterMax(slotKey: HolyWaterSlotKey): number {
     const sel = settings.holyWater[slotKey];
@@ -113,7 +128,10 @@ const abilities = computed(() => calcResult.value.abilities);
 const activeSetEffectLabels = computed(() => calcResult.value.activeTags.map((t) => SET_EFFECT_TAG_LABELS[t]));
 
 const allSkills = computed(() => calculateSkillsForSettings(settings));
-const skills = computed(() => allSkills.value.filter((skill) => settings[SKILL_VISIBILITY_SETTING_KEYS[skill.skillId]]));
+// 只有最下面「技能傷害」卡片可以切換暴擊顯示模式，其餘分頁（技能使用次數/裝備比較/傷害效益）維持固定用期望值，避免顯示跟總輸出對不上
+const critDisplayMode = ref<CritDisplayMode>("expected");
+const cardSkills = computed(() => calculateSkillsForSettings(settings, undefined, critDisplayMode.value));
+const skills = computed(() => cardSkills.value.filter((skill) => settings[SKILL_VISIBILITY_SETTING_KEYS[skill.skillId]]));
 const totalOutput = computed(() => calculateTotalOutput(settings, settings.skillUsageCounts));
 const hasAnyUsageCount = computed(() => ALL_SKILL_META.some((s) => settings.skillUsageCounts[s.id] > 0));
 const efficiencyItems = computed(() => calculateDamageEfficiency(settings));
@@ -347,7 +365,7 @@ function onArmorBreakResult(r: ArmorBreakResult) {
 function loadPreset(idx: number) {
     const data = presets.value[idx]?.data;
     if (!data) return;
-    Object.assign(settings, buildMergedSettings(data));
+    applyLoadedSettings(data);
     if (latestArmorBreakResult) onArmorBreakResult(latestArmorBreakResult);
     loadedPresetTimestamp.value = presets.value[idx].timestamp;
 }
@@ -378,7 +396,12 @@ const comparisonResults = computed<(ComparisonResult | null)[]>(() =>
         if (!preset) return null;
         // 技能次數／破防未選擇時，沿用目前分頁上的活值；三者都可獨立換，同一欄可以是任意組合
         const usageCounts = slot.usageIdx !== null ? (usagePresets.presets.value[slot.usageIdx]?.data ?? settings.skillUsageCounts) : settings.skillUsageCounts;
-        const armorBreak = slot.breakIdx !== null ? (armorBreakPresets.presets.value[slot.breakIdx]?.data ?? settings.armorBreak) : settings.armorBreak;
+        // 明確在下拉選了某個破防組合，語意上就是「套用這組」，不管當初存檔當下主開關是否勾選，這裡都強制視為已套用，
+        // 否則若存檔當下「套用破防結果」剛好沒勾，這組破防會整包被當成停用，選哪組都變成「沒有破防」、結果跟沒選一樣
+        const armorBreak =
+            slot.breakIdx !== null
+                ? { ...(armorBreakPresets.presets.value[slot.breakIdx]?.data ?? settings.armorBreak), enabled: true }
+                : settings.armorBreak;
         const comparedSettings = { ...buildMergedSettings(preset.data), armorBreak };
         return {
             name: preset.name,
@@ -435,6 +458,35 @@ function fmtDate(ts: number): string {
 }
 
 // ═══════════════════════════════════════════════════════
+//  Debug：下載完整資料／複製區塊（回報 bug 用）
+// ═══════════════════════════════════════════════════════
+const copiedBlock = ref<"settings" | "calcResult" | null>(null);
+let copiedBlockTimer: ReturnType<typeof setTimeout> | undefined;
+
+async function copyDebugBlock(block: "settings" | "calcResult") {
+    const text = JSON.stringify(block === "settings" ? settings : calcResult.value, null, 2);
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        return; // 剪貼簿權限被拒或不支援，靜默略過
+    }
+    copiedBlock.value = block;
+    clearTimeout(copiedBlockTimer);
+    copiedBlockTimer = setTimeout(() => (copiedBlock.value = null), 1500);
+}
+
+function downloadDebugData() {
+    const payload = { exportedAt: new Date().toISOString(), settings, calcResult: calcResult.value };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `shield-knight-debug-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════
 //  自動儲存（每次修改都存一份「目前設定」，跟已命名的配置分開存，
 //  重新整理頁面時優先還原這份，不用怕手動忘記按「儲存目前設定」）
 // ═══════════════════════════════════════════════════════
@@ -467,7 +519,7 @@ watch(
 onMounted(() => {
     const autosaved = loadAutosave();
     if (autosaved) {
-        Object.assign(settings, buildMergedSettings(autosaved));
+        applyLoadedSettings(autosaved);
     } else if (presets.value.length > 0) {
         loadPreset(0);
     }
@@ -1322,9 +1374,18 @@ onMounted(() => {
 
                     <el-tab-pane label="Debug" name="debug">
                         <div class="tab-body">
-                            <div class="field-section-label">settings（原始輸入值，會自動存檔的那份）</div>
+                            <div class="field-row">
+                                <el-button size="small" type="primary" plain @click="downloadDebugData">下載完整 Debug 資料（settings + calcResult）</el-button>
+                            </div>
+                            <div class="field-section-label">
+                                settings（原始輸入值，會自動存檔的那份）
+                                <el-button size="small" text @click="copyDebugBlock('settings')">{{ copiedBlock === "settings" ? "已複製" : "複製" }}</el-button>
+                            </div>
                             <pre class="debug-dump">{{ JSON.stringify(settings, null, 2) }}</pre>
-                            <div class="field-section-label">calcResult（依 settings 算出來的衍生數值）</div>
+                            <div class="field-section-label">
+                                calcResult（依 settings 算出來的衍生數值）
+                                <el-button size="small" text @click="copyDebugBlock('calcResult')">{{ copiedBlock === "calcResult" ? "已複製" : "複製" }}</el-button>
+                            </div>
                             <pre class="debug-dump">{{ JSON.stringify(calcResult, null, 2) }}</pre>
                         </div>
                     </el-tab-pane>
@@ -1607,7 +1668,17 @@ onMounted(() => {
 
         <!-- ════════ 技能傷害 ════════ -->
         <div class="skill-section">
-            <h2 class="skill-section-title">技能傷害</h2>
+            <div class="skill-section-header">
+                <h2 class="skill-section-title">技能傷害</h2>
+                <el-radio-group v-model="critDisplayMode" size="small">
+                    <el-radio-button value="noCrit">沒暴擊</el-radio-button>
+                    <el-radio-button value="crit">暴擊</el-radio-button>
+                    <el-radio-button value="expected">期望值</el-radio-button>
+                </el-radio-group>
+            </div>
+            <div class="field-hint skill-section-hint">
+                只影響這裡的卡片顯示；其餘分頁（技能使用次數／裝備比較／傷害效益／總輸出）固定用期望值計算，不受此切換影響。
+            </div>
             <div class="skill-grid">
                 <div v-for="skill in skills" :key="skill.skillId" class="skill-card" :class="{ 'skill-card-locked': skill.locked }">
                     <div class="skill-card-header">
@@ -2035,10 +2106,21 @@ onMounted(() => {
     max-width: 1280px;
     margin: 1.5rem auto 0;
 }
+.skill-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
+}
 .skill-section-title {
     font-size: 1.2rem;
-    margin-bottom: 0.75rem;
+    margin: 0;
     color: var(--color-text-primary, #f9fafb);
+}
+.skill-section-hint {
+    margin-bottom: 0.75rem;
 }
 .skill-grid {
     display: grid;

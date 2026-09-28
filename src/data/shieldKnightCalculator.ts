@@ -1248,31 +1248,63 @@ export function calculateAllSkills(
     ];
 }
 
+/** 技能卡片的暴擊顯示模式：沒暴擊＝固定用 100%（視為必定不暴擊）；暴擊＝固定用暴擊當下的原始暴擊傷害%（視為必定暴擊）；期望值＝預設，依暴擊率加權平均 */
+export type CritDisplayMode = "noCrit" | "crit" | "expected";
+
 /**
  * 依設定算出全部 10 個技能的傷害結果（不篩選顯示開關，供「技能使用次數」/「裝備比較」/「傷害效益」共用）。
  * radiantJudgementUsageCount：光輝斷罪用來分配 1/2/3 階段次數的使用次數，預設吃 settings 自己的
  * skillUsageCounts；「裝備比較」需要比較別的配置時，外部會改傳目前分頁的使用次數，維持跟「總輸出」一致。
+ * critMode：只給「技能傷害」卡片顯示用的暴擊模式切換，預設「期望值」（跟其餘所有計算一致）；
+ * 選「沒暴擊」「暴擊」時，連同風車/突擊/重擊/猛擊等才能技能餵給秘法技能的「才能技能目標傷害」都要重算，
+ * 不能只換 shared.criticalDamagePercent，否則 7 個秘法技能借用的才能傷害還是用期望值算的。
  */
 export function calculateSkillsForSettings(
     settings: ShieldKnightSettings,
     radiantJudgementUsageCount: number = settings.skillUsageCounts["radiant-judgement"] ?? 0,
+    critMode: CritDisplayMode = "expected",
 ): SkillDamageResult[] {
     const calcResult = calculateAll(settings);
     const { finalStats, abilities } = calcResult;
+    const effectiveCritPercent =
+        critMode === "noCrit" ? 100 : critMode === "crit" ? calcResult.criticalDamagePercent : calcResult.criticalDamageExpected;
+    const talentDamage = (skillRatioPercent: number) =>
+        calculateTalentSkillDamage({
+            finalAttackPower: finalStats.maxDamage,
+            skillRatioPercent,
+            criticalDamagePercent: effectiveCritPercent,
+            generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+            talentExtraDamagePercent: 0,
+            talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
+            finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+            protectionReduction: calcResult.protectionReduction,
+        });
+    const windmillDamage = critMode === "expected" ? abilities.windmillDamage : talentDamage(abilities.windmillRatio);
+    const chargeDamage = critMode === "expected" ? abilities.chargeDamage : talentDamage(abilities.chargeRatio);
+    const smashDamage = critMode === "expected" ? abilities.smashDamage : talentDamage(abilities.smashRatio);
+    const targetDamage = (skillRatioPercent: number) =>
+        calculateTalentSkillTargetDamage({
+            finalAttackPower: finalStats.maxDamage,
+            skillRatioPercent,
+            criticalDamagePercent: effectiveCritPercent,
+            protectionReduction: calcResult.protectionReduction,
+        });
+    const windmillTargetDamage = critMode === "expected" ? abilities.windmillTargetDamage : targetDamage(abilities.windmillRatio);
+    const chargeTargetDamage = critMode === "expected" ? abilities.chargeTargetDamage : targetDamage(abilities.chargeRatio);
     const mengJiMagicCircleActive = settings.magicCircleIds.includes("meng_ji_damage");
     const skills = [
         ...calculateAllSkills(
             finalStats,
-            abilities.windmillDamage,
-            abilities.chargeDamage,
-            abilities.windmillTargetDamage,
-            abilities.chargeTargetDamage,
+            windmillDamage,
+            chargeDamage,
+            windmillTargetDamage,
+            chargeTargetDamage,
             settings.nobleOathEnabled,
             settings.currentSacrifice,
             settings.radiantJudgementStage,
             settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL,
             {
-                criticalDamagePercent: calcResult.criticalDamageExpected,
+                criticalDamagePercent: effectiveCritPercent,
                 generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
                 talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
                 arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
@@ -1280,13 +1312,13 @@ export function calculateSkillsForSettings(
                 protectionReduction: calcResult.protectionReduction,
             },
         ),
-        calculateSmashHit(finalStats, abilities.smashRatio, abilities.smashDamage),
-        calculateWindmillHit(finalStats, abilities.windmillRatio, abilities.windmillDamage),
+        calculateSmashHit(finalStats, abilities.smashRatio, smashDamage),
+        calculateWindmillHit(finalStats, abilities.windmillRatio, windmillDamage),
         calculateMengJi(
             finalStats,
             settings.mengJiStack,
             mengJiMagicCircleActive,
-            calcResult.criticalDamageExpected,
+            effectiveCritPercent,
             calcResult.generalExtraDamageMultiplier,
             calcResult.talentIncreaseDamageMultiplier,
             calcResult.finalIncreaseDamageMultiplier,
