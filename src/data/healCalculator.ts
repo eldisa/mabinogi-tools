@@ -279,6 +279,8 @@ export interface HealCalcSettings {
 
     oghamHealingMaxRecovery: number; // 符文效果：治癒生命力最大回復量增加（固定值）
     oghamPartyHealingMaxRecovery: number; // 符文效果：組隊治療生命力最大回復量增加（固定值）
+
+    hasIncompleteFantasyCrownAura: boolean; // 不完美的空想王冠光環（飾品），生命的帳幕 +10%
 }
 
 export const DEFAULT_HEAL_CALC_SETTINGS: HealCalcSettings = {
@@ -328,6 +330,7 @@ export const DEFAULT_HEAL_CALC_SETTINGS: HealCalcSettings = {
     spiritMatBuffLevel: 0,
     oghamHealingMaxRecovery: 0,
     oghamPartyHealingMaxRecovery: 0,
+    hasIncompleteFantasyCrownAura: false,
 };
 
 // ===== 計算 =====
@@ -540,22 +543,52 @@ export interface SonicBaptismResult {
     protectionPerStack: number;
 }
 
-/** 音波洗禮：每 1 疊防禦／魔法防禦、保護／魔法保護 減少量（不含玩家魔攻/智力，僅取決於治癒%加成） */
-export function calculateSonicBaptism(s: HealCalcSettings): SonicBaptismResult {
+export interface LifeCurtainResult {
+    damageReductionPercent: number;
+}
+
+/** 聖詠者同步10 對應的祕法等級加成（等同祕法5級 +10%） */
+const SAINT_BARD_ARCANA_PERCENT = 10;
+/** 治癒 1 段(5+91) + 組隊治癒 R1(227) 的基礎值 */
+const SONIC_BAPTISM_BASE_CONST = 323;
+const LIFE_CURTAIN_BASE_PERCENT = 40;
+const LIFE_CURTAIN_MAX_PERCENT = 90;
+const SOUL_LIBERATE_SONIC_DEFENSE_BONUS = 2;
+const SOUL_LIBERATE_SONIC_PROTECTION_BONUS = 0.8;
+const SOUL_LIBERATE_LIFE_CURTAIN_BONUS = 2;
+const INCOMPLETE_FANTASY_CROWN_AURA_BONUS = 10;
+
+/** 音波洗禮／生命的帳幕共用的 Q 值：治癒恢復量 + 組隊治癒恢復量 + 智力×祕法% − 323 */
+function calculateSonicBaptismQ(s: HealCalcSettings): number {
     const zeroStat: HealCalcSettings = { ...s, magicAttack: 0, sevaInt: 0 };
     const healingBase = calculateHealing(zeroStat).normal.max;
     const partyHealingBase = calculatePartyHealing(zeroStat).normal.max;
-    const healingPct = getHealingPercent(s);
-    const partyHealingPct = getPartyHealingPercent(s);
+    const arcanaBonus = s.hasSaintBardLink ? (s.sevaInt * SAINT_BARD_ARCANA_PERCENT) / 100 : 0;
 
-    const base =
-        0.0045383 *
-        (healingBase * (1 + healingPct / 90) / (1 + healingPct / 100) + partyHealingBase * (1 + partyHealingPct / 90) / (1 + partyHealingPct / 100));
+    return Math.max(0, healingBase + partyHealingBase + arcanaBonus - SONIC_BAPTISM_BASE_CONST);
+}
 
+/** 音波洗禮：每 1 疊防禦／魔法防禦、保護／魔法保護 減少量 */
+export function calculateSonicBaptism(s: HealCalcSettings): SonicBaptismResult {
+    const q = calculateSonicBaptismQ(s);
     const isSoulLiberate = s.weaponId === "soul_liberate_healing_wand";
+
     return {
-        defensePerStack: base + (isSoulLiberate ? 2 : 0),
-        protectionPerStack: base / 5 + (isSoulLiberate ? 0.8 : 0),
+        defensePerStack: q * 0.005 + (isSoulLiberate ? SOUL_LIBERATE_SONIC_DEFENSE_BONUS : 0),
+        protectionPerStack: q * 0.001 + (isSoulLiberate ? SOUL_LIBERATE_SONIC_PROTECTION_BONUS : 0),
+    };
+}
+
+/** 生命的帳幕：受到傷害減少率 */
+export function calculateLifeCurtain(s: HealCalcSettings): LifeCurtainResult {
+    const q = calculateSonicBaptismQ(s);
+    const isSoulLiberate = s.weaponId === "soul_liberate_healing_wand";
+    const gearBonus =
+        (isSoulLiberate ? SOUL_LIBERATE_LIFE_CURTAIN_BONUS : 0) +
+        (s.hasIncompleteFantasyCrownAura ? INCOMPLETE_FANTASY_CROWN_AURA_BONUS : 0);
+
+    return {
+        damageReductionPercent: Math.min(LIFE_CURTAIN_MAX_PERCENT, LIFE_CURTAIN_BASE_PERCENT + q * 0.005 + gearBonus),
     };
 }
 
@@ -563,6 +596,7 @@ export interface HealCalcResult {
     healing: HealRollResult;
     partyHealing: HealRollResult;
     sonicBaptism: SonicBaptismResult;
+    lifeCurtain: LifeCurtainResult;
 }
 
 export function calculateAll(s: HealCalcSettings): HealCalcResult {
@@ -570,5 +604,6 @@ export function calculateAll(s: HealCalcSettings): HealCalcResult {
         healing: calculateHealing(s),
         partyHealing: calculatePartyHealing(s),
         sonicBaptism: calculateSonicBaptism(s),
+        lifeCurtain: calculateLifeCurtain(s),
     };
 }

@@ -2984,7 +2984,7 @@ export const conditions: Condition[] = [
             us: "Perfect Pitch",
             cn: "防止变调效果",
             jp: "音程外し防止",
-            kr: "음이탈 방지 효과",
+            kr: "음이탈 방지",
             tw: "防止走音",
         },
     },
@@ -6738,7 +6738,7 @@ export const conditions: Condition[] = [
             cn: "生命值增加",
             jp: "生命力増加",
             kr: "생명력 증가",
-            tw: "生命力增加",
+            tw: "生命值增加",
         },
     },
     {
@@ -6836,7 +6836,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 2: Threshold Cutter Enhancement",
             cn: "第2幕: 怒气上涌强化",
-            jp: "2幕:湧き出る怒り強化",
+            jp: "2幕 : 湧き出る怒り強化",
             kr: "2막 : 솟구치는 분노 강화",
             tw: "強化第二幕 : 激增的憤怒",
         },
@@ -8316,7 +8316,7 @@ export const conditions: Condition[] = [
             cn: "人偶暴击伤害倍率",
             jp: "マリオネットクリティカルダメージ倍率",
             kr: "마리오네트 크리티컬 대미지 배율",
-            tw: "人偶暴擊傷害倍率",
+            tw: "人偶暴擊傷害值倍率",
         },
     },
     {
@@ -10268,7 +10268,7 @@ export const conditions: Condition[] = [
         name: {
             cn: "半神化生命、魔法、体力恢复效果增加",
             jp: "半神化生命力、マナ、スタミナ回復効果増加",
-            tw: "半神化生命力,魔力,耐力恢復效果增加",
+            tw: "半神化生命值,魔力,耐力恢復效果增加",
         },
     },
     {
@@ -10316,6 +10316,7 @@ export const conditions: Condition[] = [
     {
         id: 1074,
         name: {
+            us: "Close Combat Talent Weapon Max Damage Increase",
             cn: "近战才能武器最大伤害增加",
             jp: "戦術才能武器最大ダメージ増加",
             tw: "近距離才能武器最大傷害值增加",
@@ -10324,6 +10325,7 @@ export const conditions: Condition[] = [
     {
         id: 1075,
         name: {
+            us: "Archery Talent Weapon Max Damage Increase",
             cn: "弓术才能武器最大伤害增加",
             jp: "弓術才能武器最大ダメージ増加",
             tw: "弓術才能武器最大傷害增加",
@@ -10332,6 +10334,7 @@ export const conditions: Condition[] = [
     {
         id: 1076,
         name: {
+            us: "Instill Elements Stamina Usage Reduction",
             cn: "全属性元素注入的每秒体力消耗量减少",
             jp: "全属性のエレメンタルインジェクションの1秒あたりのスタミナ消耗量減少",
             tw: "降低所有屬性注魔的耐力消耗量",
@@ -10340,6 +10343,7 @@ export const conditions: Condition[] = [
     {
         id: 1077,
         name: {
+            us: "Healing Effect Boost",
             cn: "治疗效果增加",
             jp: "ヒーリング効果増加",
             tw: "治癒效果增加",
@@ -10348,6 +10352,7 @@ export const conditions: Condition[] = [
     {
         id: 1078,
         name: {
+            us: "Recovers Wounds Equal to Healing Effect",
             cn: "基于治疗效果治愈负伤",
             jp: "負傷治療効果",
             tw: "依照治癒效果治療負傷",
@@ -10584,7 +10589,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 7: Climactic Crash Enhancement",
             cn: "第7幕：疯狂地疾走强化",
-            jp: "7幕：狂乱の疾走強化",
+            jp: "7幕 : 狂乱の疾走強化",
             kr: "7막 : 광란의 질주 강화",
             tw: "第七幕:強化狂亂的奔走",
         },
@@ -10710,7 +10715,7 @@ export const conditions: Condition[] = [
             cn: "铁壁猛击抵抗",
             jp: "鉄壁強打抵抗",
             kr: "철벽 강타 저항",
-            tw: "鐵壁重擊抵抗",
+            tw: "盾崩強襲抵抗",
         },
     },
     {
@@ -10769,7 +10774,7 @@ export const conditions: Condition[] = [
             us: "Battle Astrology MP Recovery",
             cn: "战斗占星术才能魔法值恢复",
             jp: "戦闘占星術才能マナ回復",
-            tw: "戰鬥占星術天賦魔力值恢復",
+            tw: "戰鬥占星術天賦魔法值恢復",
         },
     },
     {
@@ -11068,7 +11073,11 @@ export const conditions: Condition[] = [
     {
         id: 1156,
         name: {
+            us: "Commerce Expansion Cover",
+            cn: "贸易扩展顶盖",
+            jp: "交易拡張カバー",
             kr: "교역 확장 덮개",
+            tw: "貿易擴張罩",
         },
     },
     {
@@ -11086,31 +11095,51 @@ export const conditions: Condition[] = [
     {
         id: 1159,
         name: {
+            us: "Berserker's Fury",
+            cn: "斗士之怒",
+            jp: "ヒューリーオブザバーサーカー",
             kr: "퓨리 오브 더 버서커",
+            tw: "狂怒意志狀態",
         },
     },
     {
         id: 1160,
         name: {
+            us: "Blessed Craftwork: Cairbre's Bugle",
+            cn: "祝福的工艺制品：音乐之神喇叭",
+            jp: "祝福の工芸品: コルプレのラッパ",
             kr: "축복의 공예품: 코르플레의 나팔",
+            tw: "祝福的工藝品: 柯勒斐雷的喇叭",
         },
     },
     {
         id: 1161,
         name: {
+            us: "Live Wire",
+            cn: "灵线织网",
+            jp: "ワイヤーウェブ",
             kr: "와이어 웹",
+            tw: "弦音編織",
         },
     },
     {
         id: 1162,
         name: {
+            us: "Live Wire DoT",
+            cn: "灵线织网持续伤害",
+            jp: "ワイヤーウェブドットダメージ",
             kr: "와이어 웹 도트 대미지",
+            tw: "弦音編織圓點傷害",
         },
     },
     {
         id: 1163,
         name: {
+            us: "Relentless Tempo",
+            cn: "猎踪踏影",
+            jp: "トラッキングステップ",
             kr: "트래킹 스텝",
+            tw: "律動步伐",
         },
     },
     {
@@ -11146,19 +11175,31 @@ export const conditions: Condition[] = [
     {
         id: 1167,
         name: {
+            us: "Melodic Puppeteer Link Effect",
+            cn: "旋律操纵师连接效果",
+            jp: "メロディックパペッティアリンク効果",
             kr: "멜로딕 퍼피티어 링크 효과",
+            tw: "旋律人偶師連結效果",
         },
     },
     {
         id: 1168,
         name: {
+            us: "Movement Speed Increase",
+            cn: "移动速度增加",
+            jp: "移動速度増加",
             kr: "이동 속도 증가",
+            tw: "移動速度增加",
         },
     },
     {
         id: 1169,
         name: {
+            us: "Maintain Build Upon Rebirth",
+            cn: "转生时维持体型",
+            jp: "転生時の体型維持",
             kr: "환생시 체형 유지",
+            tw: "重生時維持體型",
         },
     },
     {
@@ -11188,7 +11229,11 @@ export const conditions: Condition[] = [
     {
         id: 1174,
         name: {
+            us: "Absolute Fury",
+            cn: "极致狂怒",
+            jp: "ヒューリアスアブソルート",
             kr: "퓨리어스 앱솔루트",
+            tw: "絕對狂怒",
         },
     },
     {
@@ -11204,72 +11249,120 @@ export const conditions: Condition[] = [
     {
         id: 1176,
         name: {
+            us: "Dissonance",
+            cn: "不协和音",
+            jp: "不協和音",
             kr: "불협화음",
+            tw: "不協調感",
         },
     },
     {
         id: 1177,
         name: {
+            us: "Pulse of Purification",
+            cn: "净化传播",
+            jp: "浄化の鼓動",
             kr: "정화의 고동",
+            tw: "淨化的鼓動",
         },
     },
     {
         id: 1178,
         name: {
+            us: "Ebbing of Life",
+            cn: "生命逆流",
+            jp: "生命の逆流",
             kr: "생명의 역류",
+            tw: "生命的逆流",
         },
     },
     {
         id: 1179,
         name: {
+            us: "Virtuous Oath",
+            cn: "高贵的誓约",
+            jp: "高潔な誓約",
             kr: "고결한 서약",
+            tw: "高潔誓約",
         },
     },
     {
         id: 1180,
         name: {
+            us: "Dark Erg Enhancement",
+            cn: "强化黑暗尔格",
+            jp: "闇のエルグ強化",
             kr: "어둠의 에르그 강화",
+            tw: "黑暗爾格強化",
         },
     },
     {
         id: 1181,
         name: {
+            us: "Monster Erg Enhancement",
+            cn: "强化怪物尔格",
+            jp: "モンスターエルグ強化",
             kr: "몬스터 에르그 강화",
+            tw: "怪物爾格強化",
         },
     },
     {
         id: 1182,
         name: {
+            us: "Damage Boost",
+            cn: "伤害增加",
+            jp: "ダメージ増加",
             kr: "대미지 증가",
+            tw: "增加傷害",
         },
     },
     {
         id: 1183,
         name: {
+            us: "Erg Shield",
+            cn: "尔格护盾",
+            jp: "エルグ障壁",
             kr: "에르그 방어막",
+            tw: "爾格防禦罩",
         },
     },
     {
         id: 1184,
         name: {
+            us: "Lingering Reflection",
+            cn: "审视的痕迹",
+            jp: "省察の痕跡",
             kr: "성찰의 흔적",
+            tw: "省察的痕跡",
         },
     },
     {
         id: 1185,
         name: {
+            us: "Hamchi Almighty Rock",
+            cn: "咚咚全能锁",
+            jp: "ハムオールマイティロック",
+            kr: "햄 올마이티 락",
             tw: "全能火腿搖滾",
         },
     },
     {
         id: 1186,
         name: {
-            tw: "全能鼠鼠強化確認",
+            us: "Hamchi Almighty Adrenaline",
+            cn: "咚咚肾上腺素",
+            jp: "ハムアドレナリン",
+            kr: "햄 아드레날린",
+            tw: "全能鼠鼠跺腳",
         },
     },
     {
         id: 1187,
         name: {
+            us: "Hamchi Boost Buff",
+            cn: "咚咚强化增益",
+            jp: "ハムブーストバフ",
+            kr: "햄 부스트 버프",
             tw: "全能火腿強化增益",
         },
     },
@@ -11324,13 +11417,30 @@ export const conditions: Condition[] = [
     {
         id: 1197,
         name: {
+            us: "Erg Contamination",
+            cn: "尔格污染",
+            jp: "エルグ汚染",
             kr: "에르그 오염",
+            tw: "爾格污染",
+        },
+    },
+    {
+        id: 1198,
+        name: {
+            kr: "아르카나 각성 스킬 사용 중 무적",
         },
     },
     {
         id: 1199,
         name: {
             kr: "이면을 보는 눈 적대 대상",
+        },
+    },
+    {
+        id: 1200,
+        name: {
+            us: "Auto-Repair (Prestige)",
+            tw: "自動修理 (尊貴)",
         },
     },
     {
@@ -11342,7 +11452,18 @@ export const conditions: Condition[] = [
     {
         id: 1202,
         name: {
+            us: "Hamchi Boost Check",
+            cn: "强化生命",
+            jp: "ブーストライフ",
+            kr: "부스트 라이프",
             tw: "全能火腿強化確認",
+        },
+    },
+    {
+        id: 1203,
+        name: {
+            us: "Auto-Potion (Prestige)",
+            tw: "自動藥水(尊)(",
         },
     },
     {
@@ -11370,6 +11491,66 @@ export const conditions: Condition[] = [
         },
     },
     {
+        id: 1210,
+        name: {
+            kr: "전하 과충전",
+        },
+    },
+    {
+        id: 1211,
+        name: {
+            kr: "전격검",
+        },
+    },
+    {
+        id: 1212,
+        name: {
+            kr: "방전 후유증",
+        },
+    },
+    {
+        id: 1213,
+        name: {
+            kr: "양전하",
+        },
+    },
+    {
+        id: 1214,
+        name: {
+            kr: "음전하",
+        },
+    },
+    {
+        id: 1215,
+        name: {
+            kr: "전하 면역",
+        },
+    },
+    {
+        id: 1216,
+        name: {
+            kr: "수정 감옥",
+        },
+    },
+    {
+        id: 1217,
+        name: {
+            kr: "플라즈마 서지",
+        },
+    },
+    {
+        id: 1218,
+        name: {
+            kr: "플라즈마 필드",
+        },
+    },
+    {
+        id: 1219,
+        name: {
+            kr: "과전류",
+        },
+    },
+    {
         id: 1220,
         name: {
             kr: "케미컬 카니발",
@@ -11388,6 +11569,12 @@ export const conditions: Condition[] = [
         },
     },
     {
+        id: 1223,
+        name: {
+            kr: "난격",
+        },
+    },
+    {
         id: 1224,
         name: {
             kr: "흐름",
@@ -11396,43 +11583,323 @@ export const conditions: Condition[] = [
     {
         id: 1225,
         name: {
-            tw: "火腿增益",
+            us: "Hamchi Spirit",
+            cn: "超燃咚咚",
+            jp: "ハムバーニング",
+            kr: "햄 버닝",
+            tw: "種子燃燒",
+        },
+    },
+    {
+        id: 1226,
+        name: {
+            kr: "소생의 찬가: 제창 대기",
+        },
+    },
+    {
+        id: 1228,
+        name: {
+            kr: "더스크바운드 시리즈",
+        },
+    },
+    {
+        id: 1229,
+        name: {
+            kr: "더스크바운드 : 최대 대미지 증가",
+        },
+    },
+    {
+        id: 1230,
+        name: {
+            kr: "더스크바운드 : 마법 공격력 증가",
+        },
+    },
+    {
+        id: 1231,
+        name: {
+            kr: "더스크바운드 : 모든 속성 연금술 대미지 증가",
+        },
+    },
+    {
+        id: 1232,
+        name: {
+            kr: "더스크바운드 : 크리티컬 대미지 증가",
+        },
+    },
+    {
+        id: 1233,
+        name: {
+            kr: "더스크바운드 : 공격 속도 증가",
+        },
+    },
+    {
+        id: 1234,
+        name: {
+            kr: "더스크바운드 : 공격 딜레이 감소",
+        },
+    },
+    {
+        id: 1235,
+        name: {
+            kr: "더스크바운드 : 마나 소비 감소",
+        },
+    },
+    {
+        id: 1236,
+        name: {
+            kr: "더스크바운드 : 스태미나 소비 감소",
+        },
+    },
+    {
+        id: 1237,
+        name: {
+            kr: "더스크바운드 : 충격 흡수 강화",
+        },
+    },
+    {
+        id: 1238,
+        name: {
+            kr: "더스크바운드 : 피어싱 저항 증가",
+        },
+    },
+    {
+        id: 1239,
+        name: {
+            kr: "더스크바운드 : 스매시 강화",
+        },
+    },
+    {
+        id: 1240,
+        name: {
+            kr: "더스크바운드 : 윈드밀 강화",
+        },
+    },
+    {
+        id: 1241,
+        name: {
+            kr: "더스크바운드 : 다운 어택 강화",
+        },
+    },
+    {
+        id: 1242,
+        name: {
+            kr: "더스크바운드 : 돌진 강화",
+        },
+    },
+    {
+        id: 1243,
+        name: {
+            kr: "더스크바운드 : 힐링 강화",
+        },
+    },
+    {
+        id: 1244,
+        name: {
+            kr: "더스크바운드 : 아이스볼트 강화",
+        },
+    },
+    {
+        id: 1245,
+        name: {
+            kr: "더스크바운드 : 파이어볼트 강화",
+        },
+    },
+    {
+        id: 1246,
+        name: {
+            kr: "더스크바운드 : 라이트닝로드 강화",
+        },
+    },
+    {
+        id: 1247,
+        name: {
+            kr: "더스크바운드 : 마법 속성 마스터리 대미지 증가",
+        },
+    },
+    {
+        id: 1248,
+        name: {
+            kr: "더스크바운드 : 매그넘 샷 강화",
+        },
+    },
+    {
+        id: 1249,
+        name: {
+            kr: "더스크바운드 : 서포트 샷 강화",
+        },
+    },
+    {
+        id: 1250,
+        name: {
+            kr: "더스크바운드 : 유효 사거리 추가",
+        },
+    },
+    {
+        id: 1251,
+        name: {
+            kr: "더스크바운드 : 플레이머 강화",
+        },
+    },
+    {
+        id: 1252,
+        name: {
+            kr: "더스크바운드 : 워터 캐논 강화",
+        },
+    },
+    {
+        id: 1253,
+        name: {
+            kr: "크리티컬 대미지 증가",
+        },
+    },
+    {
+        id: 1254,
+        name: {
+            kr: "스노우스톰",
+        },
+    },
+    {
+        id: 1255,
+        name: {
+            kr: "과열",
+        },
+    },
+    {
+        id: 1256,
+        name: {
+            kr: "검무",
+        },
+    },
+    {
+        id: 1257,
+        name: {
+            kr: "분출",
+        },
+    },
+    {
+        id: 1258,
+        name: {
+            kr: "보너스 대미지 증가",
+        },
+    },
+    {
+        id: 1260,
+        name: {
+            kr: "강화의 연주",
+        },
+    },
+    {
+        id: 1261,
+        name: {
+            kr: "치유의 연주",
+        },
+    },
+    {
+        id: 1262,
+        name: {
+            kr: "저주의 연주",
+        },
+    },
+    {
+        id: 1263,
+        name: {
+            kr: "뒤집힌 가마솥 문양",
+        },
+    },
+    {
+        id: 1264,
+        name: {
+            kr: "바람의 나선 문양",
+        },
+    },
+    {
+        id: 1265,
+        name: {
+            kr: "봄의 십자가 문양",
+        },
+    },
+    {
+        id: 1266,
+        name: {
+            kr: "번개의 바퀴 문양",
+        },
+    },
+    {
+        id: 1267,
+        name: {
+            kr: "폭주 회로",
+        },
+    },
+    {
+        id: 1270,
+        name: {
+            kr: "더스크바운드 : 생명의 장막 부여 시 대미지 감소율 증가",
+        },
+    },
+    {
+        id: 1271,
+        name: {
+            kr: "더스크바운드 : 불협화음 1스택 당 방어/마법방어, 보호/마법보호 감소량 증가",
         },
     },
     {
         id: 2100,
         name: {
+            us: "Seasonal Dish - Bonus Damage Boost",
+            cn: "时令料理 - 增加额外伤害",
+            jp: "旬の料理 - ボーナスダメージ増加",
             kr: "제철 요리 - 보너스 대미지 증가",
+            tw: "當季料理 - 增加額外傷害值",
         },
     },
     {
         id: 2101,
         name: {
+            us: "Seasonal Dish - Decreased Durability Loss",
+            cn: "时令料理 - 耐久度减少完善",
+            jp: "旬の料理 - 耐久度減少緩和",
             kr: "제철 요리 - 내구도 감소 완화",
+            tw: "當季料理 - 減緩耐久度磨損",
         },
     },
     {
         id: 2102,
         name: {
+            us: "Seasonal Dish - Movement Speed Boost",
+            cn: "时令料理 - 移动速度增加",
+            jp: "旬の料理 - 移動速度増加",
             kr: "제철 요리 - 이동 속도 증가",
+            tw: "當季料理 - 增加移動速度",
         },
     },
     {
         id: 2103,
         name: {
+            us: "Seasonal Dish - Combat EXP Boost",
+            cn: "时令料理 - 战斗经验值增加",
+            jp: "旬の料理 - 戦闘経験値増加",
             kr: "제철 요리 - 전투 경험치 증가",
+            tw: "當季料理 - 增加戰鬥經驗值",
         },
     },
     {
         id: 2104,
         name: {
+            us: "Seasonal Dish - Rare Material Gathering Success Rate Boost",
+            cn: "时令料理 - 稀有采集物采集成功率增加",
+            jp: "旬の料理 - 希少採集物採集成功率増加",
             kr: "제철 요리 - 희귀 채집물 채집 성공률 증가",
+            tw: "當季料理 - 增加稀有採集物採集成功率",
         },
     },
     {
         id: 2105,
         name: {
+            us: "Seasonal Dish - Rare Product Crafting Success Rate Boost",
+            cn: "时令料理 - 稀有生产物制作成功率增加",
+            jp: "旬の料理 - 希少生産物製作成功率増加",
             kr: "제철 요리 - 희귀 생산물 제작 성공률 증가",
+            tw: "當季料理 - 增加稀有生產物製造成功率",
         },
     },
     {
@@ -11472,7 +11939,7 @@ export const conditions: Condition[] = [
             cn: "恢复生命力魔法阵",
             jp: "生命力回復のマギグラフィ",
             kr: "생명력 회복의 마기그래프",
-            tw: "生命力恢復瑪奇魔法陣",
+            tw: "生命值恢復瑪奇魔法陣",
         },
     },
     {
@@ -12270,7 +12737,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 2: Threshold Cutter Skill Augment Glyph",
             cn: "第2幕：怒气上涌技能强化魔法阵",
-            jp: "2幕：湧き出る怒りスキル強化マギグラフィ",
+            jp: "2幕 : 湧き出る怒りスキル強化マギグラフィ",
             kr: "2막: 솟구치는 분노 스킬 강화 마기그래프",
             tw: "強化第二幕 : 激增的憤怒瑪奇魔法陣",
         },
@@ -12280,7 +12747,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 1: Inciting Incident Skill Augment Glyph",
             cn: "第1幕：偶然的冲突技能强化魔法阵",
-            jp: "1幕：偶然の衝突スキル強化マギグラフィ",
+            jp: "1幕 : 偶然の衝突スキル強化マギグラフィ",
             kr: "1막: 우연한 충돌 스킬 강화 마기그래프",
             tw: "強化第一幕 : 偶然的衝突瑪奇魔法陣",
         },
@@ -12290,7 +12757,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 4: Rising Action Skill Augment Glyph",
             cn: "第4幕：嫉妒的化身技能强化魔法阵",
-            jp: "4幕：嫉妬の鬼スキル強化マギグラフィ",
+            jp: "4幕 : 嫉妬の鬼スキル強化マギグラフィ",
             kr: "4막: 질투의 화신 스킬 강화 마기그래프",
             tw: "強化第四幕 : 嫉妒的化身瑪奇魔法陣",
         },
@@ -12300,7 +12767,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 6: Crisis Skill Augment Glyph",
             cn: "第6幕：诱惑陷阱技能强化魔法阵",
-            jp: "6幕：誘惑の罠スキル強化マギグラフィ",
+            jp: "6幕 : 誘惑の罠スキル強化マギグラフィ",
             kr: "6막: 유혹의 올가미 스킬 강화 마기그래프",
             tw: "強化第六幕 : 誘惑的圈套瑪奇魔法陣",
         },
@@ -12310,7 +12777,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 7: Climactic Crash Skill Augment Glyph",
             cn: "第7幕：疯狂地疾走技能强化魔法阵",
-            jp: "7幕：狂乱の疾走スキル強化マギグラフィ",
+            jp: "7幕 : 狂乱の疾走スキル強化マギグラフィ",
             kr: "7막: 광란의 질주 스킬 강화 마기그래프",
             tw: "強化第七幕 : 狂亂的奔走瑪奇魔法陣",
         },
@@ -12320,7 +12787,7 @@ export const conditions: Condition[] = [
         name: {
             us: "Act 9: Invigorating Encore Skill Augment Glyph",
             cn: "第9幕：唤醒的生命技能强化魔法阵",
-            jp: "9幕：目覚める命スキル強化マギグラフィ",
+            jp: "9幕 : 目覚める命スキル強化マギグラフィ",
             kr: "9막: 깨어나는 생명 스킬 강화 마기그래프",
             tw: "強化第九幕 : 甦醒的生命瑪奇魔法陣",
         },

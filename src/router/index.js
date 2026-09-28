@@ -28,6 +28,7 @@ import OghamView from '../views/OghamView.vue';
 import OghamSimulatorView from '../views/OghamSimulatorView.vue';
 import GachaSimulatorView from '../views/GachaSimulatorView.vue';
 import ArmorBreakTraining from '../views/ArmorBreakTraining.vue';
+import ProtectionBreakView from '../views/ProtectionBreakView.vue';
 import SponsorView from '../views/SponsorView.vue';
 import Changelog from '../views/Changelog.vue';
 import TradeCalculator from '../views/TradeCalculator.vue';
@@ -35,6 +36,7 @@ import PriceCheck from '../views/PriceCheck.vue';
 import Settings from '../views/Settings.vue';
 import AuthCallback from '../views/AuthCallback.vue';
 import HealCalculator from '../views/HealCalculator.vue';
+import ShieldKnightCalculator from '../views/ShieldKnightCalculator.vue';
 
 const routes = [
     {
@@ -122,6 +124,11 @@ const routes = [
             component: HealCalculator,
         },
         {
+            path: '/shield-knight',
+            name: '聖盾騎士傷害計算器',
+            component: ShieldKnightCalculator,
+        },
+        {
             path: '/reforge',
             name: '細工模擬器',
             component: ReforgeSimulator,
@@ -192,6 +199,11 @@ const routes = [
             component: ArmorBreakTraining,
         },
         {
+            path: '/protection-break',
+            name: '破保數據',
+            component: ProtectionBreakView,
+        },
+        {
             path: '/sponsor',
             name: '贊助',
             component: SponsorView,
@@ -237,6 +249,7 @@ const pageTitles = {
     '聖水模擬器': '聖水模擬器 | 瑪奇小工具',
     '音樂計算機': '音樂計算機 | 瑪奇小工具',
     '治癒計算機': '治癒計算機 | 瑪奇小工具',
+    '聖盾騎士傷害計算器': '聖盾騎士傷害計算器 | 瑪奇小工具',
     '魔法陣查詢': '魔法陣查詢 | 瑪奇小工具',
     '符文': '符文 | 瑪奇小工具',
     '符文模擬器': '符文模擬器 | 瑪奇小工具',

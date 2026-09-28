@@ -68,6 +68,7 @@
                                     </el-button>
                                     <el-button type="warning" plain @click="setAllToToken">全部用換的</el-button>
                                     <el-button type="primary" plain @click="setAllToBuy">全部用買的</el-button>
+                                    <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
                                 </div>
                             </div>
                             <div v-if="!layoutStore.isMobile" class="flex items-center gap-4 flex-wrap mb-4">
@@ -122,14 +123,15 @@
                                                 </template>
                                             </el-table-column>
                                             <el-table-column prop="total" label="數量" align="center" sortable width="64" />
-                                            <el-table-column label="庫存" align="center">
+                                            <el-table-column label="庫存" align="center" min-width="120">
                                                 <template #default="{ row }">
                                                     <el-input-number
                                                         :model-value="materialPriceMap.get(row.id)?.stock ?? 0"
                                                         :min="0"
-                                                        :controls="false"
+                                                        :controls="true"
+                                                        controls-position="right"
                                                         size="small"
-                                                        style="width: 72px"
+                                                        style="width: 100px"
                                                         @update:model-value="
                                                             (v: number) => setMaterialStock(row.id, v)
                                                         "
@@ -220,14 +222,14 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column label="庫存" width="120" align="center">
+                                        <el-table-column label="庫存" width="150" align="center">
                                             <template #default="{ row }">
                                                 <el-input-number
                                                     :model-value="materialPriceMap.get(row.id)?.stock ?? 0"
                                                     :min="0"
-                                                    :controls="false"
+                                                    :controls="true"
                                                     size="small"
-                                                    style="width: 90px"
+                                                    style="width: 130px"
                                                     @update:model-value="(v: number) => setMaterialStock(row.id, v)"
                                                 />
                                             </template>
@@ -522,6 +524,15 @@
                                         <span :class="row.materialCost === 0 ? 'text-gray-500' : ''">
                                             {{ row.materialCost > 0 ? formatLargeNumber(row.materialCost) : "未設定" }}
                                         </span>
+                                        <el-tooltip
+                                            v-if="row.materialCost > 0 && !row.costComplete"
+                                            content="部分材料未設定價格，實際成本可能更高（此中階未採用自製估價）"
+                                            placement="top"
+                                        >
+                                            <el-icon class="ml-1 text-yellow-400 cursor-help align-middle">
+                                                <QuestionFilled />
+                                            </el-icon>
+                                        </el-tooltip>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -1317,37 +1328,49 @@ const filteredSortedData = computed(() => {
     });
 });
 
-// 遞迴取得材料的有效單價（用於估算成本）：
-// 1. 優先用 entry.price（直接市價，不受 token/buy method 影響）
-// 2. 無市價且為加工品 → 遞迴算製作成本
+// 遞迴取得材料的「最便宜且可靠」單價與其製作成本是否完整（用於估算成本）：
+// - 市價(entry.price>0)恆可靠
+// - 製作成本：需其所有子材料都能取得可靠價才算「完整」，否則視為不可靠（避免未設定材料
+//   被當成 0 而低估）
+// - 市價與完整製作成本皆有 → 取 min（能做又較便宜就自製）；只有一個 → 用它；都無 → 0
 // 注意：不使用快取，確保 materialPrices 變動後立即反映
-const getEffectiveCost = (id: number, visited = new Set<number>()): number => {
-    if (visited.has(id)) return 0; // 防止循環依賴
-
-    // 直接取 price（不透過 getUnitCost，避免 token method 讓價格變 0）
+const getCostInfo = (id: number, visited = new Set<number>()): { cost: number; complete: boolean } => {
     const entry = materialPrices.value.find((e) => e.id === id);
     const marketPrice = entry?.price ?? 0;
-    if (marketPrice > 0) return marketPrice;
+    const hasMarket = marketPrice > 0;
 
-    // 無市價 → 嘗試遞迴計算製作成本
-    const mat = materials.find((m) => m.id === id);
-    if (mat?.source?.type === "craft") {
-        const src = mat.source as {
-            type: "craft";
-            materials: { id: number; amount: number }[];
-            yield?: number;
-        };
-        const newVisited = new Set(visited);
-        newVisited.add(id);
-        const craftTotal = src.materials.reduce((sum, sub) => {
-            return sum + getEffectiveCost(sub.id, newVisited) * sub.amount;
-        }, 0);
-        const yieldAmt = src.yield || 1;
-        if (craftTotal > 0) return craftTotal / yieldAmt;
+    // 防環：遇循環時此路不可靠，退回市價（若有）
+    if (visited.has(id)) {
+        return hasMarket ? { cost: marketPrice, complete: true } : { cost: 0, complete: false };
     }
 
-    return 0;
+    // 嘗試遞迴計算製作成本；任一子材料不可靠 → 整條製作成本視為不完整
+    let craftCost = 0;
+    let craftComplete = false;
+    const mat = materials.find((m) => m.id === id);
+    if (mat?.source?.type === "craft") {
+        const src = mat.source as { type: "craft"; materials: { id: number; amount: number }[]; yield?: number };
+        const newVisited = new Set(visited);
+        newVisited.add(id);
+        let sum = 0;
+        let allComplete = true;
+        for (const sub of src.materials) {
+            const info = getCostInfo(sub.id, newVisited);
+            sum += info.cost * sub.amount;
+            if (!info.complete) allComplete = false;
+        }
+        craftCost = sum / (src.yield || 1);
+        craftComplete = allComplete;
+    }
+    const hasCraft = craftComplete && craftCost > 0;
+
+    if (hasMarket && hasCraft) return { cost: Math.min(marketPrice, craftCost), complete: true };
+    if (hasMarket) return { cost: marketPrice, complete: true };
+    if (hasCraft) return { cost: craftCost, complete: true };
+    return { cost: 0, complete: false };
 };
+
+const getEffectiveCost = (id: number): number => getCostInfo(id).cost;
 
 // 加工物估價
 const craftedItemsData = computed(() => {
@@ -1356,9 +1379,13 @@ const craftedItemsData = computed(() => {
         .map((m) => {
             const src = m.source as { type: "craft"; materials: { id: number; amount: number }[] };
             const subMaterials = src.materials ?? [];
-            const materialCost = subMaterials.reduce((sum, mat) => {
-                return sum + getEffectiveCost(mat.id) * mat.amount;
-            }, 0);
+            let materialCost = 0;
+            let costComplete = true; // 所有子材料都取得可靠價才算完整
+            for (const mat of subMaterials) {
+                const info = getCostInfo(mat.id);
+                materialCost += info.cost * mat.amount;
+                if (!info.complete) costComplete = false;
+            }
             const selfEntry = materialPrices.value.find((e) => e.id === m.id);
             const sellPrice = selfEntry?.price ?? 0;
             return {
@@ -1366,6 +1393,7 @@ const craftedItemsData = computed(() => {
                 name: getMaterialName(m.id),
                 subMaterials,
                 materialCost,
+                costComplete,
                 sellPrice,
                 profit: sellPrice - materialCost,
             };
