@@ -167,7 +167,7 @@ export const SHIELD_PRESETS: ShieldPreset[] = [
     { id: "none", label: "無 / 其他", reduction: 0 },
     { id: "fierce_sentry", label: "兇猛哨兵盾牌", reduction: 0.2, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 28 },
     { id: "night_vanguard", label: "暗夜使者前鋒", reduction: 0.3, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 42 },
-    { id: "soul_liberator", label: "靈魂解放者盾牌", reduction: 0.45, hpFlat: 1000, oneHandWeaponExtraDamagePercent: 56 },
+    { id: "soul_liberator", label: "靈魂解放者盾牌", reduction: 0.4, hpFlat: 1000, oneHandWeaponExtraDamagePercent: 56 },
     { id: "pot", label: "鍋子", reduction: 0, maxDamageFlat: 40 },
 ];
 
