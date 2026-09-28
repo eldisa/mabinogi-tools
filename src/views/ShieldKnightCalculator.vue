@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed, watch, onMounted } from "vue";
 import { useAccountSync, mergeByTimestamp } from "../composables/useAccountSync";
+import { useNamedPresetList } from "../composables/useNamedPresets";
 import { InfoFilled } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
 import {
@@ -14,6 +15,7 @@ import {
     getReforgeLevelOptions,
     getReforgeLevelMax,
     BATTLE_CRY_REFORGE_LEVEL_OPTIONS,
+    TRANSFORMATION_REFORGE_LEVEL_OPTIONS,
     CHARACTER_BUILDS,
     getRaceSkillInfo,
     MAGIC_CIRCLE_OPTIONS,
@@ -43,6 +45,9 @@ import {
     type ShieldKnightSettings,
     type HolyWaterSlotKey,
     type HolyWaterAbilityId,
+    type SkillUsageCounts,
+    type ArmorBreakSettings,
+    type DamageEfficiencyItem,
 } from "../data/shieldKnightCalculator";
 import { getSkillIcon } from "../utils/image";
 import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
@@ -54,17 +59,11 @@ const currentBuild = computed(() => CHARACTER_BUILDS.find((b) => b.id === settin
 const currentRaceSkill = computed(() => getRaceSkillInfo(currentBuild.value));
 const currentTransformation = computed(() => TRANSFORMATION_OPTIONS.find((t) => t.id === currentBuild.value.transformationId) ?? TRANSFORMATION_OPTIONS[0]);
 const transformationReforgeLocked = computed(() => currentBuild.value.transformationId === "none");
-// 變身專屬細工：勾選＝未突破（20 級），再勾突破＝27 級（引擎仍以等級計算，舊存檔的等級會對應成勾選狀態）
+// 變身專屬細工：勾選開啟時預設 20 級，取消勾選歸零；等級本身用下拉選單（0~33，高到低）直接選
 const transformationReforgeEnabled = computed({
     get: () => settings.transformationReforgeLevel >= 1,
     set: (v: boolean) => {
-        settings.transformationReforgeLevel = v ? (settings.transformationReforgeLevel >= 27 ? 27 : 20) : 0;
-    },
-});
-const transformationBroken = computed({
-    get: () => settings.transformationReforgeLevel >= 27,
-    set: (v: boolean) => {
-        settings.transformationReforgeLevel = v ? 27 : 20;
+        settings.transformationReforgeLevel = v ? 20 : 0;
     },
 });
 const weaponOptions = computed(() => WEAPON_PRESETS[settings.weaponType]);
@@ -118,6 +117,36 @@ const skills = computed(() => allSkills.value.filter((skill) => settings[SKILL_V
 const totalOutput = computed(() => calculateTotalOutput(settings, settings.skillUsageCounts));
 const hasAnyUsageCount = computed(() => ALL_SKILL_META.some((s) => settings.skillUsageCounts[s.id] > 0));
 const efficiencyItems = computed(() => calculateDamageEfficiency(settings));
+const EFFICIENCY_DETAILS: Record<string, string> = {
+    weaponExtraDamage: "武器額外傷害由武器/盾牌自動帶出，不能手動輸入；這裡是假設它多 1% 時的效益。",
+    extraDamage: "額外傷害＝稱號＋圖騰＋農場模型＋套裝效果，在「暴擊與額外傷害」分頁設定，與武器額外傷害合起來才是「通用額外傷害」。",
+    arcaneExtraDamage: "只套用於 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃這項加成。",
+    sharpLevel: "需在「破防」分頁勾選套用破防結果才會影響傷害，否則效益為 0；保護是查表無條件捨去，同一區間內多一級可能沒有變化。",
+    muliasSacrificeRegen:
+        "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
+    muliasReflectionTrace: "併入最終增加傷害；這裡固定以「反射的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
+    muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
+    manualWindmillBase30: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualChargeEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍目前沒有對應加成（見「裝備」分頁的聚能說明）。",
+    darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍重擊基礎倍率 +150%（見「裝備」分頁的聚能說明）。",
+};
+const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
+    { label: "攻擊力／暴擊", ids: ["maxDamage", "criticalDamage", "criticalRate"] },
+    { label: "額外傷害／增傷倍率", ids: ["weaponExtraDamage", "extraDamage", "arcaneExtraDamage", "talentIncreaseDamage", "finalIncreaseDamage"] },
+    { label: "技能倍率／細工／銳利", ids: ["smashReforge", "windmillReforge", "chargeReforge", "sharpLevel"] },
+    { label: "生存屬性", ids: ["defense", "maxHp"] },
+    { label: "穆利亞斯的遺物", ids: ["muliasSacrificeRegen", "muliasReflectionTrace", "muliasJudgementStrike"] },
+    { label: "套裝效果（裝備分頁的手動套裝標記）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
+    { label: "聚能開關", ids: ["erg", "darkErg"] },
+];
+const efficiencyGroups = computed(() =>
+    EFFICIENCY_CATEGORIES.map((c) => ({
+        label: c.label,
+        items: c.ids.map((id) => efficiencyItems.value.find((i) => i.id === id)).filter((i): i is (typeof efficiencyItems.value)[number] => !!i),
+    })),
+);
 const effectiveSharpLevel = computed(() => getEffectiveSharpLevel(settings));
 const holyWaterComparison = computed(() => calculateHolyWaterComparison(settings));
 const bestHolyWaterId = computed(() => holyWaterComparison.value.reduce((best, x) => (x.deltaOutput > best.deltaOutput ? x : best), holyWaterComparison.value[0])?.id);
@@ -149,6 +178,8 @@ const skillImageId = (skillId: (typeof ALL_SKILL_META)[number]["id"]): number =>
 const RESULT_DETAILS: Record<string, string> = {
     cleanMaxDamage: "乾淨最大傷害 = 面板最大傷害 − 髒髒總和（宗師／變身／寵物／辦桌／活動加成／聖水大傷）。",
     dirtyMaxDamageTotal: "髒髒總和 = 一代宗師 + 變身（含細工等級）+ 寵物加成 + 辦桌 + 活動加成 + 聖水大傷，這些來源在「攻擊力」分頁設定，不吃攻擊係數（藥水/三項注魔）。",
+    constantAttackPower:
+        "常數攻擊力 = 精靈武器攻擊力強化（依武器種類，先從面板扣掉再加回這裡）+ 秘法同步獎勵（聖盾無此加成，恆為 0）+ 盾牌固定加成（如鍋子 +40），跟髒髒總和一樣不吃攻擊係數，但兩者是不同來源、分開加總。",
     finalMaxDamage:
         "最終最大傷害 = (乾淨最大傷害 × 攻擊係數 + 髒髒總和 + 常數攻擊力) × (1+戰場%×係數) × (1+特殊樂譜%×係數) × (1+狀態支援%×係數) × (1+力量團聚%×係數)。",
     maxHp: "最大生命值 = 角色基本數值.最大生命值 + 聖水HP加總（若「我的面板含聖水」未勾選）+ 盾牌固定HP（如靈魂解放者盾牌+1000）+ 高潔誓約加成（若數值基準=原始面板）。",
@@ -164,6 +195,7 @@ const RESULT_DETAILS: Record<string, string> = {
         "暴擊傷害 = 基礎100% + 暴擊技能R1 + 評價滿 + 精靈武器 + 武器特殊改造 + 暴擊傷害套裝 + 圖騰 + 娃娃背包 + 農場模型 + 稱號 + 布里萊赫的硬幣 + 聖水暴擊傷害 + 刺客服裝，這是「暴擊當下」的傷害倍率。",
     criticalDamageExpected:
         "暴擊傷害期望值 = 100 + 暴擊率% × (暴擊傷害% − 100) / 100。把暴擊／不暴擊兩種結果依機率加權平均，才能/秘法技能公式實際套用這個值。",
+    weaponExtraDamagePercent: "武器額外傷害 = 武器本身的額外傷害% + 單手武器搭配盾牌時盾牌提供的額外傷害%（雙手武器不吃盾牌這項），在「裝備」分頁選武器/盾牌自動帶出，不能手動填。",
     generalExtraDamageMultiplier: "通用額外傷害 = (1+武器額外傷害%) × (1+稱號+圖騰+農場模型+套裝效果%)，兩桶相乘。",
     arcaneExtraDamagePercent:
         "秘法額外傷害 = 不完美的空想王冠光環 + 布里萊赫的硬幣 + 穆利亞斯的遺物，加總後併入「(1+通用額外傷害+秘法額外傷害)」，只影響 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃。",
@@ -213,6 +245,33 @@ function persistPresets() {
 // 目前讀取的存檔（用 timestamp 當識別，刪除／排序不會錯位）
 const loadedPresetTimestamp = ref<number | null>(null);
 const loadedPreset = computed(() => presets.value.find((p) => p.timestamp === loadedPresetTimestamp.value) ?? null);
+
+// ═══════════════════════════════════════════════════════
+//  技能次數組合／破防組合（各自可存多組，供「裝備比較」的 3 個 select 任選搭配）
+// ═══════════════════════════════════════════════════════
+const usagePresets = useNamedPresetList<SkillUsageCounts>("shield_knight_calc_usage_presets_v1", "shield_knight_usage_presets");
+const newUsagePresetName = ref("");
+function saveUsagePreset() {
+    usagePresets.saveAsNew(newUsagePresetName.value, settings.skillUsageCounts);
+    newUsagePresetName.value = "";
+}
+
+const armorBreakPresets = useNamedPresetList<ArmorBreakSettings>("shield_knight_calc_armorbreak_presets_v1", "shield_knight_armorbreak_presets");
+const newArmorBreakPresetName = ref("");
+function saveArmorBreakPreset() {
+    armorBreakPresets.saveAsNew(newArmorBreakPresetName.value, settings.armorBreak);
+    newArmorBreakPresetName.value = "";
+}
+
+// 傷害效益快照：存下目前這份「各屬性等同大傷」的結果，供未來「裝備提升幅度」比較功能讀取
+const efficiencySnapshots = useNamedPresetList<DamageEfficiencyItem[]>("shield_knight_calc_efficiency_snapshots_v1", "shield_knight_efficiency_snapshots");
+const newEfficiencySnapshotName = ref("");
+function saveEfficiencySnapshot() {
+    efficiencySnapshots.saveAsNew(newEfficiencySnapshotName.value, efficiencyItems.value);
+    newEfficiencySnapshotName.value = "";
+}
+const viewingSnapshotTimestamp = ref<number | null>(null);
+const viewingSnapshot = computed(() => efficiencySnapshots.presets.value.find((p) => p.timestamp === viewingSnapshotTimestamp.value) ?? null);
 
 function saveAsNewPreset() {
     const name = newPresetName.value.trim() || `配置 ${presets.value.length + 1}`;
@@ -294,10 +353,17 @@ function loadPreset(idx: number) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  裝備比較（最多選 3 組已儲存配置）
+//  裝備比較（最多 3 欄，每欄各自挑「裝備配置／技能次數組合／破防組合」，未選則用目前分頁的活值）
 // ═══════════════════════════════════════════════════════
 const COMPARISON_SLOT_COUNT = 3;
-const comparisonSlots = ref<(number | null)[]>(Array.from({ length: COMPARISON_SLOT_COUNT }, () => null));
+interface ComparisonSlot {
+    equipIdx: number | null;
+    usageIdx: number | null;
+    breakIdx: number | null;
+}
+const comparisonSlots = ref<ComparisonSlot[]>(
+    Array.from({ length: COMPARISON_SLOT_COUNT }, () => ({ equipIdx: null, usageIdx: null, breakIdx: null })),
+);
 
 interface ComparisonResult {
     name: string;
@@ -306,16 +372,18 @@ interface ComparisonResult {
 }
 
 const comparisonResults = computed<(ComparisonResult | null)[]>(() =>
-    comparisonSlots.value.map((idx) => {
-        if (idx === null) return null;
-        const preset = presets.value[idx];
+    comparisonSlots.value.map((slot) => {
+        if (slot.equipIdx === null) return null;
+        const preset = presets.value[slot.equipIdx];
         if (!preset) return null;
-        // 破防條件（來源、所受傷害、暴擊 debuff）一律用目前面板的，只保留各配置自己的銳利等級，才是同一破防條件下的差異
-        const comparedSettings = { ...buildMergedSettings(preset.data), armorBreak: settings.armorBreak };
+        // 技能次數／破防未選擇時，沿用目前分頁上的活值；三者都可獨立換，同一欄可以是任意組合
+        const usageCounts = slot.usageIdx !== null ? (usagePresets.presets.value[slot.usageIdx]?.data ?? settings.skillUsageCounts) : settings.skillUsageCounts;
+        const armorBreak = slot.breakIdx !== null ? (armorBreakPresets.presets.value[slot.breakIdx]?.data ?? settings.armorBreak) : settings.armorBreak;
+        const comparedSettings = { ...buildMergedSettings(preset.data), armorBreak };
         return {
             name: preset.name,
-            skills: calculateSkillsForSettings(comparedSettings, settings.skillUsageCounts["radiant-judgement"] ?? 0),
-            totalOutput: calculateTotalOutput(comparedSettings, settings.skillUsageCounts),
+            skills: calculateSkillsForSettings(comparedSettings, usageCounts["radiant-judgement"] ?? 0),
+            totalOutput: calculateTotalOutput(comparedSettings, usageCounts),
         };
     }),
 );
@@ -698,12 +766,16 @@ onMounted(() => {
                                     v-model="transformationReforgeEnabled"
                                     :disabled="!settings.dirtyMaxDamage.transformationActive || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
                                 />
-                                <span class="switch-label">變身專屬細工（未突破 +{{ currentTransformation.untamedDamage }}）</span>
-                                <el-checkbox
-                                    v-model="transformationBroken"
+                                <span class="switch-label">變身專屬細工</span>
+                                <el-select
+                                    v-model="settings.transformationReforgeLevel"
+                                    size="small"
+                                    class="field-select"
                                     :disabled="!transformationReforgeEnabled || !settings.dirtyMaxDamage.transformationActive || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
-                                />
-                                <span class="switch-label">突破（+{{ currentTransformation.brokenDamage }}）</span>
+                                >
+                                    <el-option v-for="o in TRANSFORMATION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <span class="switch-label">（未突破 +{{ currentTransformation.untamedDamage }}，27~33 突破 +{{ currentTransformation.brokenDamage }}）</span>
                             </div>
 
                             <div class="field-section-label">常數攻擊力</div>
@@ -733,8 +805,17 @@ onMounted(() => {
                                 <span class="switch-label">[力量團聚]（+15%）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">戰場</label>
-                                <el-input-number v-model="settings.attackCoefficient.battlefieldPercent" :min="0" :step="0.01" :precision="2" size="small" class="field-select" />
+                                <el-checkbox v-model="settings.attackCoefficient.battlefieldActive" />
+                                <span class="switch-label">[戰場的序曲]</span>
+                                <el-input-number
+                                    v-model="settings.attackCoefficient.battlefieldPercent"
+                                    :min="0"
+                                    :step="0.01"
+                                    :precision="2"
+                                    size="small"
+                                    class="field-select"
+                                    :disabled="!settings.attackCoefficient.battlefieldActive"
+                                />
                                 <span class="switch-label">%（跟下面的「戰場上的狂吼」是不同的獨立加成）</span>
                             </div>
                             <div class="field-row">
@@ -1026,19 +1107,47 @@ onMounted(() => {
                                 </table>
                             </div>
                             <div class="field-hint">總輸出＝Σ（單次傷害 × 使用次數），供「裝備比較」與「傷害效益」分頁計算使用。</div>
+
+                            <div class="field-section-label">技能次數組合（另存目前次數，供「裝備比較」任選搭配）</div>
+                            <div class="field-row">
+                                <el-input v-model="newUsagePresetName" placeholder="組合名稱（留空自動命名）" size="small" clearable class="field-select" @keyup.enter="saveUsagePreset" />
+                                <el-button size="small" type="primary" @click="saveUsagePreset">另存為新組合</el-button>
+                            </div>
+                            <div v-if="usagePresets.presets.value.length === 0" class="field-hint">尚無儲存組合。</div>
+                            <div v-else class="preset-list">
+                                <div v-for="(p, idx) in usagePresets.presets.value" :key="p.timestamp" class="preset-item">
+                                    <el-input :model-value="p.name" size="small" class="preset-name-input" @change="(v: string) => usagePresets.rename(idx, v)" />
+                                    <el-button size="small" @click="Object.assign(settings.skillUsageCounts, p.data)">套用</el-button>
+                                    <el-button size="small" type="danger" plain @click="usagePresets.remove(idx)">✕</el-button>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
 
                     <!-- 裝備比較 -->
                     <el-tab-pane label="裝備比較" name="compare">
                         <div class="tab-body">
-                            <div class="field-section-label">最多選擇 3 組已儲存配置比較（依「技能使用次數」分頁的次數計算總輸出）</div>
+                            <div class="field-section-label">
+                                最多 3 欄，每欄各自挑「裝備配置／技能次數組合／破防組合」；技能次數／破防未選擇時，沿用「技能使用次數」「破防」分頁目前的活值
+                            </div>
                             <div v-if="presets.length === 0" class="field-hint">尚無儲存配置，請先在「儲存 / 讀取」保存至少一組設定。</div>
                             <template v-else>
-                                <div class="field-row" v-for="(_slot, idx) in comparisonSlots" :key="idx">
+                                <div class="field-row">
+                                    <el-button size="small" plain @click="comparisonSlots.forEach((s) => (s.equipIdx = comparisonSlots[0].equipIdx))">裝備統一</el-button>
+                                    <el-button size="small" plain @click="comparisonSlots.forEach((s) => (s.usageIdx = comparisonSlots[0].usageIdx))">技能次數統一</el-button>
+                                    <el-button size="small" plain @click="comparisonSlots.forEach((s) => (s.breakIdx = comparisonSlots[0].breakIdx))">破防統一</el-button>
+                                </div>
+                                <div class="field-hint">以上按鈕會把配置 1 的選擇套用到其他欄，方便只改單一軸來比較差異。</div>
+                                <div class="field-row" v-for="(slot, idx) in comparisonSlots" :key="idx">
                                     <label class="field-label">配置 {{ idx + 1 }}</label>
-                                    <el-select v-model="comparisonSlots[idx]" size="small" class="field-select" clearable placeholder="未選擇">
+                                    <el-select v-model="slot.equipIdx" size="small" class="field-select" clearable placeholder="裝備：未選擇">
                                         <el-option v-for="(p, pIdx) in presets" :key="pIdx" :value="pIdx" :label="p.name" />
+                                    </el-select>
+                                    <el-select v-model="slot.usageIdx" size="small" class="field-select" clearable placeholder="技能次數：目前活值">
+                                        <el-option v-for="(p, pIdx) in usagePresets.presets.value" :key="pIdx" :value="pIdx" :label="p.name" />
+                                    </el-select>
+                                    <el-select v-model="slot.breakIdx" size="small" class="field-select" clearable placeholder="破防：目前活值">
+                                        <el-option v-for="(p, pIdx) in armorBreakPresets.presets.value" :key="pIdx" :value="pIdx" :label="p.name" />
                                     </el-select>
                                 </div>
 
@@ -1088,7 +1197,60 @@ onMounted(() => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="item in efficiencyItems" :key="item.id">
+                                        <template v-for="group in efficiencyGroups" :key="group.label">
+                                            <tr v-if="group.items.length" class="efficiency-group-row">
+                                                <td colspan="3">{{ group.label }}</td>
+                                            </tr>
+                                            <tr v-for="item in group.items" :key="item.id">
+                                                <td class="equip-slot-label">
+                                                    {{ item.label }}
+                                                    <el-popover v-if="EFFICIENCY_DETAILS[item.id]" trigger="click" :width="280" popper-class="detail-popover">
+                                                        <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                                        {{ EFFICIENCY_DETAILS[item.id] }}
+                                                    </el-popover>
+                                                </td>
+                                                <td>{{ item.unit }}</td>
+                                                <td>{{ item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="field-section-label">儲存傷害效益（存下目前這份結果，未來「計算裝備提升幅度」會讀取這裡的快照來比較）</div>
+                            <div class="field-row">
+                                <el-input
+                                    v-model="newEfficiencySnapshotName"
+                                    placeholder="快照名稱（留空自動命名）"
+                                    size="small"
+                                    clearable
+                                    class="field-select"
+                                    @keyup.enter="saveEfficiencySnapshot"
+                                />
+                                <el-button size="small" type="primary" :disabled="!hasAnyUsageCount" @click="saveEfficiencySnapshot">另存為新快照</el-button>
+                            </div>
+                            <div v-if="efficiencySnapshots.presets.value.length === 0" class="field-hint">尚無儲存快照。</div>
+                            <div v-else class="preset-list">
+                                <div v-for="(p, idx) in efficiencySnapshots.presets.value" :key="p.timestamp" class="preset-item">
+                                    <el-input :model-value="p.name" size="small" class="preset-name-input" @change="(v: string) => efficiencySnapshots.rename(idx, v)" />
+                                    <span class="preset-date">{{ fmtDate(p.timestamp) }}</span>
+                                    <el-button size="small" plain @click="viewingSnapshotTimestamp = viewingSnapshotTimestamp === p.timestamp ? null : p.timestamp">
+                                        {{ viewingSnapshotTimestamp === p.timestamp ? "收合" : "檢視" }}
+                                    </el-button>
+                                    <el-button size="small" type="danger" plain @click="efficiencySnapshots.remove(idx)">✕</el-button>
+                                </div>
+                            </div>
+                            <div class="equip-table-wrap" v-if="viewingSnapshot">
+                                <table class="equip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>屬性</th>
+                                            <th>單位</th>
+                                            <th>等同大傷</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in viewingSnapshot.data" :key="item.id">
                                             <td class="equip-slot-label">{{ item.label }}</td>
                                             <td>{{ item.unit }}</td>
                                             <td>{{ item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
@@ -1138,6 +1300,20 @@ onMounted(() => {
                             <div class="field-hint">
                                 聖盾騎士傷害全為物理。所受傷害增加（死神烙印、倒吊人、洞察之眼、幸運草等）與近戰技能傷害（憤怒衝擊，需開啟「技能設定」的「近距離額外傷害中」）都由這裡提供，最終增加傷害不再另外設定；追加傷害尚未實作，也未接入。
                             </div>
+
+                            <div class="field-section-label">破防組合（另存目前破防結果，供「裝備比較」任選搭配，例如「日常」／「爆發」）</div>
+                            <div class="field-row">
+                                <el-input v-model="newArmorBreakPresetName" placeholder="組合名稱（留空自動命名）" size="small" clearable class="field-select" @keyup.enter="saveArmorBreakPreset" />
+                                <el-button size="small" type="primary" @click="saveArmorBreakPreset">另存為新組合</el-button>
+                            </div>
+                            <div v-if="armorBreakPresets.presets.value.length === 0" class="field-hint">尚無儲存組合。</div>
+                            <div v-else class="preset-list">
+                                <div v-for="(p, idx) in armorBreakPresets.presets.value" :key="p.timestamp" class="preset-item">
+                                    <el-input :model-value="p.name" size="small" class="preset-name-input" @change="(v: string) => armorBreakPresets.rename(idx, v)" />
+                                    <el-button size="small" @click="onArmorBreakResult(p.data)">套用</el-button>
+                                    <el-button size="small" type="danger" plain @click="armorBreakPresets.remove(idx)">✕</el-button>
+                                </div>
+                            </div>
                         </div>
                         <div class="pb-embed">
                             <ProtectionBreakPanel single :pierce="effectiveSharpLevel" @result="onArmorBreakResult" />
@@ -1180,6 +1356,16 @@ onMounted(() => {
                             </el-popover>
                         </span>
                         <span class="result-value sub">{{ fmtInt(calcResult.dirtyMaxDamageTotal) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            常數攻擊力
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.constantAttackPower }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value sub">{{ fmtInt(calcResult.constantAttackPower) }}</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">
@@ -1301,6 +1487,16 @@ onMounted(() => {
                             </el-popover>
                         </span>
                         <span class="result-value sub">{{ fmtRatio(calcResult.criticalDamageExpected) }}%</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            武器額外傷害
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.weaponExtraDamagePercent }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value sub">+{{ fmtRatio(calcResult.weaponExtraDamagePercent) }}%</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">
@@ -1678,6 +1874,13 @@ onMounted(() => {
 .equip-slot-label {
     color: var(--color-text-secondary, #d1d5db);
     font-weight: 600;
+}
+.efficiency-group-row td {
+    padding-top: 0.7rem;
+    color: var(--color-accent-hover, #fcd34d);
+    font-weight: 600;
+    font-size: 0.78rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
 }
 /* 嵌入的破防面板：套用本頁的卡片／標題／表格樣式（面板本身維持獨立頁面的樣式） */
 .pb-embed :deep(.pb-panel) {

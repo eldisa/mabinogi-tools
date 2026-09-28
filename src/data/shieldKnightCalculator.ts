@@ -554,6 +554,8 @@ export interface CalculationResult {
     cleanMaxDamage: number;
     /** 髒髒最大傷害總和 */
     dirtyMaxDamageTotal: number;
+    /** 常數攻擊力（精靈武器攻擊力強化/秘法同步/盾牌固定加成，不吃攻擊係數，直接加在最終最大傷害公式裡） */
+    constantAttackPower: number;
     /** 暴擊傷害%（暴擊當下的傷害倍率，基礎100%起跳的加總） */
     criticalDamagePercent: number;
     /** 暴擊率%（基準值+道具加成） */
@@ -562,6 +564,8 @@ export interface CalculationResult {
     criticalDamageExpected: number;
     /** 通用額外傷害倍率＝(1+武器額外傷害)×(1+額外傷害) */
     generalExtraDamageMultiplier: number;
+    /** 武器額外傷害%（武器本身 + 單手武器搭配盾牌的額外傷害），併入通用額外傷害的其中一桶 */
+    weaponExtraDamagePercent: number;
     /** 才能增加傷害倍率（種族技能×猛擊，乘算） */
     talentIncreaseDamageMultiplier: number;
     /** 最終增加傷害倍率（戰鬥服務/達可達/死神烙印/憤怒衝擊/命運編織/洞察之眼/幸運草，乘算） */
@@ -773,6 +777,8 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         abilities,
         cleanMaxDamage,
         dirtyMaxDamageTotal: dirty.total,
+        constantAttackPower,
+        weaponExtraDamagePercent,
         criticalDamagePercent,
         criticalRatePercent,
         criticalDamageExpected,
@@ -1143,7 +1149,7 @@ function applyRadiantJudgementDistribution(result: SkillDamageResult, usageCount
     const subtotal = result.stages[0].finalDamage * c1 + result.stages[1].finalDamage * c2 + result.stages[2].finalDamage * c3;
     return {
         ...result,
-        name: `光輝斷罪（依使用次數 ${usageCount} 次分配 1/2/3 階段：${c1}/${c2}/${c3}）`,
+        name: `光輝斷罪（1/2/3 階段：${c1}/${c2}/${c3}）`,
         finalDamage: Math.round(subtotal / usageCount),
     };
 }
@@ -1413,7 +1419,11 @@ export interface DamageEfficiencyItem {
         | "muliasSacrificeRegen"
         | "muliasReflectionTrace"
         | "muliasJudgementStrike"
-        | "sharpLevel";
+        | "sharpLevel"
+        | "weaponExtraDamage"
+        | "manualWindmillBase30"
+        | "manualChargeEnhance"
+        | "manualSmashEnhance";
     label: string;
     unit: string;
     /** 1 單位等同多少大傷；目前總輸出為 0（尚未設定技能使用次數）時為 null，無法換算 */
@@ -1489,18 +1499,29 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const probes: { id: DamageEfficiencyItem["id"]; label: string; unit: string; bump: DamageLevers }[] = [
         { id: "maxDamage", label: "面板最大傷害／常數攻擊力", unit: "1 點大傷", bump: { ...baseLevers, maxDamage: baseLevers.maxDamage + 1 } },
         { id: "criticalDamage", label: "暴擊傷害", unit: "1%", bump: { ...baseLevers, criticalDamagePercent: baseLevers.criticalDamagePercent + 1 } },
-        { id: "criticalRate", label: "暴擊率", unit: "1%", bump: { ...baseLevers, criticalRatePercent: baseLevers.criticalRatePercent + 1 } },
+        { id: "criticalRate", label: "暴擊率上限", unit: "1%", bump: { ...baseLevers, criticalRatePercent: baseLevers.criticalRatePercent + 1 } },
         {
-            id: "arcaneExtraDamage",
-            label: "秘法額外傷害（僅套用於 7 個秘法技能，重擊/風車/突擊/猛擊不吃）",
+            id: "weaponExtraDamage",
+            label: "武器額外傷害",
             unit: "1%",
-            bump: { ...baseLevers, arcaneExtraDamagePercent: baseLevers.arcaneExtraDamagePercent + 1 },
+            bump: {
+                ...baseLevers,
+                generalExtraDamageMultiplier:
+                    (baseLevers.generalExtraDamageMultiplier * (1 + (calcResult.weaponExtraDamagePercent + 1) / 100)) /
+                    (1 + calcResult.weaponExtraDamagePercent / 100),
+            },
         },
         {
             id: "extraDamage",
-            label: "額外傷害（額外傷害桶內加總）",
+            label: "額外傷害",
             unit: "1%",
             bump: { ...baseLevers, generalExtraDamageMultiplier: baseLevers.generalExtraDamageMultiplier + 0.01 },
+        },
+        {
+            id: "arcaneExtraDamage",
+            label: "秘法額外傷害",
+            unit: "1%",
+            bump: { ...baseLevers, arcaneExtraDamagePercent: baseLevers.arcaneExtraDamagePercent + 1 },
         },
         {
             id: "talentIncreaseDamage",
@@ -1553,9 +1574,16 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     });
 
     // ── 聚能／黑暗聚能：整個開關的價值（開啟 vs 關閉，跟目前實際是否勾選無關，方便評估要不要點聚能） ──
-    const togglePairs: { id: "erg" | "darkErg"; label: string; key: "ergActive" | "darkErgActive" }[] = [
+    const togglePairs: {
+        id: "erg" | "darkErg" | "manualWindmillBase30" | "manualChargeEnhance" | "manualSmashEnhance";
+        label: string;
+        key: "ergActive" | "darkErgActive" | "manualWindmillBase30Active" | "manualChargeEnhanceActive" | "manualSmashEnhanceActive";
+    }[] = [
         { id: "erg", label: "聚能已滿", key: "ergActive" },
         { id: "darkErg", label: "黑暗聚能已滿", key: "darkErgActive" },
+        { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", key: "manualWindmillBase30Active" },
+        { id: "manualChargeEnhance", label: "手動套裝：突擊最終倍率 ×1.15", key: "manualChargeEnhanceActive" },
+        { id: "manualSmashEnhance", label: "手動套裝：重擊最終倍率 ×1.15", key: "manualSmashEnhanceActive" },
     ];
     const toggleResults = togglePairs.map((p) => {
         const onTotal = calculateTotalOutput({ ...settings, [p.key]: true }, settings.skillUsageCounts);
@@ -1580,17 +1608,17 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const muliasProbes: { id: DamageEfficiencyItem["id"]; label: string; muliasRelic: MuliasRelicSettings }[] = [
         {
             id: "muliasSacrificeRegen",
-            label: "穆利亞斯的遺物：誓約每秒犧牲恢復（不影響傷害輸出，僅供參考）",
+            label: "誓約每秒犧牲恢復",
             muliasRelic: { ...settings.muliasRelic, sacrificeRegenLevel: settings.muliasRelic.sacrificeRegenLevel + 1 },
         },
         {
             id: "muliasReflectionTrace",
-            label: "穆利亞斯的遺物：反射的痕跡（併入最終增加傷害，以全程觸發中計算）",
+            label: "反射的痕跡",
             muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true, reflectionTraceLevel: settings.muliasRelic.reflectionTraceLevel + 1 },
         },
         {
             id: "muliasJudgementStrike",
-            label: "穆利亞斯的遺物：審判重擊基礎傷害（僅套用於審判重擊）",
+            label: "審判重擊基礎傷害",
             muliasRelic: { ...settings.muliasRelic, judgementStrikeLevel: settings.muliasRelic.judgementStrikeLevel + 1 },
         },
     ];
@@ -1611,7 +1639,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const sharpDelta = (sharpTotal - baseTotal) * (sharpUp ? 1 : -1) + 0; // + 0 避免顯示 -0
     const sharpResult = {
         id: "sharpLevel" as const,
-        label: settings.armorBreak.enabled ? "銳利等級" : "銳利等級（需在「破防」分頁勾選套用破防結果才有效果）",
+        label: "銳利等級",
         unit: "1 級",
         equivalentMaxDamage: maxDamageDelta !== 0 ? sharpDelta / maxDamageDelta : null,
     };
@@ -1745,6 +1773,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
             tripleEnchantActive: false,
             statusSupportActive: false,
             strengthGatherActive: false,
+            battlefieldActive: false,
             battlefieldPercent: 0,
             battleCryActive: false,
             battleCryReforgeLevel: 0,

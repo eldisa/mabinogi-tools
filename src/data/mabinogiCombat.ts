@@ -156,6 +156,8 @@ export interface AttackCoefficientState {
     statusSupportActive: boolean;
     /** [力量團聚] +15% */
     strengthGatherActive: boolean;
+    /** [戰場的序曲] 是否發動 */
+    battlefieldActive: boolean;
     /** 戰場加成%，直接輸入數值（到小數點後兩位），跟「戰場上的狂吼」（特殊樂譜效果）是不同的獨立加成 */
     battlefieldPercent: number;
     /** 特殊樂譜效果：戰場上的狂吼 */
@@ -193,7 +195,7 @@ export function calculateFinalMaxDamage(
 ): number {
     const coefficient = calculateAttackCoefficient(coefficientState);
     const base = cleanMaxDamage * coefficient + dirtyTotal + constantAttackPower;
-    const battlefieldMultiplier = 1 + (coefficientState.battlefieldPercent / 100) * coefficient;
+    const battlefieldMultiplier = 1 + ((coefficientState.battlefieldActive ? coefficientState.battlefieldPercent : 0) / 100) * coefficient;
     const battleCryMultiplier = 1 + (calculateBattleCryPercent(coefficientState) / 100) * coefficient;
     const statusSupportMultiplier = 1 + ((coefficientState.statusSupportActive ? 12 : 0) / 100) * coefficient;
     const strengthGatherMultiplier = 1 + ((coefficientState.strengthGatherActive ? 15 : 0) / 100) * coefficient;
