@@ -222,14 +222,14 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column label="庫存" width="150" align="center">
+                                        <el-table-column label="庫存" width="160" align="center">
                                             <template #default="{ row }">
                                                 <el-input-number
                                                     :model-value="materialPriceMap.get(row.id)?.stock ?? 0"
                                                     :min="0"
                                                     :controls="true"
                                                     size="small"
-                                                    style="width: 130px"
+                                                    style="width: 120px"
                                                     @update:model-value="(v: number) => setMaterialStock(row.id, v)"
                                                 />
                                             </template>
