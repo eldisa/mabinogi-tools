@@ -214,7 +214,8 @@ const RESULT_DETAILS: Record<string, string> = {
     criticalDamageExpected:
         "暴擊傷害期望值 = 100 + 暴擊率% × (暴擊傷害% − 100) / 100。把暴擊／不暴擊兩種結果依機率加權平均，才能/秘法技能公式實際套用這個值。",
     weaponExtraDamagePercent: "武器額外傷害 = 武器本身的額外傷害% + 單手武器搭配盾牌時盾牌提供的額外傷害%（雙手武器不吃盾牌這項），在「裝備」分頁選武器/盾牌自動帶出，不能手動填。",
-    generalExtraDamageMultiplier: "通用額外傷害 = (1+武器額外傷害%) × (1+稱號+圖騰+農場模型+套裝效果%)，兩桶相乘。",
+    generalExtraDamageMultiplier:
+        "通用額外傷害 = (1+武器額外傷害%) × (1+稱號+圖騰+農場模型+套裝效果%) × (1+暴擊時通用額外傷害%×暴擊率)，破防的暴擊時通用額外傷害（如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似。",
     arcaneExtraDamagePercent:
         "秘法額外傷害 = 不完美的空想王冠光環 + 布里萊赫的硬幣 + 穆利亞斯的遺物，加總後併入「(1+通用額外傷害+秘法額外傷害)」，只影響 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃。",
     protectionReduction: "保護減算 = 1 − 破後物理減傷率（怪物保護先扣破防%、再扣固定值、最後扣銳利，無條件捨去後查減傷表；銳利等級在「裝備」分頁填寫；「破防」分頁勾選套用時才生效，否則 ×1），乘進才能／秘法技能的目標傷害。",
@@ -1346,7 +1347,7 @@ onMounted(() => {
                                 <el-checkbox v-model="settings.armorBreak.enabled" />
                                 <span class="switch-label">
                                     套用破防結果到傷害計算（物理側：保護減算 ×{{ calcResult.protectionReduction.toFixed(2) }}、所受傷害
-                                    +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊傷害 +{{ fmtRatio(settings.armorBreak.critDamagePercent) }}%、近戰技能傷害 +{{ fmtRatio(settings.armorBreak.meleePercent) }}%）
+                                    +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊時通用額外傷害 +{{ fmtRatio(settings.armorBreak.critDamagePercent) }}%（非暴擊不套用，銳利目光等）、近戰技能傷害 +{{ fmtRatio(settings.armorBreak.meleePercent) }}%）
                                 </span>
                             </div>
                             <div class="field-hint">

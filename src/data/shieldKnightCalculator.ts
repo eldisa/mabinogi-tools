@@ -478,7 +478,11 @@ export interface ArmorBreakSettings {
     damageTakenPercent: number;
     /** 近戰技能傷害 +%（憤怒衝擊），「近距離額外傷害中」開啟時乘進最終增加傷害 */
     meleePercent: number;
-    /** 暴擊傷害 debuff %，加到暴擊傷害 */
+    /**
+     * 暴擊時才生效的通用額外傷害 +%（例如犬靈的銳利目光，語意是「暴擊時增加通用額外傷害」，不是暴擊傷害）。
+     * 欄位名維持 critDamagePercent 不改（破防面板那邊沿用舊名），但意義已經不是暴擊傷害；
+     * 非暴擊不套用，這裡用暴擊率換算成期望值近似，乘進通用額外傷害倍率。
+     */
     critDamagePercent: number;
 }
 
@@ -651,22 +655,24 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         : 1;
 
     // ── 暴擊傷害% ──
-    const criticalDamagePercent =
-        calculateCriticalDamagePercent({
-            ...settings.criticalDamage,
-            classBonusPercent: 0,
-            holyWaterPercent: sumHolyWater(settings.holyWater, "criticalDamage"),
-        }) + (armorBreak?.critDamagePercent ?? 0);
+    const criticalDamagePercent = calculateCriticalDamagePercent({
+        ...settings.criticalDamage,
+        classBonusPercent: 0,
+        holyWaterPercent: sumHolyWater(settings.holyWater, "criticalDamage"),
+    });
     const criticalRatePercent = calculateCriticalRatePercent(settings.criticalRate);
     const criticalDamageExpected = calculateCriticalDamageExpected(criticalDamagePercent, criticalRatePercent);
 
     // ── 額外傷害（通用額外傷害倍率） ──
     const isOneHandWeapon = settings.weaponType === "one_hand_axe";
     const weaponExtraDamagePercent = weapon.extraDamagePercent + (isOneHandWeapon ? (shield.oneHandWeaponExtraDamagePercent ?? 0) : 0);
-    const generalExtraDamageMultiplier = calculateGeneralExtraDamageMultiplier({
-        ...settings.extraDamage,
-        weaponExtraDamagePercent,
-    });
+    // 破防的「暴擊時通用額外傷害」（例如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似，跟全引擎的期望值作法一致
+    const critOnlyGeneralExtraPercent = ((armorBreak?.critDamagePercent ?? 0) * criticalRatePercent) / 100;
+    const generalExtraDamageMultiplier =
+        calculateGeneralExtraDamageMultiplier({
+            ...settings.extraDamage,
+            weaponExtraDamagePercent,
+        }) * (1 + critOnlyGeneralExtraPercent / 100);
 
     // ── 才能增加傷害（種族技能 × 猛擊，乘算） ──
     // 種族特殊技能是主動開啟的技能，不是被動固定套用，所以要 raceSkillActive 開啟才算
