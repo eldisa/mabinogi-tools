@@ -68,6 +68,7 @@
                                     </el-button>
                                     <el-button type="warning" plain @click="setAllToToken">全部用換的</el-button>
                                     <el-button type="primary" plain @click="setAllToBuy">全部用買的</el-button>
+                                    <el-button type="primary" @click="saveMaterialPrices">儲存</el-button>
                                 </div>
                             </div>
                             <div v-if="!layoutStore.isMobile" class="flex items-center gap-4 flex-wrap mb-4">
@@ -122,14 +123,15 @@
                                                 </template>
                                             </el-table-column>
                                             <el-table-column prop="total" label="數量" align="center" sortable width="64" />
-                                            <el-table-column label="庫存" align="center">
+                                            <el-table-column label="庫存" align="center" min-width="120">
                                                 <template #default="{ row }">
                                                     <el-input-number
                                                         :model-value="materialPriceMap.get(row.id)?.stock ?? 0"
                                                         :min="0"
-                                                        :controls="false"
+                                                        :controls="true"
+                                                        controls-position="right"
                                                         size="small"
-                                                        style="width: 72px"
+                                                        style="width: 100px"
                                                         @update:model-value="
                                                             (v: number) => setMaterialStock(row.id, v)
                                                         "
@@ -220,14 +222,14 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column label="庫存" width="120" align="center">
+                                        <el-table-column label="庫存" width="150" align="center">
                                             <template #default="{ row }">
                                                 <el-input-number
                                                     :model-value="materialPriceMap.get(row.id)?.stock ?? 0"
                                                     :min="0"
-                                                    :controls="false"
+                                                    :controls="true"
                                                     size="small"
-                                                    style="width: 90px"
+                                                    style="width: 130px"
                                                     @update:model-value="(v: number) => setMaterialStock(row.id, v)"
                                                 />
                                             </template>
@@ -522,6 +524,15 @@
                                         <span :class="row.materialCost === 0 ? 'text-gray-500' : ''">
                                             {{ row.materialCost > 0 ? formatLargeNumber(row.materialCost) : "未設定" }}
                                         </span>
+                                        <el-tooltip
+                                            v-if="row.materialCost > 0 && !row.costComplete"
+                                            content="部分材料未設定價格，實際成本可能更高（此中階未採用自製估價）"
+                                            placement="top"
+                                        >
+                                            <el-icon class="ml-1 text-yellow-400 cursor-help align-middle">
+                                                <QuestionFilled />
+                                            </el-icon>
+                                        </el-tooltip>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -1368,9 +1379,13 @@ const craftedItemsData = computed(() => {
         .map((m) => {
             const src = m.source as { type: "craft"; materials: { id: number; amount: number }[] };
             const subMaterials = src.materials ?? [];
-            const materialCost = subMaterials.reduce((sum, mat) => {
-                return sum + getEffectiveCost(mat.id) * mat.amount;
-            }, 0);
+            let materialCost = 0;
+            let costComplete = true; // 所有子材料都取得可靠價才算完整
+            for (const mat of subMaterials) {
+                const info = getCostInfo(mat.id);
+                materialCost += info.cost * mat.amount;
+                if (!info.complete) costComplete = false;
+            }
             const selfEntry = materialPrices.value.find((e) => e.id === m.id);
             const sellPrice = selfEntry?.price ?? 0;
             return {
@@ -1378,6 +1393,7 @@ const craftedItemsData = computed(() => {
                 name: getMaterialName(m.id),
                 subMaterials,
                 materialCost,
+                costComplete,
                 sellPrice,
                 profit: sellPrice - materialCost,
             };
