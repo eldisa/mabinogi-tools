@@ -1328,11 +1328,16 @@ const filteredSortedData = computed(() => {
     });
 });
 
-// 遞迴取得材料的「最便宜且可靠」單價與其製作成本是否完整（用於估算成本）：
+// 遞迴取得材料的「最便宜」單價與其製作成本是否完整（用於估算成本）：
 // - 市價(entry.price>0)恆可靠
-// - 製作成本：需其所有子材料都能取得可靠價才算「完整」，否則視為不可靠（避免未設定材料
-//   被當成 0 而低估）
-// - 市價與完整製作成本皆有 → 取 min（能做又較便宜就自製）；只有一個 → 用它；都無 → 0
+// - 製作成本：其所有子材料都能取得可靠價才算「完整」（complete）；未設定材料當 0，故不完整時
+//   為部分估算、偏低
+// 取價規則：
+//   1. 有市價 + 完整製作成本 → 取 min（能做又較便宜就自製）
+//   2. 有市價但製作成本不完整 → 用市價（避免用被低估的部分製作成本做 min）
+//   3. 無市價但有製作成本 → 用製作成本（不完整也採用，並回報 complete=false 供標記；
+//      否則父項會漏算此子材料而低於子項，造成估價矛盾）
+//   4. 都沒有 → 0
 // 注意：不使用快取，確保 materialPrices 變動後立即反映
 const getCostInfo = (id: number, visited = new Set<number>()): { cost: number; complete: boolean } => {
     const entry = materialPrices.value.find((e) => e.id === id);
@@ -1362,11 +1367,11 @@ const getCostInfo = (id: number, visited = new Set<number>()): { cost: number; c
         craftCost = sum / (src.yield || 1);
         craftComplete = allComplete;
     }
-    const hasCraft = craftComplete && craftCost > 0;
+    const canCraft = craftCost > 0; // 有製作成本（可能不完整）
 
-    if (hasMarket && hasCraft) return { cost: Math.min(marketPrice, craftCost), complete: true };
+    if (hasMarket && craftComplete && canCraft) return { cost: Math.min(marketPrice, craftCost), complete: true };
     if (hasMarket) return { cost: marketPrice, complete: true };
-    if (hasCraft) return { cost: craftCost, complete: true };
+    if (canCraft) return { cost: craftCost, complete: craftComplete };
     return { cost: 0, complete: false };
 };
 
