@@ -110,7 +110,7 @@ export type SetEffectTag =
 export const SET_EFFECT_TAG_LABELS: Record<SetEffectTag, string> = {
     windmill_enhance2: "風車套裝 +15%（武器/盾牌）",
     windmill_enhance2_10: "風車套裝 +10%（兇猛系列）",
-    windmill_enhance: "風車套裝 +30%（莊嚴騎士，最終乘算）",
+    windmill_enhance: "風車基礎倍率 +30%（莊嚴騎士）",
     charge_enhance: "突擊最終倍率 ×1.15",
     smash_enhance: "重擊套裝 +15%",
     bash_enhance: "猛擊套裝 +10%",
@@ -805,23 +805,25 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const tagPercent = (tag: keyof typeof SET_EFFECT_VALUE_PERCENT) => (tags.has(tag) ? SET_EFFECT_VALUE_PERCENT[tag] : 0);
     const isTwoHand = settings.weaponType === "two_hand_sword";
 
-    // 重擊 = (基礎+魔法陣+細工) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)
+    // 重擊 = (基礎+魔法陣+細工+單手武器聚能) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)
+    // 單手武器聚能（S50）+60%；正副手都拿單手武器才會 60+60=120%，聖盾副手是盾牌，所以只有 60%
     const smashBase =
         BASE_SKILL_RATIOS.smash +
         sumReforgeLevels(settings.reforge, "smash") * REFORGE_PER_LEVEL.smash +
         (hasMagicCircle("smash_damage") ? 100 : 0) +
-        (isTwoHand && settings.darkErgActive ? 150 : 0);
+        (!isTwoHand && settings.ergActive ? 60 : 0);
     const smashMultiplier = (isTwoHand ? 1.2 : 1) * (1 + (weapon.smashFinalIncreasePercent ?? 0) / 100);
     const smashAdditive = ((weapon.smashDamageIncreasePercent ?? 0) + tagPercent("smash_enhance")) / 100;
 
-    // 風車 = (500%+細工+聚能) × (1+風車套裝_10) × (1+風車套裝_15) × (1+風車套裝_30) × (1+連續技卡片)
+    // 風車 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝_10) × (1+風車套裝_15) × (1+連續技卡片)
+    // 單手斧聚能（S50）+100%，黑暗聚能（50）+100%
     const windmillBase =
         BASE_SKILL_RATIOS.windmill +
         sumReforgeLevels(settings.reforge, "windmill") * REFORGE_PER_LEVEL.windmill +
+        tagPercent("windmill_enhance") +
         (!isTwoHand && settings.ergActive ? 100 : 0) +
         (!isTwoHand && settings.darkErgActive ? 100 : 0);
-    const windmillMultiplier =
-        (1 + tagPercent("windmill_enhance2_10") / 100) * (1 + tagPercent("windmill_enhance2") / 100) * (1 + tagPercent("windmill_enhance") / 100);
+    const windmillMultiplier = (1 + tagPercent("windmill_enhance2_10") / 100) * (1 + tagPercent("windmill_enhance2") / 100);
 
     // 突擊維持原本算法
     const chargeBase =
@@ -1760,7 +1762,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     }[] = [
         { id: "erg", label: "聚能已滿", key: "ergActive" },
         { id: "darkErg", label: "黑暗聚能已滿", key: "darkErgActive" },
-        { id: "manualWindmillBase30", label: "手動套裝：風車套裝 +30%", key: "manualWindmillBase30Active" },
+        { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", key: "manualWindmillBase30Active" },
         { id: "manualChargeEnhance", label: "手動套裝：突擊最終倍率 ×1.15", key: "manualChargeEnhanceActive" },
         { id: "manualSmashEnhance", label: "手動套裝：重擊套裝 +15%", key: "manualSmashEnhanceActive" },
     ];

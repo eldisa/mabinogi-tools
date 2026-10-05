@@ -164,11 +164,11 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
         "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
     muliasReflectionTrace: "併入最終增加傷害；這裡固定以「反射的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
-    manualWindmillBase30: "「裝備」分頁的手動套裝勾選（風車套裝 +30%，風車最終乘算）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualWindmillBase30: "「裝備」分頁的手動套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualChargeEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
-    erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍目前沒有對應加成（見「裝備」分頁的聚能說明）。",
-    darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍重擊基礎倍率 +150%（見「裝備」分頁的聚能說明）。",
+    erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%、重擊基礎倍率 +60%（S50，正副手都拿單手武器才會 120%，聖盾副手是盾牌所以只有 60%）；雙手劍沒有聚能加成。",
+    darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
 };
 const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "攻擊力／暴擊", ids: ["maxDamage", "criticalDamage", "criticalRate"] },
@@ -243,10 +243,10 @@ const RESULT_DETAILS: Record<string, string> = {
     finalIncreaseDamageMultiplier:
         "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草 × 反射的痕跡，共 8 個來源相乘。",
     windmillDamage:
-        "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+聚能) × (1+風車套裝10%) × (1+風車套裝15%) × (1+風車套裝30%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
+        "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝10%) × (1+風車套裝15%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
     chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊倍率% = (基礎+魔法陣+細工) × 突擊套裝。",
     smashDamage:
-        "重擊傷害 = 才能技能公式，結構同風車傷害，改套用重擊倍率% = (900%+魔法陣+細工+黑暗聚能) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)。",
+        "重擊傷害 = 才能技能公式，結構同風車傷害，改套用重擊倍率% = (900%+魔法陣+細工+單手武器聚能) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)。",
     totalOutput: "總輸出 = Σ（每個技能單次傷害 × 該技能使用次數），使用次數在「技能使用次數」分頁設定。",
 };
 
@@ -679,11 +679,11 @@ onMounted(() => {
                             <div class="field-section-label">聚能</div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.ergActive" />
-                                <span class="switch-label">聚能已滿（單手斧：風車+100%）</span>
+                                <span class="switch-label">聚能已滿（單手斧：風車+100%、重擊+60%）</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.darkErgActive" />
-                                <span class="switch-label">黑暗聚能已滿（單手斧：風車+100%；雙手劍：重擊+150%）</span>
+                                <span class="switch-label">黑暗聚能已滿（單手斧：風車+100%）</span>
                             </div>
 
                             <div class="field-section-label">盾牌</div>
@@ -764,7 +764,7 @@ onMounted(() => {
                             <div class="field-section-label">套裝效果（手動；風車/猛擊套裝與武器專屬增傷由武器／盾牌自動帶出）</div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualWindmillBase30Active" />
-                                <span class="switch-label">風車套裝 +30%（莊嚴騎士，風車最終乘算）</span>
+                                <span class="switch-label">風車基礎倍率 +30%（莊嚴騎士）</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualChargeEnhanceActive" />
