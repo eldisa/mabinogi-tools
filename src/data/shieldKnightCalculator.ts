@@ -156,8 +156,7 @@ export interface WeaponPreset {
 export const WEAPON_PRESETS: Record<WeaponType, WeaponPreset[]> = {
     one_hand_axe: [
         { id: "none", label: "其他", extraDamagePercent: 0 },
-        { id: "celtic_axe", label: "凱爾特鬥斧", extraDamagePercent: 14, tags: ["bash_enhance_sp"] },
-        { id: "celtic_royal_axe", label: "凱爾特皇家鬥斧", extraDamagePercent: 14, tags: ["bash_enhance_sp"] },
+        { id: "celtic_axe", label: "凱爾特系列單手斧", extraDamagePercent: 14, tags: ["bash_enhance_sp"] },
         { id: "nightbringer_plunderer", label: "暗夜使者掠奪者", extraDamagePercent: 42, tags: ["windmill_enhance2"], smashDamageIncreasePercent: 5 },
         {
             id: "soul_liberator_axe",
@@ -220,8 +219,7 @@ export const SHIELD_PRESETS: ShieldPreset[] = [
         tags: ["windmill_enhance2", "bash_enhance"],
         oneHandWeaponExtraDamagePercent: 42,
     },
-    { id: "soul_liberator", label: "靈魂解放者盾牌", reduction: 0.4, hpFlat: 1000, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 56 },
-    { id: "soul_liberator_warrior", label: "靈魂解放者戰士盾牌", reduction: 0.4, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 56 },
+    { id: "soul_liberator", label: "靈魂解放者系列盾牌", reduction: 0.4, hpFlat: 1000, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 56 },
     { id: "pot", label: "鍋子", reduction: 0, maxDamageFlat: 40 },
 ];
 
@@ -1594,6 +1592,8 @@ export interface DamageEfficiencyItem {
         | "chargeReforge"
         | "erg"
         | "darkErg"
+        | "raceSkill"
+        | "transformation"
         | "arcaneExtraDamage"
         | "defense"
         | "maxHp"
@@ -1754,20 +1754,42 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     });
 
     // ── 聚能／黑暗聚能：整個開關的價值（開啟 vs 關閉，跟目前實際是否勾選無關，方便評估要不要點聚能） ──
+    const build = getCharacterBuild(settings.characterBuildId);
+    const transformationMaxDamage = calculateDirtyMaxDamage({
+        masterGradeActive: false,
+        masterGradeCategory: "other",
+        transformationId: build.transformationId,
+        transformationReforgeLevel: settings.transformationReforgeLevel,
+        petIds: [],
+        banquetBonus: 0,
+        eventBonus: 0,
+        holyWaterMaxDamage: 0,
+    }).total;
     const togglePairs: {
-        id: "erg" | "darkErg" | "manualWindmillBase30" | "manualChargeEnhance" | "manualSmashEnhance";
+        id: "erg" | "darkErg" | "raceSkill" | "transformation" | "manualWindmillBase30" | "manualChargeEnhance" | "manualSmashEnhance";
         label: string;
-        key: "ergActive" | "darkErgActive" | "manualWindmillBase30Active" | "manualChargeEnhanceActive" | "manualSmashEnhanceActive";
+        set: (on: boolean) => ShieldKnightSettings;
     }[] = [
-        { id: "erg", label: "聚能已滿", key: "ergActive" },
-        { id: "darkErg", label: "黑暗聚能已滿", key: "darkErgActive" },
-        { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", key: "manualWindmillBase30Active" },
-        { id: "manualChargeEnhance", label: "手動套裝：突擊最終倍率 ×1.15", key: "manualChargeEnhanceActive" },
-        { id: "manualSmashEnhance", label: "手動套裝：重擊套裝 +15%", key: "manualSmashEnhanceActive" },
+        { id: "erg", label: "聚能已滿", set: (on) => ({ ...settings, ergActive: on }) },
+        { id: "darkErg", label: "黑暗聚能已滿", set: (on) => ({ ...settings, darkErgActive: on }) },
+        { id: "raceSkill", label: "種族特殊技能（拉狄卡）", set: (on) => ({ ...settings, raceSkillActive: on }) },
+        {
+            id: "transformation",
+            label: "變身",
+            // 面板大傷已含變身加成：關閉時要從面板扣掉變身那一份，才是「沒變身」的狀態
+            set: (on) => ({
+                ...settings,
+                panelMaxDamage: on ? settings.panelMaxDamage : settings.panelMaxDamage - transformationMaxDamage,
+                dirtyMaxDamage: { ...settings.dirtyMaxDamage, transformationActive: on },
+            }),
+        },
+        { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
+        { id: "manualChargeEnhance", label: "手動套裝：突擊最終倍率 ×1.15", set: (on) => ({ ...settings, manualChargeEnhanceActive: on }) },
+        { id: "manualSmashEnhance", label: "手動套裝：重擊套裝 +15%", set: (on) => ({ ...settings, manualSmashEnhanceActive: on }) },
     ];
     const toggleResults = togglePairs.map((p) => {
-        const onTotal = calculateTotalOutput({ ...settings, [p.key]: true }, settings.skillUsageCounts);
-        const offTotal = calculateTotalOutput({ ...settings, [p.key]: false }, settings.skillUsageCounts);
+        const onTotal = calculateTotalOutput(p.set(true), settings.skillUsageCounts);
+        const offTotal = calculateTotalOutput(p.set(false), settings.skillUsageCounts);
         const delta = onTotal - offTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
         return { id: p.id, label: p.label, unit: "開關", equivalentMaxDamage };

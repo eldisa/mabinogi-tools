@@ -169,6 +169,8 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
     darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
+    raceSkill: "「裝備」分頁的種族特殊技能（人類 +5%／巨人 +15%，併入才能增加傷害）。顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關；精靈的弓術種族技能對聖盾無效，效益為 0。",
+    transformation: "面板大傷已含變身的固定加成，這裡以「面板扣掉變身那一份」當作沒變身來比較開啟 vs 關閉的價值；角色型態沒有變身（黑暗騎士）則為 0。數值約等於變身提供的大傷（受攻擊係數放大）。",
 };
 const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "攻擊力／暴擊", ids: ["maxDamage", "criticalDamage", "criticalRate"] },
@@ -177,7 +179,7 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "生存屬性", ids: ["defense", "maxHp"] },
     { label: "穆利亞斯的遺物", ids: ["muliasSacrificeRegen", "muliasReflectionTrace", "muliasJudgementStrike"] },
     { label: "套裝效果（裝備分頁的手動套裝標記）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
-    { label: "聚能開關", ids: ["erg", "darkErg"] },
+    { label: "聚能／種族技能／變身開關", ids: ["erg", "darkErg", "raceSkill", "transformation"] },
 ];
 const efficiencyGroups = computed(() =>
     EFFICIENCY_CATEGORIES.map((c) => ({
@@ -1364,7 +1366,7 @@ onMounted(() => {
                                             <td>{{ item.valueText }}</td>
                                             <td>{{ fmtInt(item.deltaOutput) }}</td>
                                             <td>{{ item.deltaPercent === null ? "-" : `${fmtDecimal(item.deltaPercent)}%` }}</td>
-                                            <td>{{ item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
+                                            <td>{{ item.id === "maxDamage" ? "基準" : item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
