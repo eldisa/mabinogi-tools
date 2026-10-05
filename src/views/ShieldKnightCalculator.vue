@@ -40,6 +40,8 @@ import {
     calculateDamageEfficiency,
     calculateHolyWaterComparison,
     getEffectiveSharpLevel,
+    COMBO_CARD_OPTIONS,
+    comboCardAveragePercent,
     MAX_DAMAGE_TO_DEFENSE_POWER_RATE,
     SET_EFFECT_TAG_LABELS,
     type ShieldKnightSettings,
@@ -68,6 +70,24 @@ const transformationReforgeEnabled = computed({
     },
 });
 const weaponOptions = computed(() => WEAPON_PRESETS[settings.weaponType]);
+function shieldOptionLabel(s: (typeof SHIELD_PRESETS)[number]): string {
+    const effects = [
+        s.reduction ? `減傷${Math.round(s.reduction * 100)}%` : "",
+        s.oneHandWeaponExtraDamagePercent ? `單手武器額外傷害+${s.oneHandWeaponExtraDamagePercent}%` : "",
+        ...(s.tags ?? []).map((t) => SET_EFFECT_TAG_LABELS[t]),
+    ].filter(Boolean);
+    return effects.length ? `${s.label}（${effects.join("、")}）` : s.label;
+}
+function weaponOptionLabel(w: (typeof WEAPON_PRESETS)[keyof typeof WEAPON_PRESETS][number]): string {
+    const effects = [
+        w.extraDamagePercent ? `額外傷害+${w.extraDamagePercent}%` : "",
+        w.smashDamageIncreasePercent ? `重擊傷害+${w.smashDamageIncreasePercent}%` : "",
+        w.smashFinalIncreasePercent ? `重擊最終+${w.smashFinalIncreasePercent}%` : "",
+        w.bashFinalIncreasePercent ? `猛擊最終+${w.bashFinalIncreasePercent}%` : "",
+        ...(w.tags ?? []).map((t) => SET_EFFECT_TAG_LABELS[t]),
+    ].filter(Boolean);
+    return effects.length ? `${w.label}（${effects.join("、")}）` : w.label;
+}
 const shieldLocked = computed(() => settings.weaponType === "two_hand_sword" && !currentBuild.value.allowTwoHandSwordWithShield);
 
 // 讀取存檔／自動存檔時（見 applyLoadedSettings）整批覆蓋 settings，此時這些 watch 只是在「還原」資料，
@@ -144,7 +164,7 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
         "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
     muliasReflectionTrace: "併入最終增加傷害；這裡固定以「反射的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
-    manualWindmillBase30: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualWindmillBase30: "「裝備」分頁的手動套裝勾選（風車套裝 +30%，風車最終乘算）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualChargeEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍目前沒有對應加成（見「裝備」分頁的聚能說明）。",
@@ -222,9 +242,11 @@ const RESULT_DETAILS: Record<string, string> = {
     talentIncreaseDamageMultiplier: "才能增加傷害 =(1+種族技能%) × (1+猛擊層數對應%)，乘算，只影響才能技能（重擊/風車/突擊/猛擊）。",
     finalIncreaseDamageMultiplier:
         "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草 × 反射的痕跡，共 8 個來源相乘。",
-    windmillDamage: "風車傷害 = 才能技能公式：最終攻擊力 × 風車基礎倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。",
-    chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊基礎倍率%。",
-    smashDamage: "重擊傷害 = 才能技能公式，結構同風車傷害，改套用重擊基礎倍率%。",
+    windmillDamage:
+        "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+聚能) × (1+風車套裝10%) × (1+風車套裝15%) × (1+風車套裝30%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
+    chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊倍率% = (基礎+魔法陣+細工) × 突擊套裝。",
+    smashDamage:
+        "重擊傷害 = 才能技能公式，結構同風車傷害，改套用重擊倍率% = (900%+魔法陣+細工+黑暗聚能) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)。",
     totalOutput: "總輸出 = Σ（每個技能單次傷害 × 該技能使用次數），使用次數在「技能使用次數」分頁設定。",
 };
 
@@ -406,7 +428,7 @@ const comparisonResults = computed<(ComparisonResult | null)[]>(() =>
         const comparedSettings = { ...buildMergedSettings(preset.data), armorBreak };
         return {
             name: preset.name,
-            skills: calculateSkillsForSettings(comparedSettings, usageCounts["radiant-judgement"] ?? 0),
+            skills: calculateSkillsForSettings(comparedSettings, usageCounts),
             totalOutput: calculateTotalOutput(comparedSettings, usageCounts),
         };
     }),
@@ -645,7 +667,7 @@ onMounted(() => {
                             <div class="field-row">
                                 <label class="field-label">武器</label>
                                 <el-select v-model="settings.weaponId" size="small" class="field-select">
-                                    <el-option v-for="w in weaponOptions" :key="w.id" :value="w.id" :label="`${w.label}${w.extraDamagePercent ? ` (額外傷害+${w.extraDamagePercent}%)` : ''}`" />
+                                    <el-option v-for="w in weaponOptions" :key="w.id" :value="w.id" :label="weaponOptionLabel(w)" />
                                 </el-select>
                             </div>
                             <div class="field-row">
@@ -668,7 +690,7 @@ onMounted(() => {
                             <div class="field-row">
                                 <label class="field-label">盾牌</label>
                                 <el-select v-model="settings.shieldId" size="small" class="field-select" :disabled="shieldLocked">
-                                    <el-option v-for="s in SHIELD_PRESETS" :key="s.id" :value="s.id" :label="s.label" />
+                                    <el-option v-for="s in SHIELD_PRESETS" :key="s.id" :value="s.id" :label="shieldOptionLabel(s)" />
                                 </el-select>
                             </div>
                             <div class="field-hint" v-if="shieldLocked">雙手劍無法與盾牌同時裝備（僅巨人型態例外），已鎖定為「無」。</div>
@@ -739,10 +761,10 @@ onMounted(() => {
                                 武器選單手斧：0~13（≥11 突破限定）；武器選雙手劍：0~25（≥21 突破限定）；飾品：0~4（4 為突破限定）。
                             </div>
 
-                            <div class="field-section-label">套裝效果（手動；風車最終倍率 +15% 由武器／盾牌自動帶出）</div>
+                            <div class="field-section-label">套裝效果（手動；風車/猛擊套裝與武器專屬增傷由武器／盾牌自動帶出）</div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualWindmillBase30Active" />
-                                <span class="switch-label">風車基礎倍率 +30%（莊嚴騎士）</span>
+                                <span class="switch-label">風車套裝 +30%（莊嚴騎士，風車最終乘算）</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualChargeEnhanceActive" />
@@ -750,7 +772,17 @@ onMounted(() => {
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualSmashEnhanceActive" />
-                                <span class="switch-label">重擊最終倍率 +15%</span>
+                                <span class="switch-label">重擊套裝 +15%</span>
+                            </div>
+
+                            <div class="field-section-label">連續技卡片（只能裝備一張，秘法技能不吃加成）</div>
+                            <div class="field-row">
+                                <el-radio-group v-model="settings.comboCardSkillId" size="small">
+                                    <el-radio-button v-for="o in COMBO_CARD_OPTIONS" :key="o.id" :value="o.id">{{ o.label }}</el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div class="field-hint">
+                                同一技能連續使用 6 下，第 1~6 下依序增傷 0% / 10% / 22% / 37% / 57% / 87%（合計 213%），使用次數依 1→6 循環平均分配，單次傷害顯示分配後的加權平均；未填使用次數時以完整 6 連的平均（{{ fmtRatio(comboCardAveragePercent(0)) }}%）預覽。
                             </div>
                         </div>
                     </el-tab-pane>
