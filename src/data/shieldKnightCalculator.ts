@@ -805,13 +805,12 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const tagPercent = (tag: keyof typeof SET_EFFECT_VALUE_PERCENT) => (tags.has(tag) ? SET_EFFECT_VALUE_PERCENT[tag] : 0);
     const isTwoHand = settings.weaponType === "two_hand_sword";
 
-    // 重擊 = (基礎+魔法陣+細工+單手武器聚能) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)
-    // 單手武器聚能（S50）+60%；正副手都拿單手武器才會 60+60=120%，聖盾副手是盾牌，所以只有 60%
+    // 重擊 = (基礎+魔法陣+細工) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)
+    // 細工與聚能提供的倍率都算在基礎裡；重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍，所以不計
     const smashBase =
         BASE_SKILL_RATIOS.smash +
         sumReforgeLevels(settings.reforge, "smash") * REFORGE_PER_LEVEL.smash +
-        (hasMagicCircle("smash_damage") ? 100 : 0) +
-        (!isTwoHand && settings.ergActive ? 60 : 0);
+        (hasMagicCircle("smash_damage") ? 100 : 0);
     const smashMultiplier = (isTwoHand ? 1.2 : 1) * (1 + (weapon.smashFinalIncreasePercent ?? 0) / 100);
     const smashAdditive = ((weapon.smashDamageIncreasePercent ?? 0) + tagPercent("smash_enhance")) / 100;
 
