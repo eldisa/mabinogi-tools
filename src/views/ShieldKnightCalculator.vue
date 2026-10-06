@@ -41,6 +41,7 @@ import {
     calculateHolyWaterComparison,
     getEffectiveSharpLevel,
     COMBO_CARD_OPTIONS,
+    COMBO_CARD_BONUS_PERCENT,
     comboCardAveragePercent,
     MAX_DAMAGE_TO_DEFENSE_POWER_RATE,
     SET_EFFECT_TAG_LABELS,
@@ -56,7 +57,20 @@ import { getSkillIcon } from "../utils/image";
 import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
 
 const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
-const activeTab = ref("character");
+
+// 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
+const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
+const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "usage", "compare", "efficiency", "armorbreak", "debug"];
+const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
+function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean } {
+    try {
+        return JSON.parse(localStorage.getItem(DISPLAY_PREFS_KEY) ?? "{}") ?? {};
+    } catch {
+        return {};
+    }
+}
+const displayPrefs = loadDisplayPrefs();
+const activeTab = ref(TAB_NAMES.includes(displayPrefs.tab ?? "") ? (displayPrefs.tab as string) : "character");
 
 const currentBuild = computed(() => CHARACTER_BUILDS.find((b) => b.id === settings.characterBuildId) ?? CHARACTER_BUILDS[0]);
 const currentRaceSkill = computed(() => getRaceSkillInfo(currentBuild.value));
@@ -149,9 +163,56 @@ const activeSetEffectLabels = computed(() => calcResult.value.activeTags.map((t)
 
 const allSkills = computed(() => calculateSkillsForSettings(settings));
 // 只有最下面「技能傷害」卡片可以切換暴擊顯示模式，其餘分頁（技能使用次數/裝備比較/傷害效益）維持固定用期望值，避免顯示跟總輸出對不上
-const critDisplayMode = ref<CritDisplayMode>("expected");
+const critDisplayMode = ref<CritDisplayMode>(CRIT_MODES.includes(displayPrefs.critMode as CritDisplayMode) ? (displayPrefs.critMode as CritDisplayMode) : "expected");
+const showArcaneCards = ref(displayPrefs.showArcane !== false);
+const showTalentCards = ref(displayPrefs.showTalent !== false);
+watch([activeTab, critDisplayMode, showArcaneCards, showTalentCards], () => {
+    try {
+        localStorage.setItem(
+            DISPLAY_PREFS_KEY,
+            JSON.stringify({ tab: activeTab.value, critMode: critDisplayMode.value, showTalent: showTalentCards.value, showArcane: showArcaneCards.value }),
+        );
+    } catch {
+        /* 瀏覽器禁用儲存時忽略 */
+    }
+});
 const cardSkills = computed(() => calculateSkillsForSettings(settings, undefined, critDisplayMode.value));
+const TALENT_SKILL_IDS = ["smash-hit", "windmill-hit", "meng-ji"] as const;
+type TalentSkillId = (typeof TALENT_SKILL_IDS)[number];
+const TALENT_ADDITIVE_KEY = { "smash-hit": "smash", "windmill-hit": "windmill", "meng-ji": "mengJi" } as const;
 const skills = computed(() => cardSkills.value.filter((skill) => settings[SKILL_VISIBILITY_SETTING_KEYS[skill.skillId]]));
+const arcaneCards = computed(() => skills.value.filter((s) => !(TALENT_SKILL_IDS as readonly string[]).includes(s.skillId)));
+/**
+ * 才能技能卡片固定以「連續技卡片裝在該技能上」計算（不受「裝備」分頁選的卡片影響，方便比較），
+ * 並列出連擊 1~6 各位置的單次傷害：位置傷害 = 無卡片傷害 × (1+加成+位置增傷%) / (1+加成)
+ */
+const talentCards = computed(() => {
+    const additives = calculateAll(settings).abilities.ratioAdditives;
+    return TALENT_SKILL_IDS.flatMap((id: TalentSkillId) => {
+        if (!settings[SKILL_VISIBILITY_SETTING_KEYS[id]]) return [];
+        const withCard = calculateSkillsForSettings({ ...settings, comboCardSkillId: id }, undefined, critDisplayMode.value).find((s) => s.skillId === id);
+        const noCard = calculateSkillsForSettings({ ...settings, comboCardSkillId: "none" }, undefined, critDisplayMode.value).find((s) => s.skillId === id);
+        if (!withCard || !noCard) return [];
+        const additive = additives[TALENT_ADDITIVE_KEY[id]];
+        return [
+            {
+                skill: withCard,
+                noCardDamage: noCard.finalDamage,
+                averagePercent: comboCardAveragePercent(settings.skillUsageCounts[id]),
+                positions: COMBO_CARD_BONUS_PERCENT.map((bonus) => ({
+                    bonus,
+                    damage: (noCard.finalDamage * (1 + additive + bonus / 100)) / (1 + additive),
+                })),
+            },
+        ];
+    });
+});
+const expandedTalentIds = ref<string[]>([]);
+function toggleTalentExpanded(id: string) {
+    const i = expandedTalentIds.value.indexOf(id);
+    if (i >= 0) expandedTalentIds.value.splice(i, 1);
+    else expandedTalentIds.value.push(id);
+}
 const totalOutput = computed(() => calculateTotalOutput(settings, settings.skillUsageCounts));
 const hasAnyUsageCount = computed(() => ALL_SKILL_META.some((s) => settings.skillUsageCounts[s.id] > 0));
 const efficiencyItems = computed(() => calculateDamageEfficiency(settings));
@@ -186,6 +247,33 @@ const efficiencyGroups = computed(() =>
         label: c.label,
         items: c.ids.map((id) => efficiencyItems.value.find((i) => i.id === id)).filter((i): i is (typeof efficiencyItems.value)[number] => !!i),
     })),
+);
+
+// ── 新手引導／自動結論 ──
+const EXAMPLE_PANEL_MAX_DAMAGE = 2000;
+const EXAMPLE_USAGE_COUNTS: Partial<SkillUsageCounts> = {
+    "holy-sanctuary": 50,
+    "shield-charge": 13,
+    "iron-wall-strike": 50,
+    "judgement-strike": 42,
+    "sacrifice-punishment": 17,
+    "radiant-judgement": 118,
+    "meng-ji": 39,
+    "smash-hit": 60,
+    "windmill-hit": 60,
+};
+const needsQuickStart = computed(() => settings.panelMaxDamage <= 0 || !hasAnyUsageCount.value);
+/** 只補上還空著的欄位，不蓋掉使用者已填的資料 */
+function loadExample() {
+    if (settings.panelMaxDamage <= 0) settings.panelMaxDamage = EXAMPLE_PANEL_MAX_DAMAGE;
+    if (!hasAnyUsageCount.value) Object.assign(settings.skillUsageCounts, EXAMPLE_USAGE_COUNTS);
+}
+/** 每單位增幅最高的前三項（排除開關與不影響輸出的項目），用「總輸出 +x%」白話呈現 */
+const topLevers = computed(() =>
+    efficiencyItems.value
+        .filter((i) => i.unit !== "開關" && i.id !== "maxDamage" && (i.deltaPercent ?? 0) > 0)
+        .sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0))
+        .slice(0, 3),
 );
 const effectiveSharpLevel = computed(() => getEffectiveSharpLevel(settings));
 const holyWaterComparison = computed(() => calculateHolyWaterComparison(settings));
@@ -560,6 +648,30 @@ onMounted(() => {
         </h1>
 
         <el-alert type="warning" :closable="false" show-icon class="verify-alert" title="此計算部分仍待驗證" />
+
+        <el-alert v-if="needsQuickStart" type="info" :closable="false" class="verify-alert" title="快速開始：最少只要填 2 項">
+            <ol class="quick-start-list">
+                <li>
+                    「<el-link type="primary" @click="activeTab = 'attack'">攻擊力</el-link>」分頁填<b>面板最大傷害</b>
+                    <span v-if="settings.panelMaxDamage > 0">（已填）</span>
+                </li>
+                <li>
+                    「<el-link type="primary" @click="activeTab = 'usage'">技能使用次數</el-link>」填各技能打幾次
+                    <span v-if="hasAnyUsageCount">（已填）</span>
+                </li>
+                <li>選填：「<el-link type="primary" @click="activeTab = 'critextra'">暴擊與額外傷害</el-link>」微調暴擊率、暴擊傷害與增傷來源（已有預設值）</li>
+            </ol>
+            <el-button size="small" type="primary" @click="loadExample">先載入範例數值看看</el-button>
+            <span class="field-hint">只會補上還空著的欄位。</span>
+        </el-alert>
+        <el-alert v-else-if="topLevers.length" type="success" :closable="false" class="verify-alert" title="自動結論">
+            目前總輸出 <b>{{ fmtInt(totalOutput) }}</b
+            >。每單位增幅最高的是
+            <template v-for="(item, i) in topLevers" :key="item.id">
+                <b>{{ item.label }}</b>（每 {{ item.unit }} 總輸出 +{{ fmtDecimal(item.deltaPercent ?? 0) }}%）<template v-if="i < topLevers.length - 1">、</template>
+            </template>
+            ，優先補這些。完整排名見「傷害效益」分頁。
+        </el-alert>
 
         <div class="sim-layout">
             <!-- ════════ 左側 — 設定 ════════ -->
@@ -1281,12 +1393,13 @@ onMounted(() => {
                                             <th>屬性</th>
                                             <th>單位</th>
                                             <th>等同大傷</th>
+                                            <th>總輸出增幅</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <template v-for="group in efficiencyGroups" :key="group.label">
                                             <tr v-if="group.items.length" class="efficiency-group-row">
-                                                <td colspan="3">{{ group.label }}</td>
+                                                <td colspan="4">{{ group.label }}</td>
                                             </tr>
                                             <tr v-for="item in group.items" :key="item.id">
                                                 <td class="equip-slot-label">
@@ -1298,6 +1411,7 @@ onMounted(() => {
                                                 </td>
                                                 <td>{{ item.unit }}</td>
                                                 <td>{{ item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
+                                                <td>{{ item.deltaPercent == null ? "-" : `+${fmtDecimal(item.deltaPercent)}%` }}</td>
                                             </tr>
                                         </template>
                                     </tbody>
@@ -1711,11 +1825,15 @@ onMounted(() => {
                     <el-radio-button value="expected">期望值</el-radio-button>
                 </el-radio-group>
             </div>
+            <div class="skill-section-filters">
+                <el-checkbox v-model="showTalentCards">顯示才能技能</el-checkbox>
+                <el-checkbox v-model="showArcaneCards">顯示秘法技能</el-checkbox>
+            </div>
             <div class="field-hint skill-section-hint">
                 只影響這裡的卡片顯示；其餘分頁（技能使用次數／裝備比較／傷害效益／總輸出）固定用期望值計算，不受此切換影響。
             </div>
-            <div class="skill-grid">
-                <div v-for="skill in skills" :key="skill.skillId" class="skill-card" :class="{ 'skill-card-locked': skill.locked }">
+            <div v-if="showArcaneCards && arcaneCards.length" class="skill-grid">
+                <div v-for="skill in arcaneCards" :key="skill.skillId" class="skill-card" :class="{ 'skill-card-locked': skill.locked }">
                     <div class="skill-card-header">
                         <span class="skill-name">
                             <img width="24" height="24" :src="getSkillIcon(skillImageId(skill.skillId))" :alt="skill.name" />
@@ -1761,6 +1879,55 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
+            <div v-if="showTalentCards && talentCards.length" class="skill-grid">
+                <div v-for="card in talentCards" :key="card.skill.skillId" class="skill-card">
+                    <div class="skill-card-header">
+                        <span class="skill-name">
+                            <img width="24" height="24" :src="getSkillIcon(skillImageId(card.skill.skillId))" :alt="card.skill.name" />
+                            {{ card.skill.name }}
+                        </span>
+                        <span class="skill-damage">{{ fmtInt(card.skill.finalDamage) }}</span>
+                    </div>
+                    <div class="field-hint">套用連續技卡片（平均 +{{ fmtRatio(card.averagePercent) }}%）｜無卡片：{{ fmtInt(card.noCardDamage) }}</div>
+
+                    <div class="skill-terms">
+                        <div v-for="term in card.skill.terms" :key="term.label" class="term-row">
+                            <span class="term-label">{{ term.label }}</span>
+                            <span class="term-ratio">{{ fmtRatio(term.ratioPercent) }}%</span>
+                            <span class="term-value">{{ fmtInt(term.amount) }}</span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="combo-toggle"
+                        :aria-expanded="expandedTalentIds.includes(card.skill.skillId)"
+                        @click="toggleTalentExpanded(card.skill.skillId)"
+                    >
+                        {{ expandedTalentIds.includes(card.skill.skillId) ? "▼" : "▶" }} 連擊 1~6 各位置傷害
+                    </button>
+                    <table v-if="expandedTalentIds.includes(card.skill.skillId)" class="stage-table">
+                        <thead>
+                            <tr>
+                                <th>連擊</th>
+                                <th>增傷</th>
+                                <th>傷害</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(pos, i) in card.positions" :key="i">
+                                <td>{{ i + 1 }}</td>
+                                <td>+{{ pos.bonus }}%</td>
+                                <td>{{ fmtInt(pos.damage) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="skill-footer">
+                        <span class="skill-cd">{{ card.skill.cooldownText }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -1783,6 +1950,14 @@ onMounted(() => {
     font-size: 1rem;
     color: var(--color-text-muted, #6b7280);
     font-weight: 400;
+}
+.quick-start-list {
+    margin: 0.25rem 0 0.6rem;
+    padding-left: 1.2rem;
+    line-height: 1.7;
+}
+.setting-tabs :deep(.el-tabs__item) {
+    padding: 0 10px;
 }
 .verify-alert {
     max-width: 1280px;
@@ -2157,10 +2332,30 @@ onMounted(() => {
 .skill-section-hint {
     margin-bottom: 0.75rem;
 }
+.skill-section-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin-bottom: 0.5rem;
+}
 .skill-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
+    margin-bottom: 1rem;
+}
+.combo-toggle {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0.1rem 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--color-accent-hover, #fcd34d);
+}
+.combo-toggle:focus-visible {
+    outline: 2px solid var(--color-accent-hover, #fcd34d);
+    outline-offset: 2px;
 }
 .skill-card {
     background: var(--color-bg-secondary, #1f2937);

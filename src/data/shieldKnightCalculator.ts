@@ -502,7 +502,7 @@ function comboCardFactor(
 }
 
 /**
- * 猛擊：獨立技能（不影響鐵壁猛擊，鐵壁猛擊吃的是風車）。層數 1~5，每層攻擊傷害倍率不同，
+ * 猛擊：獨立技能（不影響鐵壁猛擊，鐵壁猛擊吃的是風車）。層數 1~5，每層基礎傷害倍率不同，
  * 並疊加「近戰才能技能傷害%」buff（才能增加傷害，乘算）。每次使用增加 1 階段，滿 5 階持續
  * 20 秒，時間到降 1 階，本計算器不做即時計時模擬，直接以「目前層數」視為 buff 生效中。
  */
@@ -1333,7 +1333,7 @@ export function calculateMengJi(
     protectionReduction = 1,
 ): SkillDamageResult {
     const stackInfo = MENG_JI_STACKS[stack - 1];
-    const terms = [makeTerm("攻擊傷害", ratio, finalStats.maxDamage)];
+    const terms = [makeTerm("基礎傷害", ratio, finalStats.maxDamage)];
     const finalDamage = Math.round(
         calculateTalentSkillDamage({
             finalAttackPower: finalStats.maxDamage,
@@ -1609,7 +1609,11 @@ export interface DamageEfficiencyItem {
     unit: string;
     /** 1 單位等同多少大傷；目前總輸出為 0（尚未設定技能使用次數）時為 null，無法換算 */
     equivalentMaxDamage: number | null;
+    /** 1 單位使總輸出增加的百分比（舊版快照沒有這個欄位） */
+    deltaPercent?: number | null;
 }
+
+const outputPercent = (delta: number, base: number): number | null => (base !== 0 ? (delta / base) * 100 : null);
 
 function buildLeverContext(settings: ShieldKnightSettings) {
     const calcResult = calculateAll(settings);
@@ -1723,7 +1727,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const results = probes.map((p) => {
         const delta = p.id === "maxDamage" ? maxDamageDelta : compute(p.bump) - baseTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage, deltaPercent: outputPercent(delta, baseTotal) };
     });
 
     // ── 重擊／風車／突擊 細工等級效益：+1 級對應的基礎倍率 flat 加成，再乘上該技能全部乘算加成（雙手加成、套裝等） ──
@@ -1750,7 +1754,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const reforgeResults = reforgeProbes.map((p) => {
         const delta = calculateTotalOutputWithLevers(baseLevers, finalStatsBase, p.ratios, settings) - baseTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage, deltaPercent: outputPercent(delta, baseTotal) };
     });
 
     // ── 聚能／黑暗聚能：整個開關的價值（開啟 vs 關閉，跟目前實際是否勾選無關，方便評估要不要點聚能） ──
@@ -1792,7 +1796,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         const offTotal = calculateTotalOutput(p.set(false), settings.skillUsageCounts);
         const delta = onTotal - offTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: "開關", equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: "開關", equivalentMaxDamage, deltaPercent: outputPercent(delta, offTotal) };
     });
 
     // ── 防禦／最大生命值：+1 點對應多少大傷（跟其他槓桿一樣，全程套用暴擊率／暴擊傷害的期望值換算） ──
@@ -1803,7 +1807,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const statResults = statProbes.map((p) => {
         const delta = calculateTotalOutputWithLevers(baseLevers, p.finalStatsBase, ratios, settings) - baseTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage, deltaPercent: outputPercent(delta, baseTotal) };
     });
 
     // ── 穆利亞斯的遺物：3 件各自 +1 級的效益（全設定複製後重算，正確反映對「最終增加傷害」／「審判重擊」的間接影響） ──
@@ -1832,7 +1836,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         const total = calculateTotalOutput({ ...settings, muliasRelic: p.muliasRelic }, settings.skillUsageCounts);
         const delta = total - base;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: "1 級", equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: "1 級", equivalentMaxDamage, deltaPercent: outputPercent(delta, base) };
     });
 
     // ── 銳利等級：+1 級（已滿級 11 則以 −1 級反推），需套用破防結果才有效果 ──
@@ -1844,6 +1848,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         label: "銳利等級",
         unit: "1 級",
         equivalentMaxDamage: maxDamageDelta !== 0 ? sharpDelta / maxDamageDelta : null,
+        deltaPercent: outputPercent(sharpDelta, baseTotal),
     };
 
     return [...results, ...reforgeResults, sharpResult, ...statResults, ...muliasResults, ...toggleResults];
