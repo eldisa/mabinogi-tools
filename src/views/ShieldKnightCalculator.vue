@@ -3,7 +3,8 @@ import { reactive, ref, computed, watch, onMounted, nextTick } from "vue";
 import { useAccountSync, mergeByTimestamp } from "../composables/useAccountSync";
 import { useNamedPresetList } from "../composables/useNamedPresets";
 import { InfoFilled } from "@element-plus/icons-vue";
-import { ElMessageBox } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useRoute, useRouter } from "vue-router";
 import {
     WEAPON_TYPE_OPTIONS,
     WEAPON_PRESETS,
@@ -21,6 +22,7 @@ import {
     MAGIC_CIRCLE_OPTIONS,
     MAGIC_CIRCLE_LIMIT,
     createDefaultSettings,
+    createDefaultSkillUsageCounts,
     calculateAll,
     SKILL_VISIBILITY_SETTING_KEYS,
     calculateIronWallSacrifice,
@@ -56,6 +58,8 @@ import {
 import { getSkillIcon } from "../utils/image";
 import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
 
+const route = useRoute();
+const router = useRouter();
 const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
 
 // 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
@@ -242,31 +246,61 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "套裝效果（裝備分頁的手動套裝標記）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
     { label: "聚能／種族技能／變身開關", ids: ["erg", "darkErg", "raceSkill", "transformation"] },
 ];
-const efficiencyGroups = computed(() =>
-    EFFICIENCY_CATEGORIES.map((c) => ({
+const efficiencySortByGain = ref(false);
+const efficiencyTopN = ref(0);
+const efficiencyGroups = computed(() => {
+    if (efficiencySortByGain.value) {
+        const sorted = efficiencyItems.value.filter((i) => i.deltaPercent != null).sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0));
+        const topN = efficiencyTopN.value || sorted.length;
+        return [{ label: efficiencyTopN.value ? `依總輸出增幅排序（前 ${topN} 名）` : "依總輸出增幅排序", items: sorted.slice(0, topN) }];
+    }
+    return EFFICIENCY_CATEGORIES.map((c) => ({
         label: c.label,
         items: c.ids.map((id) => efficiencyItems.value.find((i) => i.id === id)).filter((i): i is (typeof efficiencyItems.value)[number] => !!i),
-    })),
-);
+    }));
+});
 
 // ── 新手引導／自動結論 ──
 const EXAMPLE_PANEL_MAX_DAMAGE = 2000;
-const EXAMPLE_USAGE_COUNTS: Partial<SkillUsageCounts> = {
-    "holy-sanctuary": 50,
-    "shield-charge": 13,
-    "iron-wall-strike": 50,
-    "judgement-strike": 42,
-    "sacrifice-punishment": 17,
-    "radiant-judgement": 118,
-    "meng-ji": 39,
-    "smash-hit": 60,
-    "windmill-hit": 60,
-};
+/** 技能次數情境範本（估算值，只是起點，請依自己的實際打法修改） */
+const USAGE_SCENARIOS: { id: string; label: string; counts: Partial<SkillUsageCounts> }[] = [
+    {
+        id: "boss",
+        label: "打王（長時間，秘法技能為主）",
+        counts: { "holy-sanctuary": 50, "shield-charge": 13, "iron-wall-strike": 50, "judgement-strike": 42, "sacrifice-punishment": 17, "radiant-judgement": 118, "meng-ji": 39, "smash-hit": 60, "windmill-hit": 60 },
+    },
+    {
+        id: "dungeon",
+        label: "副本練習（短時間）",
+        counts: { "holy-sanctuary": 15, "shield-charge": 4, "iron-wall-strike": 15, "judgement-strike": 13, "sacrifice-punishment": 5, "radiant-judgement": 36, "meng-ji": 12, "smash-hit": 18, "windmill-hit": 18 },
+    },
+    {
+        id: "talent",
+        label: "才能技能為主（重擊／風車連段）",
+        counts: { "holy-sanctuary": 10, "iron-wall-strike": 10, "radiant-judgement": 30, "meng-ji": 80, "smash-hit": 120, "windmill-hit": 120 },
+    },
+];
 const needsQuickStart = computed(() => settings.panelMaxDamage <= 0 || !hasAnyUsageCount.value);
+const selectedScenarioId = ref("");
+/** 套用次數情境：整組取代目前的次數，已有次數時先確認 */
+async function applyUsageScenario(id: string) {
+    const scenario = USAGE_SCENARIOS.find((x) => x.id === id);
+    if (!scenario) return;
+    if (hasAnyUsageCount.value) {
+        try {
+            await ElMessageBox.confirm(`要用「${scenario.label}」取代目前的技能使用次數嗎？`, "套用情境", { type: "warning" });
+        } catch {
+            selectedScenarioId.value = "";
+            return;
+        }
+    }
+    settings.skillUsageCounts = { ...createDefaultSkillUsageCounts(), ...scenario.counts };
+    selectedScenarioId.value = "";
+}
 /** 只補上還空著的欄位，不蓋掉使用者已填的資料 */
 function loadExample() {
     if (settings.panelMaxDamage <= 0) settings.panelMaxDamage = EXAMPLE_PANEL_MAX_DAMAGE;
-    if (!hasAnyUsageCount.value) Object.assign(settings.skillUsageCounts, EXAMPLE_USAGE_COUNTS);
+    if (!hasAnyUsageCount.value) settings.skillUsageCounts = { ...createDefaultSkillUsageCounts(), ...USAGE_SCENARIOS[0].counts };
 }
 /** 每單位增幅最高的前三項（排除開關與不影響輸出的項目），用「總輸出 +x%」白話呈現 */
 const topLevers = computed(() =>
@@ -275,6 +309,16 @@ const topLevers = computed(() =>
         .sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0))
         .slice(0, 3),
 );
+/** 連續技卡片裝哪張總輸出最高（用目前的技能使用次數、期望值計算） */
+const comboRanking = computed(() => {
+    const base = calculateTotalOutput({ ...settings, comboCardSkillId: "none" }, settings.skillUsageCounts);
+    const rows = COMBO_CARD_OPTIONS.map((o) => {
+        const total = calculateTotalOutput({ ...settings, comboCardSkillId: o.id }, settings.skillUsageCounts);
+        return { id: o.id, label: o.label, total, gainPercent: base !== 0 ? ((total - base) / base) * 100 : null };
+    });
+    const best = rows.reduce((a, b) => (b.total > a.total ? b : a), rows[0]);
+    return { rows, bestId: best.total > base ? best.id : null };
+});
 const effectiveSharpLevel = computed(() => getEffectiveSharpLevel(settings));
 const holyWaterComparison = computed(() => calculateHolyWaterComparison(settings));
 const bestHolyWaterId = computed(() => holyWaterComparison.value.reduce((best, x) => (x.deltaOutput > best.deltaOutput ? x : best), holyWaterComparison.value[0])?.id);
@@ -573,6 +617,73 @@ function fmtDate(ts: number): string {
 // ═══════════════════════════════════════════════════════
 //  Debug：下載完整資料／複製區塊（回報 bug 用）
 // ═══════════════════════════════════════════════════════
+//  分享：只編碼「和預設不同」的欄位成 base64url 代碼，可複製代碼或帶 ?s= 的連結
+// ═══════════════════════════════════════════════════════
+function encodeShareCode(): string {
+    const defaults = createDefaultSettings() as unknown as Record<string, unknown>;
+    const current = settings as unknown as Record<string, unknown>;
+    const diff: Record<string, unknown> = {};
+    for (const key of Object.keys(defaults)) {
+        if (JSON.stringify(current[key]) !== JSON.stringify(defaults[key])) diff[key] = current[key];
+    }
+    const bytes = new TextEncoder().encode(JSON.stringify(diff));
+    return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+/** 解碼並驗證：只收預設設定裡存在、且型別相同的欄位，其餘一律丟掉；格式不對回傳 null */
+function decodeShareCode(code: string): Partial<ShieldKnightSettings> | null {
+    try {
+        const b64 = code.trim().replace(/-/g, "+").replace(/_/g, "/");
+        const bin = atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4));
+        const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))));
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+        const defaults = createDefaultSettings() as unknown as Record<string, unknown>;
+        const picked: Record<string, unknown> = {};
+        for (const key of Object.keys(defaults)) {
+            if (Object.prototype.hasOwnProperty.call(parsed, key) && typeof parsed[key] === typeof defaults[key]) picked[key] = parsed[key];
+        }
+        return picked as Partial<ShieldKnightSettings>;
+    } catch {
+        return null;
+    }
+}
+
+async function copyText(text: string, okMessage: string) {
+    try {
+        await navigator.clipboard.writeText(text);
+        ElMessage.success(okMessage);
+    } catch {
+        ElMessage.error("無法寫入剪貼簿，請檢查瀏覽器權限");
+    }
+}
+const copyShareCode = () => copyText(encodeShareCode(), "已複製設定代碼");
+const copyShareLink = () => copyText(`${location.origin}${location.pathname}#/shield-knight?s=${encodeShareCode()}`, "已複製分享連結");
+
+async function importShareCode(code?: string) {
+    try {
+        if (code === undefined) {
+            const { value } = await ElMessageBox.prompt("貼上他人分享的設定代碼（或整個分享連結）", "匯入設定", { inputType: "textarea" });
+            code = value;
+        }
+    } catch {
+        return;
+    }
+    const fromLink = /[?&]s=([A-Za-z0-9_-]+)/.exec(code ?? "");
+    const data = decodeShareCode(fromLink ? fromLink[1] : (code ?? ""));
+    if (!data) {
+        ElMessage.error("代碼格式不正確，無法匯入");
+        return;
+    }
+    try {
+        await ElMessageBox.confirm("匯入會覆蓋目前的所有設定（可先用「儲存目前設定」備份），要繼續嗎？", "匯入設定", { type: "warning" });
+    } catch {
+        return;
+    }
+    applyLoadedSettings(data);
+    ElMessage.success("已匯入設定");
+}
+
+// ═══════════════════════════════════════════════════════
 const copiedBlock = ref<"settings" | "calcResult" | null>(null);
 let copiedBlockTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -637,6 +748,12 @@ onMounted(() => {
         loadPreset(0);
     }
     if (latestArmorBreakResult) onArmorBreakResult(latestArmorBreakResult);
+    // 分享連結：處理完就把 ?s= 從網址拿掉，避免重新整理又被詢問／覆蓋
+    const shared = route.query.s;
+    if (typeof shared === "string") {
+        router.replace({ query: {} });
+        importShareCode(shared);
+    }
 });
 </script>
 
@@ -702,6 +819,9 @@ onMounted(() => {
 
                 <div class="quick-actions">
                     <el-button size="small" plain @click="resetAll">重置設定</el-button>
+                    <el-button size="small" plain @click="copyShareLink">複製分享連結</el-button>
+                    <el-button size="small" plain @click="copyShareCode">複製設定代碼</el-button>
+                    <el-button size="small" plain @click="importShareCode()">匯入代碼</el-button>
                 </div>
 
                 <el-tabs v-model="activeTab" type="border-card" class="setting-tabs">
@@ -894,6 +1014,15 @@ onMounted(() => {
                                 <el-radio-group v-model="settings.comboCardSkillId" size="small">
                                     <el-radio-button v-for="o in COMBO_CARD_OPTIONS" :key="o.id" :value="o.id">{{ o.label }}</el-radio-button>
                                 </el-radio-group>
+                            </div>
+                            <div v-if="hasAnyUsageCount" class="field-hint">
+                                依目前技能使用次數，各卡片的總輸出（期望值）：
+                                <template v-for="(row, i) in comboRanking.rows" :key="row.id">
+                                    <b :class="{ 'combo-best': row.id === comboRanking.bestId }">{{ row.label }}</b> {{ fmtInt(row.total) }}
+                                    <template v-if="row.id !== 'none' && row.gainPercent !== null">（{{ row.gainPercent >= 0 ? "+" : "" }}{{ fmtDecimal(row.gainPercent) }}%）</template>
+                                    <template v-if="row.id === comboRanking.bestId">★最佳</template>
+                                    <template v-if="i < comboRanking.rows.length - 1">｜</template>
+                                </template>
                             </div>
                             <div class="field-hint">
                                 同一技能連續使用 6 下，第 1~6 下依序增傷 0% / 10% / 22% / 37% / 57% / 87%（合計 213%），使用次數依 1→6 循環平均分配，單次傷害顯示分配後的加權平均；未填使用次數時以完整 6 連的平均（{{ fmtRatio(comboCardAveragePercent(0)) }}%）預覽。
@@ -1280,6 +1409,18 @@ onMounted(() => {
                     <el-tab-pane label="技能使用次數" name="usage">
                         <div class="tab-body">
                             <div class="field-section-label">各技能使用次數（用於計算總輸出／裝備比較／傷害效益）</div>
+                            <div class="field-row">
+                                <label class="field-label">套用情境範本</label>
+                                <el-select
+                                    v-model="selectedScenarioId"
+                                    placeholder="選一個情境當起點（估算值，可再修改）"
+                                    size="small"
+                                    class="field-select"
+                                    @change="applyUsageScenario"
+                                >
+                                    <el-option v-for="sc in USAGE_SCENARIOS" :key="sc.id" :label="sc.label" :value="sc.id" />
+                                </el-select>
+                            </div>
                             <div class="equip-table-wrap">
                                 <table class="equip-table">
                                     <thead>
@@ -1385,6 +1526,18 @@ onMounted(() => {
                     <el-tab-pane label="傷害效益" name="efficiency">
                         <div class="tab-body">
                             <div class="field-section-label">各屬性 1 單位等同多少大傷（依目前設定 + 技能使用次數，微擾量測邊際效益）</div>
+                            <div v-if="hasAnyUsageCount" class="field-row">
+                                <el-checkbox v-model="efficiencySortByGain" />
+                                <span class="switch-label">依「總輸出增幅」由高到低排序</span>
+                                <el-select v-if="efficiencySortByGain" v-model="efficiencyTopN" size="small" style="width: 110px">
+                                    <el-option :value="0" label="全部" />
+                                    <el-option :value="5" label="前 5 名" />
+                                    <el-option :value="10" label="前 10 名" />
+                                </el-select>
+                            </div>
+                            <div v-if="hasAnyUsageCount && efficiencySortByGain" class="field-hint">
+                                單位為「開關」的項目是整個效果開啟 vs 關閉的總價值，和「每 1%／1 級」的增幅不能直接比較，排序時僅供參考。
+                            </div>
                             <div v-if="!hasAnyUsageCount" class="field-hint">請先在「技能使用次數」分頁設定至少一個技能的使用次數，才能計算屬性效益。</div>
                             <div class="equip-table-wrap" v-else>
                                 <table class="equip-table">
@@ -1958,6 +2111,9 @@ onMounted(() => {
 }
 .setting-tabs :deep(.el-tabs__item) {
     padding: 0 10px;
+}
+.combo-best {
+    color: var(--color-accent-hover, #fcd34d);
 }
 .verify-alert {
     max-width: 1280px;
