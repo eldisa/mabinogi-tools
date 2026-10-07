@@ -39,7 +39,7 @@ export const CONDITIONS: Condition[] = [
     { id: 464, name: "冰雪狀態", permanent: true, permLabel: "在場", advanced: true, note: "在場即永久", valueKind: "prot" },
     { id: 594, name: "跑跑卡丁車水球", permanent: true, valueKind: "prot" },
     { id: 912, name: "喵喵的喵皇降臨", seconds: 300, valueKind: "prot" },
-    { id: 1004, name: "銳利目光", permanent: true, permLabel: "在場", advanced: true, note: "寵物在場即永久（暴擊傷害）", valueKind: "atk" },
+    { id: 1004, name: "銳利目光", permanent: true, permLabel: "在場", advanced: true, note: "犬靈在場即永久（暴擊時通用額外傷害）", valueKind: "atk" },
     { id: 1093, name: "保護最大減少", permanent: true, side: "phys", valueKind: "prot" },
     { id: 1094, name: "魔法保護最大減少", permanent: true, side: "magic", valueKind: "prot" },
     { id: 1138, name: "幸運草標記", seconds: 300, valueKind: "atk" },
@@ -184,7 +184,7 @@ export const skillValue = (st: ValueSettings, skillId: number, condId: number): 
             return { pct: 0, fixed: 15 };
         case 490431: // 寵物 → 1138 幸運草標記（增傷；最高 4 層，疊滿 +15%）
             return { pct: (15 * st.cloverStacks) / 4, fixed: 0 };
-        case 491006: // 寵物 → 1004 銳利目光（暴擊傷害）
+        case 491006: // 犬靈 → 1004 銳利目光（暴擊時通用額外傷害）
             return { pct: 3, fixed: 0 };
         default:
             return { pct: 0, fixed: 0 };
@@ -216,7 +216,7 @@ export const STAT_GROUPS: StatGroup[] = [
     },
     { key: "atk", label: "所受傷害增加", iconId: 1166, kind: "atk", conds: [1166, 521, 1026, 1138] },
     { key: "melee", label: "近戰技能傷害", iconId: 339, kind: "atk", conds: [339] },
-    { key: "crit", label: "暴擊傷害", iconId: 1004, kind: "atk", conds: [1004] },
+    { key: "crit", label: "暴擊時通用額外傷害", iconId: 1004, kind: "atk", conds: [1004] },
 ];
 
 // 數值後的單位：未分物理／魔法側的減保狀態 → 保護/魔法保護；增傷 → 所屬分組（名稱已是分組名者略過）

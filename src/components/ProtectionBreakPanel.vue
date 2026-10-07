@@ -3,7 +3,7 @@
 import { computed, ref, watch } from "vue";
 import { useLocalStorage } from "../composables/useLocalStorage";
 import ProtectionCompareControls from "./ProtectionCompareControls.vue";
-import { DEFAULT_PROT_COMPARE, findMonster, protBeforePierce, protCompare, protRate } from "../utils/protectionCompare";
+import { DEFAULT_PROT_COMPARE, monsterStats, protBeforePierce, protCompare, protRate } from "../utils/protectionCompare";
 import { protectionData } from "../data/protectionData";
 import {
     SOURCES,
@@ -41,7 +41,7 @@ const PARAMS: Record<number, Param> = {
     490431: { num: [{ key: "cloverStacks", label: "層數", min: 1, max: 4 }] },
 };
 // 寵物俗稱（未列者只顯示條件名）
-const PET_NICK: Record<number, string> = { 490411: "貓", 490105: "蒼龍", 490431: "兔子", 490279: "天使貓" };
+const PET_NICK: Record<number, string> = { 490411: "貓", 490105: "蒼龍", 490431: "兔子", 490279: "天使貓", 491006: "犬靈" };
 
 // 同條件的寵物（數值相同）只列一個
 const PICKABLE = SOURCES.filter(
@@ -114,6 +114,7 @@ const loadConfig = (key: string) => {
 const props = defineProps<{ single?: boolean; pierce?: number }>();
 const keyPrefix = props.single ? "prot-break:single" : "prot-break";
 const protCalc = useLocalStorage(`${keyPrefix}:compare`, { ...DEFAULT_PROT_COMPARE });
+protCalc.value = { ...DEFAULT_PROT_COMPARE, ...protCalc.value }; // 舊存檔補自訂怪物欄位
 const cfgA = loadConfig(props.single ? "prot-break:single:cfg" : "prot-break:cfg-a");
 const cfgB = loadConfig("prot-break:cfg-b");
 const configs = computed(() =>
@@ -253,9 +254,9 @@ const resultA = computed(() => {
     return {
         rateAfter: r.rateAfter,
         damageTakenPercent: r.dmgInc,
-        critDamagePercent: r.crit,
-        protBeforePierce: protBeforePierce(protCalc.value.monster, r.pct, r.fixed),
-        pierceResist: findMonster(protCalc.value.monster).pierceResist,
+        critDamagePercent: r.crit, // 銳利目光：暴擊時通用額外傷害 +%（非暴擊傷害；欄位名沿用）
+        protBeforePierce: protBeforePierce(protCalc.value, r.pct, r.fixed),
+        pierceResist: monsterStats(protCalc.value).pierceResist,
         meleePercent: r.melee, // 近戰技能傷害 +%（憤怒衝擊）
     };
 });
@@ -266,22 +267,28 @@ const sides = computed(() =>
         const a = resultOf(cfgA.value, key);
         const b = resultOf(cfgB.value, key);
         const ratio = b.dealt / a.dealt;
-        const diff = !isFinite(ratio) || ratio === 1 ? "相同" : `B ${signed((ratio - 1) * 100, "%")}`;
+        // 兩種說法：B 相對 A（以 A 為底，方向固定）、較高者高出較低者多少（對調 A/B 數字不變）
+        const same = !isFinite(ratio) || ratio === 1;
+        const diff = same ? "相同" : `B ${signed((ratio - 1) * 100, "%")}`;
+        const lead = same ? "" : ratio > 1 ? `B 高 ${fmt((ratio - 1) * 100)}%` : `A 高 ${fmt((1 / ratio - 1) * 100)}%`;
+        const diffFull = lead ? `${diff}（${lead}）` : diff;
         return {
             key,
             label,
             totalA: a.total,
             totalB: b.total,
             diff,
+            lead,
+            diffFull,
             rows: [
                 { label: "保護減少", a: `-${fmt(a.pct)}% / -${fmt(a.fixed)}`, b: `-${fmt(b.pct)}% / -${fmt(b.fixed)}`, diff: "" },
                 { label: "保護", a: `${a.before} → ${a.after}`, b: `${b.before} → ${b.after}`, diff: signed(b.after - a.after) },
                 { label: "減傷率", a: `${a.rateBefore}% → ${a.rateAfter}%`, b: `${b.rateBefore}% → ${b.rateAfter}%`, diff: signed(b.rateAfter - a.rateAfter, "%") },
                 { label: "破防後傷害倍數", a: `×${a.mult}`, b: `×${b.mult}`, diff: "" },
                 { label: "所受傷害", a: `+${fmt(a.dmgInc)}%`, b: `+${fmt(b.dmgInc)}%`, diff: signed(b.dmgInc - a.dmgInc, "%") },
-                { label: "總傷害倍率", a: `×${a.total}`, b: `×${b.total}`, diff, strong: true },
+                { label: "總傷害倍率", a: `×${a.total}`, b: `×${b.total}`, diff: diffFull, strong: true },
                 { label: "近戰技能傷害＊", a: `+${fmt(a.melee)}%`, b: `+${fmt(b.melee)}%`, diff: signed(b.melee - a.melee, "%"), minor: true },
-                { label: "暴擊傷害＊", a: `+${fmt(a.crit)}%`, b: `+${fmt(b.crit)}%`, diff: signed(b.crit - a.crit, "%"), minor: true },
+                { label: "暴擊時通用額外傷害＊", a: `+${fmt(a.crit)}%`, b: `+${fmt(b.crit)}%`, diff: signed(b.crit - a.crit, "%"), minor: true },
             ],
             steps: stepRows(a.after, props.single ? a.after : b.after),
         };
@@ -435,7 +442,7 @@ const sides = computed(() =>
                 <span class="text-a font-semibold">A ×{{ s.totalA }}</span>
                 <span class="text-gray-500">→</span>
                 <span class="text-b font-semibold">B ×{{ s.totalB }}</span>
-                <span class="sum-diff">{{ s.diff }}</span>
+                <span class="sum-diff">{{ s.diffFull }}</span>
             </div>
             <el-button size="small" class="ml-auto" @click="scrollToResults">詳細結果 ↓</el-button>
         </div>
@@ -466,6 +473,7 @@ const sides = computed(() =>
                         <div class="summary-cell">
                             <div class="summary-label">實際傷害差異</div>
                             <div class="summary-val text-gray-100">{{ s.diff }}</div>
+                            <div v-if="s.lead" class="summary-label">{{ s.lead }}</div>
                         </div>
                     </template>
                 </div>
@@ -535,8 +543,8 @@ const sides = computed(() =>
 
         <p class="text-center text-xs text-gray-600 pb-6">
             同一狀態由多個來源施加時取數值較高者；不同狀態相加。先扣 %、再扣固定、最後扣銳利；保護無條件捨去後查表。<br />
-            「還需」為額外的固定保護減少量。<template v-if="!single">差異百分比為 B 相對 A 的實際傷害（保護減傷 × 所受傷害），與比較基準無關。</template><br />
-            ＊近戰技能傷害、暴擊傷害只適用部分攻擊，不計入總傷害倍率；召喚噩夢的最終傷害 +0.9594% 亦未計入。
+            「還需」為額外的固定保護減少量。<template v-if="!single">差異百分比以實際傷害（保護減傷 × 所受傷害）計算，與比較基準無關：「B ±x%」以 A 為底；括號內「A／B 高 x%」以較低者為底，A、B 對調時數字不變。</template><br />
+            ＊近戰技能傷害、暴擊時通用額外傷害只適用部分攻擊，不計入總傷害倍率；召喚噩夢的最終傷害 +0.9594% 亦未計入。
         </p>
     </div>
 </template>

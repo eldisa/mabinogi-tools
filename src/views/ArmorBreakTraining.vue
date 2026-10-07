@@ -331,6 +331,7 @@ const fmtVal = (kind: "prot" | "atk", pct: number, fixed: number) => {
 
 // 怪物保護：破防前後實際減傷（計算見 utils/protectionCompare.ts）
 const protCalc = useLocalStorage("armor-break:prot-calc", { ...DEFAULT_PROT_COMPARE });
+protCalc.value = { ...DEFAULT_PROT_COMPARE, ...protCalc.value }; // 舊存檔補自訂怪物欄位
 
 const debuffTotals = computed(() =>
     STAT_GROUPS.map((g) => {
