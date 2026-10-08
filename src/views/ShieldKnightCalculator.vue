@@ -418,28 +418,19 @@ function loadAllPresets(): ShieldKnightPreset[] {
 
 const presets = ref<ShieldKnightPreset[]>(loadAllPresets());
 const newPresetName = ref("");
-// ── buff 覆蓋率估算（只是幫忙算出建議值，結果要按鈕才會填進覆蓋率欄位） ──
+// ── buff 覆蓋率估算：覆蓋率 = 持續秒數 ÷ (持續秒數 + 平均空窗秒數)，空窗秒數看實戰紀錄兩次觸發中間空幾秒（已含沒命中、冷卻、暴擊刷新等實際情況），結果要按鈕才會填進覆蓋率欄位 ──
 const RAGE_IMPACT_DURATION_SECONDS = 7;
 const RAGE_IMPACT_BASE_COOLDOWN_SECONDS = 30;
-const rageCdReduction = ref(0);
-const rageHitRatePercent = ref(100);
-const rageExtraCasts = ref(0);
-/** 憤怒衝擊覆蓋率 = 持續秒數 × (1 + 每輪冷卻額外重放次數) × 命中率 ÷ 實際冷卻；沒命中就沒有 buff，所以命中率直接相乘 */
-const rageCoverageEstimate = computed(() => {
-    const cooldown = Math.max(1, RAGE_IMPACT_BASE_COOLDOWN_SECONDS - rageCdReduction.value);
-    return Math.min(100, ((RAGE_IMPACT_DURATION_SECONDS * (1 + rageExtraCasts.value) * rageHitRatePercent.value) / cooldown));
-});
+const coverageFromGap = (durationSeconds: number, gapSeconds: number): number => (durationSeconds * 100) / (durationSeconds + Math.max(0, gapSeconds));
+/** 預設空窗 = 冷卻 − 持續秒數（命中率 100%、沒有冷卻縮減，也就是 7 ÷ 30 ≈ 23%） */
+const rageGapSeconds = ref(RAGE_IMPACT_BASE_COOLDOWN_SECONDS - RAGE_IMPACT_DURATION_SECONDS);
+const rageCoverageEstimate = computed(() => coverageFromGap(RAGE_IMPACT_DURATION_SECONDS, rageGapSeconds.value));
 const REFLECTION_TRACE_BASE_SECONDS = 15;
 const REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL = 0.15;
 const reflectionReforgeLevel = ref(0);
-const reflectionFightSeconds = ref(180);
+const reflectionGapSeconds = ref(0);
 const reflectionDurationSeconds = computed(() => REFLECTION_TRACE_BASE_SECONDS + reflectionReforgeLevel.value * REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL);
-/** 省察的痕跡覆蓋率 = 犧牲懲戒施放次數 × 持續秒數 ÷ 戰鬥秒數（假設每次觸發的持續時間不重疊） */
-const reflectionCoverageEstimate = computed(() =>
-    reflectionFightSeconds.value > 0
-        ? Math.min(100, ((settings.skillUsageCounts["sacrifice-punishment"] ?? 0) * reflectionDurationSeconds.value * 100) / reflectionFightSeconds.value)
-        : 0,
-);
+const reflectionCoverageEstimate = computed(() => coverageFromGap(reflectionDurationSeconds.value, reflectionGapSeconds.value));
 const showPresetPanel = ref(false);
 const showDebugPanel = ref(false);
 
@@ -1367,18 +1358,15 @@ onMounted(() => {
                                 <span class="switch-label">%（平均有多少比例的技能施放吃得到加成，預設 100%＝全程有效）</span>
                             </div>
                             <div class="field-hint">
-                                憤怒衝擊技能範圍窄、可能打不中，冷卻 {{ RAGE_IMPACT_BASE_COOLDOWN_SECONDS }} 秒（裝備可縮短 0~20 秒，暴擊時可能刷新冷卻再施放），必須命中才會附加 {{ RAGE_IMPACT_DURATION_SECONDS }} 秒的效果。下面可以估算建議的覆蓋率：
+                                憤怒衝擊範圍窄、可能打不中，冷卻 {{ RAGE_IMPACT_BASE_COOLDOWN_SECONDS }} 秒（裝備可縮短 0~20 秒，暴擊時可能刷新冷卻再施放），必須命中才會附加 {{ RAGE_IMPACT_DURATION_SECONDS }} 秒的效果。建議填「兩次效果中間平均空幾秒」（已含沒命中、冷卻縮減、刷新），覆蓋率 = {{ RAGE_IMPACT_DURATION_SECONDS }} ÷ ({{ RAGE_IMPACT_DURATION_SECONDS }} + 空窗)。
                             </div>
                             <div class="field-row">
-                                <label class="field-label">冷卻縮減（秒）</label>
-                                <el-input-number v-model="rageCdReduction" :min="0" :max="20" size="small" class="field-select-sm" />
-                                <label class="field-label">命中率（%）</label>
-                                <el-input-number v-model="rageHitRatePercent" :min="0" :max="100" :step="5" size="small" class="field-select-sm" />
-                                <label class="field-label">每輪額外重放次數</label>
-                                <el-input-number v-model="rageExtraCasts" :min="0" :max="5" :step="0.5" size="small" class="field-select-sm" />
+                                <label class="field-label">平均空窗（秒）</label>
+                                <el-input-number v-model="rageGapSeconds" :min="0" :step="1" size="small" class="field-select-sm" />
+                                <span class="switch-label">預設 {{ RAGE_IMPACT_BASE_COOLDOWN_SECONDS - RAGE_IMPACT_DURATION_SECONDS }} 秒＝每次冷卻一好就命中、沒有縮減</span>
                             </div>
                             <div class="field-row">
-                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(rageCoverageEstimate) }}%（持續 {{ RAGE_IMPACT_DURATION_SECONDS }} 秒 × (1 + 額外重放) × 命中率 ÷ 實際冷卻）</span>
+                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(rageCoverageEstimate) }}%（{{ RAGE_IMPACT_DURATION_SECONDS }} ÷ ({{ RAGE_IMPACT_DURATION_SECONDS }} + {{ rageGapSeconds }}) 秒）</span>
                                 <el-button size="small" plain @click="settings.rageImpactCoveragePercent = Math.round(rageCoverageEstimate)">填入覆蓋率</el-button>
                             </div>
 
@@ -1477,16 +1465,16 @@ onMounted(() => {
                                 <span class="switch-label">%（觸發中時，平均有多少比例的秘法技能施放吃得到加成，預設 100%）</span>
                             </div>
                             <div class="field-hint">
-                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（目前 {{ fmtRatio(reflectionDurationSeconds) }} 秒）；估算用「技能使用次數」分頁的犧牲懲戒次數（目前 {{ settings.skillUsageCounts["sacrifice-punishment"] ?? 0 }} 次）。
+                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（目前 {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
                             </div>
                             <div class="field-row">
                                 <label class="field-label">細工等級</label>
                                 <el-input-number v-model="reflectionReforgeLevel" :min="0" :max="25" size="small" class="field-select-sm" />
-                                <label class="field-label">戰鬥時間（秒）</label>
-                                <el-input-number v-model="reflectionFightSeconds" :min="1" :step="30" size="small" class="field-select-sm" />
+                                <label class="field-label">平均空窗（秒）</label>
+                                <el-input-number v-model="reflectionGapSeconds" :min="0" :step="1" size="small" class="field-select-sm" />
                             </div>
                             <div class="field-row">
-                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(reflectionCoverageEstimate) }}%（犧牲懲戒次數 × 持續秒數 ÷ 戰鬥秒數，假設觸發期間不重疊）</span>
+                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(reflectionCoverageEstimate) }}%（{{ fmtRatio(reflectionDurationSeconds) }} ÷ ({{ fmtRatio(reflectionDurationSeconds) }} + {{ reflectionGapSeconds }}) 秒）</span>
                                 <el-button size="small" plain @click="settings.muliasRelic.reflectionTraceCoveragePercent = Math.round(reflectionCoverageEstimate)">填入覆蓋率</el-button>
                             </div>
                             <div class="field-row">
