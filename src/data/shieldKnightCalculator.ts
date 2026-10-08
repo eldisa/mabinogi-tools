@@ -28,6 +28,7 @@ import {
     calculateCriticalRatePercent,
     calculateCriticalDamageExpected,
     calculateGeneralExtraDamageMultiplier,
+    calculateGeneralExtraPercent,
     calculateTalentIncreaseDamageMultiplier,
     calculateTalentSkillTargetDamage,
     calculateTalentSkillDamage,
@@ -182,24 +183,15 @@ function getWeaponPreset(weaponType: WeaponType, weaponId: string): WeaponPreset
 }
 
 // ═══════════════════════════════════════════════════════
-//  武器特殊改造：R 增加暴擊傷害%、S 增加追加傷害（額外傷害）% 與最大傷害（階段 1~8）
-//  只收單手斧與雙手劍；第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化
+//  武器特殊改造：R 增加暴擊傷害%、S 增加追加傷害（算進通用額外傷害）% 與最大傷害（階段 1~8）
+//  單手斧在 9/17 上修後與雙手劍數值相同；第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化
 // ═══════════════════════════════════════════════════════
 
 export const SPECIAL_REFORM_STAGE_COUNT = 8;
-export const SPECIAL_REFORM_R_CRIT_PERCENT: Record<WeaponType, readonly number[]> = {
-    one_hand_axe: [5, 14, 23, 33, 43, 53, 63, 89],
-    two_hand_sword: [6, 16, 26, 38, 50, 62, 74, 89],
-};
-export const SPECIAL_REFORM_S_EXTRA_PERCENT: Record<WeaponType, readonly number[]> = {
-    one_hand_axe: [2, 2, 3, 3, 4, 5, 6, 10],
-    two_hand_sword: [2, 3, 4, 5, 6, 7, 9, 10],
-};
+export const SPECIAL_REFORM_R_CRIT_PERCENT: readonly number[] = [6, 16, 26, 38, 50, 62, 74, 89];
+export const SPECIAL_REFORM_S_EXTRA_PERCENT: readonly number[] = [2, 3, 4, 5, 6, 7, 9, 10];
 /** S 改造附帶的最大傷害（面板最大傷害通常已含，只用於「特殊改造效益」比較階段價值） */
-export const SPECIAL_REFORM_S_MAX_DAMAGE: Record<WeaponType, readonly number[]> = {
-    one_hand_axe: [80, 90, 100, 110, 120, 130, 140, 170],
-    two_hand_sword: [50, 60, 70, 90, 110, 130, 155, 170],
-};
+export const SPECIAL_REFORM_S_MAX_DAMAGE: readonly number[] = [50, 60, 70, 90, 110, 130, 155, 170];
 const SPECIAL_REFORM_STAGE8_WEAPON_IDS = ["soul_liberator_axe", "sky_sonata", "soul_liberator_sword"];
 
 /** 該武器能強化到第幾階：靈魂解放者／日月劍 8 階，其他 7 階 */
@@ -213,11 +205,10 @@ export function normalizeSpecialReformStage(value: unknown, maxStage: number): n
     return Math.min(Math.max(0, Math.round(n)), maxStage);
 }
 
-const reformValue = (table: Record<WeaponType, readonly number[]>, weaponType: WeaponType, stage: number): number =>
-    stage > 0 ? (table[weaponType][stage - 1] ?? 0) : 0;
-export const specialReformRCrit = (weaponType: WeaponType, stage: number) => reformValue(SPECIAL_REFORM_R_CRIT_PERCENT, weaponType, stage);
-export const specialReformSExtra = (weaponType: WeaponType, stage: number) => reformValue(SPECIAL_REFORM_S_EXTRA_PERCENT, weaponType, stage);
-export const specialReformSMaxDamage = (weaponType: WeaponType, stage: number) => reformValue(SPECIAL_REFORM_S_MAX_DAMAGE, weaponType, stage);
+const reformValue = (table: readonly number[], stage: number): number => (stage > 0 ? (table[stage - 1] ?? 0) : 0);
+export const specialReformRCrit = (stage: number) => reformValue(SPECIAL_REFORM_R_CRIT_PERCENT, stage);
+export const specialReformSExtra = (stage: number) => reformValue(SPECIAL_REFORM_S_EXTRA_PERCENT, stage);
+export const specialReformSMaxDamage = (stage: number) => reformValue(SPECIAL_REFORM_S_MAX_DAMAGE, stage);
 
 // ═══════════════════════════════════════════════════════
 //  盾牌（獨立區塊）
@@ -807,7 +798,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const reformSStage = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, reformMaxStage);
     const criticalDamagePercent = calculateCriticalDamagePercent({
         ...settings.criticalDamage,
-        weaponSpecialReforgeCritPercent: specialReformRCrit(settings.weaponType, reformRStage),
+        weaponSpecialReforgeCritPercent: specialReformRCrit(reformRStage),
         classBonusPercent: 0,
         holyWaterPercent: sumHolyWater(settings.holyWater, "criticalDamage"),
     });
@@ -816,16 +807,14 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
 
     // ── 額外傷害（通用額外傷害倍率） ──
     const isOneHandWeapon = settings.weaponType === "one_hand_axe";
-    const weaponExtraDamagePercent =
-        weapon.extraDamagePercent +
-        (isOneHandWeapon ? (shield.oneHandWeaponExtraDamagePercent ?? 0) : 0) +
-        specialReformSExtra(settings.weaponType, reformSStage);
+    const weaponExtraDamagePercent = weapon.extraDamagePercent + (isOneHandWeapon ? (shield.oneHandWeaponExtraDamagePercent ?? 0) : 0);
     // 破防的「暴擊時通用額外傷害」（例如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似，跟全引擎的期望值作法一致
     const critOnlyGeneralExtraPercent = ((armorBreak?.critDamagePercent ?? 0) * criticalRatePercent) / 100;
     const generalExtraDamageMultiplier =
         calculateGeneralExtraDamageMultiplier({
             ...settings.extraDamage,
             weaponExtraDamagePercent,
+            generalBonusPercent: specialReformSExtra(reformSStage),
         }) * (1 + critOnlyGeneralExtraPercent / 100);
 
     // ── 才能增加傷害（種族技能 × 猛擊，乘算） ──
@@ -2020,35 +2009,40 @@ export interface SpecialReformRow {
  * 量測總輸出增加量並換算成「相當大傷」。S 的最大傷害已含在面板內，這裡用「最終/面板」比例近似它吃到的攻擊係數。
  */
 export function calculateSpecialReformTable(settings: ShieldKnightSettings): SpecialReformRow[] {
-    const { calcResult, baseLevers, compute, baseTotal } = buildLeverContext(settings);
+    const { baseLevers, compute, baseTotal } = buildLeverContext(settings);
     const maxDamageDelta = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + 1 }) - baseTotal;
-    const type = settings.weaponType;
     const maxStage = specialReformMaxStage(settings.weaponId);
     const curR = normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, maxStage);
     const curS = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, maxStage);
     const coefficientRatio = settings.panelMaxDamage > 0 ? baseLevers.maxDamage / settings.panelMaxDamage : 1;
 
-    const noR = { ...baseLevers, criticalDamagePercent: baseLevers.criticalDamagePercent - specialReformRCrit(type, curR) };
+    const noR = { ...baseLevers, criticalDamagePercent: baseLevers.criticalDamagePercent - specialReformRCrit(curR) };
     const noRTotal = compute(noR);
-    const weaponExtraWithoutS = calcResult.weaponExtraDamagePercent - specialReformSExtra(type, curS);
+    // 額外傷害那一桶（含目前的 S）扣掉目前的 S，就是「沒有 S」的基準
+    const generalPercentWithS = calculateGeneralExtraPercent({
+        ...settings.extraDamage,
+        weaponExtraDamagePercent: 0,
+        generalBonusPercent: specialReformSExtra(curS),
+    });
+    const generalPercentWithoutS = generalPercentWithS - specialReformSExtra(curS);
     const noS = {
         ...baseLevers,
-        maxDamage: baseLevers.maxDamage - specialReformSMaxDamage(type, curS) * coefficientRatio,
-        generalExtraDamageMultiplier: (baseLevers.generalExtraDamageMultiplier * (1 + weaponExtraWithoutS / 100)) / (1 + calcResult.weaponExtraDamagePercent / 100),
+        maxDamage: baseLevers.maxDamage - specialReformSMaxDamage(curS) * coefficientRatio,
+        generalExtraDamageMultiplier: (baseLevers.generalExtraDamageMultiplier * (1 + generalPercentWithoutS / 100)) / (1 + generalPercentWithS / 100),
     };
     const noSTotal = compute(noS);
 
     return Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => {
         const stage = i + 1;
-        const rCrit = specialReformRCrit(type, stage);
-        const sExtra = specialReformSExtra(type, stage);
-        const sMax = specialReformSMaxDamage(type, stage);
+        const rCrit = specialReformRCrit(stage);
+        const sExtra = specialReformSExtra(stage);
+        const sMax = specialReformSMaxDamage(stage);
         const rDelta = compute({ ...noR, criticalDamagePercent: noR.criticalDamagePercent + rCrit }) - noRTotal;
         const sDelta =
             compute({
                 ...noS,
                 maxDamage: noS.maxDamage + sMax * coefficientRatio,
-                generalExtraDamageMultiplier: (noS.generalExtraDamageMultiplier * (1 + (weaponExtraWithoutS + sExtra) / 100)) / (1 + weaponExtraWithoutS / 100),
+                generalExtraDamageMultiplier: (noS.generalExtraDamageMultiplier * (1 + (generalPercentWithoutS + sExtra) / 100)) / (1 + generalPercentWithoutS / 100),
             }) - noSTotal;
         return {
             stage,
@@ -2091,7 +2085,7 @@ export interface ShieldKnightSettings {
     weaponType: WeaponType;
     weaponId: string;
     shieldId: string;
-    /** 武器特殊改造 S 階段 0~8：追加傷害%（額外傷害）併入武器額外傷害那一桶，最大傷害已含在面板 */
+    /** 武器特殊改造 S 階段 0~8：追加傷害%算進通用額外傷害的「額外傷害」那一桶（和武器本身的額外傷害不同），最大傷害已含在面板 */
     weaponSpecialReformSStage: number;
     holyWater: HolyWaterState;
     reforge: ReforgeState;

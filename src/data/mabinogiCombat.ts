@@ -305,12 +305,18 @@ export interface ExtraDamageState {
     farmModelPercent: number;
     /** 套裝效果（日月之神隨機發動/暮光套被動）0% 或 5% */
     setEffectActive: boolean;
+    /** 其他算進額外傷害那一桶的來源%（例如武器特殊改造 S 的追加傷害），由呼叫端算好傳入 */
+    generalBonusPercent?: number;
+}
+
+/** 額外傷害那一桶的加總%（稱號＋圖騰＋農場模型＋套裝效果＋其他來源，不含武器額外傷害） */
+export function calculateGeneralExtraPercent(state: ExtraDamageState): number {
+    return state.titlePercent + state.totemPercent + state.farmModelPercent + (state.setEffectActive ? 5 : 0) + (state.generalBonusPercent ?? 0);
 }
 
 /** 通用額外傷害 = (1+武器額外傷害) × (1+額外傷害)，回傳完整倍率（例如 1.61） */
 export function calculateGeneralExtraDamageMultiplier(state: ExtraDamageState): number {
-    const generalPercent = state.titlePercent + state.totemPercent + state.farmModelPercent + (state.setEffectActive ? 5 : 0);
-    return (1 + state.weaponExtraDamagePercent / 100) * (1 + generalPercent / 100);
+    return (1 + state.weaponExtraDamagePercent / 100) * (1 + calculateGeneralExtraPercent(state) / 100);
 }
 
 // ═══════════════════════════════════════════════════════

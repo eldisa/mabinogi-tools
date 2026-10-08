@@ -1309,18 +1309,18 @@ onMounted(() => {
                                 <label class="field-label">武器特殊改造 R</label>
                                 <el-select v-model="settings.criticalDamage.weaponSpecialReforgeTier" size="small" class="field-select">
                                     <el-option :value="0" label="無" />
-                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`R${n}（暴擊傷害 +${specialReformRCrit(settings.weaponType, n)}%）`" />
+                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`R${n}（暴擊傷害 +${specialReformRCrit(n)}%）`" />
                                 </el-select>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">武器特殊改造 S</label>
                                 <el-select v-model="settings.weaponSpecialReformSStage" size="small" class="field-select">
                                     <el-option :value="0" label="無" />
-                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`S${n}（追加傷害 +${specialReformSExtra(settings.weaponType, n)}%）`" />
+                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`S${n}（追加傷害 +${specialReformSExtra(n)}%）`" />
                                 </el-select>
                             </div>
                             <div class="field-hint">
-                                單手斧與雙手劍的數值不同，第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化。S 的最大傷害已含在面板最大傷害，這裡只計追加傷害 %（併入武器額外傷害）。
+                                單手斧在 9/17 上修後與雙手劍數值相同，第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化。S 的最大傷害已含在面板最大傷害，這裡只計追加傷害 %，算進通用額外傷害的「額外傷害」那一桶（和武器本身的額外傷害不同）。
                             </div>
                             <div class="field-row">
                                 <label class="field-label">暴擊傷害套裝</label>
@@ -1352,7 +1352,7 @@ onMounted(() => {
                                 <el-input-number v-model="settings.criticalDamage.titlePercent" :min="0" :max="3" size="small" class="field-select" />
                             </div>
                             <div class="field-row">
-                                <span class="switch-label">聖水暴擊傷害（自動讀取裝備分頁）：+{{ fmtRatio(calcResult.criticalDamagePercent - 100 - (settings.criticalDamage.skillR1Active ? 150 : 0) - (settings.criticalDamage.fullGradeActive ? 10 : 0) - (settings.criticalDamage.spiritWeaponCritActive ? 15 : 0) - specialReformRCrit(settings.weaponType, reformRStage) - CRITICAL_DAMAGE_SET_BONUS[settings.criticalDamage.setTier] - (settings.criticalDamage.totemChoice === 'critical_damage' ? 5 : 0) - settings.criticalDamage.dollBagPercent - settings.criticalDamage.farmModelPercent - settings.criticalDamage.titlePercent - settings.criticalDamage.brireheCoinPercent - (settings.criticalDamage.assassinOutfitActive ? 12 : 0)) }}%</span>
+                                <span class="switch-label">聖水暴擊傷害（自動讀取裝備分頁）：+{{ fmtRatio(calcResult.criticalDamagePercent - 100 - (settings.criticalDamage.skillR1Active ? 150 : 0) - (settings.criticalDamage.fullGradeActive ? 10 : 0) - (settings.criticalDamage.spiritWeaponCritActive ? 15 : 0) - specialReformRCrit(reformRStage) - CRITICAL_DAMAGE_SET_BONUS[settings.criticalDamage.setTier] - (settings.criticalDamage.totemChoice === 'critical_damage' ? 5 : 0) - settings.criticalDamage.dollBagPercent - settings.criticalDamage.farmModelPercent - settings.criticalDamage.titlePercent - settings.criticalDamage.brireheCoinPercent - (settings.criticalDamage.assassinOutfitActive ? 12 : 0)) }}%</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.criticalDamage.assassinOutfitActive" />
@@ -1794,7 +1794,7 @@ onMounted(() => {
                                 </table>
                             </div>
                             <div class="field-hint">
-                                S 的最大傷害已含在面板，這裡用「最終/面板」比例近似它吃到的攻擊係數；S 的追加傷害當成武器額外傷害那一桶。第 8 階只有靈魂解放者／日月劍可用。
+                                S 的最大傷害已含在面板，這裡用「最終/面板」比例近似它吃到的攻擊係數；S 的追加傷害算進額外傷害那一桶。第 8 階只有靈魂解放者／日月劍可用。
                             </div>
 
                             <div class="field-section-label">儲存傷害效益（存下目前這份結果，未來「計算裝備提升幅度」會讀取這裡的快照來比較）</div>
