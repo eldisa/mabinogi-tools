@@ -226,18 +226,24 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     talentIncreaseDamage:
         "才能增加傷害（乘算）＝(1+種族特殊技能%) × (1+猛擊 buff%)。種族技能需在「角色」分頁勾選開啟才計入，猛擊 buff 依「技能設定」的猛擊層數（需開啟顯示猛擊技能才計入）。對重擊/風車/突擊/猛擊全吃，7 個秘法技能只有「借用才能技能」的那部分吃到。這裡是假設這個乘區再多 1% 的效益。",
     finalIncreaseDamage:
-        "最終增加傷害（乘算）＝戰鬥服務 +1% × 強力威光（達可達）+5% × 破防面板的「所受傷害增加」× 憤怒衝擊近戰%（需勾選憤怒衝擊中）。對所有技能最後整體乘上，重擊/風車/猛擊與 7 個秘法技能全吃（反射的痕跡只加成秘法技能，不在這一項）。這裡是假設這個乘區再多 1% 的效益。",
+        "最終增加傷害（乘算）＝戰鬥服務 +1% × 強力威光（達可達）+5% × 破防面板的「所受傷害增加」× 憤怒衝擊近戰%（需勾選憤怒衝擊中）。對所有技能最後整體乘上，重擊/風車/猛擊與 7 個秘法技能全吃（省察的痕跡只加成秘法技能，不在這一項）。這裡是假設這個乘區再多 1% 的效益。",
     arcaneExtraDamage: "只套用於 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃這項加成。",
     sharpLevel: "需在「破防」分頁勾選套用破防結果才會影響傷害，否則效益為 0；保護是查表無條件捨去，同一區間內多一級可能沒有變化。",
     muliasSacrificeRegen:
         "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
-    muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；這裡固定以「反射的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
+    muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；這裡固定以「省察的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
     manualWindmillBase30: "「裝備」分頁的手動套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualChargeEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
     darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
+    rageSet:
+        "憤怒衝擊套裝（近戰技能傷害 +2%）。套裝設定在「破防」分頁，這裡只拿得到合計近戰%，所以以目前近戰% 再 +2% 當作有套裝、現值當作沒套裝估算；需開啟「近距離額外傷害中」並套用破防結果才有效果。",
+    rageCoverage:
+        "憤怒衝擊覆蓋率：近距離額外傷害中時，平均有多少比例的技能施放吃得到加成。這裡固定以憤怒衝擊中計算，顯示覆蓋率 +10 個百分點（已 ≥ 90% 時改以 −10 反推）的效益，可用來判斷「提高命中／縮短冷卻」值不值得。",
+    reflectionCoverage:
+        "省察的痕跡覆蓋率：觸發中時，平均有多少比例的秘法技能施放吃得到加成（只影響 7 個秘法技能）。這裡固定以觸發中計算，顯示覆蓋率 +10 個百分點的效益。",
     raceSkill: "「裝備」分頁的種族特殊技能（人類 +5%／巨人 +15%，併入才能增加傷害）。顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關；精靈的弓術種族技能對聖盾無效，效益為 0。",
     transformation: "面板大傷已含變身的固定加成，這裡以「面板扣掉變身那一份」當作沒變身來比較開啟 vs 關閉的價值；角色型態沒有變身（黑暗騎士）則為 0。數值約等於變身提供的大傷（受攻擊係數放大）。",
 };
@@ -248,7 +254,8 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "生存屬性", ids: ["defense", "maxHp"] },
     { label: "穆利亞斯的遺物", ids: ["muliasSacrificeRegen", "muliasReflectionTrace", "muliasJudgementStrike"] },
     { label: "套裝效果（裝備分頁的手動套裝標記）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
-    { label: "聚能／種族技能／變身開關", ids: ["erg", "darkErg", "raceSkill", "transformation"] },
+    { label: "buff 覆蓋率", ids: ["rageCoverage", "reflectionCoverage"] },
+    { label: "聚能／種族技能／變身／套裝開關", ids: ["erg", "darkErg", "raceSkill", "transformation", "rageSet"] },
 ];
 const efficiencySortByGain = ref(false);
 const efficiencyTopN = ref(0);
@@ -379,7 +386,7 @@ const RESULT_DETAILS: Record<string, string> = {
     protectionReduction: "保護減算 = 1 − 破後物理減傷率（怪物保護先扣破防%、再扣固定值、最後扣銳利，無條件捨去後查減傷表；銳利等級在「裝備」分頁填寫；「破防」分頁勾選套用時才生效，否則 ×1），乘進才能／秘法技能的目標傷害。",
     talentIncreaseDamageMultiplier: "才能增加傷害 =(1+種族技能%) × (1+猛擊層數對應%)，乘算，只影響才能技能（重擊/風車/突擊/猛擊）。",
     finalIncreaseDamageMultiplier:
-        "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草，所有技能都吃；穆利亞斯的反射的痕跡另外只乘在 7 個秘法技能（見「很貴的項目」分頁）。",
+        "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草，所有技能都吃；穆利亞斯的省察的痕跡另外只乘在 7 個秘法技能（見「很貴的項目」分頁）。",
     windmillDamage:
         "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝10%) × (1+風車套裝15%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
     chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊倍率% = (基礎+魔法陣+細工) × 突擊套裝。",
@@ -411,6 +418,28 @@ function loadAllPresets(): ShieldKnightPreset[] {
 
 const presets = ref<ShieldKnightPreset[]>(loadAllPresets());
 const newPresetName = ref("");
+// ── buff 覆蓋率估算（只是幫忙算出建議值，結果要按鈕才會填進覆蓋率欄位） ──
+const RAGE_IMPACT_DURATION_SECONDS = 7;
+const RAGE_IMPACT_BASE_COOLDOWN_SECONDS = 30;
+const rageCdReduction = ref(0);
+const rageHitRatePercent = ref(100);
+const rageExtraCasts = ref(0);
+/** 憤怒衝擊覆蓋率 = 持續秒數 × (1 + 每輪冷卻額外重放次數) × 命中率 ÷ 實際冷卻；沒命中就沒有 buff，所以命中率直接相乘 */
+const rageCoverageEstimate = computed(() => {
+    const cooldown = Math.max(1, RAGE_IMPACT_BASE_COOLDOWN_SECONDS - rageCdReduction.value);
+    return Math.min(100, ((RAGE_IMPACT_DURATION_SECONDS * (1 + rageExtraCasts.value) * rageHitRatePercent.value) / cooldown));
+});
+const REFLECTION_TRACE_BASE_SECONDS = 15;
+const REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL = 0.15;
+const reflectionReforgeLevel = ref(0);
+const reflectionFightSeconds = ref(180);
+const reflectionDurationSeconds = computed(() => REFLECTION_TRACE_BASE_SECONDS + reflectionReforgeLevel.value * REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL);
+/** 省察的痕跡覆蓋率 = 犧牲懲戒施放次數 × 持續秒數 ÷ 戰鬥秒數（假設每次觸發的持續時間不重疊） */
+const reflectionCoverageEstimate = computed(() =>
+    reflectionFightSeconds.value > 0
+        ? Math.min(100, ((settings.skillUsageCounts["sacrifice-punishment"] ?? 0) * reflectionDurationSeconds.value * 100) / reflectionFightSeconds.value)
+        : 0,
+);
 const showPresetPanel = ref(false);
 const showDebugPanel = ref(false);
 
@@ -1259,7 +1288,7 @@ onMounted(() => {
 
                             <div class="field-section-label">最終增加傷害（乘算）</div>
                             <div class="field-hint">
-                                死神烙印、憤怒衝擊、命運編織．倒吊人、洞察之眼、幸運草標記等增傷已由「破防」分頁提供（所受傷害增加、近戰技能傷害），這裡只保留戰鬥服務與強力威光；秘法額外傷害與穆利亞斯遺物（反射的痕跡）在「很貴的項目」分頁。
+                                死神烙印、憤怒衝擊、命運編織．倒吊人、洞察之眼、幸運草標記等增傷已由「破防」分頁提供（所受傷害增加、近戰技能傷害），這裡只保留戰鬥服務與強力威光；秘法額外傷害與穆利亞斯遺物（省察的痕跡）在「很貴的項目」分頁。
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.finalIncreaseDamage.combatServiceBuffActive" />
@@ -1332,6 +1361,26 @@ onMounted(() => {
                                 <el-switch v-model="settings.rageImpactBuffActive" />
                                 <span class="switch-label">近距離額外傷害中（憤怒衝擊，觸發後 7 秒內；數值在「破防」分頁的憤怒衝擊來源調整，需套用破防結果才生效）</span>
                             </div>
+                            <div class="field-row">
+                                <label class="field-label">憤怒衝擊覆蓋率</label>
+                                <el-input-number v-model="settings.rageImpactCoveragePercent" :min="0" :max="100" :step="5" size="small" class="field-select" />
+                                <span class="switch-label">%（平均有多少比例的技能施放吃得到加成，預設 100%＝全程有效）</span>
+                            </div>
+                            <div class="field-hint">
+                                憤怒衝擊技能範圍窄、可能打不中，冷卻 {{ RAGE_IMPACT_BASE_COOLDOWN_SECONDS }} 秒（裝備可縮短 0~20 秒，暴擊時可能刷新冷卻再施放），必須命中才會附加 {{ RAGE_IMPACT_DURATION_SECONDS }} 秒的效果。下面可以估算建議的覆蓋率：
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">冷卻縮減（秒）</label>
+                                <el-input-number v-model="rageCdReduction" :min="0" :max="20" size="small" class="field-select-sm" />
+                                <label class="field-label">命中率（%）</label>
+                                <el-input-number v-model="rageHitRatePercent" :min="0" :max="100" :step="5" size="small" class="field-select-sm" />
+                                <label class="field-label">每輪額外重放次數</label>
+                                <el-input-number v-model="rageExtraCasts" :min="0" :max="5" :step="0.5" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(rageCoverageEstimate) }}%（持續 {{ RAGE_IMPACT_DURATION_SECONDS }} 秒 × (1 + 額外重放) × 命中率 ÷ 實際冷卻）</span>
+                                <el-button size="small" plain @click="settings.rageImpactCoveragePercent = Math.round(rageCoverageEstimate)">填入覆蓋率</el-button>
+                            </div>
 
                             <div class="field-section-label">施工中（公式尚待驗證，暫時停用）</div>
                             <div class="field-row">
@@ -1394,9 +1443,13 @@ onMounted(() => {
                                 <span class="switch-label">不完美的空想王冠光環（+3%）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">穆利亞斯的遺物件數</label>
+                                <label class="field-label">穆利亞斯的遺物 接尾賦予總數量</label>
                                 <el-input-number v-model="settings.arcaneExtraDamage.muliasRelicCount" :min="0" :max="3" size="small" class="field-select" />
-                                <span class="switch-label">接尾賦予捲軸，身上 0~3 個，每個 +1%</span>
+                                <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                    <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                    接尾賦予包含：管理者／後悔／片段（魔攻）／自我（煉金），身上這幾種的總數量加起來填入（0~3 個），每個 +1% 秘法額外傷害。
+                                </el-popover>
+                                <span class="switch-label">每個 +1%</span>
                             </div>
                             <div class="field-hint">
                                 秘法額外傷害加總：+{{ fmtRatio(calcResult.arcaneExtraDamagePercent) }}%（已套用於 7 個秘法技能的傷害公式，重擊/風車/突擊/猛擊等才能技能不吃）
@@ -1411,12 +1464,30 @@ onMounted(() => {
                                 <span class="switch-label">高潔誓約每秒犧牲恢復量 +{{ (settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL).toFixed(2) }}/秒（每級 +{{ MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL }}，純顯示，尚無基準值可疊加）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">反射的痕跡</label>
+                                <label class="field-label">省察的痕跡</label>
                                 <el-select v-model="settings.muliasRelic.reflectionTraceLevel" size="small" class="field-select-sm">
                                     <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
                                 <el-checkbox v-model="settings.muliasRelic.reflectionTraceActive" />
-                                <span class="switch-label">犧牲懲戒觸發反射的痕跡中（+{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃）</span>
+                                <span class="switch-label">犧牲懲戒觸發省察的痕跡中（+{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">省察覆蓋率</label>
+                                <el-input-number v-model="settings.muliasRelic.reflectionTraceCoveragePercent" :min="0" :max="100" :step="5" size="small" class="field-select" />
+                                <span class="switch-label">%（觸發中時，平均有多少比例的秘法技能施放吃得到加成，預設 100%）</span>
+                            </div>
+                            <div class="field-hint">
+                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（目前 {{ fmtRatio(reflectionDurationSeconds) }} 秒）；估算用「技能使用次數」分頁的犧牲懲戒次數（目前 {{ settings.skillUsageCounts["sacrifice-punishment"] ?? 0 }} 次）。
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">細工等級</label>
+                                <el-input-number v-model="reflectionReforgeLevel" :min="0" :max="25" size="small" class="field-select-sm" />
+                                <label class="field-label">戰鬥時間（秒）</label>
+                                <el-input-number v-model="reflectionFightSeconds" :min="1" :step="30" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(reflectionCoverageEstimate) }}%（犧牲懲戒次數 × 持續秒數 ÷ 戰鬥秒數，假設觸發期間不重疊）</span>
+                                <el-button size="small" plain @click="settings.muliasRelic.reflectionTraceCoveragePercent = Math.round(reflectionCoverageEstimate)">填入覆蓋率</el-button>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">審判重擊基礎傷害</label>

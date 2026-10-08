@@ -520,9 +520,15 @@ export const MENG_JI_STACKS: { stack: 1 | 2 | 3 | 4 | 5; ratio: number; extraDam
 
 /** 高潔誓約每秒犧牲恢復量，每級 +0.05 */
 export const MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL = 0.05;
-/** 犧牲之懲戒觸發反射的痕跡時，7 個秘法技能傷害（最終增加傷害，不含重擊/風車/猛擊）每級 +0.5% */
+/** 犧牲之懲戒觸發省察的痕跡時，7 個秘法技能傷害（最終增加傷害，不含重擊/風車/猛擊）每級 +0.5% */
 export const MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL = 0.5;
 /** 審判一擊基礎傷害比例額外加成，每級 +100% */
+/** buff 覆蓋率（0~100%）轉成 0~1，舊存檔沒有這個欄位時視為 100% */
+function coverageRatio(percent: number | undefined): number {
+    return Math.min(100, Math.max(0, percent ?? 100)) / 100;
+}
+/** 憤怒衝擊套裝：近戰技能傷害 +2% */
+const RAGE_IMPACT_SET_PERCENT = 2;
 export const MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL = 100;
 
 export const MULIAS_RELIC_LEVEL_OPTIONS: { value: number; label: string }[] = Array.from({ length: 11 }, (_, i) => ({
@@ -533,10 +539,12 @@ export const MULIAS_RELIC_LEVEL_OPTIONS: { value: number; label: string }[] = Ar
 export interface MuliasRelicSettings {
     /** 高潔誓約每秒犧牲恢復量增加，Lv0~10 */
     sacrificeRegenLevel: number;
-    /** 犧牲之懲戒觸發反射的痕跡時，秘法技能傷害增加，Lv0~10 */
+    /** 犧牲之懲戒觸發省察的痕跡時，秘法技能傷害增加，Lv0~10 */
     reflectionTraceLevel: number;
-    /** 反射的痕跡是否已觸發（觸發中才套用加成） */
+    /** 省察的痕跡是否已觸發（觸發中才套用加成） */
     reflectionTraceActive: boolean;
+    /** 省察的痕跡覆蓋率 0~100%：觸發中時，平均有多少比例的秘法技能施放吃得到加成 */
+    reflectionTraceCoveragePercent: number;
     /** 審判一擊基礎傷害比例額外加成，Lv0~10 */
     judgementStrikeLevel: number;
 }
@@ -673,7 +681,7 @@ export interface CalculationResult {
     talentIncreaseDamageMultiplier: number;
     /** 最終增加傷害倍率（戰鬥服務/達可達/死神烙印/憤怒衝擊/命運編織/洞察之眼/幸運草，乘算），所有技能都吃 */
     finalIncreaseDamageMultiplier: number;
-    /** 秘法技能專用的最終增加傷害倍率 = 最終增加傷害 × 反射的痕跡（反射的痕跡只加成 7 個秘法技能） */
+    /** 秘法技能專用的最終增加傷害倍率 = 最終增加傷害 × 省察的痕跡（省察的痕跡只加成 7 個秘法技能） */
     arcaneFinalIncreaseDamageMultiplier: number;
     /** 秘法額外傷害%加總，已套用於 7 個秘法技能的傷害公式 */
     arcaneExtraDamagePercent: number;
@@ -788,14 +796,16 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const arcaneExtraDamagePercent = calculateArcaneExtraDamagePercent(settings.arcaneExtraDamage);
 
     // ── 最終增加傷害（乘算） ──
-    // 穆利亞斯的遺物：犧牲之懲戒觸發反射的痕跡時，秘法技能傷害（最終增加傷害）+0.5%/級，只乘在 7 個秘法技能
-    const reflectionTracePercent = settings.muliasRelic.reflectionTraceActive ? settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL : 0;
+    // 穆利亞斯的遺物：犧牲之懲戒觸發省察的痕跡時，秘法技能傷害（最終增加傷害）+0.5%/級，只乘在 7 個秘法技能
+    const reflectionTracePercent = settings.muliasRelic.reflectionTraceActive
+        ? settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL * coverageRatio(settings.muliasRelic.reflectionTraceCoveragePercent)
+        : 0;
     // 死神烙印／憤怒衝擊／命運編織（倒吊人）／洞察之眼／幸運草標記都改由「破防」面板提供（所受傷害增加、近戰技能傷害），這裡只留戰鬥服務與強力威光
     const finalIncreaseDamageMultiplier =
         (1 + (settings.finalIncreaseDamage.combatServiceBuffActive ? 1 : 0) / 100) *
         (1 + (settings.finalIncreaseDamage.dakotaGlowActive ? 5 : 0) / 100) *
         (1 + (armorBreak?.damageTakenPercent ?? 0) / 100) *
-        (1 + (armorBreak && settings.rageImpactBuffActive ? armorBreak.meleePercent : 0) / 100);
+        (1 + (armorBreak && settings.rageImpactBuffActive ? armorBreak.meleePercent * coverageRatio(settings.rageImpactCoveragePercent) : 0) / 100);
     const arcaneFinalIncreaseDamageMultiplier = finalIncreaseDamageMultiplier * (1 + reflectionTracePercent / 100);
 
     // 穆利亞斯的遺物：高潔誓約每秒犧牲恢復量 +0.05/級（純顯示用，目前無基準值可疊加）
@@ -1496,7 +1506,7 @@ interface DamageLevers {
     generalExtraDamageMultiplier: number;
     talentIncreaseDamageMultiplier: number;
     finalIncreaseDamageMultiplier: number;
-    /** 秘法技能專用（含反射的痕跡），重擊/風車/猛擊不吃反射的痕跡 */
+    /** 秘法技能專用（含省察的痕跡），重擊/風車/猛擊不吃省察的痕跡 */
     arcaneFinalIncreaseDamageMultiplier: number;
     /** 秘法額外傷害%，只有 7 個秘法技能（走 calculateArcaneSkillDamage）吃得到，才能技能不吃 */
     arcaneExtraDamagePercent: number;
@@ -1599,6 +1609,9 @@ export interface DamageEfficiencyItem {
         | "darkErg"
         | "raceSkill"
         | "transformation"
+        | "rageSet"
+        | "rageCoverage"
+        | "reflectionCoverage"
         | "arcaneExtraDamage"
         | "defense"
         | "maxHp"
@@ -1727,7 +1740,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             bump: {
                 ...baseLevers,
                 finalIncreaseDamageMultiplier: baseLevers.finalIncreaseDamageMultiplier + 0.01,
-                // 秘法技能的倍率 = 最終增加傷害 × 反射的痕跡，加 0.01 同樣要乘上反射的痕跡那一項
+                // 秘法技能的倍率 = 最終增加傷害 × 省察的痕跡，加 0.01 同樣要乘上省察的痕跡那一項
                 arcaneFinalIncreaseDamageMultiplier:
                     baseLevers.arcaneFinalIncreaseDamageMultiplier +
                     0.01 * (baseLevers.arcaneFinalIncreaseDamageMultiplier / baseLevers.finalIncreaseDamageMultiplier),
@@ -1783,7 +1796,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         holyWaterMaxDamage: 0,
     }).total;
     const togglePairs: {
-        id: "erg" | "darkErg" | "raceSkill" | "transformation" | "manualWindmillBase30" | "manualChargeEnhance" | "manualSmashEnhance";
+        id: "erg" | "darkErg" | "raceSkill" | "transformation" | "rageSet" | "manualWindmillBase30" | "manualChargeEnhance" | "manualSmashEnhance";
         label: string;
         set: (on: boolean) => ShieldKnightSettings;
     }[] = [
@@ -1798,6 +1811,16 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
                 ...settings,
                 panelMaxDamage: on ? settings.panelMaxDamage : settings.panelMaxDamage - transformationMaxDamage,
                 dirtyMaxDamage: { ...settings.dirtyMaxDamage, transformationActive: on },
+            }),
+        },
+        {
+            id: "rageSet",
+            label: "憤怒衝擊套裝（近戰技能傷害 +2%）",
+            // 套裝是破防面板裡的選項，這裡只拿得到合計值：以目前近戰% 再 +2% 當作「有套裝」、現值當作「沒套裝」估算
+            set: (on) => ({
+                ...settings,
+                rageImpactBuffActive: true,
+                armorBreak: { ...settings.armorBreak, meleePercent: settings.armorBreak.meleePercent + (on ? RAGE_IMPACT_SET_PERCENT : 0) },
             }),
         },
         { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
@@ -1832,7 +1855,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         },
         {
             id: "muliasReflectionTrace",
-            label: "反射的痕跡",
+            label: "省察的痕跡",
             muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true, reflectionTraceLevel: settings.muliasRelic.reflectionTraceLevel + 1 },
         },
         {
@@ -1842,7 +1865,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         },
     ];
     const muliasResults = muliasProbes.map((p) => {
-        // 基準跟著探測的遺物設定走（反射的痕跡固定以觸發中比較，不受目前勾選影響）
+        // 基準跟著探測的遺物設定走（省察的痕跡固定以觸發中比較，不受目前勾選影響）
         const base = p.id === "muliasReflectionTrace"
             ? calculateTotalOutput({ ...settings, muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true } }, settings.skillUsageCounts)
             : baseTotal;
@@ -1864,7 +1887,40 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         deltaPercent: outputPercent(sharpDelta, baseTotal),
     };
 
-    return [...results, ...reforgeResults, sharpResult, ...statResults, ...muliasResults, ...toggleResults];
+    // ── buff 覆蓋率：+10 個百分點（已經 ≥ 90% 時改成 −10 反推），以 buff 觸發中計算 ──
+    const COVERAGE_STEP = 10;
+    const coverageProbes: { id: "rageCoverage" | "reflectionCoverage"; label: string; withCoverage: (percent: number) => ShieldKnightSettings; current: number }[] = [
+        {
+            id: "rageCoverage",
+            label: "憤怒衝擊覆蓋率",
+            current: settings.rageImpactCoveragePercent ?? 100,
+            withCoverage: (percent) => ({ ...settings, rageImpactBuffActive: true, rageImpactCoveragePercent: percent }),
+        },
+        {
+            id: "reflectionCoverage",
+            label: "省察的痕跡覆蓋率",
+            current: settings.muliasRelic.reflectionTraceCoveragePercent ?? 100,
+            withCoverage: (percent) => ({
+                ...settings,
+                muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true, reflectionTraceCoveragePercent: percent },
+            }),
+        },
+    ];
+    const coverageResults = coverageProbes.map((p) => {
+        const up = p.current <= 100 - COVERAGE_STEP;
+        const base = calculateTotalOutput(p.withCoverage(p.current), settings.skillUsageCounts);
+        const probed = calculateTotalOutput(p.withCoverage(p.current + (up ? COVERAGE_STEP : -COVERAGE_STEP)), settings.skillUsageCounts);
+        const delta = (probed - base) * (up ? 1 : -1) + 0;
+        return {
+            id: p.id,
+            label: p.label,
+            unit: `${COVERAGE_STEP}%`,
+            equivalentMaxDamage: maxDamageDelta !== 0 ? delta / maxDamageDelta : null,
+            deltaPercent: outputPercent(delta, base),
+        };
+    });
+
+    return [...results, ...reforgeResults, sharpResult, ...statResults, ...muliasResults, ...coverageResults, ...toggleResults];
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1932,6 +1988,8 @@ export interface ShieldKnightSettings {
     darkErgActive: boolean;
     magicCircleIds: MagicCircleId[];
     rageImpactBuffActive: boolean;
+    /** 憤怒衝擊覆蓋率 0~100%：近距離額外傷害中時，平均有多少比例的技能施放吃得到加成 */
+    rageImpactCoveragePercent: number;
     nobleOathEnabled: boolean;
     currentSacrifice: number;
     radiantJudgementStage: 1 | 2 | 3;
@@ -2038,6 +2096,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
             sacrificeRegenLevel: 0,
             reflectionTraceLevel: 0,
             reflectionTraceActive: true,
+            reflectionTraceCoveragePercent: 100,
             judgementStrikeLevel: 0,
         },
         armorBreak: { enabled: true, protBeforePierce: 0, pierceResist: 0, damageTakenPercent: 0, critDamagePercent: 0, meleePercent: 0 },
@@ -2047,6 +2106,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         darkErgActive: false,
         magicCircleIds: [],
         rageImpactBuffActive: false,
+        rageImpactCoveragePercent: 100,
         nobleOathEnabled: true,
         currentSacrifice: 0,
         radiantJudgementStage: 1,
