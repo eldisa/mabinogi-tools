@@ -25,6 +25,7 @@ import EchostoneSimulator from '../views/EchostoneSimulator.vue';
 import MusicCalculator from '../views/MusicCalculator.vue';
 import MagicCircleView from '../views/MagicCircleView.vue';
 import OghamView from '../views/OghamView.vue';
+import ErgView from '../views/ErgView.vue';
 import OghamSimulatorView from '../views/OghamSimulatorView.vue';
 import GachaSimulatorView from '../views/GachaSimulatorView.vue';
 import ArmorBreakTraining from '../views/ArmorBreakTraining.vue';
@@ -177,6 +178,11 @@ const routes = [
             path: '/magic-circle',
             name: '魔法陣查詢',
             component: MagicCircleView,
+        },
+        {
+            path: '/erg',
+            name: '聚能查詢',
+            component: ErgView,
         },
         {
             path: '/ogham',
