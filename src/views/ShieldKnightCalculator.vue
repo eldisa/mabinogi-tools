@@ -30,7 +30,12 @@ import {
     SACRIFICE_CAP,
     PET_BONUS_OPTIONS,
     TRANSFORMATION_OPTIONS,
-    WEAPON_SPECIAL_REFORGE_CRIT,
+    SPECIAL_REFORM_STAGE_COUNT,
+    specialReformMaxStage,
+    normalizeSpecialReformStage,
+    specialReformRCrit,
+    specialReformSExtra,
+    calculateSpecialReformTable,
     CRITICAL_DAMAGE_SET_BONUS,
     CRITICAL_RATE_ITEM_BONUS,
     MULIAS_RELIC_LEVEL_OPTIONS,
@@ -239,6 +244,10 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
     darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
+    battlefield: "戰場的序曲（攻擊力加成%）：以目前戰場% 再 +1% 計算，戰場%、狀態支援、力量團聚都會乘上攻擊係數，在「攻擊力」分頁設定。",
+    statusSupport: "狀態支援（+12%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
+    strengthGather: "力量團聚（+15%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
+    physicalPotion: "物理攻擊力增加藥水（×1.2）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
     rageSet:
         "憤怒衝擊套裝（近戰技能傷害 +2%）。套裝設定在「破防」分頁，這裡只拿得到合計近戰%，所以以目前近戰% 再 +2% 當作有套裝、現值當作沒套裝估算；需開啟「近距離額外傷害中」並套用破防結果才有效果。",
     rageCoverage:
@@ -255,6 +264,7 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "生存屬性", ids: ["defense", "maxHp"] },
     { label: "穆利亞斯的遺物", ids: ["muliasSacrificeRegen", "muliasReflectionTrace", "muliasJudgementStrike"] },
     { label: "套裝效果（裝備分頁的手動套裝標記）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
+    { label: "攻擊係數（戰場序曲／狀態支援／力量團聚／藥水）", ids: ["battlefield", "statusSupport", "strengthGather", "physicalPotion"] },
     { label: "buff 覆蓋率", ids: ["rageCoverage", "reflectionCoverage"] },
     { label: "聚能／種族技能／變身／套裝開關", ids: ["erg", "darkErg", "raceSkill", "transformation", "rageSet"] },
 ];
@@ -321,6 +331,39 @@ const topLevers = computed(() =>
         .sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0))
         .slice(0, 3),
 );
+// ── 武器特殊改造（R 暴擊傷害／S 追加傷害，第 8 階只有靈魂解放者／日月劍） ──
+const reformMaxStage = computed(() => specialReformMaxStage(settings.weaponId));
+const reformStageList = computed(() => Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => i + 1).filter((n) => n <= reformMaxStage.value));
+const reformRStage = computed(() => normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, reformMaxStage.value));
+// 舊存檔的字串階段（"r7"）與超出該武器上限的階段，統一轉成合法整數
+watch(
+    [() => settings.weaponId, () => settings.criticalDamage.weaponSpecialReforgeTier, () => settings.weaponSpecialReformSStage],
+    () => {
+        settings.criticalDamage.weaponSpecialReforgeTier = reformRStage.value;
+        settings.weaponSpecialReformSStage = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, reformMaxStage.value);
+    },
+    { immediate: true },
+);
+const specialReformRows = computed(() => calculateSpecialReformTable(settings));
+
+// ── 技能傷害來源比例 ──
+const usageRows = computed(() => {
+    const rows = ALL_SKILL_META.map((meta) => {
+        const count = settings.skillUsageCounts[meta.id] ?? 0;
+        return { id: meta.id, label: meta.label, count, subtotal: (allSkills.value.find((s) => s.skillId === meta.id)?.finalDamage ?? 0) * count };
+    });
+    const total = rows.reduce((sum, r) => sum + r.subtotal, 0);
+    return rows.map((r) => ({ ...r, share: total > 0 ? (r.subtotal / total) * 100 : 0 }));
+});
+const usageShareOf = (id: string): number => usageRows.value.find((r) => r.id === id)?.share ?? 0;
+
+// ── 標準戰鬥力：固定用「打王」範本次數計算，才能跨配置／跨使用者比較（不受自己填的次數影響） ──
+const standardUsageCounts = computed<SkillUsageCounts>(() => ({ ...createDefaultSkillUsageCounts(), ...USAGE_SCENARIOS[0].counts }));
+const standardPower = computed(() => calculateTotalOutput(settings, standardUsageCounts.value));
+const standardPowerBattleCry = computed(() =>
+    calculateTotalOutput({ ...settings, attackCoefficient: { ...settings.attackCoefficient, battleCryActive: true } }, standardUsageCounts.value),
+);
+
 /** 連續技卡片裝哪張總輸出最高（用目前的技能使用次數、期望值計算） */
 const comboRanking = computed(() => {
     const base = calculateTotalOutput({ ...settings, comboCardSkillId: "none" }, settings.skillUsageCounts);
@@ -332,6 +375,39 @@ const comboRanking = computed(() => {
     return { rows, bestId: best.total > base ? best.id : null };
 });
 const effectiveSharpLevel = computed(() => getEffectiveSharpLevel(settings));
+/** 破防套用中才有的目標狀態摘要 */
+const targetSummary = computed(() =>
+    settings.armorBreak.enabled
+        ? {
+              effectiveSharp: Math.max(0, effectiveSharpLevel.value - settings.armorBreak.pierceResist),
+              reductionPercent: (1 - calcResult.value.protectionReduction) * 100,
+              damageTakenPercent: settings.armorBreak.damageTakenPercent,
+          }
+        : null,
+);
+
+/** 貼到 Discord 的純文字結果摘要 */
+function buildSummaryText(): string {
+    const c = calcResult.value;
+    const lines = [
+        "【聖盾騎士傷害計算器】",
+        `最大傷害：${fmtInt(finalStats.value.maxDamage)}　暴擊率：${fmtRatio(c.criticalRatePercent)}%　暴擊傷害：${fmtRatio(c.criticalDamagePercent)}%`,
+        `通用額外傷害：${fmtMultiplier(c.generalExtraDamageMultiplier)}　秘法額外傷害：+${fmtRatio(c.arcaneExtraDamagePercent)}%`,
+        `才能增加傷害：${fmtMultiplier(c.talentIncreaseDamageMultiplier)}　最終增加傷害：${fmtMultiplier(c.finalIncreaseDamageMultiplier)}`,
+        `總輸出：${fmtInt(totalOutput.value)}　標準戰鬥力：${fmtInt(standardPower.value)}`,
+    ];
+    const used = usageRows.value.filter((r) => r.count > 0).sort((a, b) => b.share - a.share);
+    if (used.length) {
+        lines.push("", "傷害來源比例");
+        used.forEach((r) => lines.push(`${r.label}　${fmtInt(r.subtotal)}　次數 ${r.count}　${fmtDecimal(r.share)}%`));
+    }
+    if (topLevers.value.length) {
+        lines.push("", "提升效益前三（每單位總輸出增幅）");
+        topLevers.value.forEach((i) => lines.push(`${i.label}（每 ${i.unit}）+${fmtDecimal(i.deltaPercent ?? 0)}%`));
+    }
+    return lines.join("\n");
+}
+const copySummary = () => copyText(buildSummaryText(), "已複製結果摘要");
 const holyWaterComparison = computed(() => calculateHolyWaterComparison(settings));
 const bestHolyWaterId = computed(() => holyWaterComparison.value.reduce((best, x) => (x.deltaOutput > best.deltaOutput ? x : best), holyWaterComparison.value[0])?.id);
 
@@ -849,6 +925,7 @@ onMounted(() => {
                     <el-button size="small" plain @click="copyShareLink">複製分享連結</el-button>
                     <el-button size="small" plain @click="copyShareCode">複製設定代碼</el-button>
                     <el-button size="small" plain @click="importShareCode()">匯入代碼</el-button>
+                    <el-button size="small" plain @click="copySummary">複製結果摘要</el-button>
                 </div>
 
                 <el-tabs v-model="activeTab" type="border-card" class="setting-tabs">
@@ -1229,13 +1306,21 @@ onMounted(() => {
                                 <span class="switch-label">精靈武器（+15%）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">武器特殊改造</label>
+                                <label class="field-label">武器特殊改造 R</label>
                                 <el-select v-model="settings.criticalDamage.weaponSpecialReforgeTier" size="small" class="field-select">
-                                    <el-option value="none" label="無" />
-                                    <el-option value="r6" :label="`R6 (+${WEAPON_SPECIAL_REFORGE_CRIT.r6}%)`" />
-                                    <el-option value="r7" :label="`R7 (+${WEAPON_SPECIAL_REFORGE_CRIT.r7}%)`" />
-                                    <el-option value="r8" :label="`R8 (+${WEAPON_SPECIAL_REFORGE_CRIT.r8}%)`" />
+                                    <el-option :value="0" label="無" />
+                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`R${n}（暴擊傷害 +${specialReformRCrit(settings.weaponType, n)}%）`" />
                                 </el-select>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">武器特殊改造 S</label>
+                                <el-select v-model="settings.weaponSpecialReformSStage" size="small" class="field-select">
+                                    <el-option :value="0" label="無" />
+                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`S${n}（追加傷害 +${specialReformSExtra(settings.weaponType, n)}%）`" />
+                                </el-select>
+                            </div>
+                            <div class="field-hint">
+                                單手斧與雙手劍的數值不同，第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化。S 的最大傷害已含在面板最大傷害，這裡只計追加傷害 %（併入武器額外傷害）。
                             </div>
                             <div class="field-row">
                                 <label class="field-label">暴擊傷害套裝</label>
@@ -1267,7 +1352,7 @@ onMounted(() => {
                                 <el-input-number v-model="settings.criticalDamage.titlePercent" :min="0" :max="3" size="small" class="field-select" />
                             </div>
                             <div class="field-row">
-                                <span class="switch-label">聖水暴擊傷害（自動讀取裝備分頁）：+{{ fmtRatio(calcResult.criticalDamagePercent - 100 - (settings.criticalDamage.skillR1Active ? 150 : 0) - (settings.criticalDamage.fullGradeActive ? 10 : 0) - (settings.criticalDamage.spiritWeaponCritActive ? 15 : 0) - WEAPON_SPECIAL_REFORGE_CRIT[settings.criticalDamage.weaponSpecialReforgeTier] - CRITICAL_DAMAGE_SET_BONUS[settings.criticalDamage.setTier] - (settings.criticalDamage.totemChoice === 'critical_damage' ? 5 : 0) - settings.criticalDamage.dollBagPercent - settings.criticalDamage.farmModelPercent - settings.criticalDamage.titlePercent - settings.criticalDamage.brireheCoinPercent - (settings.criticalDamage.assassinOutfitActive ? 12 : 0)) }}%</span>
+                                <span class="switch-label">聖水暴擊傷害（自動讀取裝備分頁）：+{{ fmtRatio(calcResult.criticalDamagePercent - 100 - (settings.criticalDamage.skillR1Active ? 150 : 0) - (settings.criticalDamage.fullGradeActive ? 10 : 0) - (settings.criticalDamage.spiritWeaponCritActive ? 15 : 0) - specialReformRCrit(settings.weaponType, reformRStage) - CRITICAL_DAMAGE_SET_BONUS[settings.criticalDamage.setTier] - (settings.criticalDamage.totemChoice === 'critical_damage' ? 5 : 0) - settings.criticalDamage.dollBagPercent - settings.criticalDamage.farmModelPercent - settings.criticalDamage.titlePercent - settings.criticalDamage.brireheCoinPercent - (settings.criticalDamage.assassinOutfitActive ? 12 : 0)) }}%</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.criticalDamage.assassinOutfitActive" />
@@ -1532,6 +1617,7 @@ onMounted(() => {
                                             <th>單次傷害</th>
                                             <th>使用次數</th>
                                             <th>小計</th>
+                                            <th>占比</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1545,6 +1631,7 @@ onMounted(() => {
                                                 <el-input-number v-model="settings.skillUsageCounts[meta.id]" :min="0" :controls="false" size="small" class="equip-input" />
                                             </td>
                                             <td>{{ fmtInt((allSkills.find((s) => s.skillId === meta.id)?.finalDamage ?? 0) * settings.skillUsageCounts[meta.id]) }}</td>
+                                            <td>{{ fmtDecimal(usageShareOf(meta.id)) }}%</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1672,6 +1759,42 @@ onMounted(() => {
                                         </template>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <div class="field-section-label">武器特殊改造效益（各階段相當多少大傷，相對於完全沒有該改造）</div>
+                            <div v-if="!hasAnyUsageCount" class="field-hint">請先在「技能使用次數」分頁設定至少一個技能的使用次數。</div>
+                            <div v-else class="equip-table-wrap">
+                                <table class="equip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>階段</th>
+                                            <th>S（追加傷害）</th>
+                                            <th>R（暴擊傷害）</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="row in specialReformRows" :key="row.stage">
+                                            <td class="equip-slot-label">{{ row.stage }}{{ row.available ? "" : "（此武器不可）" }}</td>
+                                            <template v-if="row.available">
+                                                <td>
+                                                    {{ row.sEquivalentMaxDamage === null ? "-" : fmtDecimal(row.sEquivalentMaxDamage) }}
+                                                    <span class="field-hint">（+{{ row.sExtraPercent }}%、最大傷害 +{{ row.sMaxDamage }}）</span>
+                                                </td>
+                                                <td>
+                                                    {{ row.rEquivalentMaxDamage === null ? "-" : fmtDecimal(row.rEquivalentMaxDamage) }}
+                                                    <span class="field-hint">（暴擊傷害 +{{ row.rCritPercent }}%）</span>
+                                                </td>
+                                            </template>
+                                            <template v-else>
+                                                <td>-</td>
+                                                <td>-</td>
+                                            </template>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="field-hint">
+                                S 的最大傷害已含在面板，這裡用「最終/面板」比例近似它吃到的攻擊係數；S 的追加傷害當成武器額外傷害那一桶。第 8 階只有靈魂解放者／日月劍可用。
                             </div>
 
                             <div class="field-section-label">儲存傷害效益（存下目前這份結果，未來「計算裝備提升幅度」會讀取這裡的快照來比較）</div>
@@ -2069,6 +2192,35 @@ onMounted(() => {
                         </span>
                         <span class="result-value">{{ fmtInt(totalOutput) }}</span>
                     </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            標準戰鬥力
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                固定用「打王」範本的技能次數計算總輸出，不受你自己填的次數影響，可以直接和不同配置、不同人的結果比較強度。
+                            </el-popover>
+                        </span>
+                        <span class="result-value">{{ fmtInt(standardPower) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">標準戰鬥力（含戰場上的狂吼）</span>
+                        <span class="result-value sub">{{ fmtInt(standardPowerBattleCry) }}</span>
+                    </div>
+                    <template v-if="targetSummary">
+                        <div class="result-group-label">目標狀態（破防）</div>
+                        <div class="result-row">
+                            <span class="result-label">最終有效銳利等級</span>
+                            <span class="result-value sub">{{ targetSummary.effectiveSharp }}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">最終目標減傷</span>
+                            <span class="result-value sub">{{ fmtDecimal(targetSummary.reductionPercent) }}%</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">目標受擊增傷</span>
+                            <span class="result-value sub">+{{ fmtDecimal(targetSummary.damageTakenPercent) }}%</span>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="util-copyrights">

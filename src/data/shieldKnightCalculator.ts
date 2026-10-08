@@ -38,11 +38,9 @@ import {
     PET_BONUS_OPTIONS,
     TRANSFORMATION_OPTIONS,
     SPIRIT_WEAPON_ATTACK_BONUS,
-    WEAPON_SPECIAL_REFORGE_CRIT,
     CRITICAL_DAMAGE_SET_BONUS,
     type SpiritWeaponAttackType,
     type AttackCoefficientState,
-    type WeaponSpecialReforgeTier,
     type CriticalDamageSetTier,
     type TotemChoice,
     type ArcaneExtraDamageState,
@@ -54,10 +52,8 @@ import { protRate } from "../utils/protectionCompare";
 export {
     PET_BONUS_OPTIONS,
     TRANSFORMATION_OPTIONS,
-    WEAPON_SPECIAL_REFORGE_CRIT,
     CRITICAL_DAMAGE_SET_BONUS,
     CRITICAL_RATE_ITEM_BONUS,
-    type WeaponSpecialReforgeTier,
     type CriticalDamageSetTier,
     type TotemChoice,
 };
@@ -184,6 +180,44 @@ export const WEAPON_PRESETS: Record<WeaponType, WeaponPreset[]> = {
 function getWeaponPreset(weaponType: WeaponType, weaponId: string): WeaponPreset {
     return WEAPON_PRESETS[weaponType].find((w) => w.id === weaponId) ?? WEAPON_PRESETS[weaponType][0];
 }
+
+// ═══════════════════════════════════════════════════════
+//  武器特殊改造：R 增加暴擊傷害%、S 增加追加傷害（額外傷害）% 與最大傷害（階段 1~8）
+//  只收單手斧與雙手劍；第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化
+// ═══════════════════════════════════════════════════════
+
+export const SPECIAL_REFORM_STAGE_COUNT = 8;
+export const SPECIAL_REFORM_R_CRIT_PERCENT: Record<WeaponType, readonly number[]> = {
+    one_hand_axe: [5, 14, 23, 33, 43, 53, 63, 89],
+    two_hand_sword: [6, 16, 26, 38, 50, 62, 74, 89],
+};
+export const SPECIAL_REFORM_S_EXTRA_PERCENT: Record<WeaponType, readonly number[]> = {
+    one_hand_axe: [2, 2, 3, 3, 4, 5, 6, 10],
+    two_hand_sword: [2, 3, 4, 5, 6, 7, 9, 10],
+};
+/** S 改造附帶的最大傷害（面板最大傷害通常已含，只用於「特殊改造效益」比較階段價值） */
+export const SPECIAL_REFORM_S_MAX_DAMAGE: Record<WeaponType, readonly number[]> = {
+    one_hand_axe: [80, 90, 100, 110, 120, 130, 140, 170],
+    two_hand_sword: [50, 60, 70, 90, 110, 130, 155, 170],
+};
+const SPECIAL_REFORM_STAGE8_WEAPON_IDS = ["soul_liberator_axe", "sky_sonata", "soul_liberator_sword"];
+
+/** 該武器能強化到第幾階：靈魂解放者／日月劍 8 階，其他 7 階 */
+export function specialReformMaxStage(weaponId: string): number {
+    return SPECIAL_REFORM_STAGE8_WEAPON_IDS.includes(weaponId) ? 8 : 7;
+}
+
+/** 舊存檔的階段是 "none"／"r6"／"r7"／"r8" 字串，統一轉成 0~maxStage 的整數 */
+export function normalizeSpecialReformStage(value: unknown, maxStage: number): number {
+    const n = typeof value === "number" ? value : typeof value === "string" ? parseInt(value.replace(/\D/g, ""), 10) || 0 : 0;
+    return Math.min(Math.max(0, Math.round(n)), maxStage);
+}
+
+const reformValue = (table: Record<WeaponType, readonly number[]>, weaponType: WeaponType, stage: number): number =>
+    stage > 0 ? (table[weaponType][stage - 1] ?? 0) : 0;
+export const specialReformRCrit = (weaponType: WeaponType, stage: number) => reformValue(SPECIAL_REFORM_R_CRIT_PERCENT, weaponType, stage);
+export const specialReformSExtra = (weaponType: WeaponType, stage: number) => reformValue(SPECIAL_REFORM_S_EXTRA_PERCENT, weaponType, stage);
+export const specialReformSMaxDamage = (weaponType: WeaponType, stage: number) => reformValue(SPECIAL_REFORM_S_MAX_DAMAGE, weaponType, stage);
 
 // ═══════════════════════════════════════════════════════
 //  盾牌（獨立區塊）
@@ -594,7 +628,8 @@ export interface CriticalDamageSettings {
     skillR1Active: boolean;
     fullGradeActive: boolean;
     spiritWeaponCritActive: boolean;
-    weaponSpecialReforgeTier: WeaponSpecialReforgeTier;
+    /** 武器特殊改造 R 階段 0~8（舊存檔是 "r6"/"r7"/"r8" 字串，計算時會轉換） */
+    weaponSpecialReforgeTier: number;
     setTier: CriticalDamageSetTier;
     totemChoice: TotemChoice;
     dollBagPercent: number;
@@ -767,8 +802,12 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         : 1;
 
     // ── 暴擊傷害% ──
+    const reformMaxStage = specialReformMaxStage(settings.weaponId);
+    const reformRStage = normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, reformMaxStage);
+    const reformSStage = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, reformMaxStage);
     const criticalDamagePercent = calculateCriticalDamagePercent({
         ...settings.criticalDamage,
+        weaponSpecialReforgeCritPercent: specialReformRCrit(settings.weaponType, reformRStage),
         classBonusPercent: 0,
         holyWaterPercent: sumHolyWater(settings.holyWater, "criticalDamage"),
     });
@@ -777,7 +816,10 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
 
     // ── 額外傷害（通用額外傷害倍率） ──
     const isOneHandWeapon = settings.weaponType === "one_hand_axe";
-    const weaponExtraDamagePercent = weapon.extraDamagePercent + (isOneHandWeapon ? (shield.oneHandWeaponExtraDamagePercent ?? 0) : 0);
+    const weaponExtraDamagePercent =
+        weapon.extraDamagePercent +
+        (isOneHandWeapon ? (shield.oneHandWeaponExtraDamagePercent ?? 0) : 0) +
+        specialReformSExtra(settings.weaponType, reformSStage);
     // 破防的「暴擊時通用額外傷害」（例如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似，跟全引擎的期望值作法一致
     const critOnlyGeneralExtraPercent = ((armorBreak?.critDamagePercent ?? 0) * criticalRatePercent) / 100;
     const generalExtraDamageMultiplier =
@@ -1613,6 +1655,10 @@ export interface DamageEfficiencyItem {
         | "raceSkill"
         | "transformation"
         | "rageSet"
+        | "battlefield"
+        | "statusSupport"
+        | "strengthGather"
+        | "physicalPotion"
         | "rageCoverage"
         | "reflectionCoverage"
         | "arcaneExtraDamage"
@@ -1799,8 +1845,21 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         holyWaterMaxDamage: 0,
     }).total;
     const togglePairs: {
-        id: "erg" | "darkErg" | "raceSkill" | "transformation" | "rageSet" | "manualWindmillBase30" | "manualChargeEnhance" | "manualSmashEnhance";
+        id:
+            | "erg"
+            | "darkErg"
+            | "raceSkill"
+            | "transformation"
+            | "rageSet"
+            | "battlefield"
+            | "statusSupport"
+            | "strengthGather"
+            | "physicalPotion"
+            | "manualWindmillBase30"
+            | "manualChargeEnhance"
+            | "manualSmashEnhance";
         label: string;
+        unit?: string;
         set: (on: boolean) => ShieldKnightSettings;
     }[] = [
         { id: "erg", label: "聚能已滿", set: (on) => ({ ...settings, ergActive: on }) },
@@ -1826,6 +1885,22 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
                 armorBreak: { ...settings.armorBreak, meleePercent: settings.armorBreak.meleePercent + (on ? RAGE_IMPACT_SET_PERCENT : 0) },
             }),
         },
+        {
+            id: "battlefield",
+            label: "戰場的序曲 +1%",
+            unit: "1%",
+            set: (on) => ({
+                ...settings,
+                attackCoefficient: {
+                    ...settings.attackCoefficient,
+                    battlefieldActive: true,
+                    battlefieldPercent: settings.attackCoefficient.battlefieldPercent + (on ? 1 : 0),
+                },
+            }),
+        },
+        { id: "statusSupport", label: "狀態支援（+12%）", set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, statusSupportActive: on } }) },
+        { id: "strengthGather", label: "力量團聚（+15%）", set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, strengthGatherActive: on } }) },
+        { id: "physicalPotion", label: "物理攻擊力增加藥水（×1.2）", set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, physicalPotionActive: on } }) },
         { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
         { id: "manualChargeEnhance", label: "手動套裝：突擊最終倍率 ×1.15", set: (on) => ({ ...settings, manualChargeEnhanceActive: on }) },
         { id: "manualSmashEnhance", label: "手動套裝：重擊套裝 +15%", set: (on) => ({ ...settings, manualSmashEnhanceActive: on }) },
@@ -1835,7 +1910,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         const offTotal = calculateTotalOutput(p.set(false), settings.skillUsageCounts);
         const delta = onTotal - offTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: "開關", equivalentMaxDamage, deltaPercent: outputPercent(delta, offTotal) };
+        return { id: p.id, label: p.label, unit: p.unit ?? "開關", equivalentMaxDamage, deltaPercent: outputPercent(delta, offTotal) };
     });
 
     // ── 防禦／最大生命值：+1 點對應多少大傷（跟其他槓桿一樣，全程套用暴擊率／暴擊傷害的期望值換算） ──
@@ -1926,6 +2001,69 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     return [...results, ...reforgeResults, sharpResult, ...statResults, ...muliasResults, ...coverageResults, ...toggleResults];
 }
 
+export interface SpecialReformRow {
+    stage: number;
+    /** 這一階該武器是否能強化（第 8 階只有靈魂解放者／日月劍） */
+    available: boolean;
+    rCritPercent: number;
+    sExtraPercent: number;
+    sMaxDamage: number;
+    /** 這一階 R 相當多少大傷（相對於完全沒有 R）；總輸出為 0 時 null */
+    rEquivalentMaxDamage: number | null;
+    sEquivalentMaxDamage: number | null;
+    rDeltaPercent: number | null;
+    sDeltaPercent: number | null;
+}
+
+/**
+ * 特殊改造各階段的價值：把目前已選的 R／S 先拿掉當作「沒改造」，再逐階套上，
+ * 量測總輸出增加量並換算成「相當大傷」。S 的最大傷害已含在面板內，這裡用「最終/面板」比例近似它吃到的攻擊係數。
+ */
+export function calculateSpecialReformTable(settings: ShieldKnightSettings): SpecialReformRow[] {
+    const { calcResult, baseLevers, compute, baseTotal } = buildLeverContext(settings);
+    const maxDamageDelta = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + 1 }) - baseTotal;
+    const type = settings.weaponType;
+    const maxStage = specialReformMaxStage(settings.weaponId);
+    const curR = normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, maxStage);
+    const curS = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, maxStage);
+    const coefficientRatio = settings.panelMaxDamage > 0 ? baseLevers.maxDamage / settings.panelMaxDamage : 1;
+
+    const noR = { ...baseLevers, criticalDamagePercent: baseLevers.criticalDamagePercent - specialReformRCrit(type, curR) };
+    const noRTotal = compute(noR);
+    const weaponExtraWithoutS = calcResult.weaponExtraDamagePercent - specialReformSExtra(type, curS);
+    const noS = {
+        ...baseLevers,
+        maxDamage: baseLevers.maxDamage - specialReformSMaxDamage(type, curS) * coefficientRatio,
+        generalExtraDamageMultiplier: (baseLevers.generalExtraDamageMultiplier * (1 + weaponExtraWithoutS / 100)) / (1 + calcResult.weaponExtraDamagePercent / 100),
+    };
+    const noSTotal = compute(noS);
+
+    return Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => {
+        const stage = i + 1;
+        const rCrit = specialReformRCrit(type, stage);
+        const sExtra = specialReformSExtra(type, stage);
+        const sMax = specialReformSMaxDamage(type, stage);
+        const rDelta = compute({ ...noR, criticalDamagePercent: noR.criticalDamagePercent + rCrit }) - noRTotal;
+        const sDelta =
+            compute({
+                ...noS,
+                maxDamage: noS.maxDamage + sMax * coefficientRatio,
+                generalExtraDamageMultiplier: (noS.generalExtraDamageMultiplier * (1 + (weaponExtraWithoutS + sExtra) / 100)) / (1 + weaponExtraWithoutS / 100),
+            }) - noSTotal;
+        return {
+            stage,
+            available: stage <= maxStage,
+            rCritPercent: rCrit,
+            sExtraPercent: sExtra,
+            sMaxDamage: sMax,
+            rEquivalentMaxDamage: maxDamageDelta !== 0 ? rDelta / maxDamageDelta : null,
+            sEquivalentMaxDamage: maxDamageDelta !== 0 ? sDelta / maxDamageDelta : null,
+            rDeltaPercent: outputPercent(rDelta, noRTotal),
+            sDeltaPercent: outputPercent(sDelta, noSTotal),
+        };
+    });
+}
+
 // ═══════════════════════════════════════════════════════
 //  鐵壁猛擊 HIT → 犧牲
 // ═══════════════════════════════════════════════════════
@@ -1953,6 +2091,8 @@ export interface ShieldKnightSettings {
     weaponType: WeaponType;
     weaponId: string;
     shieldId: string;
+    /** 武器特殊改造 S 階段 0~8：追加傷害%（額外傷害）併入武器額外傷害那一桶，最大傷害已含在面板 */
+    weaponSpecialReformSStage: number;
     holyWater: HolyWaterState;
     reforge: ReforgeState;
     characterBuildId: string;
@@ -2035,6 +2175,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         weaponType: "one_hand_axe",
         weaponId: "none",
         shieldId: "none",
+        weaponSpecialReformSStage: 0,
         holyWater: createDefaultHolyWaterState(),
         reforge: createDefaultReforgeState(),
         characterBuildId: "holy_knight",
@@ -2076,7 +2217,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
             skillR1Active: true,
             fullGradeActive: true,
             spiritWeaponCritActive: true,
-            weaponSpecialReforgeTier: "r7",
+            weaponSpecialReforgeTier: 7,
             setTier: "tier7",
             totemChoice: "none",
             dollBagPercent: 0,

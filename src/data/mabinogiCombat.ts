@@ -206,15 +206,6 @@ export function calculateFinalMaxDamage(
 //  暴擊傷害（加總）
 // ═══════════════════════════════════════════════════════
 
-export type WeaponSpecialReforgeTier = "none" | "r6" | "r7" | "r8";
-
-export const WEAPON_SPECIAL_REFORGE_CRIT: Record<WeaponSpecialReforgeTier, number> = {
-    none: 0,
-    r6: 62,
-    r7: 74,
-    r8: 89,
-};
-
 export type CriticalDamageSetTier = "none" | "tier4" | "tier7" | "tier10";
 
 /** 暴擊傷害套裝：4% / 7% / 10%（整套暮光） */
@@ -232,7 +223,8 @@ export interface CriticalDamageState {
     skillR1Active: boolean;
     fullGradeActive: boolean;
     spiritWeaponCritActive: boolean;
-    weaponSpecialReforgeTier: WeaponSpecialReforgeTier;
+    /** 武器特殊改造 R 的暴擊傷害%（依武器種類與階段查表後傳入） */
+    weaponSpecialReforgeCritPercent: number;
     setTier: CriticalDamageSetTier;
     totemChoice: TotemChoice;
     dollBagPercent: number;
@@ -252,7 +244,7 @@ export function calculateCriticalDamagePercent(state: CriticalDamageState): numb
     const skillR1 = state.skillR1Active ? 150 : 0;
     const fullGrade = state.fullGradeActive ? 10 : 0;
     const spiritWeapon = state.spiritWeaponCritActive ? 15 : 0;
-    const weaponSpecialReforge = WEAPON_SPECIAL_REFORGE_CRIT[state.weaponSpecialReforgeTier];
+    const weaponSpecialReforge = state.weaponSpecialReforgeCritPercent;
     const set = CRITICAL_DAMAGE_SET_BONUS[state.setTier];
     const totem = state.totemChoice === "critical_damage" ? 5 : 0;
     const assassinOutfit = state.assassinOutfitActive ? 12 : 0;
