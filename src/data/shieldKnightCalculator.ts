@@ -2199,7 +2199,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
             statusSupportActive: true,
             strengthGatherActive: false,
             battlefieldActive: true,
-            battlefieldPercent: 0,
+            battlefieldPercent: 80,
             battleCryActive: false,
             battleCryReforgeLevel: 20,
         },
