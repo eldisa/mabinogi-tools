@@ -64,7 +64,7 @@ const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
 
 // 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
 const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
-const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "usage", "compare", "efficiency", "armorbreak", "debug"];
+const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "expensive", "usage", "compare", "efficiency", "armorbreak"];
 const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
 function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean } {
     try {
@@ -223,11 +223,15 @@ const efficiencyItems = computed(() => calculateDamageEfficiency(settings));
 const EFFICIENCY_DETAILS: Record<string, string> = {
     weaponExtraDamage: "武器額外傷害由武器/盾牌自動帶出，不能手動輸入；這裡是假設它多 1% 時的效益。",
     extraDamage: "額外傷害＝稱號＋圖騰＋農場模型＋套裝效果，在「暴擊與額外傷害」分頁設定，與武器額外傷害合起來才是「通用額外傷害」。",
+    talentIncreaseDamage:
+        "才能增加傷害（乘算）＝(1+種族特殊技能%) × (1+猛擊 buff%)。種族技能需在「角色」分頁勾選開啟才計入，猛擊 buff 依「技能設定」的猛擊層數（需開啟顯示猛擊技能才計入）。對重擊/風車/突擊/猛擊全吃，7 個秘法技能只有「借用才能技能」的那部分吃到。這裡是假設這個乘區再多 1% 的效益。",
+    finalIncreaseDamage:
+        "最終增加傷害（乘算）＝戰鬥服務 +1% × 強力威光（達可達）+5% × 破防面板的「所受傷害增加」× 憤怒衝擊近戰%（需勾選憤怒衝擊中）。對所有技能最後整體乘上，重擊/風車/猛擊與 7 個秘法技能全吃（反射的痕跡只加成秘法技能，不在這一項）。這裡是假設這個乘區再多 1% 的效益。",
     arcaneExtraDamage: "只套用於 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃這項加成。",
     sharpLevel: "需在「破防」分頁勾選套用破防結果才會影響傷害，否則效益為 0；保護是查表無條件捨去，同一區間內多一級可能沒有變化。",
     muliasSacrificeRegen:
         "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
-    muliasReflectionTrace: "併入最終增加傷害；這裡固定以「反射的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
+    muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；這裡固定以「反射的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
     manualWindmillBase30: "「裝備」分頁的手動套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualChargeEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
@@ -375,7 +379,7 @@ const RESULT_DETAILS: Record<string, string> = {
     protectionReduction: "保護減算 = 1 − 破後物理減傷率（怪物保護先扣破防%、再扣固定值、最後扣銳利，無條件捨去後查減傷表；銳利等級在「裝備」分頁填寫；「破防」分頁勾選套用時才生效，否則 ×1），乘進才能／秘法技能的目標傷害。",
     talentIncreaseDamageMultiplier: "才能增加傷害 =(1+種族技能%) × (1+猛擊層數對應%)，乘算，只影響才能技能（重擊/風車/突擊/猛擊）。",
     finalIncreaseDamageMultiplier:
-        "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草 × 反射的痕跡，共 8 個來源相乘。",
+        "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草，所有技能都吃；穆利亞斯的反射的痕跡另外只乘在 7 個秘法技能（見「很貴的項目」分頁）。",
     windmillDamage:
         "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝10%) × (1+風車套裝15%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
     chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊倍率% = (基礎+魔法陣+細工) × 突擊套裝。",
@@ -408,6 +412,7 @@ function loadAllPresets(): ShieldKnightPreset[] {
 const presets = ref<ShieldKnightPreset[]>(loadAllPresets());
 const newPresetName = ref("");
 const showPresetPanel = ref(false);
+const showDebugPanel = ref(false);
 
 const saveLocalPresets = () => localStorage.setItem(SHIELD_KNIGHT_STORAGE_KEY, JSON.stringify(presets.value));
 const accountSync = useAccountSync("shield_knight_presets", presets, mergeByTimestamp, saveLocalPresets);
@@ -1166,14 +1171,10 @@ onMounted(() => {
                             <div class="field-row">
                                 <label class="field-label">暴擊率基準值</label>
                                 <el-input-number v-model="settings.criticalRate.baseCriticalRatePercent" :min="0" :max="100" :step="0.1" :precision="1" size="small" class="field-select" />
-                                <span class="switch-label">%（依角色屬性/裝備而定，自行輸入）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.criticalRate.itemBonusActive" />
-                                <span class="switch-label">道具加成（+{{ CRITICAL_RATE_ITEM_BONUS }}%）</span>
+                                <span class="switch-label">%（依角色屬性/裝備而定，自行輸入；版本或活動提高暴擊率上限時，直接改這個數字）</span>
                             </div>
                             <div class="field-hint">
-                                暴擊率合計：{{ fmtRatio(calcResult.criticalRatePercent) }}%；暴擊傷害期望值＝100 + 暴擊率% × (暴擊傷害% − 100) / 100 ＝
+                                暴擊率合計：{{ fmtRatio(calcResult.criticalRatePercent) }}%（含「很貴的項目」分頁的結界模型 +{{ CRITICAL_RATE_ITEM_BONUS }}%，若有勾選）；暴擊傷害期望值＝100 + 暴擊率% × (暴擊傷害% − 100) / 100 ＝
                                 {{ fmtRatio(calcResult.criticalDamageExpected) }}%，才能/秘法技能公式實際套用這個值。
                             </div>
 
@@ -1229,10 +1230,6 @@ onMounted(() => {
                                 <el-input-number v-model="settings.criticalDamage.titlePercent" :min="0" :max="3" size="small" class="field-select" />
                             </div>
                             <div class="field-row">
-                                <label class="field-label">布里萊赫的硬幣</label>
-                                <el-input-number v-model="settings.criticalDamage.brireheCoinPercent" :min="0" :max="10" size="small" class="field-select" />
-                            </div>
-                            <div class="field-row">
                                 <span class="switch-label">聖水暴擊傷害（自動讀取裝備分頁）：+{{ fmtRatio(calcResult.criticalDamagePercent - 100 - (settings.criticalDamage.skillR1Active ? 150 : 0) - (settings.criticalDamage.fullGradeActive ? 10 : 0) - (settings.criticalDamage.spiritWeaponCritActive ? 15 : 0) - WEAPON_SPECIAL_REFORGE_CRIT[settings.criticalDamage.weaponSpecialReforgeTier] - CRITICAL_DAMAGE_SET_BONUS[settings.criticalDamage.setTier] - (settings.criticalDamage.totemChoice === 'critical_damage' ? 5 : 0) - settings.criticalDamage.dollBagPercent - settings.criticalDamage.farmModelPercent - settings.criticalDamage.titlePercent - settings.criticalDamage.brireheCoinPercent - (settings.criticalDamage.assassinOutfitActive ? 12 : 0)) }}%</span>
                             </div>
                             <div class="field-row">
@@ -1260,27 +1257,9 @@ onMounted(() => {
                             </div>
                             <div class="field-hint">通用額外傷害倍率：{{ fmtMultiplier(calcResult.generalExtraDamageMultiplier) }}</div>
 
-                            <div class="field-section-label">秘法額外傷害（加總）</div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.arcaneExtraDamage.imperfectCrownAuraActive" />
-                                <span class="switch-label">不完美的空想王冠光環（+3%）</span>
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">布里萊赫的硬幣</label>
-                                <el-input-number v-model="settings.arcaneExtraDamage.brireheCoinPercent" :min="0" :max="3" :step="0.05" :precision="2" size="small" class="field-select" />
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">穆利亞斯的遺物</label>
-                                <el-input-number v-model="settings.arcaneExtraDamage.muliasRelicCount" :min="0" :max="3" size="small" class="field-select" />
-                                <span class="switch-label">接尾賦予捲軸，身上 0~3 個，每個 +1%</span>
-                            </div>
-                            <div class="field-hint">
-                                秘法額外傷害加總：+{{ fmtRatio(calcResult.arcaneExtraDamagePercent) }}%（已套用於 7 個秘法技能的傷害公式，重擊/風車/突擊/猛擊等才能技能不吃）
-                            </div>
-
                             <div class="field-section-label">最終增加傷害（乘算）</div>
                             <div class="field-hint">
-                                死神烙印、憤怒衝擊、命運編織．倒吊人、洞察之眼、幸運草標記等增傷已由「破防」分頁提供（所受傷害增加、近戰技能傷害），這裡只保留戰鬥服務與強力威光；穆利亞斯遺物的「反射的痕跡」在「技能設定」分頁。
+                                死神烙印、憤怒衝擊、命運編織．倒吊人、洞察之眼、幸運草標記等增傷已由「破防」分頁提供（所受傷害增加、近戰技能傷害），這裡只保留戰鬥服務與強力威光；秘法額外傷害與穆利亞斯遺物（反射的痕跡）在「很貴的項目」分頁。
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.finalIncreaseDamage.combatServiceBuffActive" />
@@ -1354,30 +1333,6 @@ onMounted(() => {
                                 <span class="switch-label">近距離額外傷害中（憤怒衝擊，觸發後 7 秒內；數值在「破防」分頁的憤怒衝擊來源調整，需套用破防結果才生效）</span>
                             </div>
 
-                            <div class="field-section-label">穆利亞斯的遺物（3 件，各自獨立 Lv0~10）</div>
-                            <div class="field-row">
-                                <label class="field-label">誓約每秒犧牲恢復</label>
-                                <el-select v-model="settings.muliasRelic.sacrificeRegenLevel" size="small" class="field-select-sm">
-                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <span class="switch-label">高潔誓約每秒犧牲恢復量 +{{ (settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL).toFixed(2) }}/秒（每級 +{{ MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL }}，純顯示，尚無基準值可疊加）</span>
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">反射的痕跡</label>
-                                <el-select v-model="settings.muliasRelic.reflectionTraceLevel" size="small" class="field-select-sm">
-                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <el-checkbox v-model="settings.muliasRelic.reflectionTraceActive" />
-                                <span class="switch-label">犧牲懲戒觸發反射的痕跡中（+{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 聖盾技能傷害，併入最終增加傷害）</span>
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">審判重擊基礎傷害</label>
-                                <el-select v-model="settings.muliasRelic.judgementStrikeLevel" size="small" class="field-select-sm">
-                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <span class="switch-label">審判重擊基礎傷害比例 +{{ settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%（3500% → {{ 3500 + settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%）</span>
-                            </div>
-
                             <div class="field-section-label">施工中（公式尚待驗證，暫時停用）</div>
                             <div class="field-row">
                                 <label class="field-label">目前犧牲</label>
@@ -1402,6 +1357,75 @@ onMounted(() => {
                                 <el-button size="small" type="primary" plain disabled @click="applyIronWallSacrifice">套用到目前犧牲</el-button>
                             </div>
                             <div class="field-hint">盾崩強襲的犧牲獲取僅在「高潔誓約」開啟時生效。</div>
+                        </div>
+                    </el-tab-pane>
+
+                    <!-- 很貴的項目 -->
+                    <el-tab-pane label="很貴的項目" name="expensive">
+                        <div class="tab-body">
+                            <div class="field-hint">
+                                價格高、多數人沒有的項目放這裡，沒有就整頁不用填。除了硬幣的暴擊傷害、結界模型的暴擊率會影響所有技能，其餘項目只影響 7 個秘法技能，重擊／風車／猛擊不吃。
+                            </div>
+
+                            <div class="field-section-label">布里萊赫的硬幣（3 個詞條，素質隨機）</div>
+                            <div class="field-hint">
+                                大傷（1~20）已含在「面板最大傷害」裡，不用另外填；想知道擲到的詞條值不值，可到「傷害效益」分頁比較大傷、暴擊傷害、秘法額外傷害的每單位效益。
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">暴擊傷害</label>
+                                <el-input-number v-model="settings.criticalDamage.brireheCoinPercent" :min="0" :max="10" :step="1" size="small" class="field-select" />
+                                <span class="switch-label">% （1~10，每格 1；影響所有技能）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">秘法額外傷害</label>
+                                <el-input-number v-model="settings.arcaneExtraDamage.brireheCoinPercent" :min="0" :max="3" :step="0.15" :precision="2" size="small" class="field-select" />
+                                <span class="switch-label">% （0.15~3，每格 0.15；只影響秘法技能）</span>
+                            </div>
+
+                            <div class="field-section-label">浪漫農場卡莉亞赫的結界模型</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.criticalRate.itemBonusActive" />
+                                <span class="switch-label">暴擊率上限 +{{ CRITICAL_RATE_ITEM_BONUS }}%（影響所有技能）</span>
+                            </div>
+
+                            <div class="field-section-label">秘法額外傷害來源</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.arcaneExtraDamage.imperfectCrownAuraActive" />
+                                <span class="switch-label">不完美的空想王冠光環（+3%）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">穆利亞斯的遺物件數</label>
+                                <el-input-number v-model="settings.arcaneExtraDamage.muliasRelicCount" :min="0" :max="3" size="small" class="field-select" />
+                                <span class="switch-label">接尾賦予捲軸，身上 0~3 個，每個 +1%</span>
+                            </div>
+                            <div class="field-hint">
+                                秘法額外傷害加總：+{{ fmtRatio(calcResult.arcaneExtraDamagePercent) }}%（已套用於 7 個秘法技能的傷害公式，重擊/風車/突擊/猛擊等才能技能不吃）
+                            </div>
+
+                            <div class="field-section-label">穆利亞斯的遺物（3 件，各自獨立 Lv0~10）</div>
+                            <div class="field-row">
+                                <label class="field-label">誓約每秒犧牲恢復</label>
+                                <el-select v-model="settings.muliasRelic.sacrificeRegenLevel" size="small" class="field-select-sm">
+                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <span class="switch-label">高潔誓約每秒犧牲恢復量 +{{ (settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL).toFixed(2) }}/秒（每級 +{{ MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL }}，純顯示，尚無基準值可疊加）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">反射的痕跡</label>
+                                <el-select v-model="settings.muliasRelic.reflectionTraceLevel" size="small" class="field-select-sm">
+                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <el-checkbox v-model="settings.muliasRelic.reflectionTraceActive" />
+                                <span class="switch-label">犧牲懲戒觸發反射的痕跡中（+{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">審判重擊基礎傷害</label>
+                                <el-select v-model="settings.muliasRelic.judgementStrikeLevel" size="small" class="field-select-sm">
+                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <span class="switch-label">審判重擊基礎傷害比例 +{{ settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%（3500% → {{ 3500 + settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%）</span>
+                            </div>
+
                         </div>
                     </el-tab-pane>
 
@@ -1673,8 +1697,14 @@ onMounted(() => {
                             <ProtectionBreakPanel single :pierce="effectiveSharpLevel" @result="onArmorBreakResult" />
                         </div>
                     </el-tab-pane>
+                </el-tabs>
 
-                    <el-tab-pane label="Debug" name="debug">
+                <el-card class="preset-card debug-card">
+                    <div class="preset-head" :class="{ open: showDebugPanel }" @click="showDebugPanel = !showDebugPanel">
+                        <span class="preset-head-title">🐞 Debug</span>
+                        <span class="preset-head-chevron" :style="{ transform: showDebugPanel ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
+                    </div>
+                    <template v-if="showDebugPanel">
                         <div class="tab-body">
                             <div class="field-row">
                                 <el-button size="small" type="primary" plain @click="downloadDebugData">下載完整 Debug 資料（settings + calcResult）</el-button>
@@ -1690,8 +1720,8 @@ onMounted(() => {
                             </div>
                             <pre class="debug-dump">{{ JSON.stringify(calcResult, null, 2) }}</pre>
                         </div>
-                    </el-tab-pane>
-                </el-tabs>
+                    </template>
+                </el-card>
             </div>
 
             <!-- ════════ 右側 — 最終面板 ════════ -->

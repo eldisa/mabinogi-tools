@@ -520,7 +520,7 @@ export const MENG_JI_STACKS: { stack: 1 | 2 | 3 | 4 | 5; ratio: number; extraDam
 
 /** 高潔誓約每秒犧牲恢復量，每級 +0.05 */
 export const MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL = 0.05;
-/** 犧牲之懲戒觸發反射的痕跡時，聖盾技能傷害（最終增加傷害）每級 +0.5% */
+/** 犧牲之懲戒觸發反射的痕跡時，7 個秘法技能傷害（最終增加傷害，不含重擊/風車/猛擊）每級 +0.5% */
 export const MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL = 0.5;
 /** 審判一擊基礎傷害比例額外加成，每級 +100% */
 export const MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL = 100;
@@ -533,7 +533,7 @@ export const MULIAS_RELIC_LEVEL_OPTIONS: { value: number; label: string }[] = Ar
 export interface MuliasRelicSettings {
     /** 高潔誓約每秒犧牲恢復量增加，Lv0~10 */
     sacrificeRegenLevel: number;
-    /** 犧牲之懲戒觸發反射的痕跡時，聖盾技能傷害增加，Lv0~10 */
+    /** 犧牲之懲戒觸發反射的痕跡時，秘法技能傷害增加，Lv0~10 */
     reflectionTraceLevel: number;
     /** 反射的痕跡是否已觸發（觸發中才套用加成） */
     reflectionTraceActive: boolean;
@@ -671,8 +671,10 @@ export interface CalculationResult {
     weaponExtraDamagePercent: number;
     /** 才能增加傷害倍率（種族技能×猛擊，乘算） */
     talentIncreaseDamageMultiplier: number;
-    /** 最終增加傷害倍率（戰鬥服務/達可達/死神烙印/憤怒衝擊/命運編織/洞察之眼/幸運草，乘算） */
+    /** 最終增加傷害倍率（戰鬥服務/達可達/死神烙印/憤怒衝擊/命運編織/洞察之眼/幸運草，乘算），所有技能都吃 */
     finalIncreaseDamageMultiplier: number;
+    /** 秘法技能專用的最終增加傷害倍率 = 最終增加傷害 × 反射的痕跡（反射的痕跡只加成 7 個秘法技能） */
+    arcaneFinalIncreaseDamageMultiplier: number;
     /** 秘法額外傷害%加總，已套用於 7 個秘法技能的傷害公式 */
     arcaneExtraDamagePercent: number;
     /** 穆利亞斯的遺物：高潔誓約每秒犧牲恢復量加成（純顯示用） */
@@ -786,15 +788,15 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const arcaneExtraDamagePercent = calculateArcaneExtraDamagePercent(settings.arcaneExtraDamage);
 
     // ── 最終增加傷害（乘算） ──
-    // 穆利亞斯的遺物：犧牲之懲戒觸發反射的痕跡時，聖盾技能傷害（最終增加傷害）+0.5%/級
+    // 穆利亞斯的遺物：犧牲之懲戒觸發反射的痕跡時，秘法技能傷害（最終增加傷害）+0.5%/級，只乘在 7 個秘法技能
     const reflectionTracePercent = settings.muliasRelic.reflectionTraceActive ? settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL : 0;
     // 死神烙印／憤怒衝擊／命運編織（倒吊人）／洞察之眼／幸運草標記都改由「破防」面板提供（所受傷害增加、近戰技能傷害），這裡只留戰鬥服務與強力威光
     const finalIncreaseDamageMultiplier =
         (1 + (settings.finalIncreaseDamage.combatServiceBuffActive ? 1 : 0) / 100) *
         (1 + (settings.finalIncreaseDamage.dakotaGlowActive ? 5 : 0) / 100) *
-        (1 + reflectionTracePercent / 100) *
         (1 + (armorBreak?.damageTakenPercent ?? 0) / 100) *
         (1 + (armorBreak && settings.rageImpactBuffActive ? armorBreak.meleePercent : 0) / 100);
+    const arcaneFinalIncreaseDamageMultiplier = finalIncreaseDamageMultiplier * (1 + reflectionTracePercent / 100);
 
     // 穆利亞斯的遺物：高潔誓約每秒犧牲恢復量 +0.05/級（純顯示用，目前無基準值可疊加）
     const sacrificeRegenPerSecond = settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL;
@@ -918,6 +920,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         generalExtraDamageMultiplier,
         talentIncreaseDamageMultiplier,
         finalIncreaseDamageMultiplier,
+        arcaneFinalIncreaseDamageMultiplier,
         arcaneExtraDamagePercent,
         sacrificeRegenPerSecond,
         protectionReduction,
@@ -1451,7 +1454,7 @@ export function calculateSkillsForSettings(
                 generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
                 talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
                 arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
-                finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+                finalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
                 protectionReduction: calcResult.protectionReduction,
             },
         ),
@@ -1493,6 +1496,8 @@ interface DamageLevers {
     generalExtraDamageMultiplier: number;
     talentIncreaseDamageMultiplier: number;
     finalIncreaseDamageMultiplier: number;
+    /** 秘法技能專用（含反射的痕跡），重擊/風車/猛擊不吃反射的痕跡 */
+    arcaneFinalIncreaseDamageMultiplier: number;
     /** 秘法額外傷害%，只有 7 個秘法技能（走 calculateArcaneSkillDamage）吃得到，才能技能不吃 */
     arcaneExtraDamagePercent: number;
     protectionReduction: number;
@@ -1555,7 +1560,7 @@ function calculateTotalOutputWithLevers(
                 generalExtraDamageMultiplier: levers.generalExtraDamageMultiplier,
                 talentIncreaseDamageMultiplier: levers.talentIncreaseDamageMultiplier,
                 arcaneExtraDamagePercent: levers.arcaneExtraDamagePercent,
-                finalIncreaseDamageMultiplier: levers.finalIncreaseDamageMultiplier,
+                finalIncreaseDamageMultiplier: levers.arcaneFinalIncreaseDamageMultiplier,
                 protectionReduction: levers.protectionReduction,
             },
         ),
@@ -1633,6 +1638,7 @@ function buildLeverContext(settings: ShieldKnightSettings) {
         generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
         talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
         finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+        arcaneFinalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
         arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
         protectionReduction: calcResult.protectionReduction,
     };
@@ -1718,7 +1724,14 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             id: "finalIncreaseDamage",
             label: "最終增加傷害",
             unit: "1%",
-            bump: { ...baseLevers, finalIncreaseDamageMultiplier: baseLevers.finalIncreaseDamageMultiplier + 0.01 },
+            bump: {
+                ...baseLevers,
+                finalIncreaseDamageMultiplier: baseLevers.finalIncreaseDamageMultiplier + 0.01,
+                // 秘法技能的倍率 = 最終增加傷害 × 反射的痕跡，加 0.01 同樣要乘上反射的痕跡那一項
+                arcaneFinalIncreaseDamageMultiplier:
+                    baseLevers.arcaneFinalIncreaseDamageMultiplier +
+                    0.01 * (baseLevers.arcaneFinalIncreaseDamageMultiplier / baseLevers.finalIncreaseDamageMultiplier),
+            },
         },
     ];
 
