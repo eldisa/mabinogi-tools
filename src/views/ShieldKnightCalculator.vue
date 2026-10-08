@@ -208,6 +208,8 @@ const talentCards = computed(() => {
             {
                 skill: withCard,
                 noCardDamage: noCard.finalDamage,
+                noCardRatioPercent: noCard.terms[0]?.ratioPercent ?? 0,
+                usageCount: settings.skillUsageCounts[id] ?? 0,
                 averagePercent: comboCardAveragePercent(settings.skillUsageCounts[id]),
                 positions: COMBO_CARD_BONUS_PERCENT.map((bonus) => ({
                     bonus,
@@ -2335,7 +2337,12 @@ onMounted(() => {
                         </span>
                         <span class="skill-damage">{{ fmtInt(card.skill.finalDamage) }}</span>
                     </div>
-                    <div class="field-hint">套用連續技卡片（平均 +{{ fmtRatio(card.averagePercent) }}%）｜無卡片：{{ fmtInt(card.noCardDamage) }}</div>
+                    <div class="field-hint">
+                        連擊卡：使用 {{ card.usageCount }} 次{{ card.usageCount === 0 ? "（未填，以 6 連平均預覽）" : "" }}，依 1→6 循環分配，平均 +{{ fmtRatio(card.averagePercent) }}%
+                    </div>
+                    <div class="field-hint">
+                        倍率 {{ fmtRatio(card.noCardRatioPercent) }}% → {{ fmtRatio(card.skill.terms[0]?.ratioPercent ?? 0) }}%｜無卡片傷害：{{ fmtInt(card.noCardDamage) }}
+                    </div>
 
                     <div class="skill-terms">
                         <div v-for="term in card.skill.terms" :key="term.label" class="term-row">
