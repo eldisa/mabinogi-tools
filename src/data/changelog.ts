@@ -12,6 +12,7 @@ export interface TodoItem {
 }
 
 export const announcements: Announcement[] = [
+    { date: "2026-10-08", type: "new", text: "新增 聚能查詢：各武器 B/A/S/黑暗聚能 1–50 級效果與解鎖等級、S 等級突破材料與經驗值計算（台服數據）" },
     { date: "2026-09-28", type: "new", text: "新增 聖盾騎士傷害計算器（MVP，公式持續校正中）" },
     { date: "2026-09-28", type: "update", text: "破防練習：因應版本更新移除倒塌的屏障，新增不協調感，改用與破保數據共用的破防資料" },
     { date: "2026-09-28", type: "update", text: "材料計算機：Total 新增儲存按鈕，庫存輸入改用 +/− 控制鈕" },

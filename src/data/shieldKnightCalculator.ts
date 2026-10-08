@@ -28,6 +28,7 @@ import {
     calculateCriticalRatePercent,
     calculateCriticalDamageExpected,
     calculateGeneralExtraDamageMultiplier,
+    calculateGeneralExtraPercent,
     calculateTalentIncreaseDamageMultiplier,
     calculateTalentSkillTargetDamage,
     calculateTalentSkillDamage,
@@ -38,11 +39,9 @@ import {
     PET_BONUS_OPTIONS,
     TRANSFORMATION_OPTIONS,
     SPIRIT_WEAPON_ATTACK_BONUS,
-    WEAPON_SPECIAL_REFORGE_CRIT,
     CRITICAL_DAMAGE_SET_BONUS,
     type SpiritWeaponAttackType,
     type AttackCoefficientState,
-    type WeaponSpecialReforgeTier,
     type CriticalDamageSetTier,
     type TotemChoice,
     type ArcaneExtraDamageState,
@@ -54,10 +53,8 @@ import { protRate } from "../utils/protectionCompare";
 export {
     PET_BONUS_OPTIONS,
     TRANSFORMATION_OPTIONS,
-    WEAPON_SPECIAL_REFORGE_CRIT,
     CRITICAL_DAMAGE_SET_BONUS,
     CRITICAL_RATE_ITEM_BONUS,
-    type WeaponSpecialReforgeTier,
     type CriticalDamageSetTier,
     type TotemChoice,
 };
@@ -97,15 +94,35 @@ export const DEFAULT_CHARACTER_STATS: CharacterStats = {
 //  套裝效果（內部 tag，不直接讓 User 選，由武器/盾牌/護甲套裝自動帶出）
 // ═══════════════════════════════════════════════════════
 
-export type SetEffectTag = "windmill_enhance2" | "charge_enhance" | "smash_enhance" | "windmill_base30";
+export type SetEffectTag =
+    | "windmill_enhance2"
+    | "windmill_enhance2_10"
+    | "windmill_enhance"
+    | "charge_enhance"
+    | "smash_enhance"
+    | "bash_enhance"
+    | "bash_enhance_sp";
 
 /** 套裝效果對應的顯示文字，供最終面板顯示「發動中的套裝效果」用 */
 export const SET_EFFECT_TAG_LABELS: Record<SetEffectTag, string> = {
-    windmill_enhance2: "風車最終倍率 ×1.15（武器/盾牌）",
+    windmill_enhance2: "風車套裝 +15%（武器/盾牌）",
+    windmill_enhance2_10: "風車套裝 +10%（兇猛系列）",
+    windmill_enhance: "風車基礎倍率 +30%（莊嚴騎士）",
     charge_enhance: "突擊最終倍率 ×1.15",
-    smash_enhance: "重擊最終倍率 ×1.15",
-    windmill_base30: "風車基礎倍率 +30%（莊嚴騎士）",
+    smash_enhance: "重擊套裝 +15%",
+    bash_enhance: "猛擊套裝 +10%",
+    bash_enhance_sp: "猛擊套裝（象徵）+10%",
 };
+
+/** 各套裝 tag 的實際數值（%） */
+const SET_EFFECT_VALUE_PERCENT = {
+    windmill_enhance2: 15,
+    windmill_enhance2_10: 10,
+    windmill_enhance: 30,
+    smash_enhance: 15,
+    bash_enhance: 10,
+    bash_enhance_sp: 10,
+} as const;
 
 // ═══════════════════════════════════════════════════════
 //  武器（獨立區塊：先選種類，再選武器）
@@ -124,27 +141,86 @@ export interface WeaponPreset {
     /** 額外傷害%，併入「武器額外傷害」桶 */
     extraDamagePercent: number;
     tags?: SetEffectTag[];
-    /** 僅少數武器專屬：加到重擊基礎倍率（例如穹之奏鳴曲 +25%） */
-    smashRatioFlatBonus?: number;
+    /** 武器的重擊傷害增加%，加進重擊最後一格 (1+武器重擊傷害增加+套裝+連續技卡片) */
+    smashDamageIncreasePercent?: number;
+    /** 重擊最終傷害增加%（靈魂解放者系列），乘在重擊基礎倍率上 */
+    smashFinalIncreasePercent?: number;
+    /** 猛擊最終傷害增加%（靈魂解放者系列） */
+    bashFinalIncreasePercent?: number;
 }
 
+/** 只列單手斧／雙手劍（本計算器只支援這兩種武器種類），其餘單手劍／鎚等不顯示 */
 export const WEAPON_PRESETS: Record<WeaponType, WeaponPreset[]> = {
     one_hand_axe: [
         { id: "none", label: "其他", extraDamagePercent: 0 },
-        { id: "nightbringer_plunderer", label: "暗夜使者掠奪者", extraDamagePercent: 42 },
-        { id: "soul_liberator_axe", label: "靈魂解放者單手斧", extraDamagePercent: 56, tags: ["windmill_enhance2"] },
+        { id: "celtic_axe", label: "凱爾特系列單手斧", extraDamagePercent: 14, tags: ["bash_enhance_sp"] },
+        { id: "nightbringer_plunderer", label: "暗夜使者掠奪者", extraDamagePercent: 42, tags: ["windmill_enhance2"], smashDamageIncreasePercent: 5 },
+        {
+            id: "soul_liberator_axe",
+            label: "靈魂解放者單手斧",
+            extraDamagePercent: 56,
+            tags: ["windmill_enhance2"],
+            bashFinalIncreasePercent: 10,
+        },
     ],
     two_hand_sword: [
         { id: "none", label: "其他", extraDamagePercent: 0 },
-        { id: "nightbringer_commander", label: "暗夜使者指揮官", extraDamagePercent: 84 },
-        { id: "sky_sonata", label: "穹之奏鳴曲", extraDamagePercent: 112, tags: ["windmill_enhance2"], smashRatioFlatBonus: 25 },
-        { id: "soul_liberator_sword", label: "靈魂解放者雙手劍", extraDamagePercent: 112 },
+        { id: "fierce_titan_blade", label: "兇猛泰坦利刃", extraDamagePercent: 56, tags: ["windmill_enhance2_10"] },
+        { id: "nightbringer_commander", label: "暗夜使者指揮官", extraDamagePercent: 84, smashDamageIncreasePercent: 15 },
+        {
+            id: "sky_sonata",
+            label: "穹之奏鳴曲（日月劍）",
+            extraDamagePercent: 112,
+            tags: ["windmill_enhance2", "bash_enhance"],
+            smashDamageIncreasePercent: 25,
+        },
+        { id: "soul_liberator_sword", label: "靈魂解放者雙手劍", extraDamagePercent: 112, smashFinalIncreasePercent: 20 },
     ],
 };
 
 function getWeaponPreset(weaponType: WeaponType, weaponId: string): WeaponPreset {
     return WEAPON_PRESETS[weaponType].find((w) => w.id === weaponId) ?? WEAPON_PRESETS[weaponType][0];
 }
+
+// ═══════════════════════════════════════════════════════
+//  武器特殊改造：R 增加暴擊傷害%、S 增加追加傷害（算進通用額外傷害）% 與最大傷害（階段 1~8）
+//  單手斧在 9/17 上修後與雙手劍數值相同；第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化
+// ═══════════════════════════════════════════════════════
+
+export const SPECIAL_REFORM_STAGE_COUNT = 8;
+export const SPECIAL_REFORM_R_CRIT_PERCENT: readonly number[] = [6, 16, 26, 38, 50, 62, 74, 89];
+export const SPECIAL_REFORM_S_EXTRA_PERCENT: readonly number[] = [2, 3, 4, 5, 6, 7, 9, 10];
+/** S 改造附帶的最大傷害（面板最大傷害通常已含，只用於「特殊改造效益」比較階段價值） */
+export const SPECIAL_REFORM_S_MAX_DAMAGE: readonly number[] = [50, 60, 70, 90, 110, 130, 155, 170];
+const SPECIAL_REFORM_STAGE8_WEAPON_IDS = ["soul_liberator_axe", "sky_sonata", "soul_liberator_sword"];
+
+/** 該武器能強化到第幾階：靈魂解放者／日月劍 8 階，其他 7 階 */
+export function specialReformMaxStage(weaponId: string): number {
+    return SPECIAL_REFORM_STAGE8_WEAPON_IDS.includes(weaponId) ? 8 : 7;
+}
+
+/** 一把武器只能做 R 或 S 其中一種特殊改造；兩個欄位都有值時以 S 為準（S 預設 0，有填代表刻意選擇） */
+export function resolveSpecialReform(settings: Pick<ShieldKnightSettings, "weaponId" | "weaponSpecialReformSStage" | "criticalDamage">): {
+    maxStage: number;
+    rStage: number;
+    sStage: number;
+} {
+    const maxStage = specialReformMaxStage(settings.weaponId);
+    const sStage = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, maxStage);
+    const rStage = sStage > 0 ? 0 : normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, maxStage);
+    return { maxStage, rStage, sStage };
+}
+
+/** 舊存檔的階段是 "none"／"r6"／"r7"／"r8" 字串，統一轉成 0~maxStage 的整數 */
+export function normalizeSpecialReformStage(value: unknown, maxStage: number): number {
+    const n = typeof value === "number" ? value : typeof value === "string" ? parseInt(value.replace(/\D/g, ""), 10) || 0 : 0;
+    return Math.min(Math.max(0, Math.round(n)), maxStage);
+}
+
+const reformValue = (table: readonly number[], stage: number): number => (stage > 0 ? (table[stage - 1] ?? 0) : 0);
+export const specialReformRCrit = (stage: number) => reformValue(SPECIAL_REFORM_R_CRIT_PERCENT, stage);
+export const specialReformSExtra = (stage: number) => reformValue(SPECIAL_REFORM_S_EXTRA_PERCENT, stage);
+export const specialReformSMaxDamage = (stage: number) => reformValue(SPECIAL_REFORM_S_MAX_DAMAGE, stage);
 
 // ═══════════════════════════════════════════════════════
 //  盾牌（獨立區塊）
@@ -165,9 +241,22 @@ export interface ShieldPreset {
 
 export const SHIELD_PRESETS: ShieldPreset[] = [
     { id: "none", label: "無 / 其他", reduction: 0 },
-    { id: "fierce_sentry", label: "兇猛哨兵盾牌", reduction: 0.2, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 28 },
-    { id: "night_vanguard", label: "暗夜使者前鋒", reduction: 0.3, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 42 },
-    { id: "soul_liberator", label: "靈魂解放者盾牌", reduction: 0.45, hpFlat: 1000, oneHandWeaponExtraDamagePercent: 56 },
+    { id: "holy_shield", label: "神聖盾牌", reduction: 0.15, tags: ["bash_enhance_sp", "charge_enhance"], oneHandWeaponExtraDamagePercent: 14 },
+    {
+        id: "fierce_sentry",
+        label: "兇猛哨兵盾牌",
+        reduction: 0.2,
+        tags: ["windmill_enhance2_10", "bash_enhance", "charge_enhance"],
+        oneHandWeaponExtraDamagePercent: 28,
+    },
+    {
+        id: "night_vanguard",
+        label: "暗夜使者前鋒（貓盾）",
+        reduction: 0.3,
+        tags: ["windmill_enhance2", "bash_enhance", "charge_enhance"],
+        oneHandWeaponExtraDamagePercent: 42,
+    },
+    { id: "soul_liberator", label: "靈魂解放者系列盾牌", reduction: 0.4, hpFlat: 1000, tags: ["windmill_enhance2", "charge_enhance"], oneHandWeaponExtraDamagePercent: 56 },
     { id: "pot", label: "鍋子", reduction: 0, maxDamageFlat: 40 },
 ];
 
@@ -192,7 +281,7 @@ export const HOLY_WATER_ABILITIES: HolyWaterAbility[] = [
     { id: "maxHp", label: "HP", max: 300 },
     { id: "defense", label: "防禦", max: 100 },
     { id: "magicDefense", label: "魔法防禦", max: 100 },
-    { id: "criticalDamage", label: "爆擊傷害 %", max: 4 },
+    { id: "criticalDamage", label: "暴擊傷害 %", max: 4 },
 ];
 
 export const HOLY_WATER_SLOTS = [
@@ -294,6 +383,9 @@ export function getReforgeLevelMax(slotKey: ReforgeSlotKey, weaponType: WeaponTy
     if (slotKey === "weapon") return weaponType === "two_hand_sword" ? 25 : 13;
     return 4;
 }
+
+/** 省察的痕跡細工等級選單：0~25，21~25 突破限定（兩個部位共用） */
+export const REFLECTION_REFORGE_LEVEL_OPTIONS: ReforgeLevelOption[] = buildReforgeLevelOptions(25, 21);
 
 /** [戰場上的狂吼] 樂器演奏細工等級選單：0~25，21~25 突破限定 */
 export const BATTLE_CRY_REFORGE_LEVEL_OPTIONS: ReforgeLevelOption[] = buildReforgeLevelOptions(25, 21);
@@ -408,8 +500,49 @@ const BASE_SKILL_RATIOS = {
     charge: 264,
 };
 
+// ═══════════════════════════════════════════════════════
+//  連續技卡片：只能裝備一張，同一個技能連續使用 6 下，第 1~6 下依序再加成（秘法技能不吃）
+// ═══════════════════════════════════════════════════════
+
+/** 第 1~6 下各自的增傷%，總和 213% */
+export const COMBO_CARD_BONUS_PERCENT: readonly number[] = [0, 10, 22, 37, 57, 87];
+
+export type ComboCardSkillId = "none" | "smash-hit" | "meng-ji" | "windmill-hit";
+
+export const COMBO_CARD_OPTIONS: { id: ComboCardSkillId; label: string }[] = [
+    { id: "none", label: "不使用" },
+    { id: "smash-hit", label: "重擊" },
+    { id: "meng-ji", label: "猛擊" },
+    { id: "windmill-hit", label: "風車" },
+];
+
 /**
- * 猛擊：獨立技能（不影響鐵壁猛擊，鐵壁猛擊吃的是風車）。層數 1~5，每層攻擊傷害倍率不同，
+ * 使用次數依 1→6→1 循環平均分配到 6 個位置（餘數優先給前面），回傳加權平均增傷%。
+ * 次數為 0 時以完整 6 連的平均（213/6）當代表值，這樣沒填次數時卡片/單次傷害預覽也看得到連擊效果。
+ */
+export function comboCardAveragePercent(usageCount: number): number {
+    const positions = COMBO_CARD_BONUS_PERCENT.length;
+    if (usageCount <= 0) return COMBO_CARD_BONUS_PERCENT.reduce((s, p) => s + p, 0) / positions;
+    const base = Math.floor(usageCount / positions);
+    const remainder = usageCount % positions;
+    const total = COMBO_CARD_BONUS_PERCENT.reduce((sum, p, i) => sum + p * (base + (i < remainder ? 1 : 0)), 0);
+    return total / usageCount;
+}
+
+/** 目前選的連續技卡片套在 skillId 上，相對於「未含連續技卡片」倍率的放大比例：(1+加成+連續技平均)/(1+加成) */
+function comboCardFactor(
+    settings: { comboCardSkillId: ComboCardSkillId },
+    usageCounts: Record<string, number>,
+    skillId: Exclude<ComboCardSkillId, "none">,
+    additive: number,
+): number {
+    if (settings.comboCardSkillId !== skillId) return 1;
+    const combo = comboCardAveragePercent(usageCounts[skillId] ?? 0) / 100;
+    return (1 + additive + combo) / (1 + additive);
+}
+
+/**
+ * 猛擊：獨立技能（不影響鐵壁猛擊，鐵壁猛擊吃的是風車）。層數 1~5，每層基礎傷害倍率不同，
  * 並疊加「近戰才能技能傷害%」buff（才能增加傷害，乘算）。每次使用增加 1 階段，滿 5 階持續
  * 20 秒，時間到降 1 階，本計算器不做即時計時模擬，直接以「目前層數」視為 buff 生效中。
  */
@@ -427,9 +560,15 @@ export const MENG_JI_STACKS: { stack: 1 | 2 | 3 | 4 | 5; ratio: number; extraDam
 
 /** 高潔誓約每秒犧牲恢復量，每級 +0.05 */
 export const MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL = 0.05;
-/** 犧牲之懲戒觸發反射的痕跡時，聖盾技能傷害（最終增加傷害）每級 +0.5% */
+/** 犧牲之懲戒觸發省察的痕跡時，7 個秘法技能傷害（最終增加傷害，不含重擊/風車/猛擊）每級 +0.5% */
 export const MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL = 0.5;
 /** 審判一擊基礎傷害比例額外加成，每級 +100% */
+/** buff 覆蓋率（0~100%）轉成 0~1，舊存檔沒有這個欄位時視為 100% */
+function coverageRatio(percent: number | undefined): number {
+    return Math.min(100, Math.max(0, percent ?? 100)) / 100;
+}
+/** 憤怒衝擊套裝：近戰技能傷害 +2% */
+const RAGE_IMPACT_SET_PERCENT = 2;
 export const MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL = 100;
 
 export const MULIAS_RELIC_LEVEL_OPTIONS: { value: number; label: string }[] = Array.from({ length: 11 }, (_, i) => ({
@@ -440,10 +579,10 @@ export const MULIAS_RELIC_LEVEL_OPTIONS: { value: number; label: string }[] = Ar
 export interface MuliasRelicSettings {
     /** 高潔誓約每秒犧牲恢復量增加，Lv0~10 */
     sacrificeRegenLevel: number;
-    /** 犧牲之懲戒觸發反射的痕跡時，聖盾技能傷害增加，Lv0~10 */
+    /** 犧牲之懲戒觸發省察的痕跡時，秘法技能傷害增加，Lv0~10 */
     reflectionTraceLevel: number;
-    /** 反射的痕跡是否已觸發（觸發中才套用加成） */
-    reflectionTraceActive: boolean;
+    /** 省察的痕跡覆蓋率 0~100%：觸發中時，平均有多少比例的秘法技能施放吃得到加成 */
+    reflectionTraceCoveragePercent: number;
     /** 審判一擊基礎傷害比例額外加成，Lv0~10 */
     judgementStrikeLevel: number;
 }
@@ -478,7 +617,11 @@ export interface ArmorBreakSettings {
     damageTakenPercent: number;
     /** 近戰技能傷害 +%（憤怒衝擊），「近距離額外傷害中」開啟時乘進最終增加傷害 */
     meleePercent: number;
-    /** 暴擊傷害 debuff %，加到暴擊傷害 */
+    /**
+     * 暴擊時才生效的通用額外傷害 +%（例如犬靈的銳利目光，語意是「暴擊時增加通用額外傷害」，不是暴擊傷害）。
+     * 欄位名維持 critDamagePercent 不改（破防面板那邊沿用舊名），但意義已經不是暴擊傷害；
+     * 非暴擊不套用，這裡用暴擊率換算成期望值近似，乘進通用額外傷害倍率。
+     */
     critDamagePercent: number;
 }
 
@@ -486,7 +629,8 @@ export interface CriticalDamageSettings {
     skillR1Active: boolean;
     fullGradeActive: boolean;
     spiritWeaponCritActive: boolean;
-    weaponSpecialReforgeTier: WeaponSpecialReforgeTier;
+    /** 武器特殊改造 R 階段 0~8（舊存檔是 "r6"/"r7"/"r8" 字串，計算時會轉換） */
+    weaponSpecialReforgeTier: number;
     setTier: CriticalDamageSetTier;
     totemChoice: TotemChoice;
     dollBagPercent: number;
@@ -534,9 +678,15 @@ export interface FinalStats {
 }
 
 export interface AbilityValues {
+    /** 以下 4 個倍率都是「未含連續技卡片」的有效倍率（已乘上武器/盾牌/套裝等加成），連續技卡片另依使用次數分配 */
     smashRatio: number;
     windmillRatio: number;
     chargeRatio: number;
+    mengJiRatio: number;
+    /** 各技能最後一格 (1+加成+連續技卡片) 裡、連續技卡片以外的加成（小數，0.2＝+20%），套用連續技卡片時用來換算比例 */
+    ratioAdditives: { smash: number; windmill: number; mengJi: number };
+    /** 細工 +1 級實際增加的倍率 = 每級倍率 × 該技能全部乘算加成，傷害效益算細工邊際效益用 */
+    ratioMultipliers: { smash: number; windmill: number; charge: number };
     /** 才能技能最終傷害（重擊目前沒有任何秘法技能公式使用，先算出來顯示參考） */
     smashDamage: number;
     windmillDamage: number;
@@ -568,8 +718,10 @@ export interface CalculationResult {
     weaponExtraDamagePercent: number;
     /** 才能增加傷害倍率（種族技能×猛擊，乘算） */
     talentIncreaseDamageMultiplier: number;
-    /** 最終增加傷害倍率（戰鬥服務/達可達/死神烙印/憤怒衝擊/命運編織/洞察之眼/幸運草，乘算） */
+    /** 最終增加傷害倍率（戰鬥服務/達可達/死神烙印/憤怒衝擊/命運編織/洞察之眼/幸運草，乘算），所有技能都吃 */
     finalIncreaseDamageMultiplier: number;
+    /** 秘法技能專用的最終增加傷害倍率 = 最終增加傷害 × 省察的痕跡（省察的痕跡只加成 7 個秘法技能） */
+    arcaneFinalIncreaseDamageMultiplier: number;
     /** 秘法額外傷害%加總，已套用於 7 個秘法技能的傷害公式 */
     arcaneExtraDamagePercent: number;
     /** 穆利亞斯的遺物：高潔誓約每秒犧牲恢復量加成（純顯示用） */
@@ -614,7 +766,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const tags = collectActiveTags(weapon, shield);
     if (settings.manualChargeEnhanceActive) tags.add("charge_enhance");
     if (settings.manualSmashEnhanceActive) tags.add("smash_enhance");
-    if (settings.manualWindmillBase30Active) tags.add("windmill_base30");
+    if (settings.manualWindmillBase30Active) tags.add("windmill_enhance");
     const hasMagicCircle = (id: MagicCircleId) => settings.magicCircleIds.includes(id);
 
     // ── 最終最大傷害 ──
@@ -651,22 +803,27 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         : 1;
 
     // ── 暴擊傷害% ──
-    const criticalDamagePercent =
-        calculateCriticalDamagePercent({
-            ...settings.criticalDamage,
-            classBonusPercent: 0,
-            holyWaterPercent: sumHolyWater(settings.holyWater, "criticalDamage"),
-        }) + (armorBreak?.critDamagePercent ?? 0);
+    const { rStage: reformRStage, sStage: reformSStage } = resolveSpecialReform(settings);
+    const criticalDamagePercent = calculateCriticalDamagePercent({
+        ...settings.criticalDamage,
+        weaponSpecialReforgeCritPercent: specialReformRCrit(reformRStage),
+        classBonusPercent: 0,
+        holyWaterPercent: sumHolyWater(settings.holyWater, "criticalDamage"),
+    });
     const criticalRatePercent = calculateCriticalRatePercent(settings.criticalRate);
     const criticalDamageExpected = calculateCriticalDamageExpected(criticalDamagePercent, criticalRatePercent);
 
     // ── 額外傷害（通用額外傷害倍率） ──
     const isOneHandWeapon = settings.weaponType === "one_hand_axe";
     const weaponExtraDamagePercent = weapon.extraDamagePercent + (isOneHandWeapon ? (shield.oneHandWeaponExtraDamagePercent ?? 0) : 0);
-    const generalExtraDamageMultiplier = calculateGeneralExtraDamageMultiplier({
-        ...settings.extraDamage,
-        weaponExtraDamagePercent,
-    });
+    // 破防的「暴擊時通用額外傷害」（例如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似，跟全引擎的期望值作法一致
+    const critOnlyGeneralExtraPercent = ((armorBreak?.critDamagePercent ?? 0) * criticalRatePercent) / 100;
+    const generalExtraDamageMultiplier =
+        calculateGeneralExtraDamageMultiplier({
+            ...settings.extraDamage,
+            weaponExtraDamagePercent,
+            generalBonusPercent: specialReformSExtra(reformSStage),
+        }) * (1 + critOnlyGeneralExtraPercent / 100);
 
     // ── 才能增加傷害（種族技能 × 猛擊，乘算） ──
     // 種族特殊技能是主動開啟的技能，不是被動固定套用，所以要 raceSkillActive 開啟才算
@@ -681,38 +838,60 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const arcaneExtraDamagePercent = calculateArcaneExtraDamagePercent(settings.arcaneExtraDamage);
 
     // ── 最終增加傷害（乘算） ──
-    // 穆利亞斯的遺物：犧牲之懲戒觸發反射的痕跡時，聖盾技能傷害（最終增加傷害）+0.5%/級
-    const reflectionTracePercent = settings.muliasRelic.reflectionTraceActive ? settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL : 0;
+    // 穆利亞斯的遺物：犧牲之懲戒觸發省察的痕跡時，秘法技能傷害（最終增加傷害）+0.5%/級，只乘在 7 個秘法技能
+    const reflectionTracePercent =
+        settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL * coverageRatio(settings.muliasRelic.reflectionTraceCoveragePercent);
     // 死神烙印／憤怒衝擊／命運編織（倒吊人）／洞察之眼／幸運草標記都改由「破防」面板提供（所受傷害增加、近戰技能傷害），這裡只留戰鬥服務與強力威光
     const finalIncreaseDamageMultiplier =
         (1 + (settings.finalIncreaseDamage.combatServiceBuffActive ? 1 : 0) / 100) *
         (1 + (settings.finalIncreaseDamage.dakotaGlowActive ? 5 : 0) / 100) *
-        (1 + reflectionTracePercent / 100) *
         (1 + (armorBreak?.damageTakenPercent ?? 0) / 100) *
-        (1 + (armorBreak && settings.rageImpactBuffActive ? armorBreak.meleePercent : 0) / 100);
+        (1 + (armorBreak && settings.rageImpactBuffActive ? armorBreak.meleePercent * coverageRatio(settings.rageImpactCoveragePercent) : 0) / 100);
+    const arcaneFinalIncreaseDamageMultiplier = finalIncreaseDamageMultiplier * (1 + reflectionTracePercent / 100);
 
     // 穆利亞斯的遺物：高潔誓約每秒犧牲恢復量 +0.05/級（純顯示用，目前無基準值可疊加）
     const sacrificeRegenPerSecond = settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL;
 
-    // ── 重擊 / 風車 / 突擊 三個基礎倍率 ──
-    const smashFlat =
-        sumReforgeLevels(settings.reforge, "smash") * REFORGE_PER_LEVEL.smash +
-        (weapon.smashRatioFlatBonus ?? 0) +
-        (hasMagicCircle("smash_damage") ? 100 : 0) +
-        (settings.weaponType === "two_hand_sword" && settings.darkErgActive ? 150 : 0);
-    const windmillFlat =
-        sumReforgeLevels(settings.reforge, "windmill") * REFORGE_PER_LEVEL.windmill +
-        (tags.has("windmill_base30") ? 30 : 0) +
-        (settings.weaponType === "one_hand_axe" && settings.ergActive ? 100 : 0) +
-        (settings.weaponType === "one_hand_axe" && settings.darkErgActive ? 100 : 0);
-    const chargeFlat =
-        sumReforgeLevels(settings.reforge, "charge") * REFORGE_PER_LEVEL.charge +
-        (hasMagicCircle("charge_damage") ? 60 : 0);
+    // ── 重擊 / 風車 / 突擊 / 猛擊 倍率（皆為未含連續技卡片的有效倍率，連續技卡片依使用次數另外處理） ──
+    const tagPercent = (tag: keyof typeof SET_EFFECT_VALUE_PERCENT) => (tags.has(tag) ? SET_EFFECT_VALUE_PERCENT[tag] : 0);
+    const isTwoHand = settings.weaponType === "two_hand_sword";
 
-    // 套裝的「最終倍率」乘在（基礎＋固定加成）之後
-    const smashRatio = (BASE_SKILL_RATIOS.smash + smashFlat) * (tags.has("smash_enhance") ? 1.15 : 1);
-    const windmillRatio = (BASE_SKILL_RATIOS.windmill + windmillFlat) * (tags.has("windmill_enhance2") ? 1.15 : 1);
-    const chargeRatio = (BASE_SKILL_RATIOS.charge + chargeFlat) * (tags.has("charge_enhance") ? 1.15 : 1);
+    // 重擊 = (基礎+魔法陣+細工) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)
+    // 細工與聚能提供的倍率都算在基礎裡；重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍，所以不計
+    const smashBase =
+        BASE_SKILL_RATIOS.smash +
+        sumReforgeLevels(settings.reforge, "smash") * REFORGE_PER_LEVEL.smash +
+        (hasMagicCircle("smash_damage") ? 100 : 0);
+    const smashMultiplier = (isTwoHand ? 1.2 : 1) * (1 + (weapon.smashFinalIncreasePercent ?? 0) / 100);
+    const smashAdditive = ((weapon.smashDamageIncreasePercent ?? 0) + tagPercent("smash_enhance")) / 100;
+
+    // 風車 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝_10) × (1+風車套裝_15) × (1+連續技卡片)
+    // 單手斧聚能（S50）+100%，黑暗聚能（50）+100%
+    const windmillBase =
+        BASE_SKILL_RATIOS.windmill +
+        sumReforgeLevels(settings.reforge, "windmill") * REFORGE_PER_LEVEL.windmill +
+        tagPercent("windmill_enhance") +
+        (!isTwoHand && settings.ergActive ? 100 : 0) +
+        (!isTwoHand && settings.darkErgActive ? 100 : 0);
+    const windmillMultiplier = (1 + tagPercent("windmill_enhance2_10") / 100) * (1 + tagPercent("windmill_enhance2") / 100);
+
+    // 突擊維持原本算法
+    const chargeBase =
+        BASE_SKILL_RATIOS.charge + sumReforgeLevels(settings.reforge, "charge") * REFORGE_PER_LEVEL.charge + (hasMagicCircle("charge_damage") ? 60 : 0);
+    const chargeMultiplier = tags.has("charge_enhance") ? 1.15 : 1;
+
+    // 猛擊 = (層數基礎+魔法陣+單手精靈武器20%) × (1+猛擊最終傷害增加) × (1+猛擊套裝+猛擊套裝象徵+連續技卡片)
+    const mengJiBase =
+        MENG_JI_STACKS[settings.mengJiStack - 1].ratio +
+        (hasMagicCircle("meng_ji_damage") ? 40 : 0) +
+        (!isTwoHand && settings.spiritWeaponAttackActive ? 20 : 0);
+    const mengJiMultiplier = 1 + (weapon.bashFinalIncreasePercent ?? 0) / 100;
+    const mengJiAdditive = (tagPercent("bash_enhance") + tagPercent("bash_enhance_sp")) / 100;
+
+    const smashRatio = smashBase * smashMultiplier * (1 + smashAdditive);
+    const windmillRatio = windmillBase * windmillMultiplier;
+    const chargeRatio = chargeBase * chargeMultiplier;
+    const mengJiRatio = mengJiBase * mengJiMultiplier * (1 + mengJiAdditive);
 
     const talentDamage = (skillRatioPercent: number) =>
         calculateTalentSkillDamage({
@@ -730,6 +909,13 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         smashRatio,
         windmillRatio,
         chargeRatio,
+        mengJiRatio,
+        ratioAdditives: { smash: smashAdditive, windmill: 0, mengJi: mengJiAdditive },
+        ratioMultipliers: {
+            smash: smashMultiplier * (1 + smashAdditive),
+            windmill: windmillMultiplier,
+            charge: chargeMultiplier,
+        },
         smashDamage: talentDamage(smashRatio),
         windmillDamage: talentDamage(windmillRatio),
         chargeDamage: talentDamage(chargeRatio),
@@ -785,6 +971,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         generalExtraDamageMultiplier,
         talentIncreaseDamageMultiplier,
         finalIncreaseDamageMultiplier,
+        arcaneFinalIncreaseDamageMultiplier,
         arcaneExtraDamagePercent,
         sacrificeRegenPerSecond,
         protectionReduction,
@@ -1169,6 +1356,29 @@ export function calculateSmashHit(finalStats: FinalStats, smashRatio: number, sm
     };
 }
 
+/**
+ * 突擊（顯示用）：不在 10 個技能內（不進總輸出、沒有使用次數），只在技能傷害區的才能技能卡片顯示，
+ * 吃風車/突擊餵給盾擊衝鋒的同一個「突擊傷害」，不吃連續技卡片。
+ */
+export function calculateChargeHit(settings: ShieldKnightSettings, critMode: CritDisplayMode = "expected") {
+    const calcResult = calculateAll(settings);
+    const { finalStats, abilities } = calcResult;
+    const criticalDamagePercent = critMode === "noCrit" ? 100 : critMode === "crit" ? calcResult.criticalDamagePercent : calcResult.criticalDamageExpected;
+    const finalDamage = Math.round(
+        calculateTalentSkillDamage({
+            finalAttackPower: finalStats.maxDamage,
+            skillRatioPercent: abilities.chargeRatio,
+            criticalDamagePercent,
+            generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+            talentExtraDamagePercent: 0,
+            talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
+            finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+            protectionReduction: calcResult.protectionReduction,
+        }),
+    );
+    return { name: "突擊", terms: [makeTerm("基礎傷害", abilities.chargeRatio, finalStats.maxDamage)], finalDamage };
+}
+
 /** 風車（顯示用）：與鐵壁猛擊/審判一擊/光輝之審判吃的「風車傷害」才能技能最終傷害同一個基礎倍率 */
 export function calculateWindmillHit(finalStats: FinalStats, windmillRatio: number, windmillDamage: number): SkillDamageResult {
     const terms = [makeTerm("基礎傷害", windmillRatio, finalStats.maxDamage)];
@@ -1184,10 +1394,14 @@ export function calculateWindmillHit(finalStats: FinalStats, windmillRatio: numb
     };
 }
 
-/** 猛擊：獨立技能，不影響鐵壁猛擊。魔法陣「猛擊打擊傷害+40%」併入本技能的基礎倍率 */
+/**
+ * 猛擊：獨立技能，不影響鐵壁猛擊。ratio 是已經乘好魔法陣/精靈武器/猛擊套裝/連續技卡片等全部加成的有效倍率，
+ * 由 calculateAll 算好傳進來（公式見該處）。
+ */
 export function calculateMengJi(
     finalStats: FinalStats,
     stack: 1 | 2 | 3 | 4 | 5,
+    ratio: number,
     magicCircleActive: boolean,
     criticalDamagePercent: number,
     generalExtraDamageMultiplier: number,
@@ -1196,8 +1410,7 @@ export function calculateMengJi(
     protectionReduction = 1,
 ): SkillDamageResult {
     const stackInfo = MENG_JI_STACKS[stack - 1];
-    const ratio = stackInfo.ratio + (magicCircleActive ? 40 : 0);
-    const terms = [makeTerm("攻擊傷害", ratio, finalStats.maxDamage)];
+    const terms = [makeTerm("基礎傷害", ratio, finalStats.maxDamage)];
     const finalDamage = Math.round(
         calculateTalentSkillDamage({
             finalAttackPower: finalStats.maxDamage,
@@ -1248,45 +1461,85 @@ export function calculateAllSkills(
     ];
 }
 
+/** 技能卡片的暴擊顯示模式：沒暴擊＝固定用 100%（視為必定不暴擊）；暴擊＝固定用暴擊當下的原始暴擊傷害%（視為必定暴擊）；期望值＝預設，依暴擊率加權平均 */
+export type CritDisplayMode = "noCrit" | "crit" | "expected";
+
 /**
  * 依設定算出全部 10 個技能的傷害結果（不篩選顯示開關，供「技能使用次數」/「裝備比較」/「傷害效益」共用）。
  * radiantJudgementUsageCount：光輝斷罪用來分配 1/2/3 階段次數的使用次數，預設吃 settings 自己的
  * skillUsageCounts；「裝備比較」需要比較別的配置時，外部會改傳目前分頁的使用次數，維持跟「總輸出」一致。
+ * critMode：只給「技能傷害」卡片顯示用的暴擊模式切換，預設「期望值」（跟其餘所有計算一致）；
+ * 選「沒暴擊」「暴擊」時，連同風車/突擊/重擊/猛擊等才能技能餵給秘法技能的「才能技能目標傷害」都要重算，
+ * 不能只換 shared.criticalDamagePercent，否則 7 個秘法技能借用的才能傷害還是用期望值算的。
  */
 export function calculateSkillsForSettings(
     settings: ShieldKnightSettings,
-    radiantJudgementUsageCount: number = settings.skillUsageCounts["radiant-judgement"] ?? 0,
+    usageCounts: SkillUsageCounts = settings.skillUsageCounts,
+    critMode: CritDisplayMode = "expected",
 ): SkillDamageResult[] {
+    const radiantJudgementUsageCount = usageCounts["radiant-judgement"] ?? 0;
     const calcResult = calculateAll(settings);
     const { finalStats, abilities } = calcResult;
+    const effectiveCritPercent =
+        critMode === "noCrit" ? 100 : critMode === "crit" ? calcResult.criticalDamagePercent : calcResult.criticalDamageExpected;
+    const talentDamage = (skillRatioPercent: number) =>
+        calculateTalentSkillDamage({
+            finalAttackPower: finalStats.maxDamage,
+            skillRatioPercent,
+            criticalDamagePercent: effectiveCritPercent,
+            generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+            talentExtraDamagePercent: 0,
+            talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
+            finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+            protectionReduction: calcResult.protectionReduction,
+        });
+    // 7 個秘法技能借用的才能技能傷害不吃連續技卡片，所以這組用「未含連續技卡片」的倍率
+    const windmillDamage = critMode === "expected" ? abilities.windmillDamage : talentDamage(abilities.windmillRatio);
+    const chargeDamage = critMode === "expected" ? abilities.chargeDamage : talentDamage(abilities.chargeRatio);
+    // 目標傷害（還沒乘保護減算，秘法技能公式自己會乘一次）
+    const targetDamage = (skillRatioPercent: number) =>
+        calculateTalentSkillTargetDamage({
+            finalAttackPower: finalStats.maxDamage,
+            skillRatioPercent,
+            criticalDamagePercent: effectiveCritPercent,
+        });
+    const windmillTargetDamage = critMode === "expected" ? abilities.windmillTargetDamage : targetDamage(abilities.windmillRatio);
+    const chargeTargetDamage = critMode === "expected" ? abilities.chargeTargetDamage : targetDamage(abilities.chargeRatio);
+    // 重擊／風車／猛擊技能本身（卡片與使用次數小計）才吃連續技卡片
+    const smashRatio = abilities.smashRatio * comboCardFactor(settings, usageCounts, "smash-hit", abilities.ratioAdditives.smash);
+    const windmillRatio = abilities.windmillRatio * comboCardFactor(settings, usageCounts, "windmill-hit", abilities.ratioAdditives.windmill);
+    const mengJiRatio = abilities.mengJiRatio * comboCardFactor(settings, usageCounts, "meng-ji", abilities.ratioAdditives.mengJi);
+    const smashDamage = talentDamage(smashRatio);
+    const windmillHitDamage = talentDamage(windmillRatio);
     const mengJiMagicCircleActive = settings.magicCircleIds.includes("meng_ji_damage");
     const skills = [
         ...calculateAllSkills(
             finalStats,
-            abilities.windmillDamage,
-            abilities.chargeDamage,
-            abilities.windmillTargetDamage,
-            abilities.chargeTargetDamage,
+            windmillDamage,
+            chargeDamage,
+            windmillTargetDamage,
+            chargeTargetDamage,
             settings.nobleOathEnabled,
             settings.currentSacrifice,
             settings.radiantJudgementStage,
             settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL,
             {
-                criticalDamagePercent: calcResult.criticalDamageExpected,
+                criticalDamagePercent: effectiveCritPercent,
                 generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
                 talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
                 arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
-                finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+                finalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
                 protectionReduction: calcResult.protectionReduction,
             },
         ),
-        calculateSmashHit(finalStats, abilities.smashRatio, abilities.smashDamage),
-        calculateWindmillHit(finalStats, abilities.windmillRatio, abilities.windmillDamage),
+        calculateSmashHit(finalStats, smashRatio, smashDamage),
+        calculateWindmillHit(finalStats, windmillRatio, windmillHitDamage),
         calculateMengJi(
             finalStats,
             settings.mengJiStack,
+            mengJiRatio,
             mengJiMagicCircleActive,
-            calcResult.criticalDamageExpected,
+            effectiveCritPercent,
             calcResult.generalExtraDamageMultiplier,
             calcResult.talentIncreaseDamageMultiplier,
             calcResult.finalIncreaseDamageMultiplier,
@@ -1298,10 +1551,7 @@ export function calculateSkillsForSettings(
 
 /** 總輸出＝Σ（技能傷害 × 使用次數），供「技能使用次數」／「裝備比較」分頁共用 */
 export function calculateTotalOutput(settings: ShieldKnightSettings, usageCounts: SkillUsageCounts): number {
-    return calculateSkillsForSettings(settings, usageCounts["radiant-judgement"] ?? 0).reduce(
-        (sum, skill) => sum + skill.finalDamage * (usageCounts[skill.skillId] ?? 0),
-        0,
-    );
+    return calculateSkillsForSettings(settings, usageCounts).reduce((sum, skill) => sum + skill.finalDamage * (usageCounts[skill.skillId] ?? 0), 0);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1320,6 +1570,8 @@ interface DamageLevers {
     generalExtraDamageMultiplier: number;
     talentIncreaseDamageMultiplier: number;
     finalIncreaseDamageMultiplier: number;
+    /** 秘法技能專用（含省察的痕跡），重擊/風車/猛擊不吃省察的痕跡 */
+    arcaneFinalIncreaseDamageMultiplier: number;
     /** 秘法額外傷害%，只有 7 個秘法技能（走 calculateArcaneSkillDamage）吃得到，才能技能不吃 */
     arcaneExtraDamagePercent: number;
     protectionReduction: number;
@@ -1328,9 +1580,10 @@ interface DamageLevers {
 function calculateTotalOutputWithLevers(
     levers: DamageLevers,
     finalStatsBase: Pick<FinalStats, "maxHp" | "defense" | "protection" | "magicDefense" | "magicProtection" | "shieldDamageReduction">,
-    ratios: { smashRatio: number; windmillRatio: number; chargeRatio: number },
+    ratios: Pick<AbilityValues, "smashRatio" | "windmillRatio" | "chargeRatio" | "mengJiRatio" | "ratioAdditives">,
     settings: ShieldKnightSettings,
 ): number {
+    const usageCounts = settings.skillUsageCounts;
     const passiveDefensePower = levers.maxDamage * MAX_DAMAGE_TO_DEFENSE_POWER_RATE;
     const defensePower =
         finalStatsBase.defense + finalStatsBase.protection + finalStatsBase.magicDefense + finalStatsBase.magicProtection + passiveDefensePower;
@@ -1349,7 +1602,11 @@ function calculateTotalOutputWithLevers(
         });
     const windmillDamage = talentDamage(ratios.windmillRatio);
     const chargeDamage = talentDamage(ratios.chargeRatio);
-    const smashDamage = talentDamage(ratios.smashRatio);
+    const smashRatioWithCombo = ratios.smashRatio * comboCardFactor(settings, usageCounts, "smash-hit", ratios.ratioAdditives.smash);
+    const windmillRatioWithCombo = ratios.windmillRatio * comboCardFactor(settings, usageCounts, "windmill-hit", ratios.ratioAdditives.windmill);
+    const mengJiRatioWithCombo = ratios.mengJiRatio * comboCardFactor(settings, usageCounts, "meng-ji", ratios.ratioAdditives.mengJi);
+    const smashDamage = talentDamage(smashRatioWithCombo);
+    const windmillHitDamage = talentDamage(windmillRatioWithCombo);
     const windmillTargetDamage = calculateTalentSkillTargetDamage({
         finalAttackPower: levers.maxDamage,
         skillRatioPercent: ratios.windmillRatio,
@@ -1377,15 +1634,16 @@ function calculateTotalOutputWithLevers(
                 generalExtraDamageMultiplier: levers.generalExtraDamageMultiplier,
                 talentIncreaseDamageMultiplier: levers.talentIncreaseDamageMultiplier,
                 arcaneExtraDamagePercent: levers.arcaneExtraDamagePercent,
-                finalIncreaseDamageMultiplier: levers.finalIncreaseDamageMultiplier,
+                finalIncreaseDamageMultiplier: levers.arcaneFinalIncreaseDamageMultiplier,
                 protectionReduction: levers.protectionReduction,
             },
         ),
-        calculateSmashHit(finalStats, ratios.smashRatio, smashDamage),
-        calculateWindmillHit(finalStats, ratios.windmillRatio, windmillDamage),
+        calculateSmashHit(finalStats, smashRatioWithCombo, smashDamage),
+        calculateWindmillHit(finalStats, windmillRatioWithCombo, windmillHitDamage),
         calculateMengJi(
             finalStats,
             settings.mengJiStack,
+            mengJiRatioWithCombo,
             mengJiMagicCircleActive,
             criticalDamageExpected,
             levers.generalExtraDamageMultiplier,
@@ -1413,6 +1671,15 @@ export interface DamageEfficiencyItem {
         | "chargeReforge"
         | "erg"
         | "darkErg"
+        | "raceSkill"
+        | "transformation"
+        | "rageSet"
+        | "battlefield"
+        | "statusSupport"
+        | "strengthGather"
+        | "physicalPotion"
+        | "rageCoverage"
+        | "reflectionCoverage"
         | "arcaneExtraDamage"
         | "defense"
         | "maxHp"
@@ -1428,7 +1695,13 @@ export interface DamageEfficiencyItem {
     unit: string;
     /** 1 單位等同多少大傷；目前總輸出為 0（尚未設定技能使用次數）時為 null，無法換算 */
     equivalentMaxDamage: number | null;
+    /** 1 單位使總輸出增加的百分比（舊版快照沒有這個欄位） */
+    deltaPercent?: number | null;
+    /** 開關類項目目前已經是開啟的（畫面上不用再顯示「開了值多少」） */
+    active?: boolean;
 }
+
+const outputPercent = (delta: number, base: number): number | null => (base !== 0 ? (delta / base) * 100 : null);
 
 function buildLeverContext(settings: ShieldKnightSettings) {
     const calcResult = calculateAll(settings);
@@ -1448,6 +1721,7 @@ function buildLeverContext(settings: ShieldKnightSettings) {
         generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
         talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
         finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+        arcaneFinalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
         arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
         protectionReduction: calcResult.protectionReduction,
     };
@@ -1533,7 +1807,14 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             id: "finalIncreaseDamage",
             label: "最終增加傷害",
             unit: "1%",
-            bump: { ...baseLevers, finalIncreaseDamageMultiplier: baseLevers.finalIncreaseDamageMultiplier + 0.01 },
+            bump: {
+                ...baseLevers,
+                finalIncreaseDamageMultiplier: baseLevers.finalIncreaseDamageMultiplier + 0.01,
+                // 秘法技能的倍率 = 最終增加傷害 × 省察的痕跡，加 0.01 同樣要乘上省察的痕跡那一項
+                arcaneFinalIncreaseDamageMultiplier:
+                    baseLevers.arcaneFinalIncreaseDamageMultiplier +
+                    0.01 * (baseLevers.arcaneFinalIncreaseDamageMultiplier / baseLevers.finalIncreaseDamageMultiplier),
+            },
         },
     ];
 
@@ -1542,55 +1823,118 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const results = probes.map((p) => {
         const delta = p.id === "maxDamage" ? maxDamageDelta : compute(p.bump) - baseTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage, deltaPercent: outputPercent(delta, baseTotal) };
     });
 
-    // ── 重擊／風車／突擊 細工等級效益：+1 級對應的基礎倍率 flat 加成（再乘上各自的套裝最終倍率 ×1.15） ──
-    const mult = (tag: SetEffectTag) => (calcResult.activeTags.includes(tag) ? 1.15 : 1);
+    // ── 重擊／風車／突擊 細工等級效益：+1 級對應的基礎倍率 flat 加成，再乘上該技能全部乘算加成（雙手加成、套裝等） ──
     const reforgeProbes: { id: DamageEfficiencyItem["id"]; label: string; unit: string; ratios: typeof ratios }[] = [
         {
             id: "smashReforge",
             label: "重擊細工等級",
             unit: "1 級",
-            ratios: { ...ratios, smashRatio: ratios.smashRatio + REFORGE_PER_LEVEL.smash * mult("smash_enhance") },
+            ratios: { ...ratios, smashRatio: ratios.smashRatio + REFORGE_PER_LEVEL.smash * ratios.ratioMultipliers.smash },
         },
         {
             id: "windmillReforge",
             label: "風車細工等級",
             unit: "1 級",
-            ratios: { ...ratios, windmillRatio: ratios.windmillRatio + REFORGE_PER_LEVEL.windmill * mult("windmill_enhance2") },
+            ratios: { ...ratios, windmillRatio: ratios.windmillRatio + REFORGE_PER_LEVEL.windmill * ratios.ratioMultipliers.windmill },
         },
         {
             id: "chargeReforge",
             label: "突擊細工等級",
             unit: "1 級",
-            ratios: { ...ratios, chargeRatio: ratios.chargeRatio + REFORGE_PER_LEVEL.charge * mult("charge_enhance") },
+            ratios: { ...ratios, chargeRatio: ratios.chargeRatio + REFORGE_PER_LEVEL.charge * ratios.ratioMultipliers.charge },
         },
     ];
     const reforgeResults = reforgeProbes.map((p) => {
         const delta = calculateTotalOutputWithLevers(baseLevers, finalStatsBase, p.ratios, settings) - baseTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage, deltaPercent: outputPercent(delta, baseTotal) };
     });
 
     // ── 聚能／黑暗聚能：整個開關的價值（開啟 vs 關閉，跟目前實際是否勾選無關，方便評估要不要點聚能） ──
+    const build = getCharacterBuild(settings.characterBuildId);
+    const transformationMaxDamage = calculateDirtyMaxDamage({
+        masterGradeActive: false,
+        masterGradeCategory: "other",
+        transformationId: build.transformationId,
+        transformationReforgeLevel: settings.transformationReforgeLevel,
+        petIds: [],
+        banquetBonus: 0,
+        eventBonus: 0,
+        holyWaterMaxDamage: 0,
+    }).total;
     const togglePairs: {
-        id: "erg" | "darkErg" | "manualWindmillBase30" | "manualChargeEnhance" | "manualSmashEnhance";
+        id:
+            | "erg"
+            | "darkErg"
+            | "raceSkill"
+            | "transformation"
+            | "rageSet"
+            | "battlefield"
+            | "statusSupport"
+            | "strengthGather"
+            | "physicalPotion"
+            | "manualWindmillBase30"
+            | "manualChargeEnhance"
+            | "manualSmashEnhance";
         label: string;
-        key: "ergActive" | "darkErgActive" | "manualWindmillBase30Active" | "manualChargeEnhanceActive" | "manualSmashEnhanceActive";
+        unit?: string;
+        /** 目前是否已經開啟；不知道（例如憤怒衝擊套裝在破防面板）就省略 */
+        isOn?: boolean;
+        set: (on: boolean) => ShieldKnightSettings;
     }[] = [
-        { id: "erg", label: "聚能已滿", key: "ergActive" },
-        { id: "darkErg", label: "黑暗聚能已滿", key: "darkErgActive" },
-        { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", key: "manualWindmillBase30Active" },
-        { id: "manualChargeEnhance", label: "手動套裝：突擊最終倍率 ×1.15", key: "manualChargeEnhanceActive" },
-        { id: "manualSmashEnhance", label: "手動套裝：重擊最終倍率 ×1.15", key: "manualSmashEnhanceActive" },
+        { id: "erg", label: "聚能已滿", isOn: settings.ergActive, set: (on) => ({ ...settings, ergActive: on }) },
+        { id: "darkErg", label: "黑暗聚能已滿", isOn: settings.darkErgActive, set: (on) => ({ ...settings, darkErgActive: on }) },
+        { id: "raceSkill", label: "種族特殊技能（拉狄卡）", isOn: settings.raceSkillActive, set: (on) => ({ ...settings, raceSkillActive: on }) },
+        {
+            id: "transformation",
+            label: "變身",
+            isOn: settings.dirtyMaxDamage.transformationActive,
+            // 面板大傷已含變身加成：關閉時要從面板扣掉變身那一份，才是「沒變身」的狀態
+            set: (on) => ({
+                ...settings,
+                panelMaxDamage: on ? settings.panelMaxDamage : settings.panelMaxDamage - transformationMaxDamage,
+                dirtyMaxDamage: { ...settings.dirtyMaxDamage, transformationActive: on },
+            }),
+        },
+        {
+            id: "rageSet",
+            label: "憤怒衝擊套裝（近戰技能傷害 +2%）",
+            // 套裝是破防面板裡的選項，這裡只拿得到合計值：以目前近戰% 再 +2% 當作「有套裝」、現值當作「沒套裝」估算
+            set: (on) => ({
+                ...settings,
+                rageImpactBuffActive: true,
+                armorBreak: { ...settings.armorBreak, meleePercent: settings.armorBreak.meleePercent + (on ? RAGE_IMPACT_SET_PERCENT : 0) },
+            }),
+        },
+        {
+            id: "battlefield",
+            label: "戰場的序曲 +1%",
+            unit: "1%",
+            set: (on) => ({
+                ...settings,
+                attackCoefficient: {
+                    ...settings.attackCoefficient,
+                    battlefieldActive: true,
+                    battlefieldPercent: settings.attackCoefficient.battlefieldPercent + (on ? 1 : 0),
+                },
+            }),
+        },
+        { id: "statusSupport", label: "狀態支援（+12%）", isOn: settings.attackCoefficient.statusSupportActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, statusSupportActive: on } }) },
+        { id: "strengthGather", label: "力量團聚（+15%）", isOn: settings.attackCoefficient.strengthGatherActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, strengthGatherActive: on } }) },
+        { id: "physicalPotion", label: "物理攻擊力增加藥水（×1.2）", isOn: settings.attackCoefficient.physicalPotionActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, physicalPotionActive: on } }) },
+        { id: "manualWindmillBase30", label: "風車基礎倍率 +30%", isOn: settings.manualWindmillBase30Active, set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
+        { id: "manualChargeEnhance", label: "突擊最終倍率 ×1.15", isOn: settings.manualChargeEnhanceActive, set: (on) => ({ ...settings, manualChargeEnhanceActive: on }) },
+        { id: "manualSmashEnhance", label: "重擊套裝 +15%", isOn: settings.manualSmashEnhanceActive, set: (on) => ({ ...settings, manualSmashEnhanceActive: on }) },
     ];
     const toggleResults = togglePairs.map((p) => {
-        const onTotal = calculateTotalOutput({ ...settings, [p.key]: true }, settings.skillUsageCounts);
-        const offTotal = calculateTotalOutput({ ...settings, [p.key]: false }, settings.skillUsageCounts);
+        const onTotal = calculateTotalOutput(p.set(true), settings.skillUsageCounts);
+        const offTotal = calculateTotalOutput(p.set(false), settings.skillUsageCounts);
         const delta = onTotal - offTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: "開關", equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: p.unit ?? "開關", equivalentMaxDamage, deltaPercent: outputPercent(delta, offTotal), active: p.isOn };
     });
 
     // ── 防禦／最大生命值：+1 點對應多少大傷（跟其他槓桿一樣，全程套用暴擊率／暴擊傷害的期望值換算） ──
@@ -1601,7 +1945,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     const statResults = statProbes.map((p) => {
         const delta = calculateTotalOutputWithLevers(baseLevers, p.finalStatsBase, ratios, settings) - baseTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: p.unit, equivalentMaxDamage, deltaPercent: outputPercent(delta, baseTotal) };
     });
 
     // ── 穆利亞斯的遺物：3 件各自 +1 級的效益（全設定複製後重算，正確反映對「最終增加傷害」／「審判重擊」的間接影響） ──
@@ -1613,8 +1957,9 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         },
         {
             id: "muliasReflectionTrace",
-            label: "反射的痕跡",
-            muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true, reflectionTraceLevel: settings.muliasRelic.reflectionTraceLevel + 1 },
+            label: "省察的痕跡",
+            // 省察的痕跡固定以覆蓋率 100% 比較每一級的價值
+            muliasRelic: { ...settings.muliasRelic, reflectionTraceCoveragePercent: 100, reflectionTraceLevel: settings.muliasRelic.reflectionTraceLevel + 1 },
         },
         {
             id: "muliasJudgementStrike",
@@ -1623,14 +1968,14 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         },
     ];
     const muliasResults = muliasProbes.map((p) => {
-        // 基準跟著探測的遺物設定走（反射的痕跡固定以觸發中比較，不受目前勾選影響）
+        // 基準跟著探測的遺物設定走（省察的痕跡固定以覆蓋率 100% 比較，不受目前覆蓋率影響）
         const base = p.id === "muliasReflectionTrace"
-            ? calculateTotalOutput({ ...settings, muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true } }, settings.skillUsageCounts)
+            ? calculateTotalOutput({ ...settings, muliasRelic: { ...settings.muliasRelic, reflectionTraceCoveragePercent: 100 } }, settings.skillUsageCounts)
             : baseTotal;
         const total = calculateTotalOutput({ ...settings, muliasRelic: p.muliasRelic }, settings.skillUsageCounts);
         const delta = total - base;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: "1 級", equivalentMaxDamage };
+        return { id: p.id, label: p.label, unit: "1 級", equivalentMaxDamage, deltaPercent: outputPercent(delta, base) };
     });
 
     // ── 銳利等級：+1 級（已滿級 11 則以 −1 級反推），需套用破防結果才有效果 ──
@@ -1642,9 +1987,108 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         label: "銳利等級",
         unit: "1 級",
         equivalentMaxDamage: maxDamageDelta !== 0 ? sharpDelta / maxDamageDelta : null,
+        deltaPercent: outputPercent(sharpDelta, baseTotal),
     };
 
-    return [...results, ...reforgeResults, sharpResult, ...statResults, ...muliasResults, ...toggleResults];
+    // ── buff 覆蓋率：+10 個百分點（已經 ≥ 90% 時改成 −10 反推），以 buff 觸發中計算 ──
+    const COVERAGE_STEP = 10;
+    const coverageProbes: { id: "rageCoverage" | "reflectionCoverage"; label: string; withCoverage: (percent: number) => ShieldKnightSettings; current: number }[] = [
+        {
+            id: "rageCoverage",
+            label: "憤怒衝擊覆蓋率",
+            current: settings.rageImpactCoveragePercent ?? 100,
+            withCoverage: (percent) => ({ ...settings, rageImpactBuffActive: true, rageImpactCoveragePercent: percent }),
+        },
+        {
+            id: "reflectionCoverage",
+            label: "省察的痕跡覆蓋率",
+            current: settings.muliasRelic.reflectionTraceCoveragePercent ?? 100,
+            withCoverage: (percent) => ({
+                ...settings,
+                muliasRelic: { ...settings.muliasRelic, reflectionTraceCoveragePercent: percent },
+            }),
+        },
+    ];
+    const coverageResults = coverageProbes.map((p) => {
+        const up = p.current <= 100 - COVERAGE_STEP;
+        const base = calculateTotalOutput(p.withCoverage(p.current), settings.skillUsageCounts);
+        const probed = calculateTotalOutput(p.withCoverage(p.current + (up ? COVERAGE_STEP : -COVERAGE_STEP)), settings.skillUsageCounts);
+        const delta = (probed - base) * (up ? 1 : -1) + 0;
+        return {
+            id: p.id,
+            label: p.label,
+            unit: `${COVERAGE_STEP}%`,
+            equivalentMaxDamage: maxDamageDelta !== 0 ? delta / maxDamageDelta : null,
+            deltaPercent: outputPercent(delta, base),
+        };
+    });
+
+    return [...results, ...reforgeResults, sharpResult, ...statResults, ...muliasResults, ...coverageResults, ...toggleResults];
+}
+
+export interface SpecialReformRow {
+    stage: number;
+    /** 這一階該武器是否能強化（第 8 階只有靈魂解放者／日月劍） */
+    available: boolean;
+    rCritPercent: number;
+    sExtraPercent: number;
+    sMaxDamage: number;
+    /** 這一階 R 相當多少大傷（相對於完全沒有 R）；總輸出為 0 時 null */
+    rEquivalentMaxDamage: number | null;
+    sEquivalentMaxDamage: number | null;
+    rDeltaPercent: number | null;
+    sDeltaPercent: number | null;
+}
+
+/**
+ * 特殊改造各階段的價值：把目前已選的 R／S 先拿掉當作「沒改造」，再逐階套上，
+ * 量測總輸出增加量並換算成「相當大傷」。S 的最大傷害已含在面板內，這裡用「最終/面板」比例近似它吃到的攻擊係數。
+ */
+export function calculateSpecialReformTable(settings: ShieldKnightSettings): SpecialReformRow[] {
+    const { baseLevers, compute, baseTotal } = buildLeverContext(settings);
+    const maxDamageDelta = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + 1 }) - baseTotal;
+    const { maxStage, rStage: curR, sStage: curS } = resolveSpecialReform(settings);
+    const coefficientRatio = settings.panelMaxDamage > 0 ? baseLevers.maxDamage / settings.panelMaxDamage : 1;
+
+    // 基準 = 完全沒有特殊改造：把目前選的 R／S 都拿掉（R 與 S 只能擇一，所以兩欄各自和「沒改造」比）
+    const generalPercentWithCurrent = calculateGeneralExtraPercent({
+        ...settings.extraDamage,
+        weaponExtraDamagePercent: 0,
+        generalBonusPercent: specialReformSExtra(curS),
+    });
+    const generalPercentBase = generalPercentWithCurrent - specialReformSExtra(curS);
+    const none = {
+        ...baseLevers,
+        criticalDamagePercent: baseLevers.criticalDamagePercent - specialReformRCrit(curR),
+        maxDamage: baseLevers.maxDamage - specialReformSMaxDamage(curS) * coefficientRatio,
+        generalExtraDamageMultiplier: (baseLevers.generalExtraDamageMultiplier * (1 + generalPercentBase / 100)) / (1 + generalPercentWithCurrent / 100),
+    };
+    const noneTotal = compute(none);
+
+    return Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => {
+        const stage = i + 1;
+        const rCrit = specialReformRCrit(stage);
+        const sExtra = specialReformSExtra(stage);
+        const sMax = specialReformSMaxDamage(stage);
+        const rDelta = compute({ ...none, criticalDamagePercent: none.criticalDamagePercent + rCrit }) - noneTotal;
+        const sDelta =
+            compute({
+                ...none,
+                maxDamage: none.maxDamage + sMax * coefficientRatio,
+                generalExtraDamageMultiplier: (none.generalExtraDamageMultiplier * (1 + (generalPercentBase + sExtra) / 100)) / (1 + generalPercentBase / 100),
+            }) - noneTotal;
+        return {
+            stage,
+            available: stage <= maxStage,
+            rCritPercent: rCrit,
+            sExtraPercent: sExtra,
+            sMaxDamage: sMax,
+            rEquivalentMaxDamage: maxDamageDelta !== 0 ? rDelta / maxDamageDelta : null,
+            sEquivalentMaxDamage: maxDamageDelta !== 0 ? sDelta / maxDamageDelta : null,
+            rDeltaPercent: outputPercent(rDelta, noneTotal),
+            sDeltaPercent: outputPercent(sDelta, noneTotal),
+        };
+    });
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1674,17 +2118,21 @@ export interface ShieldKnightSettings {
     weaponType: WeaponType;
     weaponId: string;
     shieldId: string;
+    /** 武器特殊改造 S 階段 0~8：追加傷害%算進通用額外傷害的「額外傷害」那一桶（和武器本身的額外傷害不同），最大傷害已含在面板 */
+    weaponSpecialReformSStage: number;
     holyWater: HolyWaterState;
     reforge: ReforgeState;
     characterBuildId: string;
     /** 種族特殊技能（拉狄卡的氣息/視線/力量）是主動開啟的技能，預設關閉 */
     raceSkillActive: boolean;
-    /** 突擊最終倍率 ×1.15（charge_enhance），目前沒有已知裝備資料來源，先開放手動勾選 */
+    /** 突擊最終倍率 ×1.15（charge_enhance）：除了「無 / 其他」與鍋子，可選的盾牌都內建；這個手動勾選給沒選盾牌或其他來源用（效果不疊加） */
     manualChargeEnhanceActive: boolean;
-    /** 重擊最終倍率 ×1.15（smash_enhance），目前沒有已知裝備資料來源，先開放手動勾選 */
+    /** 重擊套裝 +15%（smash_enhance，加進重擊最後一格），目前沒有已知裝備資料來源，先開放手動勾選 */
     manualSmashEnhanceActive: boolean;
-    /** 風車基礎倍率 +30%（莊嚴騎士，windmill_base30），手動勾選 */
+    /** 風車套裝 +30%（莊嚴騎士，windmill_enhance，最終乘算），手動勾選；欄位名沿用舊存檔的 Base30 */
     manualWindmillBase30Active: boolean;
+    /** 連續技卡片（只能裝備一張，6 連擊依序增傷，秘法技能不吃） */
+    comboCardSkillId: ComboCardSkillId;
 
     // 攻擊力
     /** 面板最大傷害（無狀態下，已含所有裝備/永久加成，不用另外加聖水/鍋子） */
@@ -1692,6 +2140,8 @@ export interface ShieldKnightSettings {
     dirtyMaxDamage: DirtyMaxDamageSettings;
     /** 變身細工等級 0~33（27~33 突破限定） */
     transformationReforgeLevel: number;
+    /** 細工-XX魔法盾持續時間 等級 0~25（21~25 突破限定）：共 4 種詞條、只出在頭和身體，只取最高，影響省察的痕跡持續時間 */
+    reflectionReforgeLevel: number;
     spiritWeaponAttackActive: boolean;
     attackCoefficient: AttackCoefficientState;
 
@@ -1710,6 +2160,8 @@ export interface ShieldKnightSettings {
     darkErgActive: boolean;
     magicCircleIds: MagicCircleId[];
     rageImpactBuffActive: boolean;
+    /** 憤怒衝擊覆蓋率 0~100%：近距離額外傷害中時，平均有多少比例的技能施放吃得到加成 */
+    rageImpactCoveragePercent: number;
     nobleOathEnabled: boolean;
     currentSacrifice: number;
     radiantJudgementStage: 1 | 2 | 3;
@@ -1724,6 +2176,8 @@ export interface ShieldKnightSettings {
     showSmashSkill: boolean;
     showWindmillSkill: boolean;
     showMengJiSkill: boolean;
+    /** 技能傷害區是否顯示突擊卡片（顯示用，不進總輸出） */
+    showChargeSkill: boolean;
     mengJiStack: 1 | 2 | 3 | 4 | 5;
     /** 技能使用次數（用於「總輸出」／「裝備比較」／「傷害效益」計算） */
     skillUsageCounts: SkillUsageCounts;
@@ -1749,6 +2203,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         weaponType: "one_hand_axe",
         weaponId: "none",
         shieldId: "none",
+        weaponSpecialReformSStage: 0,
         holyWater: createDefaultHolyWaterState(),
         reforge: createDefaultReforgeState(),
         characterBuildId: "holy_knight",
@@ -1756,6 +2211,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         manualChargeEnhanceActive: false,
         manualSmashEnhanceActive: false,
         manualWindmillBase30Active: false,
+        comboCardSkillId: "none",
 
         panelMaxDamage: 0,
         dirtyMaxDamage: {
@@ -1767,16 +2223,17 @@ export function createDefaultSettings(): ShieldKnightSettings {
             panelAlreadyIncludesDirty: false,
         },
         transformationReforgeLevel: 0,
+        reflectionReforgeLevel: 0,
         spiritWeaponAttackActive: true,
         attackCoefficient: {
-            physicalPotionActive: false,
+            physicalPotionActive: true,
             tripleEnchantActive: false,
-            statusSupportActive: false,
+            statusSupportActive: true,
             strengthGatherActive: false,
-            battlefieldActive: false,
-            battlefieldPercent: 0,
+            battlefieldActive: true,
+            battlefieldPercent: 80,
             battleCryActive: false,
-            battleCryReforgeLevel: 0,
+            battleCryReforgeLevel: 20,
         },
 
         criticalRate: {
@@ -1787,7 +2244,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
             skillR1Active: true,
             fullGradeActive: true,
             spiritWeaponCritActive: true,
-            weaponSpecialReforgeTier: "r7",
+            weaponSpecialReforgeTier: 7,
             setTier: "tier7",
             totemChoice: "none",
             dollBagPercent: 0,
@@ -1814,7 +2271,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         muliasRelic: {
             sacrificeRegenLevel: 0,
             reflectionTraceLevel: 0,
-            reflectionTraceActive: true,
+            reflectionTraceCoveragePercent: 100,
             judgementStrikeLevel: 0,
         },
         armorBreak: { enabled: true, protBeforePierce: 0, pierceResist: 0, damageTakenPercent: 0, critDamagePercent: 0, meleePercent: 0 },
@@ -1824,6 +2281,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         darkErgActive: false,
         magicCircleIds: [],
         rageImpactBuffActive: false,
+        rageImpactCoveragePercent: 100,
         nobleOathEnabled: true,
         currentSacrifice: 0,
         radiantJudgementStage: 1,
@@ -1838,6 +2296,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         showSmashSkill: true,
         showWindmillSkill: true,
         showMengJiSkill: true,
+        showChargeSkill: true,
         mengJiStack: 1,
         skillUsageCounts: createDefaultSkillUsageCounts(),
     };

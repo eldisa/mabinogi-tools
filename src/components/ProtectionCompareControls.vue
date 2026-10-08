@@ -1,20 +1,28 @@
 <script setup lang="ts">
 // 怪物／銳利等級／比較基準 選擇列；計算見 utils/protectionCompare.ts
 import { computed } from "vue";
-import { MONSTERS, findMonster, type ProtCompareSettings } from "../utils/protectionCompare";
+import { CUSTOM_MONSTER, MONSTERS, monsterStats, type ProtCompareSettings } from "../utils/protectionCompare";
 
 const model = defineModel<ProtCompareSettings>({ required: true });
 // 銳利等級由呼叫端各自設定時可隱藏（例如 A/B 比較）
 withDefaults(defineProps<{ showPierce?: boolean }>(), { showPierce: true });
-const monster = computed(() => findMonster(model.value.monster));
+const monster = computed(() => monsterStats(model.value));
+const isCustom = computed(() => model.value.monster === CUSTOM_MONSTER);
 </script>
 
 <template>
     <div class="flex items-center gap-2.5 flex-wrap">
         <el-select v-model="model.monster" size="small" style="width: 170px" aria-label="怪物">
             <el-option v-for="m in MONSTERS" :key="m.key" :label="m.label" :value="m.key" />
+            <el-option label="自訂" :value="CUSTOM_MONSTER" />
         </el-select>
-        <span class="text-xs text-gray-400">
+        <template v-if="isCustom">
+            <span class="text-xs text-gray-400">保護</span>
+            <el-input-number v-model="model.customProt" :min="0" :max="999" size="small" controls-position="right" style="width: 90px" aria-label="自訂怪物保護" />
+            <span class="text-xs text-gray-400">銳利抵抗</span>
+            <el-input-number v-model="model.customResist" :min="0" :max="11" size="small" controls-position="right" style="width: 80px" aria-label="自訂怪物銳利抵抗" />
+        </template>
+        <span v-else class="text-xs text-gray-400">
             保護 {{ monster.prot }}<template v-if="monster.pierceResist">・銳利抵抗 {{ monster.pierceResist }}</template>
         </span>
         <template v-if="showPierce">

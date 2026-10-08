@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { reactive, ref, computed, watch, onMounted } from "vue";
+import { reactive, ref, computed, watch, onMounted, nextTick } from "vue";
 import { useAccountSync, mergeByTimestamp } from "../composables/useAccountSync";
 import { useNamedPresetList } from "../composables/useNamedPresets";
 import { InfoFilled } from "@element-plus/icons-vue";
-import { ElMessageBox } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useRoute, useRouter } from "vue-router";
 import {
     WEAPON_TYPE_OPTIONS,
     WEAPON_PRESETS,
@@ -16,18 +17,25 @@ import {
     getReforgeLevelMax,
     BATTLE_CRY_REFORGE_LEVEL_OPTIONS,
     TRANSFORMATION_REFORGE_LEVEL_OPTIONS,
+    REFLECTION_REFORGE_LEVEL_OPTIONS,
     CHARACTER_BUILDS,
     getRaceSkillInfo,
     MAGIC_CIRCLE_OPTIONS,
     MAGIC_CIRCLE_LIMIT,
     createDefaultSettings,
+    createDefaultSkillUsageCounts,
     calculateAll,
     SKILL_VISIBILITY_SETTING_KEYS,
     calculateIronWallSacrifice,
     SACRIFICE_CAP,
     PET_BONUS_OPTIONS,
     TRANSFORMATION_OPTIONS,
-    WEAPON_SPECIAL_REFORGE_CRIT,
+    SPECIAL_REFORM_STAGE_COUNT,
+    specialReformMaxStage,
+    resolveSpecialReform,
+    specialReformRCrit,
+    specialReformSExtra,
+    calculateSpecialReformTable,
     CRITICAL_DAMAGE_SET_BONUS,
     CRITICAL_RATE_ITEM_BONUS,
     MULIAS_RELIC_LEVEL_OPTIONS,
@@ -36,10 +44,14 @@ import {
     MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL,
     ALL_SKILL_META,
     calculateSkillsForSettings,
+    calculateChargeHit,
     calculateTotalOutput,
     calculateDamageEfficiency,
     calculateHolyWaterComparison,
     getEffectiveSharpLevel,
+    COMBO_CARD_OPTIONS,
+    COMBO_CARD_BONUS_PERCENT,
+    comboCardAveragePercent,
     MAX_DAMAGE_TO_DEFENSE_POWER_RATE,
     SET_EFFECT_TAG_LABELS,
     type ShieldKnightSettings,
@@ -48,12 +60,28 @@ import {
     type SkillUsageCounts,
     type ArmorBreakSettings,
     type DamageEfficiencyItem,
+    type CritDisplayMode,
 } from "../data/shieldKnightCalculator";
 import { getSkillIcon } from "../utils/image";
 import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
 
+const route = useRoute();
+const router = useRouter();
 const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
-const activeTab = ref("character");
+
+// 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
+const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
+const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "expensive", "usage", "compare", "efficiency", "armorbreak"];
+const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
+function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean; applyCombo?: boolean } {
+    try {
+        return JSON.parse(localStorage.getItem(DISPLAY_PREFS_KEY) ?? "{}") ?? {};
+    } catch {
+        return {};
+    }
+}
+const displayPrefs = loadDisplayPrefs();
+const activeTab = ref(TAB_NAMES.includes(displayPrefs.tab ?? "") ? (displayPrefs.tab as string) : "character");
 
 const currentBuild = computed(() => CHARACTER_BUILDS.find((b) => b.id === settings.characterBuildId) ?? CHARACTER_BUILDS[0]);
 const currentRaceSkill = computed(() => getRaceSkillInfo(currentBuild.value));
@@ -67,11 +95,33 @@ const transformationReforgeEnabled = computed({
     },
 });
 const weaponOptions = computed(() => WEAPON_PRESETS[settings.weaponType]);
+function shieldOptionLabel(s: (typeof SHIELD_PRESETS)[number]): string {
+    const effects = [
+        s.reduction ? `減傷${Math.round(s.reduction * 100)}%` : "",
+        s.oneHandWeaponExtraDamagePercent ? `單手武器額外傷害+${s.oneHandWeaponExtraDamagePercent}%` : "",
+        ...(s.tags ?? []).map((t) => SET_EFFECT_TAG_LABELS[t]),
+    ].filter(Boolean);
+    return effects.length ? `${s.label}（${effects.join("、")}）` : s.label;
+}
+function weaponOptionLabel(w: (typeof WEAPON_PRESETS)[keyof typeof WEAPON_PRESETS][number]): string {
+    const effects = [
+        w.extraDamagePercent ? `額外傷害+${w.extraDamagePercent}%` : "",
+        w.smashDamageIncreasePercent ? `重擊傷害+${w.smashDamageIncreasePercent}%` : "",
+        w.smashFinalIncreasePercent ? `重擊最終+${w.smashFinalIncreasePercent}%` : "",
+        w.bashFinalIncreasePercent ? `猛擊最終+${w.bashFinalIncreasePercent}%` : "",
+        ...(w.tags ?? []).map((t) => SET_EFFECT_TAG_LABELS[t]),
+    ].filter(Boolean);
+    return effects.length ? `${w.label}（${effects.join("、")}）` : w.label;
+}
 const shieldLocked = computed(() => settings.weaponType === "two_hand_sword" && !currentBuild.value.allowTwoHandSwordWithShield);
 
+// 讀取存檔／自動存檔時（見 applyLoadedSettings）整批覆蓋 settings，此時這些 watch 只是在「還原」資料，
+// 不是使用者手動切換，必須跳過下面的重設邏輯，否則會在整批賦值跑完後才觸發、把剛還原好的值又蓋掉
+const isLoadingSettings = ref(false);
 watch(
     () => settings.weaponType,
     (weaponType) => {
+        if (isLoadingSettings.value) return;
         settings.weaponId = "none";
         const max = getReforgeLevelMax("weapon", weaponType);
         (["smash", "windmill", "charge"] as const).forEach((t) => {
@@ -80,11 +130,21 @@ watch(
     },
 );
 watch(shieldLocked, (locked) => {
+    if (isLoadingSettings.value) return;
     if (locked) settings.shieldId = "none";
 });
 watch(transformationReforgeLocked, (locked) => {
+    if (isLoadingSettings.value) return;
     if (locked) settings.transformationReforgeLevel = 0;
 });
+
+function applyLoadedSettings(data: Partial<ShieldKnightSettings> | undefined) {
+    isLoadingSettings.value = true;
+    Object.assign(settings, buildMergedSettings(data));
+    nextTick(() => {
+        isLoadingSettings.value = false;
+    });
+}
 
 function holyWaterMax(slotKey: HolyWaterSlotKey): number {
     const sel = settings.holyWater[slotKey];
@@ -113,24 +173,102 @@ const abilities = computed(() => calcResult.value.abilities);
 const activeSetEffectLabels = computed(() => calcResult.value.activeTags.map((t) => SET_EFFECT_TAG_LABELS[t]));
 
 const allSkills = computed(() => calculateSkillsForSettings(settings));
-const skills = computed(() => allSkills.value.filter((skill) => settings[SKILL_VISIBILITY_SETTING_KEYS[skill.skillId]]));
+// 只有最下面「技能傷害」卡片可以切換暴擊顯示模式，其餘分頁（技能使用次數/裝備比較/傷害效益）維持固定用期望值，避免顯示跟總輸出對不上
+const critDisplayMode = ref<CritDisplayMode>(CRIT_MODES.includes(displayPrefs.critMode as CritDisplayMode) ? (displayPrefs.critMode as CritDisplayMode) : "expected");
+const showArcaneCards = ref(displayPrefs.showArcane !== false);
+const showTalentCards = ref(displayPrefs.showTalent !== false);
+/** 才能技能卡片是否套用連續技卡片（預設套用；只影響卡片顯示） */
+const applyComboCard = ref(displayPrefs.applyCombo !== false);
+watch([activeTab, critDisplayMode, showArcaneCards, showTalentCards, applyComboCard], () => {
+    try {
+        localStorage.setItem(
+            DISPLAY_PREFS_KEY,
+            JSON.stringify({
+                tab: activeTab.value,
+                critMode: critDisplayMode.value,
+                showTalent: showTalentCards.value,
+                showArcane: showArcaneCards.value,
+                applyCombo: applyComboCard.value,
+            }),
+        );
+    } catch {
+        /* 瀏覽器禁用儲存時忽略 */
+    }
+});
+const cardSkills = computed(() => calculateSkillsForSettings(settings, undefined, critDisplayMode.value));
+const TALENT_SKILL_IDS = ["smash-hit", "windmill-hit", "meng-ji"] as const;
+type TalentSkillId = (typeof TALENT_SKILL_IDS)[number];
+const TALENT_ADDITIVE_KEY = { "smash-hit": "smash", "windmill-hit": "windmill", "meng-ji": "mengJi" } as const;
+const skills = computed(() => cardSkills.value.filter((skill) => settings[SKILL_VISIBILITY_SETTING_KEYS[skill.skillId]]));
+const arcaneCards = computed(() => skills.value.filter((s) => !(TALENT_SKILL_IDS as readonly string[]).includes(s.skillId)));
+/**
+ * 才能技能卡片固定以「連續技卡片裝在該技能上」計算（不受「裝備」分頁選的卡片影響，方便比較），
+ * 並列出連擊 1~6 各位置的單次傷害：位置傷害 = 無卡片傷害 × (1+加成+位置增傷%) / (1+加成)
+ */
+const talentCards = computed(() => {
+    const additives = calculateAll(settings).abilities.ratioAdditives;
+    return TALENT_SKILL_IDS.flatMap((id: TalentSkillId) => {
+        if (!settings[SKILL_VISIBILITY_SETTING_KEYS[id]]) return [];
+        const withCard = calculateSkillsForSettings({ ...settings, comboCardSkillId: id }, undefined, critDisplayMode.value).find((s) => s.skillId === id);
+        const noCard = calculateSkillsForSettings({ ...settings, comboCardSkillId: "none" }, undefined, critDisplayMode.value).find((s) => s.skillId === id);
+        if (!withCard || !noCard) return [];
+        const additive = additives[TALENT_ADDITIVE_KEY[id]];
+        return [
+            {
+                skill: applyComboCard.value ? withCard : noCard,
+                noCardDamage: noCard.finalDamage,
+                noCardRatioPercent: noCard.terms[0]?.ratioPercent ?? 0,
+                usageCount: settings.skillUsageCounts[id] ?? 0,
+                averagePercent: comboCardAveragePercent(settings.skillUsageCounts[id]),
+                positions: COMBO_CARD_BONUS_PERCENT.map((bonus) => ({
+                    bonus,
+                    damage: (noCard.finalDamage * (1 + additive + bonus / 100)) / (1 + additive),
+                })),
+            },
+        ];
+    });
+});
+/** 突擊卡片：顯示用，不吃連擊卡，不進總輸出 */
+const chargeCard = computed(() => (settings.showChargeSkill ? calculateChargeHit(settings, critDisplayMode.value) : null));
+const expandedTalentIds = ref<string[]>([]);
+function toggleTalentExpanded(id: string) {
+    const i = expandedTalentIds.value.indexOf(id);
+    if (i >= 0) expandedTalentIds.value.splice(i, 1);
+    else expandedTalentIds.value.push(id);
+}
 const totalOutput = computed(() => calculateTotalOutput(settings, settings.skillUsageCounts));
 const hasAnyUsageCount = computed(() => ALL_SKILL_META.some((s) => settings.skillUsageCounts[s.id] > 0));
 const efficiencyItems = computed(() => calculateDamageEfficiency(settings));
 const EFFICIENCY_DETAILS: Record<string, string> = {
     weaponExtraDamage: "武器額外傷害由武器/盾牌自動帶出，不能手動輸入；這裡是假設它多 1% 時的效益。",
     extraDamage: "額外傷害＝稱號＋圖騰＋農場模型＋套裝效果，在「暴擊與額外傷害」分頁設定，與武器額外傷害合起來才是「通用額外傷害」。",
+    talentIncreaseDamage:
+        "才能增加傷害（乘算）＝(1+種族特殊技能%) × (1+猛擊 buff%)。種族技能需在「角色」分頁勾選開啟才計入，猛擊 buff 依「技能設定」的猛擊層數（需開啟顯示猛擊技能才計入）。對重擊/風車/突擊/猛擊全吃，7 個秘法技能只有「借用才能技能」的那部分吃到。這裡是假設這個乘區再多 1% 的效益。",
+    finalIncreaseDamage:
+        "最終增加傷害（乘算）＝戰鬥服務 +1% × 強力威光（達可達）+5% × 破防面板的「所受傷害增加」× 憤怒衝擊近戰%（需勾選憤怒衝擊中）。對所有技能最後整體乘上，重擊/風車/猛擊與 7 個秘法技能全吃（省察的痕跡只加成秘法技能，不在這一項）。這裡是假設這個乘區再多 1% 的效益。",
     arcaneExtraDamage: "只套用於 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃這項加成。",
     sharpLevel: "需在「破防」分頁勾選套用破防結果才會影響傷害，否則效益為 0；保護是查表無條件捨去，同一區間內多一級可能沒有變化。",
     muliasSacrificeRegen:
         "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
-    muliasReflectionTrace: "併入最終增加傷害；這裡固定以「反射的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
+    muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；這裡固定以「省察的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
-    manualWindmillBase30: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
-    manualChargeEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
-    manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
-    erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍目前沒有對應加成（見「裝備」分頁的聚能說明）。",
-    darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍重擊基礎倍率 +150%（見「裝備」分頁的聚能說明）。",
+    manualWindmillBase30: "「裝備」分頁的套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualChargeEnhance: "突擊最終倍率 ×1.15。選擇神聖／兇猛哨兵／貓盾／靈魂解放者系列盾牌時已內建，這時開啟或關閉勾選都沒有差別（效益為 0）；沒選盾牌時才看得出價值。這裡顯示開啟 vs 關閉的整體價值，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualSmashEnhance: "「裝備」分頁的套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
+    darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
+    battlefield: "戰場的序曲（攻擊力加成%）：以目前戰場% 再 +1% 計算，戰場%、狀態支援、力量團聚都會乘上攻擊係數，在「攻擊力」分頁設定。",
+    statusSupport: "狀態支援（+12%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
+    strengthGather: "力量團聚（+15%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
+    physicalPotion: "物理攻擊力增加藥水（×1.2）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
+    rageSet:
+        "憤怒衝擊套裝（近戰技能傷害 +2%）。套裝設定在「破防」分頁，這裡只拿得到合計近戰%，所以以目前近戰% 再 +2% 當作有套裝、現值當作沒套裝估算；需開啟「近距離額外傷害中」並套用破防結果才有效果。",
+    rageCoverage:
+        "憤怒衝擊覆蓋率：近距離額外傷害中時，平均有多少比例的技能施放吃得到加成。這裡固定以憤怒衝擊中計算，顯示覆蓋率 +10 個百分點（已 ≥ 90% 時改以 −10 反推）的效益，可用來判斷「提高命中／縮短冷卻」值不值得。",
+    reflectionCoverage:
+        "省察的痕跡覆蓋率：觸發中時，平均有多少比例的秘法技能施放吃得到加成（只影響 7 個秘法技能）。這裡固定以觸發中計算，顯示覆蓋率 +10 個百分點的效益。",
+    raceSkill: "「裝備」分頁的種族特殊技能（人類 +5%／巨人 +15%，併入才能增加傷害）。顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關；精靈的弓術種族技能對聖盾無效，效益為 0。",
+    transformation: "面板大傷已含變身的固定加成，這裡以「面板扣掉變身那一份」當作沒變身來比較開啟 vs 關閉的價值；角色型態沒有變身（黑暗騎士）則為 0。數值約等於變身提供的大傷（受攻擊係數放大）。",
 };
 const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "攻擊力／暴擊", ids: ["maxDamage", "criticalDamage", "criticalRate"] },
@@ -138,16 +276,172 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "技能倍率／細工／銳利", ids: ["smashReforge", "windmillReforge", "chargeReforge", "sharpLevel"] },
     { label: "生存屬性", ids: ["defense", "maxHp"] },
     { label: "穆利亞斯的遺物", ids: ["muliasSacrificeRegen", "muliasReflectionTrace", "muliasJudgementStrike"] },
-    { label: "套裝效果（裝備分頁的手動套裝標記）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
-    { label: "聚能開關", ids: ["erg", "darkErg"] },
+    { label: "套裝效果（裝備分頁）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
+    { label: "攻擊係數（戰場序曲／狀態支援／力量團聚／藥水）", ids: ["battlefield", "statusSupport", "strengthGather", "physicalPotion"] },
+    { label: "buff 覆蓋率", ids: ["rageCoverage", "reflectionCoverage"] },
+    { label: "聚能／種族技能／變身／套裝開關", ids: ["erg", "darkErg", "raceSkill", "transformation", "rageSet"] },
 ];
-const efficiencyGroups = computed(() =>
-    EFFICIENCY_CATEGORIES.map((c) => ({
-        label: c.label,
-        items: c.ids.map((id) => efficiencyItems.value.find((i) => i.id === id)).filter((i): i is (typeof efficiencyItems.value)[number] => !!i),
-    })),
+/** 傷害效益畫面不顯示：已經開啟的開關（再開沒有意義）、等同大傷為 0 的項目 */
+const visibleEfficiencyItems = computed(() =>
+    efficiencyItems.value.filter((i) => !i.active && !(i.equivalentMaxDamage !== null && Math.abs(i.equivalentMaxDamage) < 0.005)),
 );
+const efficiencySortByGain = ref(false);
+const efficiencyTopN = ref(0);
+const efficiencyGroups = computed(() => {
+    if (efficiencySortByGain.value) {
+        const sorted = visibleEfficiencyItems.value.filter((i) => i.deltaPercent != null).sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0));
+        const topN = efficiencyTopN.value || sorted.length;
+        return [{ label: efficiencyTopN.value ? `依總輸出增幅排序（前 ${topN} 名）` : "依總輸出增幅排序", items: sorted.slice(0, topN) }];
+    }
+    return EFFICIENCY_CATEGORIES.map((c) => ({
+        label: c.label,
+        items: c.ids.map((id) => visibleEfficiencyItems.value.find((i) => i.id === id)).filter((i): i is (typeof efficiencyItems.value)[number] => !!i),
+    }));
+});
+
+// ── 新手引導／自動結論 ──
+const EXAMPLE_PANEL_MAX_DAMAGE = 2000;
+/** 技能次數情境範本（估算值，只是起點，請依自己的實際打法修改） */
+const USAGE_SCENARIOS: { id: string; label: string; counts: Partial<SkillUsageCounts> }[] = [
+    {
+        id: "boss",
+        label: "打王（長時間，秘法技能為主）",
+        counts: { "holy-sanctuary": 50, "shield-charge": 13, "iron-wall-strike": 50, "judgement-strike": 42, "sacrifice-punishment": 17, "radiant-judgement": 118, "meng-ji": 39, "smash-hit": 60, "windmill-hit": 60 },
+    },
+    {
+        id: "dungeon",
+        label: "副本練習（短時間）",
+        counts: { "holy-sanctuary": 15, "shield-charge": 4, "iron-wall-strike": 15, "judgement-strike": 13, "sacrifice-punishment": 5, "radiant-judgement": 36, "meng-ji": 12, "smash-hit": 18, "windmill-hit": 18 },
+    },
+    {
+        id: "talent",
+        label: "才能技能為主（重擊／風車連段）",
+        counts: { "holy-sanctuary": 10, "iron-wall-strike": 10, "radiant-judgement": 30, "meng-ji": 80, "smash-hit": 120, "windmill-hit": 120 },
+    },
+];
+const needsQuickStart = computed(() => settings.panelMaxDamage <= 0 || !hasAnyUsageCount.value);
+const selectedScenarioId = ref("");
+/** 套用次數情境：整組取代目前的次數，已有次數時先確認 */
+async function applyUsageScenario(id: string) {
+    const scenario = USAGE_SCENARIOS.find((x) => x.id === id);
+    if (!scenario) return;
+    if (hasAnyUsageCount.value) {
+        try {
+            await ElMessageBox.confirm(`要用「${scenario.label}」取代目前的技能使用次數嗎？`, "套用情境", { type: "warning" });
+        } catch {
+            selectedScenarioId.value = "";
+            return;
+        }
+    }
+    settings.skillUsageCounts = { ...createDefaultSkillUsageCounts(), ...scenario.counts };
+    selectedScenarioId.value = "";
+}
+/** 只補上還空著的欄位，不蓋掉使用者已填的資料 */
+function loadExample() {
+    if (settings.panelMaxDamage <= 0) settings.panelMaxDamage = EXAMPLE_PANEL_MAX_DAMAGE;
+    if (!hasAnyUsageCount.value) settings.skillUsageCounts = { ...createDefaultSkillUsageCounts(), ...USAGE_SCENARIOS[0].counts };
+}
+/** 每單位增幅最高的前三項（排除開關與不影響輸出的項目），用「總輸出 +x%」白話呈現 */
+const topLevers = computed(() =>
+    efficiencyItems.value
+        .filter((i) => i.unit !== "開關" && i.id !== "maxDamage" && (i.deltaPercent ?? 0) > 0)
+        .sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0))
+        .slice(0, 3),
+);
+// ── 武器特殊改造（R 暴擊傷害／S 追加傷害，第 8 階只有靈魂解放者／日月劍） ──
+const reformMaxStage = computed(() => specialReformMaxStage(settings.weaponId));
+const reformStageList = computed(() => Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => i + 1).filter((n) => n <= reformMaxStage.value));
+const reformResolved = computed(() => resolveSpecialReform(settings));
+const reformRStage = computed(() => reformResolved.value.rStage);
+// 特殊改造 R／S 只能擇一：用「種類 + 階段」兩個控制項，寫回原本的兩個欄位（另一個歸零）
+const reformKind = computed<"none" | "R" | "S">({
+    get: () => (reformResolved.value.sStage > 0 ? "S" : reformResolved.value.rStage > 0 ? "R" : "none"),
+    set: (kind) => {
+        const stage = Math.max(reformResolved.value.rStage, reformResolved.value.sStage) || Math.min(7, reformMaxStage.value);
+        settings.criticalDamage.weaponSpecialReforgeTier = kind === "R" ? stage : 0;
+        settings.weaponSpecialReformSStage = kind === "S" ? stage : 0;
+    },
+});
+const reformStage = computed<number>({
+    get: () => Math.max(reformResolved.value.rStage, reformResolved.value.sStage),
+    set: (n) => {
+        if (reformKind.value === "S") settings.weaponSpecialReformSStage = n;
+        else settings.criticalDamage.weaponSpecialReforgeTier = n;
+    },
+});
+// 舊存檔的字串階段（"r7"）、同時填了 R 與 S、或超出該武器上限的階段，統一轉成合法值
+watch(
+    [() => settings.weaponId, () => settings.criticalDamage.weaponSpecialReforgeTier, () => settings.weaponSpecialReformSStage],
+    () => {
+        settings.criticalDamage.weaponSpecialReforgeTier = reformResolved.value.rStage;
+        settings.weaponSpecialReformSStage = reformResolved.value.sStage;
+    },
+    { immediate: true },
+);
+const specialReformRows = computed(() => calculateSpecialReformTable(settings));
+
+// ── 技能傷害來源比例 ──
+const usageRows = computed(() => {
+    const rows = ALL_SKILL_META.map((meta) => {
+        const count = settings.skillUsageCounts[meta.id] ?? 0;
+        return { id: meta.id, label: meta.label, count, subtotal: (allSkills.value.find((s) => s.skillId === meta.id)?.finalDamage ?? 0) * count };
+    });
+    const total = rows.reduce((sum, r) => sum + r.subtotal, 0);
+    return rows.map((r) => ({ ...r, share: total > 0 ? (r.subtotal / total) * 100 : 0 }));
+});
+const usageShareOf = (id: string): number => usageRows.value.find((r) => r.id === id)?.share ?? 0;
+
+// ── 標準戰鬥力：固定用「打王」範本次數計算，才能跨配置／跨使用者比較（不受自己填的次數影響） ──
+const standardUsageCounts = computed<SkillUsageCounts>(() => ({ ...createDefaultSkillUsageCounts(), ...USAGE_SCENARIOS[0].counts }));
+const standardPower = computed(() => calculateTotalOutput(settings, standardUsageCounts.value));
+const standardPowerBattleCry = computed(() =>
+    calculateTotalOutput({ ...settings, attackCoefficient: { ...settings.attackCoefficient, battleCryActive: true } }, standardUsageCounts.value),
+);
+
+/** 連續技卡片裝哪張總輸出最高（用目前的技能使用次數、期望值計算） */
+const comboRanking = computed(() => {
+    const base = calculateTotalOutput({ ...settings, comboCardSkillId: "none" }, settings.skillUsageCounts);
+    const rows = COMBO_CARD_OPTIONS.map((o) => {
+        const total = calculateTotalOutput({ ...settings, comboCardSkillId: o.id }, settings.skillUsageCounts);
+        return { id: o.id, label: o.label, total, gainPercent: base !== 0 ? ((total - base) / base) * 100 : null };
+    });
+    const best = rows.reduce((a, b) => (b.total > a.total ? b : a), rows[0]);
+    return { rows, bestId: best.total > base ? best.id : null };
+});
 const effectiveSharpLevel = computed(() => getEffectiveSharpLevel(settings));
+/** 破防套用中才有的目標狀態摘要 */
+const targetSummary = computed(() =>
+    settings.armorBreak.enabled
+        ? {
+              effectiveSharp: Math.max(0, effectiveSharpLevel.value - settings.armorBreak.pierceResist),
+              reductionPercent: (1 - calcResult.value.protectionReduction) * 100,
+              damageTakenPercent: settings.armorBreak.damageTakenPercent,
+          }
+        : null,
+);
+
+/** 貼到 Discord 的純文字結果摘要 */
+function buildSummaryText(): string {
+    const c = calcResult.value;
+    const lines = [
+        "【聖盾騎士傷害計算器】",
+        `最大傷害：${fmtInt(finalStats.value.maxDamage)}　暴擊率：${fmtRatio(c.criticalRatePercent)}%　暴擊傷害：${fmtRatio(c.criticalDamagePercent)}%`,
+        `通用額外傷害：${fmtMultiplier(c.generalExtraDamageMultiplier)}　秘法額外傷害：+${fmtRatio(c.arcaneExtraDamagePercent)}%`,
+        `才能增加傷害：${fmtMultiplier(c.talentIncreaseDamageMultiplier)}　最終增加傷害：${fmtMultiplier(c.finalIncreaseDamageMultiplier)}`,
+        `總輸出：${fmtInt(totalOutput.value)}　標準戰鬥力：${fmtInt(standardPower.value)}`,
+    ];
+    const used = usageRows.value.filter((r) => r.count > 0).sort((a, b) => b.share - a.share);
+    if (used.length) {
+        lines.push("", "傷害來源比例");
+        used.forEach((r) => lines.push(`${r.label}　${fmtInt(r.subtotal)}　次數 ${r.count}　${fmtDecimal(r.share)}%`));
+    }
+    if (topLevers.value.length) {
+        lines.push("", "提升效益前三（每單位總輸出增幅）");
+        topLevers.value.forEach((i) => lines.push(`${i.label}（每 ${i.unit}）+${fmtDecimal(i.deltaPercent ?? 0)}%`));
+    }
+    return lines.join("\n");
+}
+const copySummary = () => copyText(buildSummaryText(), "已複製結果摘要");
 const holyWaterComparison = computed(() => calculateHolyWaterComparison(settings));
 const bestHolyWaterId = computed(() => holyWaterComparison.value.reduce((best, x) => (x.deltaOutput > best.deltaOutput ? x : best), holyWaterComparison.value[0])?.id);
 
@@ -196,16 +490,19 @@ const RESULT_DETAILS: Record<string, string> = {
     criticalDamageExpected:
         "暴擊傷害期望值 = 100 + 暴擊率% × (暴擊傷害% − 100) / 100。把暴擊／不暴擊兩種結果依機率加權平均，才能/秘法技能公式實際套用這個值。",
     weaponExtraDamagePercent: "武器額外傷害 = 武器本身的額外傷害% + 單手武器搭配盾牌時盾牌提供的額外傷害%（雙手武器不吃盾牌這項），在「裝備」分頁選武器/盾牌自動帶出，不能手動填。",
-    generalExtraDamageMultiplier: "通用額外傷害 = (1+武器額外傷害%) × (1+稱號+圖騰+農場模型+套裝效果%)，兩桶相乘。",
+    generalExtraDamageMultiplier:
+        "通用額外傷害 = (1+武器額外傷害%) × (1+稱號+圖騰+農場模型+套裝效果%) × (1+暴擊時通用額外傷害%×暴擊率)，破防的暴擊時通用額外傷害（如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似。",
     arcaneExtraDamagePercent:
         "秘法額外傷害 = 不完美的空想王冠光環 + 布里萊赫的硬幣 + 穆利亞斯的遺物，加總後併入「(1+通用額外傷害+秘法額外傷害)」，只影響 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃。",
     protectionReduction: "保護減算 = 1 − 破後物理減傷率（怪物保護先扣破防%、再扣固定值、最後扣銳利，無條件捨去後查減傷表；銳利等級在「裝備」分頁填寫；「破防」分頁勾選套用時才生效，否則 ×1），乘進才能／秘法技能的目標傷害。",
     talentIncreaseDamageMultiplier: "才能增加傷害 =(1+種族技能%) × (1+猛擊層數對應%)，乘算，只影響才能技能（重擊/風車/突擊/猛擊）。",
     finalIncreaseDamageMultiplier:
-        "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草 × 反射的痕跡，共 8 個來源相乘。",
-    windmillDamage: "風車傷害 = 才能技能公式：最終攻擊力 × 風車基礎倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。",
-    chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊基礎倍率%。",
-    smashDamage: "重擊傷害 = 才能技能公式，結構同風車傷害，改套用重擊基礎倍率%。",
+        "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草，所有技能都吃；穆利亞斯的省察的痕跡另外只乘在 7 個秘法技能（見「很貴的項目」分頁）。",
+    windmillDamage:
+        "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝10%) × (1+風車套裝15%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
+    chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊倍率% = (基礎+魔法陣+細工) × 突擊套裝。",
+    smashDamage:
+        "重擊傷害 = 才能技能公式，結構同風車傷害，改套用重擊倍率% = (900%+魔法陣+細工) × 雙手武器 1.2 × (1+重擊最終傷害增加) × (1+武器重擊傷害增加+重擊套裝+連續技卡片)。",
     totalOutput: "總輸出 = Σ（每個技能單次傷害 × 該技能使用次數），使用次數在「技能使用次數」分頁設定。",
 };
 
@@ -232,7 +529,20 @@ function loadAllPresets(): ShieldKnightPreset[] {
 
 const presets = ref<ShieldKnightPreset[]>(loadAllPresets());
 const newPresetName = ref("");
+// ── buff 覆蓋率估算：覆蓋率 = 持續秒數 ÷ (持續秒數 + 平均空窗秒數)，空窗秒數看實戰紀錄兩次觸發中間空幾秒（已含沒命中、冷卻、暴擊刷新等實際情況），結果要按鈕才會填進覆蓋率欄位 ──
+const RAGE_IMPACT_DURATION_SECONDS = 7;
+const RAGE_IMPACT_BASE_COOLDOWN_SECONDS = 30;
+const coverageFromGap = (durationSeconds: number, gapSeconds: number): number => (durationSeconds * 100) / (durationSeconds + Math.max(0, gapSeconds));
+/** 預設空窗 = 冷卻 − 持續秒數（命中率 100%、沒有冷卻縮減，也就是 7 ÷ 30 ≈ 23%） */
+const rageGapSeconds = ref(RAGE_IMPACT_BASE_COOLDOWN_SECONDS - RAGE_IMPACT_DURATION_SECONDS);
+const rageCoverageEstimate = computed(() => coverageFromGap(RAGE_IMPACT_DURATION_SECONDS, rageGapSeconds.value));
+const REFLECTION_TRACE_BASE_SECONDS = 15;
+const REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL = 0.15;
+const reflectionGapSeconds = ref(0);
+const reflectionDurationSeconds = computed(() => REFLECTION_TRACE_BASE_SECONDS + settings.reflectionReforgeLevel * REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL);
+const reflectionCoverageEstimate = computed(() => coverageFromGap(reflectionDurationSeconds.value, reflectionGapSeconds.value));
 const showPresetPanel = ref(false);
+const showDebugPanel = ref(false);
 
 const saveLocalPresets = () => localStorage.setItem(SHIELD_KNIGHT_STORAGE_KEY, JSON.stringify(presets.value));
 const accountSync = useAccountSync("shield_knight_presets", presets, mergeByTimestamp, saveLocalPresets);
@@ -328,7 +638,20 @@ function buildMergedSettings(data: Partial<ShieldKnightSettings> | undefined): S
     };
     merged.skillUsageCounts = { ...defaults.skillUsageCounts, ...(data.skillUsageCounts ?? {}) };
     merged.muliasRelic = { ...defaults.muliasRelic, ...(data.muliasRelic ?? {}) };
+    // 舊版有「省察的痕跡是否觸發中」勾選：沒勾且沒有覆蓋率的舊存檔，轉成覆蓋率 0%
+    const legacyRelic = data.muliasRelic as { reflectionTraceActive?: boolean; reflectionTraceCoveragePercent?: number } | undefined;
+    if (legacyRelic?.reflectionTraceActive === false && legacyRelic.reflectionTraceCoveragePercent === undefined) {
+        merged.muliasRelic.reflectionTraceCoveragePercent = 0;
+    }
+    delete (merged.muliasRelic as { reflectionTraceActive?: boolean }).reflectionTraceActive;
     merged.armorBreak = { ...defaults.armorBreak, ...(data.armorBreak ?? {}) };
+    // 舊版省察細工分頭／身體兩個欄位，只取最高轉成單一等級
+    const legacy = data as { reflectionReforgeLevel1?: number; reflectionReforgeLevel2?: number };
+    if (data.reflectionReforgeLevel === undefined && (legacy.reflectionReforgeLevel1 || legacy.reflectionReforgeLevel2)) {
+        merged.reflectionReforgeLevel = Math.max(legacy.reflectionReforgeLevel1 ?? 0, legacy.reflectionReforgeLevel2 ?? 0);
+    }
+    delete (merged as Partial<typeof legacy>).reflectionReforgeLevel1;
+    delete (merged as Partial<typeof legacy>).reflectionReforgeLevel2;
     return merged;
 }
 
@@ -347,7 +670,7 @@ function onArmorBreakResult(r: ArmorBreakResult) {
 function loadPreset(idx: number) {
     const data = presets.value[idx]?.data;
     if (!data) return;
-    Object.assign(settings, buildMergedSettings(data));
+    applyLoadedSettings(data);
     if (latestArmorBreakResult) onArmorBreakResult(latestArmorBreakResult);
     loadedPresetTimestamp.value = presets.value[idx].timestamp;
 }
@@ -378,11 +701,16 @@ const comparisonResults = computed<(ComparisonResult | null)[]>(() =>
         if (!preset) return null;
         // 技能次數／破防未選擇時，沿用目前分頁上的活值；三者都可獨立換，同一欄可以是任意組合
         const usageCounts = slot.usageIdx !== null ? (usagePresets.presets.value[slot.usageIdx]?.data ?? settings.skillUsageCounts) : settings.skillUsageCounts;
-        const armorBreak = slot.breakIdx !== null ? (armorBreakPresets.presets.value[slot.breakIdx]?.data ?? settings.armorBreak) : settings.armorBreak;
+        // 明確在下拉選了某個破防組合，語意上就是「套用這組」，不管當初存檔當下主開關是否勾選，這裡都強制視為已套用，
+        // 否則若存檔當下「套用破防結果」剛好沒勾，這組破防會整包被當成停用，選哪組都變成「沒有破防」、結果跟沒選一樣
+        const armorBreak =
+            slot.breakIdx !== null
+                ? { ...(armorBreakPresets.presets.value[slot.breakIdx]?.data ?? settings.armorBreak), enabled: true }
+                : settings.armorBreak;
         const comparedSettings = { ...buildMergedSettings(preset.data), armorBreak };
         return {
             name: preset.name,
-            skills: calculateSkillsForSettings(comparedSettings, usageCounts["radiant-judgement"] ?? 0),
+            skills: calculateSkillsForSettings(comparedSettings, usageCounts),
             totalOutput: calculateTotalOutput(comparedSettings, usageCounts),
         };
     }),
@@ -435,6 +763,102 @@ function fmtDate(ts: number): string {
 }
 
 // ═══════════════════════════════════════════════════════
+//  Debug：下載完整資料／複製區塊（回報 bug 用）
+// ═══════════════════════════════════════════════════════
+//  分享：只編碼「和預設不同」的欄位成 base64url 代碼，可複製代碼或帶 ?s= 的連結
+// ═══════════════════════════════════════════════════════
+function encodeShareCode(): string {
+    const defaults = createDefaultSettings() as unknown as Record<string, unknown>;
+    const current = settings as unknown as Record<string, unknown>;
+    const diff: Record<string, unknown> = {};
+    for (const key of Object.keys(defaults)) {
+        if (JSON.stringify(current[key]) !== JSON.stringify(defaults[key])) diff[key] = current[key];
+    }
+    const bytes = new TextEncoder().encode(JSON.stringify(diff));
+    return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+/** 解碼並驗證：只收預設設定裡存在、且型別相同的欄位，其餘一律丟掉；格式不對回傳 null */
+function decodeShareCode(code: string): Partial<ShieldKnightSettings> | null {
+    try {
+        const b64 = code.trim().replace(/-/g, "+").replace(/_/g, "/");
+        const bin = atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4));
+        const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))));
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+        const defaults = createDefaultSettings() as unknown as Record<string, unknown>;
+        const picked: Record<string, unknown> = {};
+        for (const key of Object.keys(defaults)) {
+            if (Object.prototype.hasOwnProperty.call(parsed, key) && typeof parsed[key] === typeof defaults[key]) picked[key] = parsed[key];
+        }
+        return picked as Partial<ShieldKnightSettings>;
+    } catch {
+        return null;
+    }
+}
+
+async function copyText(text: string, okMessage: string) {
+    try {
+        await navigator.clipboard.writeText(text);
+        ElMessage.success(okMessage);
+    } catch {
+        ElMessage.error("無法寫入剪貼簿，請檢查瀏覽器權限");
+    }
+}
+const copyShareCode = () => copyText(encodeShareCode(), "已複製設定代碼");
+const copyShareLink = () => copyText(`${location.origin}${location.pathname}#/shield-knight?s=${encodeShareCode()}`, "已複製分享連結");
+
+async function importShareCode(code?: string) {
+    try {
+        if (code === undefined) {
+            const { value } = await ElMessageBox.prompt("貼上他人分享的設定代碼（或整個分享連結）", "匯入設定", { inputType: "textarea" });
+            code = value;
+        }
+    } catch {
+        return;
+    }
+    const fromLink = /[?&]s=([A-Za-z0-9_-]+)/.exec(code ?? "");
+    const data = decodeShareCode(fromLink ? fromLink[1] : (code ?? ""));
+    if (!data) {
+        ElMessage.error("代碼格式不正確，無法匯入");
+        return;
+    }
+    try {
+        await ElMessageBox.confirm("匯入會覆蓋目前的所有設定（可先用「儲存目前設定」備份），要繼續嗎？", "匯入設定", { type: "warning" });
+    } catch {
+        return;
+    }
+    applyLoadedSettings(data);
+    ElMessage.success("已匯入設定");
+}
+
+// ═══════════════════════════════════════════════════════
+const copiedBlock = ref<"settings" | "calcResult" | null>(null);
+let copiedBlockTimer: ReturnType<typeof setTimeout> | undefined;
+
+async function copyDebugBlock(block: "settings" | "calcResult") {
+    const text = JSON.stringify(block === "settings" ? settings : calcResult.value, null, 2);
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        return; // 剪貼簿權限被拒或不支援，靜默略過
+    }
+    copiedBlock.value = block;
+    clearTimeout(copiedBlockTimer);
+    copiedBlockTimer = setTimeout(() => (copiedBlock.value = null), 1500);
+}
+
+function downloadDebugData() {
+    const payload = { exportedAt: new Date().toISOString(), settings, calcResult: calcResult.value };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `shield-knight-debug-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════
 //  自動儲存（每次修改都存一份「目前設定」，跟已命名的配置分開存，
 //  重新整理頁面時優先還原這份，不用怕手動忘記按「儲存目前設定」）
 // ═══════════════════════════════════════════════════════
@@ -467,11 +891,17 @@ watch(
 onMounted(() => {
     const autosaved = loadAutosave();
     if (autosaved) {
-        Object.assign(settings, buildMergedSettings(autosaved));
+        applyLoadedSettings(autosaved);
     } else if (presets.value.length > 0) {
         loadPreset(0);
     }
     if (latestArmorBreakResult) onArmorBreakResult(latestArmorBreakResult);
+    // 分享連結：處理完就把 ?s= 從網址拿掉，避免重新整理又被詢問／覆蓋
+    const shared = route.query.s;
+    if (typeof shared === "string") {
+        router.replace({ query: {} });
+        importShareCode(shared);
+    }
 });
 </script>
 
@@ -483,6 +913,30 @@ onMounted(() => {
         </h1>
 
         <el-alert type="warning" :closable="false" show-icon class="verify-alert" title="此計算部分仍待驗證" />
+
+        <el-alert v-if="needsQuickStart" type="info" :closable="false" class="verify-alert" title="快速開始：最少只要填 2 項">
+            <ol class="quick-start-list">
+                <li>
+                    「<el-link type="primary" @click="activeTab = 'attack'">攻擊力</el-link>」分頁填<b>面板最大傷害</b>
+                    <span v-if="settings.panelMaxDamage > 0">（已填）</span>
+                </li>
+                <li>
+                    「<el-link type="primary" @click="activeTab = 'usage'">技能使用次數</el-link>」填各技能打幾次
+                    <span v-if="hasAnyUsageCount">（已填）</span>
+                </li>
+                <li>選填：「<el-link type="primary" @click="activeTab = 'critextra'">暴擊與額外傷害</el-link>」微調暴擊率、暴擊傷害與增傷來源（已有預設值）</li>
+            </ol>
+            <el-button size="small" type="primary" @click="loadExample">先載入範例數值看看</el-button>
+            <span class="field-hint">只會補上還空著的欄位。</span>
+        </el-alert>
+        <el-alert v-else-if="topLevers.length" type="success" :closable="false" class="verify-alert" title="自動結論">
+            目前總輸出 <b>{{ fmtInt(totalOutput) }}</b
+            >。每單位增幅最高的是
+            <template v-for="(item, i) in topLevers" :key="item.id">
+                <b>{{ item.label }}</b>（每 {{ item.unit }} 總輸出 +{{ fmtDecimal(item.deltaPercent ?? 0) }}%）<template v-if="i < topLevers.length - 1">、</template>
+            </template>
+            ，優先補這些。完整排名見「傷害效益」分頁。
+        </el-alert>
 
         <div class="sim-layout">
             <!-- ════════ 左側 — 設定 ════════ -->
@@ -513,6 +967,10 @@ onMounted(() => {
 
                 <div class="quick-actions">
                     <el-button size="small" plain @click="resetAll">重置設定</el-button>
+                    <el-button size="small" plain @click="copyShareLink">複製分享連結</el-button>
+                    <el-button size="small" plain @click="copyShareCode">複製設定代碼</el-button>
+                    <el-button size="small" plain @click="importShareCode()">匯入代碼</el-button>
+                    <el-button size="small" plain @click="copySummary">複製結果摘要</el-button>
                 </div>
 
                 <el-tabs v-model="activeTab" type="border-card" class="setting-tabs">
@@ -592,7 +1050,7 @@ onMounted(() => {
                             <div class="field-row">
                                 <label class="field-label">武器</label>
                                 <el-select v-model="settings.weaponId" size="small" class="field-select">
-                                    <el-option v-for="w in weaponOptions" :key="w.id" :value="w.id" :label="`${w.label}${w.extraDamagePercent ? ` (額外傷害+${w.extraDamagePercent}%)` : ''}`" />
+                                    <el-option v-for="w in weaponOptions" :key="w.id" :value="w.id" :label="weaponOptionLabel(w)" />
                                 </el-select>
                             </div>
                             <div class="field-row">
@@ -608,14 +1066,14 @@ onMounted(() => {
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.darkErgActive" />
-                                <span class="switch-label">黑暗聚能已滿（單手斧：風車+100%；雙手劍：重擊+150%）</span>
+                                <span class="switch-label">黑暗聚能已滿（單手斧：風車+100%）</span>
                             </div>
 
                             <div class="field-section-label">盾牌</div>
                             <div class="field-row">
                                 <label class="field-label">盾牌</label>
                                 <el-select v-model="settings.shieldId" size="small" class="field-select" :disabled="shieldLocked">
-                                    <el-option v-for="s in SHIELD_PRESETS" :key="s.id" :value="s.id" :label="s.label" />
+                                    <el-option v-for="s in SHIELD_PRESETS" :key="s.id" :value="s.id" :label="shieldOptionLabel(s)" />
                                 </el-select>
                             </div>
                             <div class="field-hint" v-if="shieldLocked">雙手劍無法與盾牌同時裝備（僅巨人型態例外），已鎖定為「無」。</div>
@@ -686,18 +1144,49 @@ onMounted(() => {
                                 武器選單手斧：0~13（≥11 突破限定）；武器選雙手劍：0~25（≥21 突破限定）；飾品：0~4（4 為突破限定）。
                             </div>
 
-                            <div class="field-section-label">套裝效果（手動；風車最終倍率 +15% 由武器／盾牌自動帶出）</div>
+                            <div class="field-section-label">細工-XX魔法盾持續時間（共 4 種，只取最高）</div>
+                            <div class="field-row">
+                                <label class="field-label">等級</label>
+                                <el-select v-model="settings.reflectionReforgeLevel" size="small" class="reforge-level-select">
+                                    <el-option v-for="o in REFLECTION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                            </div>
+                            <div class="field-hint">
+                                影響省察的痕跡的持續時間，只出在頭和身體（一般建議頭），共 4 種詞條取最高的那個等級填入。持續時間 = 15 + 等級 × 0.15 秒，目前 {{ settings.reflectionReforgeLevel }} 級；用於「技能設定」分頁的覆蓋率估算。
+                            </div>
+
+                            <div class="field-section-label">套裝效果（風車/猛擊套裝與武器專屬增傷由武器／盾牌自動帶出）</div>
+                            <div class="field-hint">備註：憤怒衝擊套裝（近戰技能傷害 +2%）在「破防」分頁設定。</div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualWindmillBase30Active" />
                                 <span class="switch-label">風車基礎倍率 +30%（莊嚴騎士）</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualChargeEnhanceActive" />
-                                <span class="switch-label">突擊最終倍率 +15%</span>
+                                <span class="switch-label">突擊最終倍率 +15%（四種盾牌都已內建，這裡給沒選盾牌或其他來源用，不會重複疊加）</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualSmashEnhanceActive" />
-                                <span class="switch-label">重擊最終倍率 +15%</span>
+                                <span class="switch-label">重擊套裝 +15%</span>
+                            </div>
+
+                            <div class="field-section-label">連續技卡片（只能裝備一張，秘法技能不吃加成）</div>
+                            <div class="field-row">
+                                <el-radio-group v-model="settings.comboCardSkillId" size="small">
+                                    <el-radio-button v-for="o in COMBO_CARD_OPTIONS" :key="o.id" :value="o.id">{{ o.label }}</el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div v-if="hasAnyUsageCount" class="field-hint">
+                                依目前技能使用次數，各卡片的總輸出（期望值）：
+                                <template v-for="(row, i) in comboRanking.rows" :key="row.id">
+                                    <b :class="{ 'combo-best': row.id === comboRanking.bestId }">{{ row.label }}</b> {{ fmtInt(row.total) }}
+                                    <template v-if="row.id !== 'none' && row.gainPercent !== null">（{{ row.gainPercent >= 0 ? "+" : "" }}{{ fmtDecimal(row.gainPercent) }}%）</template>
+                                    <template v-if="row.id === comboRanking.bestId">★最佳</template>
+                                    <template v-if="i < comboRanking.rows.length - 1">｜</template>
+                                </template>
+                            </div>
+                            <div class="field-hint">
+                                同一技能連續使用 6 下，第 1~6 下依序增傷 0% / 10% / 22% / 37% / 57% / 87%（合計 213%），使用次數依 1→6 循環平均分配，單次傷害顯示分配後的加權平均；未填使用次數時以完整 6 連的平均（{{ fmtRatio(comboCardAveragePercent(0)) }}%）預覽。
                             </div>
                         </div>
                     </el-tab-pane>
@@ -838,14 +1327,10 @@ onMounted(() => {
                             <div class="field-row">
                                 <label class="field-label">暴擊率基準值</label>
                                 <el-input-number v-model="settings.criticalRate.baseCriticalRatePercent" :min="0" :max="100" :step="0.1" :precision="1" size="small" class="field-select" />
-                                <span class="switch-label">%（依角色屬性/裝備而定，自行輸入）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.criticalRate.itemBonusActive" />
-                                <span class="switch-label">道具加成（+{{ CRITICAL_RATE_ITEM_BONUS }}%）</span>
+                                <span class="switch-label">%（依角色屬性/裝備而定，自行輸入；版本或活動提高暴擊率上限時，直接改這個數字）</span>
                             </div>
                             <div class="field-hint">
-                                暴擊率合計：{{ fmtRatio(calcResult.criticalRatePercent) }}%；暴擊傷害期望值＝100 + 暴擊率% × (暴擊傷害% − 100) / 100 ＝
+                                暴擊率合計：{{ fmtRatio(calcResult.criticalRatePercent) }}%（含「很貴的項目」分頁的結界模型 +{{ CRITICAL_RATE_ITEM_BONUS }}%，若有勾選）；暴擊傷害期望值＝100 + 暴擊率% × (暴擊傷害% − 100) / 100 ＝
                                 {{ fmtRatio(calcResult.criticalDamageExpected) }}%，才能/秘法技能公式實際套用這個值。
                             </div>
 
@@ -864,12 +1349,25 @@ onMounted(() => {
                             </div>
                             <div class="field-row">
                                 <label class="field-label">武器特殊改造</label>
-                                <el-select v-model="settings.criticalDamage.weaponSpecialReforgeTier" size="small" class="field-select">
-                                    <el-option value="none" label="無" />
-                                    <el-option value="r6" :label="`R6 (+${WEAPON_SPECIAL_REFORGE_CRIT.r6}%)`" />
-                                    <el-option value="r7" :label="`R7 (+${WEAPON_SPECIAL_REFORGE_CRIT.r7}%)`" />
-                                    <el-option value="r8" :label="`R8 (+${WEAPON_SPECIAL_REFORGE_CRIT.r8}%)`" />
+                                <el-radio-group v-model="reformKind" size="small">
+                                    <el-radio-button value="none">無</el-radio-button>
+                                    <el-radio-button value="R">R（暴擊傷害）</el-radio-button>
+                                    <el-radio-button value="S">S（追加傷害）</el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div class="field-row" v-if="reformKind !== 'none'">
+                                <label class="field-label">階段</label>
+                                <el-select v-model="reformStage" size="small" class="field-select">
+                                    <el-option
+                                        v-for="n in reformStageList"
+                                        :key="n"
+                                        :value="n"
+                                        :label="reformKind === 'S' ? `S${n}（追加傷害 +${specialReformSExtra(n)}%）` : `R${n}（暴擊傷害 +${specialReformRCrit(n)}%）`"
+                                    />
                                 </el-select>
+                            </div>
+                            <div class="field-hint">
+                                R 與 S 只能擇一。單手斧在 9/17 上修後與雙手劍數值相同，第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化。S 的最大傷害已含在面板最大傷害，這裡只計追加傷害 %，算進通用額外傷害的「額外傷害」那一桶（和武器本身的額外傷害不同）。
                             </div>
                             <div class="field-row">
                                 <label class="field-label">暴擊傷害套裝</label>
@@ -901,11 +1399,7 @@ onMounted(() => {
                                 <el-input-number v-model="settings.criticalDamage.titlePercent" :min="0" :max="3" size="small" class="field-select" />
                             </div>
                             <div class="field-row">
-                                <label class="field-label">布里萊赫的硬幣</label>
-                                <el-input-number v-model="settings.criticalDamage.brireheCoinPercent" :min="0" :max="10" size="small" class="field-select" />
-                            </div>
-                            <div class="field-row">
-                                <span class="switch-label">聖水暴擊傷害（自動讀取裝備分頁）：+{{ fmtRatio(calcResult.criticalDamagePercent - 100 - (settings.criticalDamage.skillR1Active ? 150 : 0) - (settings.criticalDamage.fullGradeActive ? 10 : 0) - (settings.criticalDamage.spiritWeaponCritActive ? 15 : 0) - WEAPON_SPECIAL_REFORGE_CRIT[settings.criticalDamage.weaponSpecialReforgeTier] - CRITICAL_DAMAGE_SET_BONUS[settings.criticalDamage.setTier] - (settings.criticalDamage.totemChoice === 'critical_damage' ? 5 : 0) - settings.criticalDamage.dollBagPercent - settings.criticalDamage.farmModelPercent - settings.criticalDamage.titlePercent - settings.criticalDamage.brireheCoinPercent - (settings.criticalDamage.assassinOutfitActive ? 12 : 0)) }}%</span>
+                                <span class="switch-label">聖水暴擊傷害（自動讀取裝備分頁）：+{{ fmtRatio(calcResult.criticalDamagePercent - 100 - (settings.criticalDamage.skillR1Active ? 150 : 0) - (settings.criticalDamage.fullGradeActive ? 10 : 0) - (settings.criticalDamage.spiritWeaponCritActive ? 15 : 0) - specialReformRCrit(reformRStage) - CRITICAL_DAMAGE_SET_BONUS[settings.criticalDamage.setTier] - (settings.criticalDamage.totemChoice === 'critical_damage' ? 5 : 0) - settings.criticalDamage.dollBagPercent - settings.criticalDamage.farmModelPercent - settings.criticalDamage.titlePercent - settings.criticalDamage.brireheCoinPercent - (settings.criticalDamage.assassinOutfitActive ? 12 : 0)) }}%</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.criticalDamage.assassinOutfitActive" />
@@ -932,27 +1426,9 @@ onMounted(() => {
                             </div>
                             <div class="field-hint">通用額外傷害倍率：{{ fmtMultiplier(calcResult.generalExtraDamageMultiplier) }}</div>
 
-                            <div class="field-section-label">秘法額外傷害（加總）</div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.arcaneExtraDamage.imperfectCrownAuraActive" />
-                                <span class="switch-label">不完美的空想王冠光環（+3%）</span>
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">布里萊赫的硬幣</label>
-                                <el-input-number v-model="settings.arcaneExtraDamage.brireheCoinPercent" :min="0" :max="3" :step="0.05" :precision="2" size="small" class="field-select" />
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">穆利亞斯的遺物</label>
-                                <el-input-number v-model="settings.arcaneExtraDamage.muliasRelicCount" :min="0" :max="3" size="small" class="field-select" />
-                                <span class="switch-label">接尾賦予捲軸，身上 0~3 個，每個 +1%</span>
-                            </div>
-                            <div class="field-hint">
-                                秘法額外傷害加總：+{{ fmtRatio(calcResult.arcaneExtraDamagePercent) }}%（已套用於 7 個秘法技能的傷害公式，重擊/風車/突擊/猛擊等才能技能不吃）
-                            </div>
-
                             <div class="field-section-label">最終增加傷害（乘算）</div>
                             <div class="field-hint">
-                                死神烙印、憤怒衝擊、命運編織．倒吊人、洞察之眼、幸運草標記等增傷已由「破防」分頁提供（所受傷害增加、近戰技能傷害），這裡只保留戰鬥服務與強力威光；穆利亞斯遺物的「反射的痕跡」在「技能設定」分頁。
+                                死神烙印、憤怒衝擊、命運編織．倒吊人、洞察之眼、幸運草標記等增傷已由「破防」分頁提供（所受傷害增加、近戰技能傷害），這裡只保留戰鬥服務與強力威光；秘法額外傷害與穆利亞斯遺物（省察的痕跡）在「很貴的項目」分頁。
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.finalIncreaseDamage.combatServiceBuffActive" />
@@ -991,6 +1467,8 @@ onMounted(() => {
                                 <span class="switch-label">風車</span>
                                 <el-checkbox v-model="settings.showMengJiSkill" />
                                 <span class="switch-label">猛擊</span>
+                                <el-checkbox v-model="settings.showChargeSkill" />
+                                <span class="switch-label">突擊（只顯示傷害，不進總輸出）</span>
                             </div>
                             <div class="field-row" v-if="settings.showMengJiSkill">
                                 <label class="field-label">猛擊層數</label>
@@ -1012,6 +1490,9 @@ onMounted(() => {
                                     <el-option v-for="c in MAGIC_CIRCLE_OPTIONS" :key="c.id" :value="c.id" :label="c.label" />
                                 </el-select>
                             </div>
+                            <div class="field-hint">
+                                備註：憤怒衝擊魔法陣（近戰技能傷害 +0.3%／級，最高 +3%）的等級在「破防」分頁設定，但它同樣佔用這 {{ MAGIC_CIRCLE_LIMIT }} 個魔法陣欄位，選了它就要少選上面一個。
+                            </div>
 
                             <div class="field-section-label">狀態</div>
                             <div class="field-row">
@@ -1025,29 +1506,43 @@ onMounted(() => {
                                 <el-switch v-model="settings.rageImpactBuffActive" />
                                 <span class="switch-label">近距離額外傷害中（憤怒衝擊，觸發後 7 秒內；數值在「破防」分頁的憤怒衝擊來源調整，需套用破防結果才生效）</span>
                             </div>
+                            <div class="field-row">
+                                <label class="field-label">憤怒衝擊覆蓋率</label>
+                                <el-input-number v-model="settings.rageImpactCoveragePercent" :min="0" :max="100" :step="5" size="small" class="field-select" />
+                                <span class="switch-label">%（平均有多少比例的技能施放吃得到加成，預設 100%＝全程有效）</span>
+                            </div>
+                            <div class="field-hint">
+                                憤怒衝擊範圍窄、可能打不中，冷卻 {{ RAGE_IMPACT_BASE_COOLDOWN_SECONDS }} 秒（裝備可縮短 0~20 秒，暴擊時可能刷新冷卻再施放），必須命中才會附加 {{ RAGE_IMPACT_DURATION_SECONDS }} 秒的效果。建議填「兩次效果中間平均空幾秒」（已含沒命中、冷卻縮減、刷新），覆蓋率 = {{ RAGE_IMPACT_DURATION_SECONDS }} ÷ ({{ RAGE_IMPACT_DURATION_SECONDS }} + 空窗)。
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">平均空窗（秒）</label>
+                                <el-input-number v-model="rageGapSeconds" :min="0" :step="1" size="small" class="field-select-sm" />
+                                <span class="switch-label">預設 {{ RAGE_IMPACT_BASE_COOLDOWN_SECONDS - RAGE_IMPACT_DURATION_SECONDS }} 秒＝每次冷卻一好就命中、沒有縮減</span>
+                            </div>
+                            <div class="field-row">
+                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(rageCoverageEstimate) }}%（{{ RAGE_IMPACT_DURATION_SECONDS }} ÷ ({{ RAGE_IMPACT_DURATION_SECONDS }} + {{ rageGapSeconds }}) 秒）</span>
+                                <el-button size="small" plain @click="settings.rageImpactCoveragePercent = Math.round(rageCoverageEstimate)">填入覆蓋率</el-button>
+                            </div>
 
-                            <div class="field-section-label">穆利亞斯的遺物（3 件，各自獨立 Lv0~10）</div>
-                            <div class="field-row">
-                                <label class="field-label">誓約每秒犧牲恢復</label>
-                                <el-select v-model="settings.muliasRelic.sacrificeRegenLevel" size="small" class="field-select-sm">
-                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <span class="switch-label">高潔誓約每秒犧牲恢復量 +{{ (settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL).toFixed(2) }}/秒（每級 +{{ MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL }}，純顯示，尚無基準值可疊加）</span>
+                            <div class="field-section-label">省察的痕跡（穆利亞斯的遺物）覆蓋率</div>
+                            <div class="field-hint">
+                                空窗取決於犧牲懲戒的發動頻率（目前「技能使用次數」填了犧牲懲戒 {{ settings.skillUsageCounts["sacrifice-punishment"] ?? 0 }} 次）；犧牲的主要來源是盾崩成功觸發格擋的次數。是否觸發中與遺物等級在「很貴的項目」分頁，細工等級在「裝備」分頁。
                             </div>
                             <div class="field-row">
-                                <label class="field-label">反射的痕跡</label>
-                                <el-select v-model="settings.muliasRelic.reflectionTraceLevel" size="small" class="field-select-sm">
-                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <el-checkbox v-model="settings.muliasRelic.reflectionTraceActive" />
-                                <span class="switch-label">犧牲懲戒觸發反射的痕跡中（+{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 聖盾技能傷害，併入最終增加傷害）</span>
+                                <label class="field-label">省察覆蓋率</label>
+                                <el-input-number v-model="settings.muliasRelic.reflectionTraceCoveragePercent" :min="0" :max="100" :step="5" size="small" class="field-select" />
+                                <span class="switch-label">%（觸發中時，平均有多少比例的秘法技能施放吃得到加成，預設 100%）</span>
+                            </div>
+                            <div class="field-hint">
+                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（細工等級在「裝備」分頁填，目前 {{ settings.reflectionReforgeLevel }} 級 → {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
                             </div>
                             <div class="field-row">
-                                <label class="field-label">審判重擊基礎傷害</label>
-                                <el-select v-model="settings.muliasRelic.judgementStrikeLevel" size="small" class="field-select-sm">
-                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <span class="switch-label">審判重擊基礎傷害比例 +{{ settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%（3500% → {{ 3500 + settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%）</span>
+                                <label class="field-label">平均空窗（秒）</label>
+                                <el-input-number v-model="reflectionGapSeconds" :min="0" :step="1" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(reflectionCoverageEstimate) }}%（{{ fmtRatio(reflectionDurationSeconds) }} ÷ ({{ fmtRatio(reflectionDurationSeconds) }} + {{ reflectionGapSeconds }}) 秒）</span>
+                                <el-button size="small" plain @click="settings.muliasRelic.reflectionTraceCoveragePercent = Math.round(reflectionCoverageEstimate)">填入覆蓋率</el-button>
                             </div>
 
                             <div class="field-section-label">施工中（公式尚待驗證，暫時停用）</div>
@@ -1077,10 +1572,94 @@ onMounted(() => {
                         </div>
                     </el-tab-pane>
 
+                    <!-- 很貴的項目 -->
+                    <el-tab-pane label="很貴的項目" name="expensive">
+                        <div class="tab-body">
+                            <div class="field-hint">
+                                價格高、多數人沒有的項目放這裡，沒有就整頁不用填。除了硬幣的暴擊傷害、結界模型的暴擊率會影響所有技能，其餘項目只影響 7 個秘法技能，重擊／風車／猛擊不吃。
+                            </div>
+
+                            <div class="field-section-label">布里萊赫的硬幣（3 個詞條，素質隨機）</div>
+                            <div class="field-hint">
+                                大傷（1~20）已含在「面板最大傷害」裡，不用另外填；想知道擲到的詞條值不值，可到「傷害效益」分頁比較大傷、暴擊傷害、秘法額外傷害的每單位效益。
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">暴擊傷害</label>
+                                <el-input-number v-model="settings.criticalDamage.brireheCoinPercent" :min="0" :max="10" :step="1" size="small" class="field-select" />
+                                <span class="switch-label">% （1~10，每格 1；影響所有技能）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">秘法額外傷害</label>
+                                <el-input-number v-model="settings.arcaneExtraDamage.brireheCoinPercent" :min="0" :max="3" :step="0.15" :precision="2" size="small" class="field-select" />
+                                <span class="switch-label">% （0.15~3，每格 0.15；只影響秘法技能）</span>
+                            </div>
+
+                            <div class="field-section-label">浪漫農場卡莉亞赫的結界模型</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.criticalRate.itemBonusActive" />
+                                <span class="switch-label">暴擊率上限 +{{ CRITICAL_RATE_ITEM_BONUS }}%（影響所有技能）</span>
+                            </div>
+
+                            <div class="field-section-label">秘法額外傷害來源</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.arcaneExtraDamage.imperfectCrownAuraActive" />
+                                <span class="switch-label">不完美的空想王冠光環（+3%）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">穆利亞斯的遺物 接尾賦予總數量</label>
+                                <el-input-number v-model="settings.arcaneExtraDamage.muliasRelicCount" :min="0" :max="3" size="small" class="field-select" />
+                                <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                    <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                    接尾賦予包含：管理者／後悔／片段（魔攻）／自我（煉金），身上這幾種的總數量加起來填入（0~3 個），每個 +1% 秘法額外傷害。
+                                </el-popover>
+                                <span class="switch-label">每個 +1%</span>
+                            </div>
+                            <div class="field-hint">
+                                秘法額外傷害加總：+{{ fmtRatio(calcResult.arcaneExtraDamagePercent) }}%（已套用於 7 個秘法技能的傷害公式，重擊/風車/突擊/猛擊等才能技能不吃）
+                            </div>
+
+                            <div class="field-section-label">穆利亞斯的遺物（3 件，各自獨立 Lv0~10）</div>
+                            <div class="field-row">
+                                <label class="field-label">誓約每秒犧牲恢復</label>
+                                <el-select v-model="settings.muliasRelic.sacrificeRegenLevel" size="small" class="field-select-sm">
+                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <span class="switch-label">高潔誓約每秒犧牲恢復量 +{{ (settings.muliasRelic.sacrificeRegenLevel * MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL).toFixed(2) }}/秒（每級 +{{ MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL }}，純顯示，尚無基準值可疊加）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">省察的痕跡</label>
+                                <el-select v-model="settings.muliasRelic.reflectionTraceLevel" size="small" class="field-select-sm">
+                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <span class="switch-label">犧牲懲戒觸發省察的痕跡時 +{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃；實際吃到的比例看「技能設定」分頁的省察覆蓋率（預設 100%，填 0% 等於沒觸發）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">審判重擊基礎傷害</label>
+                                <el-select v-model="settings.muliasRelic.judgementStrikeLevel" size="small" class="field-select-sm">
+                                    <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <span class="switch-label">審判重擊基礎傷害比例 +{{ settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%（3500% → {{ 3500 + settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%）</span>
+                            </div>
+
+                        </div>
+                    </el-tab-pane>
+
                     <!-- 技能使用次數 -->
                     <el-tab-pane label="技能使用次數" name="usage">
                         <div class="tab-body">
                             <div class="field-section-label">各技能使用次數（用於計算總輸出／裝備比較／傷害效益）</div>
+                            <div class="field-row">
+                                <label class="field-label">套用情境範本</label>
+                                <el-select
+                                    v-model="selectedScenarioId"
+                                    placeholder="選一個情境當起點（估算值，可再修改）"
+                                    size="small"
+                                    class="field-select"
+                                    @change="applyUsageScenario"
+                                >
+                                    <el-option v-for="sc in USAGE_SCENARIOS" :key="sc.id" :label="sc.label" :value="sc.id" />
+                                </el-select>
+                            </div>
                             <div class="equip-table-wrap">
                                 <table class="equip-table">
                                     <thead>
@@ -1089,6 +1668,7 @@ onMounted(() => {
                                             <th>單次傷害</th>
                                             <th>使用次數</th>
                                             <th>小計</th>
+                                            <th>占比</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1102,6 +1682,7 @@ onMounted(() => {
                                                 <el-input-number v-model="settings.skillUsageCounts[meta.id]" :min="0" :controls="false" size="small" class="equip-input" />
                                             </td>
                                             <td>{{ fmtInt((allSkills.find((s) => s.skillId === meta.id)?.finalDamage ?? 0) * settings.skillUsageCounts[meta.id]) }}</td>
+                                            <td>{{ fmtDecimal(usageShareOf(meta.id)) }}%</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1186,6 +1767,18 @@ onMounted(() => {
                     <el-tab-pane label="傷害效益" name="efficiency">
                         <div class="tab-body">
                             <div class="field-section-label">各屬性 1 單位等同多少大傷（依目前設定 + 技能使用次數，微擾量測邊際效益）</div>
+                            <div v-if="hasAnyUsageCount" class="field-row">
+                                <el-checkbox v-model="efficiencySortByGain" />
+                                <span class="switch-label">依「總輸出增幅」由高到低排序</span>
+                                <el-select v-if="efficiencySortByGain" v-model="efficiencyTopN" size="small" style="width: 110px">
+                                    <el-option :value="0" label="全部" />
+                                    <el-option :value="5" label="前 5 名" />
+                                    <el-option :value="10" label="前 10 名" />
+                                </el-select>
+                            </div>
+                            <div v-if="hasAnyUsageCount && efficiencySortByGain" class="field-hint">
+                                單位為「開關」的項目是整個效果開啟 vs 關閉的總價值，和「每 1%／1 級」的增幅不能直接比較，排序時僅供參考。
+                            </div>
                             <div v-if="!hasAnyUsageCount" class="field-hint">請先在「技能使用次數」分頁設定至少一個技能的使用次數，才能計算屬性效益。</div>
                             <div class="equip-table-wrap" v-else>
                                 <table class="equip-table">
@@ -1194,12 +1787,13 @@ onMounted(() => {
                                             <th>屬性</th>
                                             <th>單位</th>
                                             <th>等同大傷</th>
+                                            <th>總輸出增幅</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <template v-for="group in efficiencyGroups" :key="group.label">
                                             <tr v-if="group.items.length" class="efficiency-group-row">
-                                                <td colspan="3">{{ group.label }}</td>
+                                                <td colspan="4">{{ group.label }}</td>
                                             </tr>
                                             <tr v-for="item in group.items" :key="item.id">
                                                 <td class="equip-slot-label">
@@ -1211,10 +1805,47 @@ onMounted(() => {
                                                 </td>
                                                 <td>{{ item.unit }}</td>
                                                 <td>{{ item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
+                                                <td>{{ item.deltaPercent == null ? "-" : `+${fmtDecimal(item.deltaPercent)}%` }}</td>
                                             </tr>
                                         </template>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <div class="field-section-label">武器特殊改造效益（R／S 只能擇一，各階段相當多少大傷，相對於完全沒有特殊改造）</div>
+                            <div v-if="!hasAnyUsageCount" class="field-hint">請先在「技能使用次數」分頁設定至少一個技能的使用次數。</div>
+                            <div v-else class="equip-table-wrap">
+                                <table class="equip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>階段</th>
+                                            <th>S（追加傷害）</th>
+                                            <th>R（暴擊傷害）</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="row in specialReformRows" :key="row.stage">
+                                            <td class="equip-slot-label">{{ row.stage }}{{ row.available ? "" : "（此武器不可）" }}</td>
+                                            <template v-if="row.available">
+                                                <td>
+                                                    {{ row.sEquivalentMaxDamage === null ? "-" : fmtDecimal(row.sEquivalentMaxDamage) }}
+                                                    <span class="field-hint">（+{{ row.sExtraPercent }}%、最大傷害 +{{ row.sMaxDamage }}）</span>
+                                                </td>
+                                                <td>
+                                                    {{ row.rEquivalentMaxDamage === null ? "-" : fmtDecimal(row.rEquivalentMaxDamage) }}
+                                                    <span class="field-hint">（暴擊傷害 +{{ row.rCritPercent }}%）</span>
+                                                </td>
+                                            </template>
+                                            <template v-else>
+                                                <td>-</td>
+                                                <td>-</td>
+                                            </template>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="field-hint">
+                                S 的最大傷害已含在面板，這裡用「最終/面板」比例近似它吃到的攻擊係數；S 的追加傷害算進額外傷害那一桶。第 8 階只有靈魂解放者／日月劍可用。
                             </div>
 
                             <div class="field-section-label">儲存傷害效益（存下目前這份結果，未來「計算裝備提升幅度」會讀取這裡的快照來比較）</div>
@@ -1279,7 +1910,7 @@ onMounted(() => {
                                             <td>{{ item.valueText }}</td>
                                             <td>{{ fmtInt(item.deltaOutput) }}</td>
                                             <td>{{ item.deltaPercent === null ? "-" : `${fmtDecimal(item.deltaPercent)}%` }}</td>
-                                            <td>{{ item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
+                                            <td>{{ item.id === "maxDamage" ? "基準" : item.equivalentMaxDamage === null ? "-" : fmtDecimal(item.equivalentMaxDamage) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1294,7 +1925,7 @@ onMounted(() => {
                                 <el-checkbox v-model="settings.armorBreak.enabled" />
                                 <span class="switch-label">
                                     套用破防結果到傷害計算（物理側：保護減算 ×{{ calcResult.protectionReduction.toFixed(2) }}、所受傷害
-                                    +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊傷害 +{{ fmtRatio(settings.armorBreak.critDamagePercent) }}%、近戰技能傷害 +{{ fmtRatio(settings.armorBreak.meleePercent) }}%）
+                                    +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊時通用額外傷害 +{{ fmtRatio(settings.armorBreak.critDamagePercent) }}%（非暴擊不套用，銳利目光等）、近戰技能傷害 +{{ fmtRatio(settings.armorBreak.meleePercent) }}%）
                                 </span>
                             </div>
                             <div class="field-hint">
@@ -1319,16 +1950,31 @@ onMounted(() => {
                             <ProtectionBreakPanel single :pierce="effectiveSharpLevel" @result="onArmorBreakResult" />
                         </div>
                     </el-tab-pane>
+                </el-tabs>
 
-                    <el-tab-pane label="Debug" name="debug">
+                <el-card class="preset-card debug-card">
+                    <div class="preset-head" :class="{ open: showDebugPanel }" @click="showDebugPanel = !showDebugPanel">
+                        <span class="preset-head-title">🐞 Debug</span>
+                        <span class="preset-head-chevron" :style="{ transform: showDebugPanel ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
+                    </div>
+                    <template v-if="showDebugPanel">
                         <div class="tab-body">
-                            <div class="field-section-label">settings（原始輸入值，會自動存檔的那份）</div>
+                            <div class="field-row">
+                                <el-button size="small" type="primary" plain @click="downloadDebugData">下載完整 Debug 資料（settings + calcResult）</el-button>
+                            </div>
+                            <div class="field-section-label">
+                                settings（原始輸入值，會自動存檔的那份）
+                                <el-button size="small" text @click="copyDebugBlock('settings')">{{ copiedBlock === "settings" ? "已複製" : "複製" }}</el-button>
+                            </div>
                             <pre class="debug-dump">{{ JSON.stringify(settings, null, 2) }}</pre>
-                            <div class="field-section-label">calcResult（依 settings 算出來的衍生數值）</div>
+                            <div class="field-section-label">
+                                calcResult（依 settings 算出來的衍生數值）
+                                <el-button size="small" text @click="copyDebugBlock('calcResult')">{{ copiedBlock === "calcResult" ? "已複製" : "複製" }}</el-button>
+                            </div>
                             <pre class="debug-dump">{{ JSON.stringify(calcResult, null, 2) }}</pre>
                         </div>
-                    </el-tab-pane>
-                </el-tabs>
+                    </template>
+                </el-card>
             </div>
 
             <!-- ════════ 右側 — 最終面板 ════════ -->
@@ -1597,6 +2243,35 @@ onMounted(() => {
                         </span>
                         <span class="result-value">{{ fmtInt(totalOutput) }}</span>
                     </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            標準戰鬥力
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                固定用「打王」範本的技能次數計算總輸出，不受你自己填的次數影響，可以直接和不同配置、不同人的結果比較強度。
+                            </el-popover>
+                        </span>
+                        <span class="result-value">{{ fmtInt(standardPower) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">標準戰鬥力（含戰場上的狂吼）</span>
+                        <span class="result-value sub">{{ fmtInt(standardPowerBattleCry) }}</span>
+                    </div>
+                    <template v-if="targetSummary">
+                        <div class="result-group-label">目標狀態（破防）</div>
+                        <div class="result-row">
+                            <span class="result-label">最終有效銳利等級</span>
+                            <span class="result-value sub">{{ targetSummary.effectiveSharp }}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">最終目標減傷</span>
+                            <span class="result-value sub">{{ fmtDecimal(targetSummary.reductionPercent) }}%</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">目標受擊增傷</span>
+                            <span class="result-value sub">+{{ fmtDecimal(targetSummary.damageTakenPercent) }}%</span>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="util-copyrights">
@@ -1607,9 +2282,24 @@ onMounted(() => {
 
         <!-- ════════ 技能傷害 ════════ -->
         <div class="skill-section">
-            <h2 class="skill-section-title">技能傷害</h2>
-            <div class="skill-grid">
-                <div v-for="skill in skills" :key="skill.skillId" class="skill-card" :class="{ 'skill-card-locked': skill.locked }">
+            <div class="skill-section-header">
+                <h2 class="skill-section-title">技能傷害</h2>
+                <el-radio-group v-model="critDisplayMode" size="small">
+                    <el-radio-button value="noCrit">沒暴擊</el-radio-button>
+                    <el-radio-button value="crit">暴擊</el-radio-button>
+                    <el-radio-button value="expected">期望值</el-radio-button>
+                </el-radio-group>
+            </div>
+            <div class="skill-section-filters">
+                <el-checkbox v-model="showTalentCards">顯示才能技能</el-checkbox>
+                <el-checkbox v-model="showArcaneCards">顯示秘法技能</el-checkbox>
+                <el-checkbox v-model="applyComboCard">套用連續技卡片（才能技能）</el-checkbox>
+            </div>
+            <div class="field-hint skill-section-hint">
+                只影響這裡的卡片顯示；其餘分頁（技能使用次數／裝備比較／傷害效益／總輸出）固定用期望值計算，不受此切換影響。
+            </div>
+            <div v-if="showArcaneCards && arcaneCards.length" class="skill-grid">
+                <div v-for="skill in arcaneCards" :key="skill.skillId" class="skill-card" :class="{ 'skill-card-locked': skill.locked }">
                     <div class="skill-card-header">
                         <span class="skill-name">
                             <img width="24" height="24" :src="getSkillIcon(skillImageId(skill.skillId))" :alt="skill.name" />
@@ -1655,6 +2345,79 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
+            <div v-if="showTalentCards && (talentCards.length || chargeCard)" class="skill-grid">
+                <div v-for="card in talentCards" :key="card.skill.skillId" class="skill-card">
+                    <div class="skill-card-header">
+                        <span class="skill-name">
+                            <img width="24" height="24" :src="getSkillIcon(skillImageId(card.skill.skillId))" :alt="card.skill.name" />
+                            {{ card.skill.name }}
+                        </span>
+                        <span class="skill-damage">{{ fmtInt(card.skill.finalDamage) }}</span>
+                    </div>
+                    <template v-if="applyComboCard">
+                    <div class="field-hint">
+                        連擊卡：使用 {{ card.usageCount }} 次{{ card.usageCount === 0 ? "（未填，以 6 連平均預覽）" : "" }}，依 1→6 循環分配，平均 +{{ fmtRatio(card.averagePercent) }}%
+                    </div>
+                    <div class="field-hint">
+                        倍率 {{ fmtRatio(card.noCardRatioPercent) }}% → {{ fmtRatio(card.skill.terms[0]?.ratioPercent ?? 0) }}%｜無卡片傷害：{{ fmtInt(card.noCardDamage) }}
+                    </div>
+                    </template>
+                    <div v-else class="field-hint">未套用連續技卡片（卡片傷害為無卡片的基礎值）</div>
+
+                    <div class="skill-terms">
+                        <div v-for="term in card.skill.terms" :key="term.label" class="term-row">
+                            <span class="term-label">{{ term.label }}</span>
+                            <span class="term-ratio">{{ fmtRatio(term.ratioPercent) }}%</span>
+                            <span class="term-value">{{ fmtInt(term.amount) }}</span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="combo-toggle"
+                        :aria-expanded="expandedTalentIds.includes(card.skill.skillId)"
+                        @click="toggleTalentExpanded(card.skill.skillId)"
+                    >
+                        {{ expandedTalentIds.includes(card.skill.skillId) ? "▼" : "▶" }} 連擊 1~6 各位置傷害
+                    </button>
+                    <table v-if="expandedTalentIds.includes(card.skill.skillId)" class="stage-table">
+                        <thead>
+                            <tr>
+                                <th>連擊</th>
+                                <th>增傷</th>
+                                <th>傷害</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(pos, i) in card.positions" :key="i">
+                                <td>{{ i + 1 }}</td>
+                                <td>+{{ pos.bonus }}%</td>
+                                <td>{{ fmtInt(pos.damage) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="skill-footer">
+                        <span class="skill-cd">{{ card.skill.cooldownText }}</span>
+                    </div>
+                </div>
+                <div v-if="chargeCard" class="skill-card">
+                    <div class="skill-card-header">
+                        <span class="skill-name">
+                            <img width="24" height="24" :src="getSkillIcon(20011)" alt="突擊" />
+                            {{ chargeCard.name }}
+                        </span>
+                        <span class="skill-damage">{{ fmtInt(chargeCard.finalDamage) }}</span>
+                    </div>
+                    <div class="skill-terms">
+                        <div v-for="term in chargeCard.terms" :key="term.label" class="term-row">
+                            <span class="term-label">{{ term.label }}</span>
+                            <span class="term-ratio">{{ fmtRatio(term.ratioPercent) }}%</span>
+                            <span class="term-value">{{ fmtInt(term.amount) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -1677,6 +2440,17 @@ onMounted(() => {
     font-size: 1rem;
     color: var(--color-text-muted, #6b7280);
     font-weight: 400;
+}
+.quick-start-list {
+    margin: 0.25rem 0 0.6rem;
+    padding-left: 1.2rem;
+    line-height: 1.7;
+}
+.setting-tabs :deep(.el-tabs__item) {
+    padding: 0 10px;
+}
+.combo-best {
+    color: var(--color-accent-hover, #fcd34d);
 }
 .verify-alert {
     max-width: 1280px;
@@ -2035,15 +2809,46 @@ onMounted(() => {
     max-width: 1280px;
     margin: 1.5rem auto 0;
 }
+.skill-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
+}
 .skill-section-title {
     font-size: 1.2rem;
-    margin-bottom: 0.75rem;
+    margin: 0;
     color: var(--color-text-primary, #f9fafb);
+}
+.skill-section-hint {
+    margin-bottom: 0.75rem;
+}
+.skill-section-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin-bottom: 0.5rem;
 }
 .skill-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
+    margin-bottom: 1rem;
+}
+.combo-toggle {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0.1rem 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--color-accent-hover, #fcd34d);
+}
+.combo-toggle:focus-visible {
+    outline: 2px solid var(--color-accent-hover, #fcd34d);
+    outline-offset: 2px;
 }
 .skill-card {
     background: var(--color-bg-secondary, #1f2937);
