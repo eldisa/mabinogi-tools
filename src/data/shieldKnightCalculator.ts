@@ -269,7 +269,7 @@ export const HOLY_WATER_ABILITIES: HolyWaterAbility[] = [
     { id: "maxHp", label: "HP", max: 300 },
     { id: "defense", label: "防禦", max: 100 },
     { id: "magicDefense", label: "魔法防禦", max: 100 },
-    { id: "criticalDamage", label: "爆擊傷害 %", max: 4 },
+    { id: "criticalDamage", label: "暴擊傷害 %", max: 4 },
 ];
 
 export const HOLY_WATER_SLOTS = [
@@ -569,8 +569,6 @@ export interface MuliasRelicSettings {
     sacrificeRegenLevel: number;
     /** 犧牲之懲戒觸發省察的痕跡時，秘法技能傷害增加，Lv0~10 */
     reflectionTraceLevel: number;
-    /** 省察的痕跡是否已觸發（觸發中才套用加成） */
-    reflectionTraceActive: boolean;
     /** 省察的痕跡覆蓋率 0~100%：觸發中時，平均有多少比例的秘法技能施放吃得到加成 */
     reflectionTraceCoveragePercent: number;
     /** 審判一擊基礎傷害比例額外加成，Lv0~10 */
@@ -831,9 +829,8 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
 
     // ── 最終增加傷害（乘算） ──
     // 穆利亞斯的遺物：犧牲之懲戒觸發省察的痕跡時，秘法技能傷害（最終增加傷害）+0.5%/級，只乘在 7 個秘法技能
-    const reflectionTracePercent = settings.muliasRelic.reflectionTraceActive
-        ? settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL * coverageRatio(settings.muliasRelic.reflectionTraceCoveragePercent)
-        : 0;
+    const reflectionTracePercent =
+        settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL * coverageRatio(settings.muliasRelic.reflectionTraceCoveragePercent);
     // 死神烙印／憤怒衝擊／命運編織（倒吊人）／洞察之眼／幸運草標記都改由「破防」面板提供（所受傷害增加、近戰技能傷害），這裡只留戰鬥服務與強力威光
     const finalIncreaseDamageMultiplier =
         (1 + (settings.finalIncreaseDamage.combatServiceBuffActive ? 1 : 0) / 100) *
@@ -1667,6 +1664,8 @@ export interface DamageEfficiencyItem {
     equivalentMaxDamage: number | null;
     /** 1 單位使總輸出增加的百分比（舊版快照沒有這個欄位） */
     deltaPercent?: number | null;
+    /** 開關類項目目前已經是開啟的（畫面上不用再顯示「開了值多少」） */
+    active?: boolean;
 }
 
 const outputPercent = (delta: number, base: number): number | null => (base !== 0 ? (delta / base) * 100 : null);
@@ -1849,14 +1848,17 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             | "manualSmashEnhance";
         label: string;
         unit?: string;
+        /** 目前是否已經開啟；不知道（例如憤怒衝擊套裝在破防面板）就省略 */
+        isOn?: boolean;
         set: (on: boolean) => ShieldKnightSettings;
     }[] = [
-        { id: "erg", label: "聚能已滿", set: (on) => ({ ...settings, ergActive: on }) },
-        { id: "darkErg", label: "黑暗聚能已滿", set: (on) => ({ ...settings, darkErgActive: on }) },
-        { id: "raceSkill", label: "種族特殊技能（拉狄卡）", set: (on) => ({ ...settings, raceSkillActive: on }) },
+        { id: "erg", label: "聚能已滿", isOn: settings.ergActive, set: (on) => ({ ...settings, ergActive: on }) },
+        { id: "darkErg", label: "黑暗聚能已滿", isOn: settings.darkErgActive, set: (on) => ({ ...settings, darkErgActive: on }) },
+        { id: "raceSkill", label: "種族特殊技能（拉狄卡）", isOn: settings.raceSkillActive, set: (on) => ({ ...settings, raceSkillActive: on }) },
         {
             id: "transformation",
             label: "變身",
+            isOn: settings.dirtyMaxDamage.transformationActive,
             // 面板大傷已含變身加成：關閉時要從面板扣掉變身那一份，才是「沒變身」的狀態
             set: (on) => ({
                 ...settings,
@@ -1887,19 +1889,19 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
                 },
             }),
         },
-        { id: "statusSupport", label: "狀態支援（+12%）", set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, statusSupportActive: on } }) },
-        { id: "strengthGather", label: "力量團聚（+15%）", set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, strengthGatherActive: on } }) },
-        { id: "physicalPotion", label: "物理攻擊力增加藥水（×1.2）", set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, physicalPotionActive: on } }) },
-        { id: "manualWindmillBase30", label: "手動套裝：風車基礎倍率 +30%", set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
-        { id: "manualChargeEnhance", label: "手動套裝：突擊最終倍率 ×1.15", set: (on) => ({ ...settings, manualChargeEnhanceActive: on }) },
-        { id: "manualSmashEnhance", label: "手動套裝：重擊套裝 +15%", set: (on) => ({ ...settings, manualSmashEnhanceActive: on }) },
+        { id: "statusSupport", label: "狀態支援（+12%）", isOn: settings.attackCoefficient.statusSupportActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, statusSupportActive: on } }) },
+        { id: "strengthGather", label: "力量團聚（+15%）", isOn: settings.attackCoefficient.strengthGatherActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, strengthGatherActive: on } }) },
+        { id: "physicalPotion", label: "物理攻擊力增加藥水（×1.2）", isOn: settings.attackCoefficient.physicalPotionActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, physicalPotionActive: on } }) },
+        { id: "manualWindmillBase30", label: "風車基礎倍率 +30%", isOn: settings.manualWindmillBase30Active, set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
+        { id: "manualChargeEnhance", label: "突擊最終倍率 ×1.15", isOn: settings.manualChargeEnhanceActive, set: (on) => ({ ...settings, manualChargeEnhanceActive: on }) },
+        { id: "manualSmashEnhance", label: "重擊套裝 +15%", isOn: settings.manualSmashEnhanceActive, set: (on) => ({ ...settings, manualSmashEnhanceActive: on }) },
     ];
     const toggleResults = togglePairs.map((p) => {
         const onTotal = calculateTotalOutput(p.set(true), settings.skillUsageCounts);
         const offTotal = calculateTotalOutput(p.set(false), settings.skillUsageCounts);
         const delta = onTotal - offTotal;
         const equivalentMaxDamage = maxDamageDelta !== 0 ? delta / maxDamageDelta : null;
-        return { id: p.id, label: p.label, unit: p.unit ?? "開關", equivalentMaxDamage, deltaPercent: outputPercent(delta, offTotal) };
+        return { id: p.id, label: p.label, unit: p.unit ?? "開關", equivalentMaxDamage, deltaPercent: outputPercent(delta, offTotal), active: p.isOn };
     });
 
     // ── 防禦／最大生命值：+1 點對應多少大傷（跟其他槓桿一樣，全程套用暴擊率／暴擊傷害的期望值換算） ──
@@ -1923,7 +1925,8 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         {
             id: "muliasReflectionTrace",
             label: "省察的痕跡",
-            muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true, reflectionTraceLevel: settings.muliasRelic.reflectionTraceLevel + 1 },
+            // 省察的痕跡固定以覆蓋率 100% 比較每一級的價值
+            muliasRelic: { ...settings.muliasRelic, reflectionTraceCoveragePercent: 100, reflectionTraceLevel: settings.muliasRelic.reflectionTraceLevel + 1 },
         },
         {
             id: "muliasJudgementStrike",
@@ -1932,9 +1935,9 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         },
     ];
     const muliasResults = muliasProbes.map((p) => {
-        // 基準跟著探測的遺物設定走（省察的痕跡固定以觸發中比較，不受目前勾選影響）
+        // 基準跟著探測的遺物設定走（省察的痕跡固定以覆蓋率 100% 比較，不受目前覆蓋率影響）
         const base = p.id === "muliasReflectionTrace"
-            ? calculateTotalOutput({ ...settings, muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true } }, settings.skillUsageCounts)
+            ? calculateTotalOutput({ ...settings, muliasRelic: { ...settings.muliasRelic, reflectionTraceCoveragePercent: 100 } }, settings.skillUsageCounts)
             : baseTotal;
         const total = calculateTotalOutput({ ...settings, muliasRelic: p.muliasRelic }, settings.skillUsageCounts);
         const delta = total - base;
@@ -1969,7 +1972,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             current: settings.muliasRelic.reflectionTraceCoveragePercent ?? 100,
             withCoverage: (percent) => ({
                 ...settings,
-                muliasRelic: { ...settings.muliasRelic, reflectionTraceActive: true, reflectionTraceCoveragePercent: percent },
+                muliasRelic: { ...settings.muliasRelic, reflectionTraceCoveragePercent: percent },
             }),
         },
     ];
@@ -2191,14 +2194,14 @@ export function createDefaultSettings(): ShieldKnightSettings {
         reflectionReforgeLevel: 0,
         spiritWeaponAttackActive: true,
         attackCoefficient: {
-            physicalPotionActive: false,
+            physicalPotionActive: true,
             tripleEnchantActive: false,
-            statusSupportActive: false,
+            statusSupportActive: true,
             strengthGatherActive: false,
-            battlefieldActive: false,
+            battlefieldActive: true,
             battlefieldPercent: 0,
             battleCryActive: false,
-            battleCryReforgeLevel: 0,
+            battleCryReforgeLevel: 20,
         },
 
         criticalRate: {
@@ -2236,7 +2239,6 @@ export function createDefaultSettings(): ShieldKnightSettings {
         muliasRelic: {
             sacrificeRegenLevel: 0,
             reflectionTraceLevel: 0,
-            reflectionTraceActive: true,
             reflectionTraceCoveragePercent: 100,
             judgementStrikeLevel: 0,
         },

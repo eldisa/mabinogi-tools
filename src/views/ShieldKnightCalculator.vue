@@ -239,9 +239,9 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
         "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
     muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；這裡固定以「省察的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
-    manualWindmillBase30: "「裝備」分頁的手動套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
-    manualChargeEnhance: "突擊最終倍率 ×1.15。選擇神聖／兇猛哨兵／貓盾／靈魂解放者系列盾牌時已內建，這時開啟或關閉手動勾選都沒有差別（效益為 0）；沒選盾牌時才看得出價值。這裡顯示開啟 vs 關閉的整體價值，3 項各自獨立測試（不是同時開 3 個疊加）。",
-    manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualWindmillBase30: "「裝備」分頁的套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualChargeEnhance: "突擊最終倍率 ×1.15。選擇神聖／兇猛哨兵／貓盾／靈魂解放者系列盾牌時已內建，這時開啟或關閉勾選都沒有差別（效益為 0）；沒選盾牌時才看得出價值。這裡顯示開啟 vs 關閉的整體價值，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualSmashEnhance: "「裝備」分頁的套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
     darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
     battlefield: "戰場的序曲（攻擊力加成%）：以目前戰場% 再 +1% 計算，戰場%、狀態支援、力量團聚都會乘上攻擊係數，在「攻擊力」分頁設定。",
@@ -263,22 +263,26 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "技能倍率／細工／銳利", ids: ["smashReforge", "windmillReforge", "chargeReforge", "sharpLevel"] },
     { label: "生存屬性", ids: ["defense", "maxHp"] },
     { label: "穆利亞斯的遺物", ids: ["muliasSacrificeRegen", "muliasReflectionTrace", "muliasJudgementStrike"] },
-    { label: "套裝效果（裝備分頁的手動套裝標記）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
+    { label: "套裝效果（裝備分頁）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
     { label: "攻擊係數（戰場序曲／狀態支援／力量團聚／藥水）", ids: ["battlefield", "statusSupport", "strengthGather", "physicalPotion"] },
     { label: "buff 覆蓋率", ids: ["rageCoverage", "reflectionCoverage"] },
     { label: "聚能／種族技能／變身／套裝開關", ids: ["erg", "darkErg", "raceSkill", "transformation", "rageSet"] },
 ];
+/** 傷害效益畫面不顯示：已經開啟的開關（再開沒有意義）、等同大傷為 0 的項目 */
+const visibleEfficiencyItems = computed(() =>
+    efficiencyItems.value.filter((i) => !i.active && !(i.equivalentMaxDamage !== null && Math.abs(i.equivalentMaxDamage) < 0.005)),
+);
 const efficiencySortByGain = ref(false);
 const efficiencyTopN = ref(0);
 const efficiencyGroups = computed(() => {
     if (efficiencySortByGain.value) {
-        const sorted = efficiencyItems.value.filter((i) => i.deltaPercent != null).sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0));
+        const sorted = visibleEfficiencyItems.value.filter((i) => i.deltaPercent != null).sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0));
         const topN = efficiencyTopN.value || sorted.length;
         return [{ label: efficiencyTopN.value ? `依總輸出增幅排序（前 ${topN} 名）` : "依總輸出增幅排序", items: sorted.slice(0, topN) }];
     }
     return EFFICIENCY_CATEGORIES.map((c) => ({
         label: c.label,
-        items: c.ids.map((id) => efficiencyItems.value.find((i) => i.id === id)).filter((i): i is (typeof efficiencyItems.value)[number] => !!i),
+        items: c.ids.map((id) => visibleEfficiencyItems.value.find((i) => i.id === id)).filter((i): i is (typeof efficiencyItems.value)[number] => !!i),
     }));
 });
 
@@ -604,6 +608,12 @@ function buildMergedSettings(data: Partial<ShieldKnightSettings> | undefined): S
     };
     merged.skillUsageCounts = { ...defaults.skillUsageCounts, ...(data.skillUsageCounts ?? {}) };
     merged.muliasRelic = { ...defaults.muliasRelic, ...(data.muliasRelic ?? {}) };
+    // 舊版有「省察的痕跡是否觸發中」勾選：沒勾且沒有覆蓋率的舊存檔，轉成覆蓋率 0%
+    const legacyRelic = data.muliasRelic as { reflectionTraceActive?: boolean; reflectionTraceCoveragePercent?: number } | undefined;
+    if (legacyRelic?.reflectionTraceActive === false && legacyRelic.reflectionTraceCoveragePercent === undefined) {
+        merged.muliasRelic.reflectionTraceCoveragePercent = 0;
+    }
+    delete (merged.muliasRelic as { reflectionTraceActive?: boolean }).reflectionTraceActive;
     merged.armorBreak = { ...defaults.armorBreak, ...(data.armorBreak ?? {}) };
     // 舊版省察細工分頭／身體兩個欄位，只取最高轉成單一等級
     const legacy = data as { reflectionReforgeLevel1?: number; reflectionReforgeLevel2?: number };
@@ -1115,7 +1125,8 @@ onMounted(() => {
                                 影響省察的痕跡的持續時間，只出在頭和身體（一般建議頭），共 4 種詞條取最高的那個等級填入。持續時間 = 15 + 等級 × 0.15 秒，目前 {{ settings.reflectionReforgeLevel }} 級；用於「技能設定」分頁的覆蓋率估算。
                             </div>
 
-                            <div class="field-section-label">套裝效果（手動；風車/猛擊套裝與武器專屬增傷由武器／盾牌自動帶出）</div>
+                            <div class="field-section-label">套裝效果（風車/猛擊套裝與武器專屬增傷由武器／盾牌自動帶出）</div>
+                            <div class="field-hint">備註：憤怒衝擊套裝（近戰技能傷害 +2%）在「破防」分頁設定。</div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualWindmillBase30Active" />
                                 <span class="switch-label">風車基礎倍率 +30%（莊嚴騎士）</span>
@@ -1580,8 +1591,7 @@ onMounted(() => {
                                 <el-select v-model="settings.muliasRelic.reflectionTraceLevel" size="small" class="field-select-sm">
                                     <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
-                                <el-checkbox v-model="settings.muliasRelic.reflectionTraceActive" />
-                                <span class="switch-label">犧牲懲戒觸發省察的痕跡中（+{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃）</span>
+                                <span class="switch-label">犧牲懲戒觸發省察的痕跡時 +{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃；實際吃到的比例看「技能設定」分頁的省察覆蓋率（預設 100%，填 0% 等於沒觸發）</span>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">審判重擊基礎傷害</label>
