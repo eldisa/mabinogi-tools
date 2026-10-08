@@ -347,6 +347,9 @@ export function getReforgeLevelMax(slotKey: ReforgeSlotKey, weaponType: WeaponTy
     return 4;
 }
 
+/** 省察的痕跡細工等級選單：0~25，21~25 突破限定（兩個部位共用） */
+export const REFLECTION_REFORGE_LEVEL_OPTIONS: ReforgeLevelOption[] = buildReforgeLevelOptions(25, 21);
+
 /** [戰場上的狂吼] 樂器演奏細工等級選單：0~25，21~25 突破限定 */
 export const BATTLE_CRY_REFORGE_LEVEL_OPTIONS: ReforgeLevelOption[] = buildReforgeLevelOptions(25, 21);
 
@@ -1970,6 +1973,9 @@ export interface ShieldKnightSettings {
     dirtyMaxDamage: DirtyMaxDamageSettings;
     /** 變身細工等級 0~33（27~33 突破限定） */
     transformationReforgeLevel: number;
+    /** 省察的痕跡細工等級 0~25（21~25 突破限定）：兩個裝備部位都可能有，持續時間只取較高的那個 */
+    reflectionReforgeLevel1: number;
+    reflectionReforgeLevel2: number;
     spiritWeaponAttackActive: boolean;
     attackCoefficient: AttackCoefficientState;
 
@@ -2048,6 +2054,8 @@ export function createDefaultSettings(): ShieldKnightSettings {
             panelAlreadyIncludesDirty: false,
         },
         transformationReforgeLevel: 0,
+        reflectionReforgeLevel1: 0,
+        reflectionReforgeLevel2: 0,
         spiritWeaponAttackActive: true,
         attackCoefficient: {
             physicalPotionActive: false,

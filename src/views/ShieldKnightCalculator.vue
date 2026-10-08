@@ -17,6 +17,7 @@ import {
     getReforgeLevelMax,
     BATTLE_CRY_REFORGE_LEVEL_OPTIONS,
     TRANSFORMATION_REFORGE_LEVEL_OPTIONS,
+    REFLECTION_REFORGE_LEVEL_OPTIONS,
     CHARACTER_BUILDS,
     getRaceSkillInfo,
     MAGIC_CIRCLE_OPTIONS,
@@ -427,8 +428,9 @@ const rageGapSeconds = ref(RAGE_IMPACT_BASE_COOLDOWN_SECONDS - RAGE_IMPACT_DURAT
 const rageCoverageEstimate = computed(() => coverageFromGap(RAGE_IMPACT_DURATION_SECONDS, rageGapSeconds.value));
 const REFLECTION_TRACE_BASE_SECONDS = 15;
 const REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL = 0.15;
-const reflectionReforgeLevel = ref(0);
 const reflectionGapSeconds = ref(0);
+/** 兩個部位的細工等級只取最高 */
+const reflectionReforgeLevel = computed(() => Math.max(settings.reflectionReforgeLevel1, settings.reflectionReforgeLevel2));
 const reflectionDurationSeconds = computed(() => REFLECTION_TRACE_BASE_SECONDS + reflectionReforgeLevel.value * REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL);
 const reflectionCoverageEstimate = computed(() => coverageFromGap(reflectionDurationSeconds.value, reflectionGapSeconds.value));
 const showPresetPanel = ref(false);
@@ -1020,6 +1022,21 @@ onMounted(() => {
                                 武器選單手斧：0~13（≥11 突破限定）；武器選雙手劍：0~25（≥21 突破限定）；飾品：0~4（4 為突破限定）。
                             </div>
 
+                            <div class="field-section-label">省察的痕跡細工（兩個部位，持續時間只取較高的）</div>
+                            <div class="field-row">
+                                <label class="field-label">部位 1</label>
+                                <el-select v-model="settings.reflectionReforgeLevel1" size="small" class="reforge-level-select">
+                                    <el-option v-for="o in REFLECTION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <label class="field-label">部位 2</label>
+                                <el-select v-model="settings.reflectionReforgeLevel2" size="small" class="reforge-level-select">
+                                    <el-option v-for="o in REFLECTION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                            </div>
+                            <div class="field-hint">
+                                省察的痕跡持續時間 = 15 + 最高細工等級 × 0.15 秒，目前取 {{ reflectionReforgeLevel }} 級；用於「很貴的項目」分頁的覆蓋率估算。
+                            </div>
+
                             <div class="field-section-label">套裝效果（手動；風車/猛擊套裝與武器專屬增傷由武器／盾牌自動帶出）</div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualWindmillBase30Active" />
@@ -1465,11 +1482,9 @@ onMounted(() => {
                                 <span class="switch-label">%（觸發中時，平均有多少比例的秘法技能施放吃得到加成，預設 100%）</span>
                             </div>
                             <div class="field-hint">
-                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（目前 {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
+                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（細工等級在「裝備」分頁填，目前 {{ reflectionReforgeLevel }} 級 → {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
                             </div>
                             <div class="field-row">
-                                <label class="field-label">細工等級</label>
-                                <el-input-number v-model="reflectionReforgeLevel" :min="0" :max="25" size="small" class="field-select-sm" />
                                 <label class="field-label">平均空窗（秒）</label>
                                 <el-input-number v-model="reflectionGapSeconds" :min="0" :step="1" size="small" class="field-select-sm" />
                             </div>
