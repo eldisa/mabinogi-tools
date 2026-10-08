@@ -1356,6 +1356,29 @@ export function calculateSmashHit(finalStats: FinalStats, smashRatio: number, sm
     };
 }
 
+/**
+ * 突擊（顯示用）：不在 10 個技能內（不進總輸出、沒有使用次數），只在技能傷害區的才能技能卡片顯示，
+ * 吃風車/突擊餵給盾擊衝鋒的同一個「突擊傷害」，不吃連續技卡片。
+ */
+export function calculateChargeHit(settings: ShieldKnightSettings, critMode: CritDisplayMode = "expected") {
+    const calcResult = calculateAll(settings);
+    const { finalStats, abilities } = calcResult;
+    const criticalDamagePercent = critMode === "noCrit" ? 100 : critMode === "crit" ? calcResult.criticalDamagePercent : calcResult.criticalDamageExpected;
+    const finalDamage = Math.round(
+        calculateTalentSkillDamage({
+            finalAttackPower: finalStats.maxDamage,
+            skillRatioPercent: abilities.chargeRatio,
+            criticalDamagePercent,
+            generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+            talentExtraDamagePercent: 0,
+            talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
+            finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
+            protectionReduction: calcResult.protectionReduction,
+        }),
+    );
+    return { name: "突擊", terms: [makeTerm("基礎傷害", abilities.chargeRatio, finalStats.maxDamage)], finalDamage };
+}
+
 /** 風車（顯示用）：與鐵壁猛擊/審判一擊/光輝之審判吃的「風車傷害」才能技能最終傷害同一個基礎倍率 */
 export function calculateWindmillHit(finalStats: FinalStats, windmillRatio: number, windmillDamage: number): SkillDamageResult {
     const terms = [makeTerm("基礎傷害", windmillRatio, finalStats.maxDamage)];
@@ -2153,6 +2176,8 @@ export interface ShieldKnightSettings {
     showSmashSkill: boolean;
     showWindmillSkill: boolean;
     showMengJiSkill: boolean;
+    /** 技能傷害區是否顯示突擊卡片（顯示用，不進總輸出） */
+    showChargeSkill: boolean;
     mengJiStack: 1 | 2 | 3 | 4 | 5;
     /** 技能使用次數（用於「總輸出」／「裝備比較」／「傷害效益」計算） */
     skillUsageCounts: SkillUsageCounts;
@@ -2271,6 +2296,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         showSmashSkill: true,
         showWindmillSkill: true,
         showMengJiSkill: true,
+        showChargeSkill: true,
         mengJiStack: 1,
         skillUsageCounts: createDefaultSkillUsageCounts(),
     };

@@ -44,6 +44,7 @@ import {
     MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL,
     ALL_SKILL_META,
     calculateSkillsForSettings,
+    calculateChargeHit,
     calculateTotalOutput,
     calculateDamageEfficiency,
     calculateHolyWaterComparison,
@@ -219,6 +220,8 @@ const talentCards = computed(() => {
         ];
     });
 });
+/** 突擊卡片：顯示用，不吃連擊卡，不進總輸出 */
+const chargeCard = computed(() => (settings.showChargeSkill ? calculateChargeHit(settings, critDisplayMode.value) : null));
 const expandedTalentIds = ref<string[]>([]);
 function toggleTalentExpanded(id: string) {
     const i = expandedTalentIds.value.indexOf(id);
@@ -1456,6 +1459,8 @@ onMounted(() => {
                                 <span class="switch-label">風車</span>
                                 <el-checkbox v-model="settings.showMengJiSkill" />
                                 <span class="switch-label">猛擊</span>
+                                <el-checkbox v-model="settings.showChargeSkill" />
+                                <span class="switch-label">突擊（只顯示傷害，不進總輸出）</span>
                             </div>
                             <div class="field-row" v-if="settings.showMengJiSkill">
                                 <label class="field-label">猛擊層數</label>
@@ -1476,6 +1481,9 @@ onMounted(() => {
                                 <el-select v-model="settings.magicCircleIds" multiple :multiple-limit="MAGIC_CIRCLE_LIMIT" size="small" class="field-select" style="width: 100%">
                                     <el-option v-for="c in MAGIC_CIRCLE_OPTIONS" :key="c.id" :value="c.id" :label="c.label" />
                                 </el-select>
+                            </div>
+                            <div class="field-hint">
+                                備註：憤怒衝擊魔法陣（近戰技能傷害 +0.3%／級，最高 +3%）的等級在「破防」分頁設定，但它同樣佔用這 {{ MAGIC_CIRCLE_LIMIT }} 個魔法陣欄位，選了它就要少選上面一個。
                             </div>
 
                             <div class="field-section-label">狀態</div>
@@ -2328,7 +2336,7 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-            <div v-if="showTalentCards && talentCards.length" class="skill-grid">
+            <div v-if="showTalentCards && (talentCards.length || chargeCard)" class="skill-grid">
                 <div v-for="card in talentCards" :key="card.skill.skillId" class="skill-card">
                     <div class="skill-card-header">
                         <span class="skill-name">
@@ -2379,6 +2387,23 @@ onMounted(() => {
 
                     <div class="skill-footer">
                         <span class="skill-cd">{{ card.skill.cooldownText }}</span>
+                    </div>
+                </div>
+                <div v-if="chargeCard" class="skill-card">
+                    <div class="skill-card-header">
+                        <span class="skill-name">
+                            <img width="24" height="24" :src="getSkillIcon(20011)" alt="突擊" />
+                            {{ chargeCard.name }}
+                        </span>
+                        <span class="skill-damage">{{ fmtInt(chargeCard.finalDamage) }}</span>
+                    </div>
+                    <div class="field-hint">不吃連續技卡片；盾擊衝鋒借用的就是這個突擊傷害</div>
+                    <div class="skill-terms">
+                        <div v-for="term in chargeCard.terms" :key="term.label" class="term-row">
+                            <span class="term-label">{{ term.label }}</span>
+                            <span class="term-ratio">{{ fmtRatio(term.ratioPercent) }}%</span>
+                            <span class="term-value">{{ fmtInt(term.amount) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
