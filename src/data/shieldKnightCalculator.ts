@@ -199,6 +199,18 @@ export function specialReformMaxStage(weaponId: string): number {
     return SPECIAL_REFORM_STAGE8_WEAPON_IDS.includes(weaponId) ? 8 : 7;
 }
 
+/** 一把武器只能做 R 或 S 其中一種特殊改造；兩個欄位都有值時以 S 為準（S 預設 0，有填代表刻意選擇） */
+export function resolveSpecialReform(settings: Pick<ShieldKnightSettings, "weaponId" | "weaponSpecialReformSStage" | "criticalDamage">): {
+    maxStage: number;
+    rStage: number;
+    sStage: number;
+} {
+    const maxStage = specialReformMaxStage(settings.weaponId);
+    const sStage = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, maxStage);
+    const rStage = sStage > 0 ? 0 : normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, maxStage);
+    return { maxStage, rStage, sStage };
+}
+
 /** 舊存檔的階段是 "none"／"r6"／"r7"／"r8" 字串，統一轉成 0~maxStage 的整數 */
 export function normalizeSpecialReformStage(value: unknown, maxStage: number): number {
     const n = typeof value === "number" ? value : typeof value === "string" ? parseInt(value.replace(/\D/g, ""), 10) || 0 : 0;
@@ -791,9 +803,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         : 1;
 
     // ── 暴擊傷害% ──
-    const reformMaxStage = specialReformMaxStage(settings.weaponId);
-    const reformRStage = normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, reformMaxStage);
-    const reformSStage = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, reformMaxStage);
+    const { rStage: reformRStage, sStage: reformSStage } = resolveSpecialReform(settings);
     const criticalDamagePercent = calculateCriticalDamagePercent({
         ...settings.criticalDamage,
         weaponSpecialReforgeCritPercent: specialReformRCrit(reformRStage),
@@ -2014,39 +2024,36 @@ export interface SpecialReformRow {
 export function calculateSpecialReformTable(settings: ShieldKnightSettings): SpecialReformRow[] {
     const { baseLevers, compute, baseTotal } = buildLeverContext(settings);
     const maxDamageDelta = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + 1 }) - baseTotal;
-    const maxStage = specialReformMaxStage(settings.weaponId);
-    const curR = normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, maxStage);
-    const curS = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, maxStage);
+    const { maxStage, rStage: curR, sStage: curS } = resolveSpecialReform(settings);
     const coefficientRatio = settings.panelMaxDamage > 0 ? baseLevers.maxDamage / settings.panelMaxDamage : 1;
 
-    const noR = { ...baseLevers, criticalDamagePercent: baseLevers.criticalDamagePercent - specialReformRCrit(curR) };
-    const noRTotal = compute(noR);
-    // 額外傷害那一桶（含目前的 S）扣掉目前的 S，就是「沒有 S」的基準
-    const generalPercentWithS = calculateGeneralExtraPercent({
+    // 基準 = 完全沒有特殊改造：把目前選的 R／S 都拿掉（R 與 S 只能擇一，所以兩欄各自和「沒改造」比）
+    const generalPercentWithCurrent = calculateGeneralExtraPercent({
         ...settings.extraDamage,
         weaponExtraDamagePercent: 0,
         generalBonusPercent: specialReformSExtra(curS),
     });
-    const generalPercentWithoutS = generalPercentWithS - specialReformSExtra(curS);
-    const noS = {
+    const generalPercentBase = generalPercentWithCurrent - specialReformSExtra(curS);
+    const none = {
         ...baseLevers,
+        criticalDamagePercent: baseLevers.criticalDamagePercent - specialReformRCrit(curR),
         maxDamage: baseLevers.maxDamage - specialReformSMaxDamage(curS) * coefficientRatio,
-        generalExtraDamageMultiplier: (baseLevers.generalExtraDamageMultiplier * (1 + generalPercentWithoutS / 100)) / (1 + generalPercentWithS / 100),
+        generalExtraDamageMultiplier: (baseLevers.generalExtraDamageMultiplier * (1 + generalPercentBase / 100)) / (1 + generalPercentWithCurrent / 100),
     };
-    const noSTotal = compute(noS);
+    const noneTotal = compute(none);
 
     return Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => {
         const stage = i + 1;
         const rCrit = specialReformRCrit(stage);
         const sExtra = specialReformSExtra(stage);
         const sMax = specialReformSMaxDamage(stage);
-        const rDelta = compute({ ...noR, criticalDamagePercent: noR.criticalDamagePercent + rCrit }) - noRTotal;
+        const rDelta = compute({ ...none, criticalDamagePercent: none.criticalDamagePercent + rCrit }) - noneTotal;
         const sDelta =
             compute({
-                ...noS,
-                maxDamage: noS.maxDamage + sMax * coefficientRatio,
-                generalExtraDamageMultiplier: (noS.generalExtraDamageMultiplier * (1 + (generalPercentWithoutS + sExtra) / 100)) / (1 + generalPercentWithoutS / 100),
-            }) - noSTotal;
+                ...none,
+                maxDamage: none.maxDamage + sMax * coefficientRatio,
+                generalExtraDamageMultiplier: (none.generalExtraDamageMultiplier * (1 + (generalPercentBase + sExtra) / 100)) / (1 + generalPercentBase / 100),
+            }) - noneTotal;
         return {
             stage,
             available: stage <= maxStage,
@@ -2055,8 +2062,8 @@ export function calculateSpecialReformTable(settings: ShieldKnightSettings): Spe
             sMaxDamage: sMax,
             rEquivalentMaxDamage: maxDamageDelta !== 0 ? rDelta / maxDamageDelta : null,
             sEquivalentMaxDamage: maxDamageDelta !== 0 ? sDelta / maxDamageDelta : null,
-            rDeltaPercent: outputPercent(rDelta, noRTotal),
-            sDeltaPercent: outputPercent(sDelta, noSTotal),
+            rDeltaPercent: outputPercent(rDelta, noneTotal),
+            sDeltaPercent: outputPercent(sDelta, noneTotal),
         };
     });
 }

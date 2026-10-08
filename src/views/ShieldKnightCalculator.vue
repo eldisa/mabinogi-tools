@@ -32,7 +32,7 @@ import {
     TRANSFORMATION_OPTIONS,
     SPECIAL_REFORM_STAGE_COUNT,
     specialReformMaxStage,
-    normalizeSpecialReformStage,
+    resolveSpecialReform,
     specialReformRCrit,
     specialReformSExtra,
     calculateSpecialReformTable,
@@ -338,13 +338,30 @@ const topLevers = computed(() =>
 // ── 武器特殊改造（R 暴擊傷害／S 追加傷害，第 8 階只有靈魂解放者／日月劍） ──
 const reformMaxStage = computed(() => specialReformMaxStage(settings.weaponId));
 const reformStageList = computed(() => Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => i + 1).filter((n) => n <= reformMaxStage.value));
-const reformRStage = computed(() => normalizeSpecialReformStage(settings.criticalDamage.weaponSpecialReforgeTier, reformMaxStage.value));
-// 舊存檔的字串階段（"r7"）與超出該武器上限的階段，統一轉成合法整數
+const reformResolved = computed(() => resolveSpecialReform(settings));
+const reformRStage = computed(() => reformResolved.value.rStage);
+// 特殊改造 R／S 只能擇一：用「種類 + 階段」兩個控制項，寫回原本的兩個欄位（另一個歸零）
+const reformKind = computed<"none" | "R" | "S">({
+    get: () => (reformResolved.value.sStage > 0 ? "S" : reformResolved.value.rStage > 0 ? "R" : "none"),
+    set: (kind) => {
+        const stage = Math.max(reformResolved.value.rStage, reformResolved.value.sStage) || Math.min(7, reformMaxStage.value);
+        settings.criticalDamage.weaponSpecialReforgeTier = kind === "R" ? stage : 0;
+        settings.weaponSpecialReformSStage = kind === "S" ? stage : 0;
+    },
+});
+const reformStage = computed<number>({
+    get: () => Math.max(reformResolved.value.rStage, reformResolved.value.sStage),
+    set: (n) => {
+        if (reformKind.value === "S") settings.weaponSpecialReformSStage = n;
+        else settings.criticalDamage.weaponSpecialReforgeTier = n;
+    },
+});
+// 舊存檔的字串階段（"r7"）、同時填了 R 與 S、或超出該武器上限的階段，統一轉成合法值
 watch(
     [() => settings.weaponId, () => settings.criticalDamage.weaponSpecialReforgeTier, () => settings.weaponSpecialReformSStage],
     () => {
-        settings.criticalDamage.weaponSpecialReforgeTier = reformRStage.value;
-        settings.weaponSpecialReformSStage = normalizeSpecialReformStage(settings.weaponSpecialReformSStage, reformMaxStage.value);
+        settings.criticalDamage.weaponSpecialReforgeTier = reformResolved.value.rStage;
+        settings.weaponSpecialReformSStage = reformResolved.value.sStage;
     },
     { immediate: true },
 );
@@ -1318,21 +1335,26 @@ onMounted(() => {
                                 <span class="switch-label">精靈武器（+15%）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">武器特殊改造 R</label>
-                                <el-select v-model="settings.criticalDamage.weaponSpecialReforgeTier" size="small" class="field-select">
-                                    <el-option :value="0" label="無" />
-                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`R${n}（暴擊傷害 +${specialReformRCrit(n)}%）`" />
-                                </el-select>
+                                <label class="field-label">武器特殊改造</label>
+                                <el-radio-group v-model="reformKind" size="small">
+                                    <el-radio-button value="none">無</el-radio-button>
+                                    <el-radio-button value="R">R（暴擊傷害）</el-radio-button>
+                                    <el-radio-button value="S">S（追加傷害）</el-radio-button>
+                                </el-radio-group>
                             </div>
-                            <div class="field-row">
-                                <label class="field-label">武器特殊改造 S</label>
-                                <el-select v-model="settings.weaponSpecialReformSStage" size="small" class="field-select">
-                                    <el-option :value="0" label="無" />
-                                    <el-option v-for="n in reformStageList" :key="n" :value="n" :label="`S${n}（追加傷害 +${specialReformSExtra(n)}%）`" />
+                            <div class="field-row" v-if="reformKind !== 'none'">
+                                <label class="field-label">階段</label>
+                                <el-select v-model="reformStage" size="small" class="field-select">
+                                    <el-option
+                                        v-for="n in reformStageList"
+                                        :key="n"
+                                        :value="n"
+                                        :label="reformKind === 'S' ? `S${n}（追加傷害 +${specialReformSExtra(n)}%）` : `R${n}（暴擊傷害 +${specialReformRCrit(n)}%）`"
+                                    />
                                 </el-select>
                             </div>
                             <div class="field-hint">
-                                單手斧在 9/17 上修後與雙手劍數值相同，第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化。S 的最大傷害已含在面板最大傷害，這裡只計追加傷害 %，算進通用額外傷害的「額外傷害」那一桶（和武器本身的額外傷害不同）。
+                                R 與 S 只能擇一。單手斧在 9/17 上修後與雙手劍數值相同，第 8 階只有靈魂解放者／日月劍（穹之奏鳴曲）才能強化。S 的最大傷害已含在面板最大傷害，這裡只計追加傷害 %，算進通用額外傷害的「額外傷害」那一桶（和武器本身的額外傷害不同）。
                             </div>
                             <div class="field-row">
                                 <label class="field-label">暴擊傷害套裝</label>
@@ -1772,7 +1794,7 @@ onMounted(() => {
                                 </table>
                             </div>
 
-                            <div class="field-section-label">武器特殊改造效益（各階段相當多少大傷，相對於完全沒有該改造）</div>
+                            <div class="field-section-label">武器特殊改造效益（R／S 只能擇一，各階段相當多少大傷，相對於完全沒有特殊改造）</div>
                             <div v-if="!hasAnyUsageCount" class="field-hint">請先在「技能使用次數」分頁設定至少一個技能的使用次數。</div>
                             <div v-else class="equip-table-wrap">
                                 <table class="equip-table">
