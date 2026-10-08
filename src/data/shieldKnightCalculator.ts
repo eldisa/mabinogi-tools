@@ -2107,9 +2107,8 @@ export interface ShieldKnightSettings {
     dirtyMaxDamage: DirtyMaxDamageSettings;
     /** 變身細工等級 0~33（27~33 突破限定） */
     transformationReforgeLevel: number;
-    /** 省察的痕跡細工等級 0~25（21~25 突破限定）：兩個裝備部位都可能有，持續時間只取較高的那個 */
-    reflectionReforgeLevel1: number;
-    reflectionReforgeLevel2: number;
+    /** 細工-XX魔法盾持續時間 等級 0~25（21~25 突破限定）：共 4 種詞條、只出在頭和身體，只取最高，影響省察的痕跡持續時間 */
+    reflectionReforgeLevel: number;
     spiritWeaponAttackActive: boolean;
     attackCoefficient: AttackCoefficientState;
 
@@ -2189,8 +2188,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
             panelAlreadyIncludesDirty: false,
         },
         transformationReforgeLevel: 0,
-        reflectionReforgeLevel1: 0,
-        reflectionReforgeLevel2: 0,
+        reflectionReforgeLevel: 0,
         spiritWeaponAttackActive: true,
         attackCoefficient: {
             physicalPotionActive: false,

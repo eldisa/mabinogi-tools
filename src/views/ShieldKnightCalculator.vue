@@ -505,9 +505,7 @@ const rageCoverageEstimate = computed(() => coverageFromGap(RAGE_IMPACT_DURATION
 const REFLECTION_TRACE_BASE_SECONDS = 15;
 const REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL = 0.15;
 const reflectionGapSeconds = ref(0);
-/** 兩個部位的細工等級只取最高 */
-const reflectionReforgeLevel = computed(() => Math.max(settings.reflectionReforgeLevel1, settings.reflectionReforgeLevel2));
-const reflectionDurationSeconds = computed(() => REFLECTION_TRACE_BASE_SECONDS + reflectionReforgeLevel.value * REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL);
+const reflectionDurationSeconds = computed(() => REFLECTION_TRACE_BASE_SECONDS + settings.reflectionReforgeLevel * REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL);
 const reflectionCoverageEstimate = computed(() => coverageFromGap(reflectionDurationSeconds.value, reflectionGapSeconds.value));
 const showPresetPanel = ref(false);
 const showDebugPanel = ref(false);
@@ -607,6 +605,13 @@ function buildMergedSettings(data: Partial<ShieldKnightSettings> | undefined): S
     merged.skillUsageCounts = { ...defaults.skillUsageCounts, ...(data.skillUsageCounts ?? {}) };
     merged.muliasRelic = { ...defaults.muliasRelic, ...(data.muliasRelic ?? {}) };
     merged.armorBreak = { ...defaults.armorBreak, ...(data.armorBreak ?? {}) };
+    // 舊版省察細工分頭／身體兩個欄位，只取最高轉成單一等級
+    const legacy = data as { reflectionReforgeLevel1?: number; reflectionReforgeLevel2?: number };
+    if (data.reflectionReforgeLevel === undefined && (legacy.reflectionReforgeLevel1 || legacy.reflectionReforgeLevel2)) {
+        merged.reflectionReforgeLevel = Math.max(legacy.reflectionReforgeLevel1 ?? 0, legacy.reflectionReforgeLevel2 ?? 0);
+    }
+    delete (merged as Partial<typeof legacy>).reflectionReforgeLevel1;
+    delete (merged as Partial<typeof legacy>).reflectionReforgeLevel2;
     return merged;
 }
 
@@ -1099,19 +1104,15 @@ onMounted(() => {
                                 武器選單手斧：0~13（≥11 突破限定）；武器選雙手劍：0~25（≥21 突破限定）；飾品：0~4（4 為突破限定）。
                             </div>
 
-                            <div class="field-section-label">省察的痕跡細工（頭／身體的「XX魔法盾持續時間」詞條，共 4 種，只取最高）</div>
+                            <div class="field-section-label">細工-XX魔法盾持續時間（共 4 種，只取最高）</div>
                             <div class="field-row">
-                                <label class="field-label">頭</label>
-                                <el-select v-model="settings.reflectionReforgeLevel1" size="small" class="reforge-level-select">
-                                    <el-option v-for="o in REFLECTION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <label class="field-label">身體</label>
-                                <el-select v-model="settings.reflectionReforgeLevel2" size="small" class="reforge-level-select">
+                                <label class="field-label">等級</label>
+                                <el-select v-model="settings.reflectionReforgeLevel" size="small" class="reforge-level-select">
                                     <el-option v-for="o in REFLECTION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
                             </div>
                             <div class="field-hint">
-                                省察的痕跡持續時間 = 15 + 最高細工等級 × 0.15 秒，目前取 {{ reflectionReforgeLevel }} 級；用於「很貴的項目」分頁的覆蓋率估算。
+                                影響省察的痕跡的持續時間，只出在頭和身體（一般建議頭），共 4 種詞條取最高的那個等級填入。持續時間 = 15 + 等級 × 0.15 秒，目前 {{ settings.reflectionReforgeLevel }} 級；用於「技能設定」分頁的覆蓋率估算。
                             </div>
 
                             <div class="field-section-label">套裝效果（手動；風車/猛擊套裝與武器專屬增傷由武器／盾牌自動帶出）</div>
@@ -1482,7 +1483,7 @@ onMounted(() => {
                                 <span class="switch-label">%（觸發中時，平均有多少比例的秘法技能施放吃得到加成，預設 100%）</span>
                             </div>
                             <div class="field-hint">
-                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（細工等級在「裝備」分頁填，目前 {{ reflectionReforgeLevel }} 級 → {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
+                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（細工等級在「裝備」分頁填，目前 {{ settings.reflectionReforgeLevel }} 級 → {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
                             </div>
                             <div class="field-row">
                                 <label class="field-label">平均空窗（秒）</label>
