@@ -240,7 +240,7 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；這裡固定以「省察的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
     manualWindmillBase30: "「裝備」分頁的手動套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
-    manualChargeEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    manualChargeEnhance: "突擊最終倍率 ×1.15。選擇神聖／兇猛哨兵／貓盾／靈魂解放者系列盾牌時已內建，這時開啟或關閉手動勾選都沒有差別（效益為 0）；沒選盾牌時才看得出價值。這裡顯示開啟 vs 關閉的整體價值，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualSmashEnhance: "「裝備」分頁的手動套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
     darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
@@ -1121,7 +1121,7 @@ onMounted(() => {
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualChargeEnhanceActive" />
-                                <span class="switch-label">突擊最終倍率 +15%</span>
+                                <span class="switch-label">突擊最終倍率 +15%（四種盾牌都已內建，這裡給沒選盾牌或其他來源用，不會重複疊加）</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.manualSmashEnhanceActive" />

@@ -229,22 +229,22 @@ export interface ShieldPreset {
 
 export const SHIELD_PRESETS: ShieldPreset[] = [
     { id: "none", label: "無 / 其他", reduction: 0 },
-    { id: "holy_shield", label: "神聖盾牌", reduction: 0.15, tags: ["bash_enhance_sp"], oneHandWeaponExtraDamagePercent: 14 },
+    { id: "holy_shield", label: "神聖盾牌", reduction: 0.15, tags: ["bash_enhance_sp", "charge_enhance"], oneHandWeaponExtraDamagePercent: 14 },
     {
         id: "fierce_sentry",
         label: "兇猛哨兵盾牌",
         reduction: 0.2,
-        tags: ["windmill_enhance2_10", "bash_enhance"],
+        tags: ["windmill_enhance2_10", "bash_enhance", "charge_enhance"],
         oneHandWeaponExtraDamagePercent: 28,
     },
     {
         id: "night_vanguard",
         label: "暗夜使者前鋒（貓盾）",
         reduction: 0.3,
-        tags: ["windmill_enhance2", "bash_enhance"],
+        tags: ["windmill_enhance2", "bash_enhance", "charge_enhance"],
         oneHandWeaponExtraDamagePercent: 42,
     },
-    { id: "soul_liberator", label: "靈魂解放者系列盾牌", reduction: 0.4, hpFlat: 1000, tags: ["windmill_enhance2"], oneHandWeaponExtraDamagePercent: 56 },
+    { id: "soul_liberator", label: "靈魂解放者系列盾牌", reduction: 0.4, hpFlat: 1000, tags: ["windmill_enhance2", "charge_enhance"], oneHandWeaponExtraDamagePercent: 56 },
     { id: "pot", label: "鍋子", reduction: 0, maxDamageFlat: 40 },
 ];
 
@@ -2092,7 +2092,7 @@ export interface ShieldKnightSettings {
     characterBuildId: string;
     /** 種族特殊技能（拉狄卡的氣息/視線/力量）是主動開啟的技能，預設關閉 */
     raceSkillActive: boolean;
-    /** 突擊最終倍率 ×1.15（charge_enhance），目前沒有已知裝備資料來源，先開放手動勾選 */
+    /** 突擊最終倍率 ×1.15（charge_enhance）：除了「無 / 其他」與鍋子，可選的盾牌都內建；這個手動勾選給沒選盾牌或其他來源用（效果不疊加） */
     manualChargeEnhanceActive: boolean;
     /** 重擊套裝 +15%（smash_enhance，加進重擊最後一格），目前沒有已知裝備資料來源，先開放手動勾選 */
     manualSmashEnhanceActive: boolean;
