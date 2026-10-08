@@ -2397,7 +2397,6 @@ onMounted(() => {
                         </span>
                         <span class="skill-damage">{{ fmtInt(chargeCard.finalDamage) }}</span>
                     </div>
-                    <div class="field-hint">不吃連續技卡片；盾擊衝鋒借用的就是這個突擊傷害</div>
                     <div class="skill-terms">
                         <div v-for="term in chargeCard.terms" :key="term.label" class="term-row">
                             <span class="term-label">{{ term.label }}</span>
