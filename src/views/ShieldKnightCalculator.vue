@@ -1022,13 +1022,13 @@ onMounted(() => {
                                 武器選單手斧：0~13（≥11 突破限定）；武器選雙手劍：0~25（≥21 突破限定）；飾品：0~4（4 為突破限定）。
                             </div>
 
-                            <div class="field-section-label">省察的痕跡細工（兩個部位，持續時間只取較高的）</div>
+                            <div class="field-section-label">省察的痕跡細工（頭／身體的「XX魔法盾持續時間」詞條，共 4 種，只取最高）</div>
                             <div class="field-row">
-                                <label class="field-label">部位 1</label>
+                                <label class="field-label">頭</label>
                                 <el-select v-model="settings.reflectionReforgeLevel1" size="small" class="reforge-level-select">
                                     <el-option v-for="o in REFLECTION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
-                                <label class="field-label">部位 2</label>
+                                <label class="field-label">身體</label>
                                 <el-select v-model="settings.reflectionReforgeLevel2" size="small" class="reforge-level-select">
                                     <el-option v-for="o in REFLECTION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
@@ -1387,6 +1387,27 @@ onMounted(() => {
                                 <el-button size="small" plain @click="settings.rageImpactCoveragePercent = Math.round(rageCoverageEstimate)">填入覆蓋率</el-button>
                             </div>
 
+                            <div class="field-section-label">省察的痕跡（穆利亞斯的遺物）覆蓋率</div>
+                            <div class="field-hint">
+                                空窗取決於犧牲懲戒的發動頻率（目前「技能使用次數」填了犧牲懲戒 {{ settings.skillUsageCounts["sacrifice-punishment"] ?? 0 }} 次）；犧牲的主要來源是盾崩成功觸發格擋的次數。是否觸發中與遺物等級在「很貴的項目」分頁，細工等級在「裝備」分頁。
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">省察覆蓋率</label>
+                                <el-input-number v-model="settings.muliasRelic.reflectionTraceCoveragePercent" :min="0" :max="100" :step="5" size="small" class="field-select" />
+                                <span class="switch-label">%（觸發中時，平均有多少比例的秘法技能施放吃得到加成，預設 100%）</span>
+                            </div>
+                            <div class="field-hint">
+                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（細工等級在「裝備」分頁填，目前 {{ reflectionReforgeLevel }} 級 → {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">平均空窗（秒）</label>
+                                <el-input-number v-model="reflectionGapSeconds" :min="0" :step="1" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(reflectionCoverageEstimate) }}%（{{ fmtRatio(reflectionDurationSeconds) }} ÷ ({{ fmtRatio(reflectionDurationSeconds) }} + {{ reflectionGapSeconds }}) 秒）</span>
+                                <el-button size="small" plain @click="settings.muliasRelic.reflectionTraceCoveragePercent = Math.round(reflectionCoverageEstimate)">填入覆蓋率</el-button>
+                            </div>
+
                             <div class="field-section-label">施工中（公式尚待驗證，暫時停用）</div>
                             <div class="field-row">
                                 <label class="field-label">目前犧牲</label>
@@ -1475,22 +1496,6 @@ onMounted(() => {
                                 </el-select>
                                 <el-checkbox v-model="settings.muliasRelic.reflectionTraceActive" />
                                 <span class="switch-label">犧牲懲戒觸發省察的痕跡中（+{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃）</span>
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">省察覆蓋率</label>
-                                <el-input-number v-model="settings.muliasRelic.reflectionTraceCoveragePercent" :min="0" :max="100" :step="5" size="small" class="field-select" />
-                                <span class="switch-label">%（觸發中時，平均有多少比例的秘法技能施放吃得到加成，預設 100%）</span>
-                            </div>
-                            <div class="field-hint">
-                                持續時間 = {{ REFLECTION_TRACE_BASE_SECONDS }} + 細工等級 × {{ REFLECTION_TRACE_SECONDS_PER_REFORGE_LEVEL }} 秒（細工等級在「裝備」分頁填，目前 {{ reflectionReforgeLevel }} 級 → {{ fmtRatio(reflectionDurationSeconds) }} 秒）。實戰上觸發之間常有空窗，建議填「兩次觸發中間平均空幾秒」，覆蓋率 = 持續 ÷ (持續 + 空窗)。
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">平均空窗（秒）</label>
-                                <el-input-number v-model="reflectionGapSeconds" :min="0" :step="1" size="small" class="field-select-sm" />
-                            </div>
-                            <div class="field-row">
-                                <span class="switch-label">估算覆蓋率：{{ fmtRatio(reflectionCoverageEstimate) }}%（{{ fmtRatio(reflectionDurationSeconds) }} ÷ ({{ fmtRatio(reflectionDurationSeconds) }} + {{ reflectionGapSeconds }}) 秒）</span>
-                                <el-button size="small" plain @click="settings.muliasRelic.reflectionTraceCoveragePercent = Math.round(reflectionCoverageEstimate)">填入覆蓋率</el-button>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">審判重擊基礎傷害</label>
