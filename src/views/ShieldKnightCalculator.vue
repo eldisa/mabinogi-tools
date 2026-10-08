@@ -73,7 +73,7 @@ const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
 const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
 const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "expensive", "usage", "compare", "efficiency", "armorbreak"];
 const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
-function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean } {
+function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean; applyCombo?: boolean } {
     try {
         return JSON.parse(localStorage.getItem(DISPLAY_PREFS_KEY) ?? "{}") ?? {};
     } catch {
@@ -177,11 +177,19 @@ const allSkills = computed(() => calculateSkillsForSettings(settings));
 const critDisplayMode = ref<CritDisplayMode>(CRIT_MODES.includes(displayPrefs.critMode as CritDisplayMode) ? (displayPrefs.critMode as CritDisplayMode) : "expected");
 const showArcaneCards = ref(displayPrefs.showArcane !== false);
 const showTalentCards = ref(displayPrefs.showTalent !== false);
-watch([activeTab, critDisplayMode, showArcaneCards, showTalentCards], () => {
+/** 才能技能卡片是否套用連續技卡片（預設套用；只影響卡片顯示） */
+const applyComboCard = ref(displayPrefs.applyCombo !== false);
+watch([activeTab, critDisplayMode, showArcaneCards, showTalentCards, applyComboCard], () => {
     try {
         localStorage.setItem(
             DISPLAY_PREFS_KEY,
-            JSON.stringify({ tab: activeTab.value, critMode: critDisplayMode.value, showTalent: showTalentCards.value, showArcane: showArcaneCards.value }),
+            JSON.stringify({
+                tab: activeTab.value,
+                critMode: critDisplayMode.value,
+                showTalent: showTalentCards.value,
+                showArcane: showArcaneCards.value,
+                applyCombo: applyComboCard.value,
+            }),
         );
     } catch {
         /* 瀏覽器禁用儲存時忽略 */
@@ -207,7 +215,7 @@ const talentCards = computed(() => {
         const additive = additives[TALENT_ADDITIVE_KEY[id]];
         return [
             {
-                skill: withCard,
+                skill: applyComboCard.value ? withCard : noCard,
                 noCardDamage: noCard.finalDamage,
                 noCardRatioPercent: noCard.terms[0]?.ratioPercent ?? 0,
                 usageCount: settings.skillUsageCounts[id] ?? 0,
@@ -2285,6 +2293,7 @@ onMounted(() => {
             <div class="skill-section-filters">
                 <el-checkbox v-model="showTalentCards">顯示才能技能</el-checkbox>
                 <el-checkbox v-model="showArcaneCards">顯示秘法技能</el-checkbox>
+                <el-checkbox v-model="applyComboCard">套用連續技卡片（才能技能）</el-checkbox>
             </div>
             <div class="field-hint skill-section-hint">
                 只影響這裡的卡片顯示；其餘分頁（技能使用次數／裝備比較／傷害效益／總輸出）固定用期望值計算，不受此切換影響。
@@ -2345,12 +2354,15 @@ onMounted(() => {
                         </span>
                         <span class="skill-damage">{{ fmtInt(card.skill.finalDamage) }}</span>
                     </div>
+                    <template v-if="applyComboCard">
                     <div class="field-hint">
                         連擊卡：使用 {{ card.usageCount }} 次{{ card.usageCount === 0 ? "（未填，以 6 連平均預覽）" : "" }}，依 1→6 循環分配，平均 +{{ fmtRatio(card.averagePercent) }}%
                     </div>
                     <div class="field-hint">
                         倍率 {{ fmtRatio(card.noCardRatioPercent) }}% → {{ fmtRatio(card.skill.terms[0]?.ratioPercent ?? 0) }}%｜無卡片傷害：{{ fmtInt(card.noCardDamage) }}
                     </div>
+                    </template>
+                    <div v-else class="field-hint">未套用連續技卡片（卡片傷害為無卡片的基礎值）</div>
 
                     <div class="skill-terms">
                         <div v-for="term in card.skill.terms" :key="term.label" class="term-row">
