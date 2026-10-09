@@ -470,7 +470,7 @@ const BOW = items([
 
 const build = (rows: string[][], item: string[], weapons: string[]) => rows.map((r, i) => [...r, item[i], weapons[i]]);
 
-/** 各武器 S 等級第 1–9 次突破材料；治癒杖尚未收錄 */
+/** 各武器 S 等級第 1–9 次突破材料 */
 export const ergSMaterials: Record<string, string[][]> = {
     單手劍: build(MELEE_ROWS, ONE_HAND, MELEE_WEAPONS),
     單手斧: build(MELEE_ROWS, ONE_HAND, MELEE_WEAPONS),
@@ -497,6 +497,7 @@ export const ergSMaterials: Record<string, string[][]> = {
     ),
     "弓、弩": build(MAGIC_ROWS, BOW, MAGIC_WEAPONS),
     "魔杖(短杖)": build(MAGIC_ROWS, WAND, MAGIC_WEAPONS),
+    治癒杖: build(MAGIC_ROWS, WAND, MAGIC_WEAPONS),
     "集魔杖(長杖)": build(MAGIC_ROWS, WAND, MAGIC_WEAPONS),
     鐮刀: build(MAGIC_ROWS, WAND, SCYTHE_WEAPONS),
     鋼瓶: build(
