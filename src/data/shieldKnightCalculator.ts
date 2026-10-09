@@ -1258,7 +1258,7 @@ export function calculateSacrificePunishment(finalStats: FinalStats, currentSacr
         finalDamage,
         sacrificeGain: 0,
         sacrificeNote: "使用後犧牲值歸零",
-        cooldownText: "-",
+        cooldownText: `無 CD（犧牲滿 ${SACRIFICE_CAP} 才能施放）`,
         locked,
         lockedReason: locked ? `犧牲需達 ${SACRIFICE_CAP} 才能使用（目前 ${currentSacrifice}）` : undefined,
     };
