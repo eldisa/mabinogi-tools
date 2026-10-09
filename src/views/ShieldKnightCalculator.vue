@@ -912,8 +912,6 @@ onMounted(() => {
             <span class="page-subtitle">角色 / 裝備 → 攻擊力 → 暴擊與額外傷害 → 最終面板 → 技能傷害拆解</span>
         </h1>
 
-        <el-alert type="warning" :closable="false" show-icon class="verify-alert" title="此計算部分仍待驗證" />
-
         <el-alert v-if="needsQuickStart" type="info" :closable="false" class="verify-alert" title="快速開始：最少只要填 2 項">
             <ol class="quick-start-list">
                 <li>
@@ -928,14 +926,6 @@ onMounted(() => {
             </ol>
             <el-button size="small" type="primary" @click="loadExample">先載入範例數值看看</el-button>
             <span class="field-hint">只會補上還空著的欄位。</span>
-        </el-alert>
-        <el-alert v-else-if="topLevers.length" type="success" :closable="false" class="verify-alert" title="自動結論">
-            目前總輸出 <b>{{ fmtInt(totalOutput) }}</b
-            >。每單位增幅最高的是
-            <template v-for="(item, i) in topLevers" :key="item.id">
-                <b>{{ item.label }}</b>（每 {{ item.unit }} 總輸出 +{{ fmtDecimal(item.deltaPercent ?? 0) }}%）<template v-if="i < topLevers.length - 1">、</template>
-            </template>
-            ，優先補這些。完整排名見「傷害效益」分頁。
         </el-alert>
 
         <div class="sim-layout">
