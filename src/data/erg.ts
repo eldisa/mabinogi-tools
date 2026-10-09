@@ -581,3 +581,19 @@ export const parseMaterial = (s: string): [string, number] => {
     const m = s.match(/^(.*?)\s*(\d+)個$/);
     return m ? [m[1], Number(m[2])] : [s, 1];
 };
+
+/** B/A/S 各等級突破上限的單次成功率（%） */
+export const ergBreakRate: Record<number, number> = {
+    5: 90,
+    10: 60,
+    15: 30,
+    20: 15,
+    25: 5,
+    30: 2,
+    35: 1,
+    40: 0.7,
+    45: 0.3,
+};
+
+/** 突破材料中，每次挑戰（不論成敗）都會消耗的前幾項 */
+export const ERG_CONSUMED_EACH_TRY = 3;
