@@ -2406,6 +2406,9 @@ onMounted(() => {
                             <span class="term-value">{{ fmtInt(term.amount) }}</span>
                         </div>
                     </div>
+                    <div class="skill-footer">
+                        <span class="skill-cd">CD 10 秒（細工每級 −0.25 秒）</span>
+                    </div>
                 </div>
             </div>
         </div>

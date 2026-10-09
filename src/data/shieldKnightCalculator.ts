@@ -1313,7 +1313,7 @@ export function calculateRadiantJudgement(
         finalDamage: current.finalDamage,
         sacrificeGain: current.sacrificeGain,
         sacrificeNote: nobleOathEnabled && currentRatios.sacrificeGain > 0 ? `高潔誓約：+${currentRatios.sacrificeGain} 犧牲` : undefined,
-        cooldownText: "使用後階段循環 1 → 2 → 3 → 1",
+        cooldownText: "CD 1.5 秒（使用後階段循環 1 → 2 → 3 → 1）",
         stages,
     };
 }
@@ -1352,7 +1352,7 @@ export function calculateSmashHit(finalStats: FinalStats, smashRatio: number, sm
         passiveMultiplier: 1,
         finalDamage: Math.round(smashDamage),
         sacrificeGain: 0,
-        cooldownText: "-",
+        cooldownText: "幾乎沒有 CD（需跑技能動畫）",
     };
 }
 
@@ -1390,7 +1390,7 @@ export function calculateWindmillHit(finalStats: FinalStats, windmillRatio: numb
         passiveMultiplier: 1,
         finalDamage: Math.round(windmillDamage),
         sacrificeGain: 0,
-        cooldownText: "-",
+        cooldownText: "幾乎沒有 CD（需跑技能動畫）",
     };
 }
 
@@ -1433,7 +1433,7 @@ export function calculateMengJi(
         finalDamage,
         sacrificeGain: 0,
         sacrificeNote: `近戰才能技能傷害 +${stackInfo.extraDamagePercent}%（已併入才能增加傷害）；每次使用 +1 階，滿 5 階持續 20 秒，時間到降 1 階`,
-        cooldownText: "-",
+        cooldownText: "幾乎沒有 CD（需跑技能動畫）",
     };
 }
 
