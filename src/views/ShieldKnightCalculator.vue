@@ -41,6 +41,7 @@ import {
     MULIAS_RELIC_LEVEL_OPTIONS,
     MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL,
     MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL,
+    MULIAS_RELIC_REFLECTION_TRACE_BASE_PERCENT,
     MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL,
     ALL_SKILL_META,
     calculateSkillsForSettings,
@@ -250,13 +251,18 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     sharpLevel: "需在「破防」分頁勾選套用破防結果才會影響傷害，否則效益為 0；保護是查表無條件捨去，同一區間內多一級可能沒有變化。",
     muliasSacrificeRegen:
         "純顯示用，目前沒有基準值可疊加，不影響傷害輸出，效益固定是 0。實戰上犧牲的恢復主要看 boss 出招與駕駛員使用盾崩強襲的時機（觸發 HIT 才 +7），不是穩定的每秒被動數值，難以用固定公式估算。",
-    muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；這裡固定以「省察的痕跡」觸發中的情況計算，不受目前是否勾選影響。",
+    muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；基礎 +10% 不隨遺物等級變，遺物每級再 +0.5%，這裡顯示遺物 +1 級的效益，固定以覆蓋率 100% 計算。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
     manualWindmillBase30: "「裝備」分頁的套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualChargeEnhance: "突擊最終倍率 ×1.15。選擇神聖／兇猛哨兵／貓盾／靈魂解放者系列盾牌時已內建，這時開啟或關閉勾選都沒有差別（效益為 0）；沒選盾牌時才看得出價值。這裡顯示開啟 vs 關閉的整體價值，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualSmashEnhance: "「裝備」分頁的套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
     darkErg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有黑暗聚能加成。",
+    masterAbrasive: "名匠的研磨劑（最終傷害 +3%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
+    fatalPierce: "要害貫通：最終傷害 +15%，且穿刺等級 +1（需套用破防結果才有穿刺的部分）。開啟 vs 關閉的整體價值。",
+    hymnBattlefield: "聖詠演奏：把戰場的序曲 % 的 10% 再加進額外傷害那一桶；需戰場的序曲有發動且有填 %。開啟 vs 關閉的整體價值。",
+    spiritWeakness: "精靈武器弱點分析：才能額外傷害 +10%，只算才能技能與秘法技能借用的才能部分。開啟 vs 關閉的整體價值。",
+    spiritTransform: "精靈武器實體化：才能額外傷害 +10%（強化後 +25%），只算才能技能與秘法技能借用的才能部分。這裡比較「開實體化（不含強化）」vs 關閉。",
     battlefield: "戰場的序曲（攻擊力加成%）：以目前戰場% 再 +1% 計算，戰場%、狀態支援、力量團聚都會乘上攻擊係數，在「攻擊力」分頁設定。",
     statusSupport: "狀態支援（+12%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
     strengthGather: "力量團聚（+15%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
@@ -279,7 +285,10 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "套裝效果（裝備分頁）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
     { label: "攻擊係數（戰場序曲／狀態支援／力量團聚／藥水）", ids: ["battlefield", "statusSupport", "strengthGather", "physicalPotion"] },
     { label: "buff 覆蓋率", ids: ["rageCoverage", "reflectionCoverage"] },
-    { label: "聚能／種族技能／變身／套裝開關", ids: ["erg", "darkErg", "raceSkill", "transformation", "rageSet"] },
+    {
+        label: "聚能／種族技能／變身／套裝／其他開關",
+        ids: ["erg", "darkErg", "raceSkill", "transformation", "rageSet", "masterAbrasive", "fatalPierce", "hymnBattlefield", "spiritWeakness", "spiritTransform"],
+    },
 ];
 /** 傷害效益畫面不顯示：已經開啟的開關（再開沒有意義）、等同大傷為 0 的項目 */
 const visibleEfficiencyItems = computed(() =>
@@ -493,11 +502,11 @@ const RESULT_DETAILS: Record<string, string> = {
     generalExtraDamageMultiplier:
         "通用額外傷害 = (1+武器額外傷害%) × (1+稱號+圖騰+農場模型+套裝效果%) × (1+暴擊時通用額外傷害%×暴擊率)，破防的暴擊時通用額外傷害（如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似。",
     arcaneExtraDamagePercent:
-        "秘法額外傷害 = 不完美的空想王冠光環 + 布里萊赫的硬幣 + 穆利亞斯的遺物，加總後併入「(1+通用額外傷害+秘法額外傷害)」，只影響 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃。",
+        "秘法額外傷害 = 不完美的空想王冠光環 + 布里萊赫的硬幣 + 穆利亞斯的遺物，加總後是獨立乘區：×(1+秘法額外傷害)，與通用額外傷害（武器 × 額外傷害）相乘；只影響 7 個秘法技能（聖域展開/零秒嘲諷/盾擊衝鋒/盾崩強襲/審判重擊/犧牲懲戒/光輝斷罪），重擊/風車/突擊/猛擊等才能技能不吃。",
     protectionReduction: "保護減算 = 1 − 破後物理減傷率（怪物保護先扣破防%、再扣固定值、最後扣銳利，無條件捨去後查減傷表；銳利等級在「裝備」分頁填寫；「破防」分頁勾選套用時才生效，否則 ×1），乘進才能／秘法技能的目標傷害。",
     talentIncreaseDamageMultiplier: "才能增加傷害 =(1+種族技能%) × (1+猛擊層數對應%)，乘算，只影響才能技能（重擊/風車/突擊/猛擊）。",
     finalIncreaseDamageMultiplier:
-        "最終增加傷害 = 戰鬥服務 × 達可達 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草，所有技能都吃；穆利亞斯的省察的痕跡另外只乘在 7 個秘法技能（見「很貴的項目」分頁）。",
+        "最終增加傷害 = 戰鬥服務 × 達可達 × 名匠的研磨劑 × 要害貫通 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草，所有技能都吃；穆利亞斯的省察的痕跡（基礎 10% + 遺物每級 0.5%）另外只乘在 7 個秘法技能。",
     windmillDamage:
         "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝10%) × (1+風車套裝15%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
     chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊倍率% = (基礎+魔法陣+細工) × 突擊套裝。",
@@ -635,6 +644,8 @@ function buildMergedSettings(data: Partial<ShieldKnightSettings> | undefined): S
     merged.finalIncreaseDamage = {
         combatServiceBuffActive: data.finalIncreaseDamage?.combatServiceBuffActive ?? defaults.finalIncreaseDamage.combatServiceBuffActive,
         dakotaGlowActive: data.finalIncreaseDamage?.dakotaGlowActive ?? defaults.finalIncreaseDamage.dakotaGlowActive,
+        masterAbrasiveActive: data.finalIncreaseDamage?.masterAbrasiveActive ?? defaults.finalIncreaseDamage.masterAbrasiveActive,
+        fatalPierceActive: data.finalIncreaseDamage?.fatalPierceActive ?? defaults.finalIncreaseDamage.fatalPierceActive,
     };
     merged.skillUsageCounts = { ...defaults.skillUsageCounts, ...(data.skillUsageCounts ?? {}) };
     merged.muliasRelic = { ...defaults.muliasRelic, ...(data.muliasRelic ?? {}) };
@@ -1414,7 +1425,24 @@ onMounted(() => {
                                 <el-checkbox v-model="settings.extraDamage.setEffectActive" />
                                 <span class="switch-label">套裝效果（日月之神隨機發動／暮光套被動，+5%）</span>
                             </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.extraDamage.hymnBattlefieldBonusActive" />
+                                <span class="switch-label">聖詠演奏（戰場序曲 % 的 10% 再加進額外傷害；需有發動戰場的序曲）</span>
+                            </div>
                             <div class="field-hint">通用額外傷害倍率：{{ fmtMultiplier(calcResult.generalExtraDamageMultiplier) }}</div>
+
+                            <div class="field-section-label">才能額外傷害（精靈武器，只算才能技能與秘法技能借用的才能部分）</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.extraDamage.spiritWeaknessActive" />
+                                <span class="switch-label">弱點分析（+10%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.extraDamage.spiritTransformActive" />
+                                <span class="switch-label">實體化（+10%）</span>
+                                <el-checkbox v-model="settings.extraDamage.spiritTransformEnhanceActive" :disabled="!settings.extraDamage.spiritTransformActive" />
+                                <span class="switch-label">實體化強化（再 +15%，合計 +25%）</span>
+                            </div>
+                            <div class="field-hint">才能額外傷害合計：+{{ fmtRatio(calcResult.talentExtraDamagePercent) }}%</div>
 
                             <div class="field-section-label">最終增加傷害（乘算）</div>
                             <div class="field-hint">
@@ -1427,6 +1455,14 @@ onMounted(() => {
                             <div class="field-row">
                                 <el-checkbox v-model="settings.finalIncreaseDamage.dakotaGlowActive" />
                                 <span class="switch-label">達可達的強力威光（+5%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.finalIncreaseDamage.masterAbrasiveActive" />
+                                <span class="switch-label">名匠的研磨劑（+3%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.finalIncreaseDamage.fatalPierceActive" />
+                                <span class="switch-label">要害貫通（+15%，同時穿刺／銳利等級 +1，銳利欄位不用再加）</span>
                             </div>
                             <div class="field-hint">最終增加傷害倍率：{{ fmtMultiplier(calcResult.finalIncreaseDamageMultiplier) }}</div>
                         </div>
@@ -1621,7 +1657,7 @@ onMounted(() => {
                                 <el-select v-model="settings.muliasRelic.reflectionTraceLevel" size="small" class="field-select-sm">
                                     <el-option v-for="o in MULIAS_RELIC_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
-                                <span class="switch-label">犧牲懲戒觸發省察的痕跡時 +{{ (settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}% 秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃；實際吃到的比例看「技能設定」分頁的省察覆蓋率（預設 100%，填 0% 等於沒觸發）</span>
+                                <span class="switch-label">犧牲懲戒觸發省察的痕跡時 +{{ (MULIAS_RELIC_REFLECTION_TRACE_BASE_PERCENT + settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL).toFixed(1) }}%（基礎 {{ MULIAS_RELIC_REFLECTION_TRACE_BASE_PERCENT }}% + 每級 {{ MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL }}%）秘法技能傷害，只乘在 7 個秘法技能，重擊/風車/猛擊不吃；實際吃到的比例看「技能設定」分頁的省察覆蓋率（預設 100%，填 0% 等於沒觸發）</span>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">審判重擊基礎傷害</label>

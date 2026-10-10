@@ -199,6 +199,13 @@ export function specialReformMaxStage(weaponId: string): number {
     return SPECIAL_REFORM_STAGE8_WEAPON_IDS.includes(weaponId) ? 8 : 7;
 }
 
+/** 聖詠演奏：戰場序曲% 的 10% 加進額外傷害（戰場序曲沒發動就沒有） */
+export function hymnBattlefieldBonusPercent(settings: Pick<ShieldKnightSettings, "extraDamage" | "attackCoefficient">): number {
+    return settings.extraDamage.hymnBattlefieldBonusActive && settings.attackCoefficient.battlefieldActive
+        ? settings.attackCoefficient.battlefieldPercent * 0.1
+        : 0;
+}
+
 /** 一把武器只能做 R 或 S 其中一種特殊改造；兩個欄位都有值時以 S 為準（S 預設 0，有填代表刻意選擇） */
 export function resolveSpecialReform(settings: Pick<ShieldKnightSettings, "weaponId" | "weaponSpecialReformSStage" | "criticalDamage">): {
     maxStage: number;
@@ -562,6 +569,8 @@ export const MENG_JI_STACKS: { stack: 1 | 2 | 3 | 4 | 5; ratio: number; extraDam
 export const MULIAS_RELIC_SACRIFICE_REGEN_PER_LEVEL = 0.05;
 /** 犧牲之懲戒觸發省察的痕跡時，7 個秘法技能傷害（最終增加傷害，不含重擊/風車/猛擊）每級 +0.5% */
 export const MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL = 0.5;
+/** 省察的痕跡基礎加成 +10%（沒有遺物也有，遺物每級再 +0.5%） */
+export const MULIAS_RELIC_REFLECTION_TRACE_BASE_PERCENT = 10;
 /** 審判一擊基礎傷害比例額外加成，每級 +100% */
 /** buff 覆蓋率（0~100%）轉成 0~1，舊存檔沒有這個欄位時視為 100% */
 function coverageRatio(percent: number | undefined): number {
@@ -649,6 +658,19 @@ export interface ExtraDamageSettings {
     totemPercent: number;
     farmModelPercent: number;
     setEffectActive: boolean;
+    /** 聖詠演奏：戰場序曲% 的 10% 再加進額外傷害那一桶（要戰場序曲有發動才算） */
+    hymnBattlefieldBonusActive: boolean;
+    /** 精靈武器 弱點分析 +10%（才能額外傷害，只算才能技能與秘法技能借用的才能部分） */
+    spiritWeaknessActive: boolean;
+    /** 精靈武器 實體化 +10%（才能額外傷害） */
+    spiritTransformActive: boolean;
+    /** 實體化強化 +15%（需先開實體化，合計 +25%） */
+    spiritTransformEnhanceActive: boolean;
+}
+
+/** 才能額外傷害%：精靈武器弱點分析 +10、實體化 +10（強化後 +25） */
+export function calculateTalentExtraDamagePercent(extra: ExtraDamageSettings): number {
+    return (extra.spiritWeaknessActive ? 10 : 0) + (extra.spiritTransformActive ? (extra.spiritTransformEnhanceActive ? 25 : 10) : 0);
 }
 
 /** 秘法額外傷害（不完美的空想王冠光環/布里萊赫的硬幣/穆利亞斯的遺物，加總），已套用到 7 個秘法技能的傷害公式。 */
@@ -659,6 +681,10 @@ export interface FinalIncreaseDamageSettings {
     combatServiceBuffActive: boolean;
     /** 達可達的強力威光 +5% */
     dakotaGlowActive: boolean;
+    /** 名匠的研磨劑 最終傷害 +3% */
+    masterAbrasiveActive: boolean;
+    /** 要害貫通 最終傷害 +15%，且穿刺（銳利）等級 +1 */
+    fatalPierceActive: boolean;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -728,6 +754,10 @@ export interface CalculationResult {
     sacrificeRegenPerSecond: number;
     /** 保護減算（未套用破防結果時為 1） */
     protectionReduction: number;
+    /** 秘法技能裡借用的才能技能部分用的保護減算（雙重穿刺：穿刺等級 ×2，上限 18） */
+    talentProtectionReduction: number;
+    /** 才能額外傷害%（精靈武器弱點分析／實體化） */
+    talentExtraDamagePercent: number;
     activeTags: SetEffectTag[];
 }
 
@@ -740,6 +770,8 @@ function collectActiveTags(weapon: WeaponPreset, shield: ShieldPreset): Set<SetE
 
 /** 職業被動：裝備單手武器和盾牌時，銳利增加 3 */
 const ONE_HAND_AND_SHIELD_SHARP_BONUS = 3;
+/** 雙重穿刺（秘法技能內借用的才能技能部分）的穿刺等級上限 */
+const DOUBLE_PIERCE_LEVEL_CAP = 18;
 
 /** 實際銳利等級 = 手動輸入的裝備銳利 + 單手武器搭配盾牌的職業被動（雙手劍且無法配盾時盾牌視為無） */
 export function getEffectiveSharpLevel(settings: ShieldKnightSettings): number {
@@ -747,7 +779,8 @@ export function getEffectiveSharpLevel(settings: ShieldKnightSettings): number {
     const shieldEquipped =
         settings.shieldId !== "none" && !(settings.weaponType === "two_hand_sword" && !build.allowTwoHandSwordWithShield);
     const passive = settings.weaponType === "one_hand_axe" && shieldEquipped ? ONE_HAND_AND_SHIELD_SHARP_BONUS : 0;
-    return settings.sharpLevel + passive;
+    const fatalPierce = settings.finalIncreaseDamage?.fatalPierceActive ? 1 : 0;
+    return settings.sharpLevel + passive + fatalPierce;
 }
 
 /**
@@ -798,9 +831,13 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     // ── 破防結果（A 組、物理側）：保護減算、所受傷害增加、暴擊傷害 debuff ──
     const armorBreak = settings.armorBreak.enabled ? settings.armorBreak : null;
     // 保護：先扣%、再扣固定（面板已算好 protBeforePierce）、最後扣銳利（每級 −5，扣除怪物銳利抵抗），無條件捨去後查減傷表
-    const protectionReduction = armorBreak
-        ? 1 - protRate(Math.max(0, armorBreak.protBeforePierce - Math.max(0, getEffectiveSharpLevel(settings) - armorBreak.pierceResist) * 5))
+    const netPierce = armorBreak ? Math.max(0, getEffectiveSharpLevel(settings) - armorBreak.pierceResist) : 0;
+    const protectionReduction = armorBreak ? 1 - protRate(Math.max(0, armorBreak.protBeforePierce - netPierce * 5)) : 1;
+    // 秘法技能內借用的才能技能部分用「雙重穿刺」：穿刺等級 ×2（上限 18）
+    const talentProtectionReduction = armorBreak
+        ? 1 - protRate(Math.max(0, armorBreak.protBeforePierce - Math.min(DOUBLE_PIERCE_LEVEL_CAP, netPierce * 2) * 5))
         : 1;
+    const talentExtraDamagePercent = calculateTalentExtraDamagePercent(settings.extraDamage);
 
     // ── 暴擊傷害% ──
     const { rStage: reformRStage, sStage: reformSStage } = resolveSpecialReform(settings);
@@ -822,7 +859,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         calculateGeneralExtraDamageMultiplier({
             ...settings.extraDamage,
             weaponExtraDamagePercent,
-            generalBonusPercent: specialReformSExtra(reformSStage),
+            generalBonusPercent: specialReformSExtra(reformSStage) + hymnBattlefieldBonusPercent(settings),
         }) * (1 + critOnlyGeneralExtraPercent / 100);
 
     // ── 才能增加傷害（種族技能 × 猛擊，乘算） ──
@@ -840,11 +877,14 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     // ── 最終增加傷害（乘算） ──
     // 穆利亞斯的遺物：犧牲之懲戒觸發省察的痕跡時，秘法技能傷害（最終增加傷害）+0.5%/級，只乘在 7 個秘法技能
     const reflectionTracePercent =
-        settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL * coverageRatio(settings.muliasRelic.reflectionTraceCoveragePercent);
+        (MULIAS_RELIC_REFLECTION_TRACE_BASE_PERCENT + settings.muliasRelic.reflectionTraceLevel * MULIAS_RELIC_REFLECTION_TRACE_PER_LEVEL) *
+        coverageRatio(settings.muliasRelic.reflectionTraceCoveragePercent);
     // 死神烙印／憤怒衝擊／命運編織（倒吊人）／洞察之眼／幸運草標記都改由「破防」面板提供（所受傷害增加、近戰技能傷害），這裡只留戰鬥服務與強力威光
     const finalIncreaseDamageMultiplier =
         (1 + (settings.finalIncreaseDamage.combatServiceBuffActive ? 1 : 0) / 100) *
         (1 + (settings.finalIncreaseDamage.dakotaGlowActive ? 5 : 0) / 100) *
+        (1 + (settings.finalIncreaseDamage.masterAbrasiveActive ? 3 : 0) / 100) *
+        (1 + (settings.finalIncreaseDamage.fatalPierceActive ? 15 : 0) / 100) *
         (1 + (armorBreak?.damageTakenPercent ?? 0) / 100) *
         (1 + (armorBreak && settings.rageImpactBuffActive ? armorBreak.meleePercent * coverageRatio(settings.rageImpactCoveragePercent) : 0) / 100);
     const arcaneFinalIncreaseDamageMultiplier = finalIncreaseDamageMultiplier * (1 + reflectionTracePercent / 100);
@@ -899,7 +939,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
             skillRatioPercent,
             criticalDamagePercent: criticalDamageExpected,
             generalExtraDamageMultiplier,
-            talentExtraDamagePercent: 0,
+            talentExtraDamagePercent,
             talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier,
             protectionReduction,
@@ -975,6 +1015,8 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         arcaneExtraDamagePercent,
         sacrificeRegenPerSecond,
         protectionReduction,
+        talentProtectionReduction,
+        talentExtraDamagePercent,
         activeTags: Array.from(tags),
     };
 }
@@ -1072,6 +1114,10 @@ export interface ArcaneSharedParams {
     finalIncreaseDamageMultiplier: number;
     /** 保護減算（1＝不扣減；套用破防結果時為 1 − 破後物理減傷率） */
     protectionReduction: number;
+    /** 借用的才能技能部分用的保護減算（雙重穿刺） */
+    talentProtectionReduction: number;
+    /** 才能額外傷害%（精靈武器弱點分析／實體化） */
+    talentExtraDamagePercent: number;
 }
 
 /**
@@ -1090,12 +1136,13 @@ function finalizeArcaneSkill(
             countedTalentSkillTargetDamage,
             arcaneOnlyRawDamage,
             criticalDamagePercent: shared.criticalDamagePercent,
-            talentExtraDamagePercent: 0,
+            talentExtraDamagePercent: shared.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: shared.talentIncreaseDamageMultiplier,
             generalExtraDamageMultiplier: shared.generalExtraDamageMultiplier,
             arcaneExtraDamagePercent: shared.arcaneExtraDamagePercent,
             finalIncreaseDamageMultiplier: shared.finalIncreaseDamageMultiplier,
             protectionReduction: shared.protectionReduction,
+            talentProtectionReduction: shared.talentProtectionReduction,
         }),
         { skillId, finalStats },
     );
@@ -1370,7 +1417,7 @@ export function calculateChargeHit(settings: ShieldKnightSettings, critMode: Cri
             skillRatioPercent: abilities.chargeRatio,
             criticalDamagePercent,
             generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
-            talentExtraDamagePercent: 0,
+            talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
             protectionReduction: calcResult.protectionReduction,
@@ -1408,6 +1455,7 @@ export function calculateMengJi(
     talentIncreaseDamageMultiplier: number,
     finalIncreaseDamageMultiplier: number,
     protectionReduction = 1,
+    talentExtraDamagePercent = 0,
 ): SkillDamageResult {
     const stackInfo = MENG_JI_STACKS[stack - 1];
     const terms = [makeTerm("基礎傷害", ratio, finalStats.maxDamage)];
@@ -1417,7 +1465,7 @@ export function calculateMengJi(
             skillRatioPercent: ratio,
             criticalDamagePercent,
             generalExtraDamageMultiplier,
-            talentExtraDamagePercent: 0,
+            talentExtraDamagePercent,
             talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier,
             protectionReduction,
@@ -1488,7 +1536,7 @@ export function calculateSkillsForSettings(
             skillRatioPercent,
             criticalDamagePercent: effectiveCritPercent,
             generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
-            talentExtraDamagePercent: 0,
+            talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
             protectionReduction: calcResult.protectionReduction,
@@ -1530,6 +1578,8 @@ export function calculateSkillsForSettings(
                 arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
                 finalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
                 protectionReduction: calcResult.protectionReduction,
+                talentProtectionReduction: calcResult.talentProtectionReduction,
+                talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
             },
         ),
         calculateSmashHit(finalStats, smashRatio, smashDamage),
@@ -1544,6 +1594,7 @@ export function calculateSkillsForSettings(
             calcResult.talentIncreaseDamageMultiplier,
             calcResult.finalIncreaseDamageMultiplier,
             calcResult.protectionReduction,
+            calcResult.talentExtraDamagePercent,
         ),
     ];
     return skills.map((s) => (s.skillId === "radiant-judgement" ? applyRadiantJudgementDistribution(s, radiantJudgementUsageCount) : s));
@@ -1575,6 +1626,8 @@ interface DamageLevers {
     /** 秘法額外傷害%，只有 7 個秘法技能（走 calculateArcaneSkillDamage）吃得到，才能技能不吃 */
     arcaneExtraDamagePercent: number;
     protectionReduction: number;
+    talentProtectionReduction: number;
+    talentExtraDamagePercent: number;
 }
 
 function calculateTotalOutputWithLevers(
@@ -1595,7 +1648,7 @@ function calculateTotalOutputWithLevers(
             skillRatioPercent,
             criticalDamagePercent: criticalDamageExpected,
             generalExtraDamageMultiplier: levers.generalExtraDamageMultiplier,
-            talentExtraDamagePercent: 0,
+            talentExtraDamagePercent: levers.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: levers.talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier: levers.finalIncreaseDamageMultiplier,
             protectionReduction: levers.protectionReduction,
@@ -1636,6 +1689,8 @@ function calculateTotalOutputWithLevers(
                 arcaneExtraDamagePercent: levers.arcaneExtraDamagePercent,
                 finalIncreaseDamageMultiplier: levers.arcaneFinalIncreaseDamageMultiplier,
                 protectionReduction: levers.protectionReduction,
+                talentProtectionReduction: levers.talentProtectionReduction,
+                talentExtraDamagePercent: levers.talentExtraDamagePercent,
             },
         ),
         calculateSmashHit(finalStats, smashRatioWithCombo, smashDamage),
@@ -1650,6 +1705,7 @@ function calculateTotalOutputWithLevers(
             levers.talentIncreaseDamageMultiplier,
             levers.finalIncreaseDamageMultiplier,
             levers.protectionReduction,
+            levers.talentExtraDamagePercent,
         ),
     ];
     const radiantJudgementUsageCount = settings.skillUsageCounts["radiant-judgement"] ?? 0;
@@ -1674,6 +1730,11 @@ export interface DamageEfficiencyItem {
         | "raceSkill"
         | "transformation"
         | "rageSet"
+        | "masterAbrasive"
+        | "fatalPierce"
+        | "hymnBattlefield"
+        | "spiritWeakness"
+        | "spiritTransform"
         | "battlefield"
         | "statusSupport"
         | "strengthGather"
@@ -1724,6 +1785,8 @@ function buildLeverContext(settings: ShieldKnightSettings) {
         arcaneFinalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
         arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
         protectionReduction: calcResult.protectionReduction,
+        talentProtectionReduction: calcResult.talentProtectionReduction,
+        talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
     };
     const compute = (levers: DamageLevers, stats = finalStatsBase) => calculateTotalOutputWithLevers(levers, stats, ratios, settings);
     return { calcResult, finalStatsBase, ratios, baseLevers, compute, baseTotal: compute(baseLevers) };
@@ -1872,6 +1935,11 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             | "raceSkill"
             | "transformation"
             | "rageSet"
+            | "masterAbrasive"
+            | "fatalPierce"
+            | "hymnBattlefield"
+            | "spiritWeakness"
+            | "spiritTransform"
             | "battlefield"
             | "statusSupport"
             | "strengthGather"
@@ -1908,6 +1976,36 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
                 rageImpactBuffActive: true,
                 armorBreak: { ...settings.armorBreak, meleePercent: settings.armorBreak.meleePercent + (on ? RAGE_IMPACT_SET_PERCENT : 0) },
             }),
+        },
+        {
+            id: "masterAbrasive",
+            label: "名匠的研磨劑（最終傷害 +3%）",
+            isOn: settings.finalIncreaseDamage.masterAbrasiveActive,
+            set: (on) => ({ ...settings, finalIncreaseDamage: { ...settings.finalIncreaseDamage, masterAbrasiveActive: on } }),
+        },
+        {
+            id: "fatalPierce",
+            label: "要害貫通（最終傷害 +15%、穿刺 +1）",
+            isOn: settings.finalIncreaseDamage.fatalPierceActive,
+            set: (on) => ({ ...settings, finalIncreaseDamage: { ...settings.finalIncreaseDamage, fatalPierceActive: on } }),
+        },
+        {
+            id: "hymnBattlefield",
+            label: "聖詠演奏（戰場序曲 10% 轉額外傷害）",
+            isOn: settings.extraDamage.hymnBattlefieldBonusActive,
+            set: (on) => ({ ...settings, extraDamage: { ...settings.extraDamage, hymnBattlefieldBonusActive: on } }),
+        },
+        {
+            id: "spiritWeakness",
+            label: "精靈武器弱點分析（才能額外傷害 +10%）",
+            isOn: settings.extraDamage.spiritWeaknessActive,
+            set: (on) => ({ ...settings, extraDamage: { ...settings.extraDamage, spiritWeaknessActive: on } }),
+        },
+        {
+            id: "spiritTransform",
+            label: "精靈武器實體化（才能額外傷害 +10%）",
+            isOn: settings.extraDamage.spiritTransformActive,
+            set: (on) => ({ ...settings, extraDamage: { ...settings.extraDamage, spiritTransformActive: on } }),
         },
         {
             id: "battlefield",
@@ -2054,7 +2152,7 @@ export function calculateSpecialReformTable(settings: ShieldKnightSettings): Spe
     const generalPercentWithCurrent = calculateGeneralExtraPercent({
         ...settings.extraDamage,
         weaponExtraDamagePercent: 0,
-        generalBonusPercent: specialReformSExtra(curS),
+        generalBonusPercent: specialReformSExtra(curS) + hymnBattlefieldBonusPercent(settings),
     });
     const generalPercentBase = generalPercentWithCurrent - specialReformSExtra(curS);
     const none = {
@@ -2258,6 +2356,10 @@ export function createDefaultSettings(): ShieldKnightSettings {
             totemPercent: 0,
             farmModelPercent: 0,
             setEffectActive: false,
+            hymnBattlefieldBonusActive: false,
+            spiritWeaknessActive: false,
+            spiritTransformActive: false,
+            spiritTransformEnhanceActive: false,
         },
         arcaneExtraDamage: {
             imperfectCrownAuraActive: false,
@@ -2267,6 +2369,8 @@ export function createDefaultSettings(): ShieldKnightSettings {
         finalIncreaseDamage: {
             combatServiceBuffActive: true,
             dakotaGlowActive: true,
+            masterAbrasiveActive: false,
+            fatalPierceActive: false,
         },
         muliasRelic: {
             sacrificeRegenLevel: 0,
