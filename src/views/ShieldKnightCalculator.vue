@@ -507,6 +507,8 @@ const RESULT_DETAILS: Record<string, string> = {
     talentIncreaseDamageMultiplier: "才能增加傷害 =(1+種族技能%) × (1+猛擊層數對應%)，乘算，只影響才能技能（重擊/風車/突擊/猛擊）。",
     finalIncreaseDamageMultiplier:
         "最終增加傷害 = 戰鬥服務 × 達可達 × 名匠的研磨劑 × 要害貫通 × 死神烙印 × 憤怒衝擊 × 命運編織 × 洞察之眼 × 幸運草，所有技能都吃；穆利亞斯的省察的痕跡（基礎 10% + 遺物每級 0.5%）另外只乘在 7 個秘法技能。",
+    reflectionTraceMultiplier:
+        "省察的痕跡 = 1 + (基礎 10% + 遺物等級 × 0.5%) × 覆蓋率，只乘在 7 個秘法技能，重擊/風車/突擊/猛擊不吃。覆蓋率在「技能設定」分頁，遺物等級在「很貴的項目」分頁。秘法技能實際吃的最終增加傷害 = 上面的最終增加傷害 × 這一項。",
     windmillDamage:
         "風車傷害 = 才能技能公式：最終攻擊力 × 風車倍率% × 暴擊傷害期望值% × (通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害。風車倍率 = (500%+細工+風車套裝30%+單手斧聚能) × (1+風車套裝10%) × (1+風車套裝15%)；連續技卡片只加在風車技能本身，7 個秘法技能借用的風車傷害不吃。",
     chargeDamage: "突擊傷害 = 才能技能公式，結構同風車傷害，改套用突擊倍率% = (基礎+魔法陣+細工) × 突擊套裝。",
@@ -2219,6 +2221,16 @@ onMounted(() => {
                             </el-popover>
                         </span>
                         <span class="result-value sub">{{ fmtMultiplier(calcResult.finalIncreaseDamageMultiplier) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            省察的痕跡（只乘秘法技能）
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.reflectionTraceMultiplier }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value sub">{{ fmtMultiplier(calcResult.arcaneFinalIncreaseDamageMultiplier / calcResult.finalIncreaseDamageMultiplier) }}</span>
                     </div>
                     <div class="result-group-label">才能技能能力值（風車/突擊餵進秘法技能公式，重擊僅供參考）</div>
                     <div class="result-row">
