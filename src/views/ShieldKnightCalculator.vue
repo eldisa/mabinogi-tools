@@ -51,6 +51,11 @@ import {
     calculateHolyWaterComparison,
     getEffectiveSharpLevel,
     COMBO_CARD_OPTIONS,
+    OGHAM_OPTIONS,
+    OGHAM_SYNERGY_SCORES,
+    OGHAM_OPTIONS_PER_SLOT,
+    oghamSpecialLimit,
+    type OghamSlot,
     COMBO_CARD_BONUS_PERCENT,
     comboCardAveragePercent,
     MAX_DAMAGE_TO_DEFENSE_POWER_RATE,
@@ -72,7 +77,7 @@ const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
 
 // 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
 const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
-const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "expensive", "usage", "compare", "efficiency", "armorbreak"];
+const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "expensive", "ogham", "usage", "compare", "efficiency", "armorbreak"];
 const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
 function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean; applyCombo?: boolean } {
     try {
@@ -357,6 +362,68 @@ const topLevers = computed(() =>
         .sort((a, b) => (b.deltaPercent ?? 0) - (a.deltaPercent ?? 0))
         .slice(0, 3),
 );
+// ── 歐甘（符文版本）──
+// 沒勾「符文版本」就隱藏歐甘分頁（效果也不套用）；正在看歐甘分頁時取消勾選，退回第一個分頁
+watch(
+    () => settings.oghamEnabled,
+    (enabled) => {
+        if (!enabled && activeTab.value === "ogham") activeTab.value = "character";
+    },
+);
+const oghamSpecialCount = computed(() => settings.ogham.slots.filter((sl) => sl.type === "special").length);
+const oghamLimit = computed(() => oghamSpecialLimit(settings.ogham.synergy));
+/** 該欄位該列可選的詞條：一般歐甘不能選特殊詞條，同一顆不可重複選 */
+function oghamChoices(slot: OghamSlot, row: number) {
+    const taken = slot.options.filter((_, i) => i !== row).map((o) => o.id);
+    return OGHAM_OPTIONS.filter((o) => (slot.type === "special" || !o.special) && !taken.includes(o.id));
+}
+const oghamMaxLevel = (id: string): number => OGHAM_OPTIONS.find((o) => o.id === id)?.maxLevel ?? 1;
+/** 選了詞條就預設最高等級（和韓服一致），之後可自行調整 */
+function onOghamOptionChange(slot: OghamSlot, row: number) {
+    const opt = slot.options[row];
+    opt.level = opt.id === "none" ? 1 : oghamMaxLevel(opt.id);
+}
+/** 特殊歐甘超過上限（沒組合 5、有組合 3）就把其他的特殊歐甘降成一般，剛改的那顆保留 */
+function enforceOghamSpecialLimit(keepIndex: number) {
+    let excess = oghamSpecialCount.value - oghamLimit.value;
+    for (let i = settings.ogham.slots.length - 1; i >= 0 && excess > 0; i--) {
+        if (i !== keepIndex && settings.ogham.slots[i].type === "special") {
+            settings.ogham.slots[i].type = "normal";
+            resetSpecialOnlyOptions(settings.ogham.slots[i]);
+            excess--;
+        }
+    }
+}
+function resetSpecialOnlyOptions(slot: OghamSlot) {
+    slot.options.forEach((opt) => {
+        if (opt.id !== "none" && OGHAM_OPTIONS.find((o) => o.id === opt.id)?.special) {
+            opt.id = "none";
+            opt.level = 1;
+        }
+    });
+}
+function onOghamTypeChange(index: number) {
+    const slot = settings.ogham.slots[index];
+    if (slot.type === "none") slot.options.forEach((opt) => ((opt.id = "none"), (opt.level = 1)));
+    else if (slot.type === "normal") resetSpecialOnlyOptions(slot);
+    enforceOghamSpecialLimit(index);
+}
+watch(
+    () => settings.ogham.synergy,
+    () => enforceOghamSpecialLimit(-1),
+);
+const oghamSynergyText = computed(() => {
+    const score = settings.ogham.synergyScore;
+    const step = score - 5;
+    if (settings.ogham.synergy === "fortress") {
+        return `盾崩強襲：要塞（${score} 點）\n• 風車倍率 +${5 + 5 * step}%（150% → ${150 + 5 + 5 * step}%）\n• 基礎傷害倍率 +${200 + 100 * step}%、防禦力倍率 +300%、最大生命倍率 +50%\n• 不進公式的效果：要塞化每層犧牲獲取量 +${10 + 5 * step}%（最多 3 層、15 秒）、攻擊範圍 6m／150 度、累計冷卻上限 12 秒`;
+    }
+    if (settings.ogham.synergy === "execution") {
+        return `光輝的斷罪：執行（${score} 點）\n• 常時以第 3 階段運作，基礎傷害／防禦力／最大生命倍率 ×${(1.1 + 0.1 * step).toFixed(1)}\n• 不進公式的效果：高潔誓約下每次獲得 4 犧牲、冷卻 2.5 秒、技能位移距離 ${(6 + 0.5 * step).toFixed(1)}m`;
+    }
+    return "";
+});
+
 // ── 武器特殊改造（R 暴擊傷害／S 追加傷害，第 8 階只有靈魂解放者／日月劍） ──
 const reformMaxStage = computed(() => specialReformMaxStage(settings.weaponId));
 const reformStageList = computed(() => Array.from({ length: SPECIAL_REFORM_STAGE_COUNT }, (_, i) => i + 1).filter((n) => n <= reformMaxStage.value));
@@ -969,6 +1036,7 @@ onMounted(() => {
                 </el-card>
 
                 <div class="quick-actions">
+                    <el-checkbox v-model="settings.oghamEnabled">符文版本（顯示歐甘分頁）</el-checkbox>
                     <el-button size="small" plain @click="resetAll">重置設定</el-button>
                     <el-button size="small" plain @click="copyShareLink">複製分享連結</el-button>
                     <el-button size="small" plain @click="copyShareCode">複製設定代碼</el-button>
@@ -1669,6 +1737,61 @@ onMounted(() => {
                                 <span class="switch-label">審判重擊基礎傷害比例 +{{ settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%（3500% → {{ 3500 + settings.muliasRelic.judgementStrikeLevel * MULIAS_RELIC_JUDGEMENT_STRIKE_BASE_PER_LEVEL }}%）</span>
                             </div>
 
+                        </div>
+                    </el-tab-pane>
+
+                    <!-- 歐甘（符文版本） -->
+                    <el-tab-pane v-if="settings.oghamEnabled" label="歐甘" name="ogham">
+                        <div class="tab-body">
+                            <div class="field-hint">
+                                歐甘只算單次傷害；要塞化的犧牲加成、累計冷卻、位移距離、攻擊範圍等效果暫不計入。精通斧頭的最大傷害若已含在面板最大傷害，請不要再選，否則會重複計算。
+                            </div>
+
+                            <div class="field-section-label">歐甘組合</div>
+                            <div class="field-row">
+                                <label class="field-label">組合</label>
+                                <el-select v-model="settings.ogham.synergy" size="small" class="field-select">
+                                    <el-option value="none" label="未選擇" />
+                                    <el-option value="fortress" label="盾崩強襲：要塞" />
+                                    <el-option value="execution" label="光輝的斷罪：執行" />
+                                </el-select>
+                                <label class="field-label">點數</label>
+                                <el-select v-model="settings.ogham.synergyScore" size="small" class="field-select-sm" :disabled="settings.ogham.synergy === 'none'">
+                                    <el-option v-for="n in OGHAM_SYNERGY_SCORES" :key="n" :value="n" :label="`${n} 點`" />
+                                </el-select>
+                            </div>
+                            <div v-if="oghamSynergyText" class="ogham-synergy-text">{{ oghamSynergyText }}</div>
+
+                            <div class="field-section-label">
+                                歐甘欄位（特殊歐甘最多 {{ oghamLimit }} 個，目前 {{ oghamSpecialCount }} 個）
+                            </div>
+                            <div v-for="(slot, si) in settings.ogham.slots" :key="si" class="ogham-slot">
+                                <div class="field-row">
+                                    <label class="field-label">歐甘 #{{ si + 1 }}</label>
+                                    <el-select v-model="slot.type" size="small" class="field-select-sm" @change="onOghamTypeChange(si)">
+                                        <el-option value="none" label="未裝備" />
+                                        <el-option value="normal" label="一般歐甘" />
+                                        <el-option value="special" label="特殊歐甘" />
+                                    </el-select>
+                                </div>
+                                <template v-if="slot.type !== 'none'">
+                                    <div v-for="row in OGHAM_OPTIONS_PER_SLOT" :key="row" class="field-row">
+                                        <label class="field-label">詞條 {{ row }}</label>
+                                        <el-select v-model="slot.options[row - 1].id" size="small" class="field-select" @change="onOghamOptionChange(slot, row - 1)">
+                                            <el-option value="none" label="無" />
+                                            <el-option v-for="o in oghamChoices(slot, row - 1)" :key="o.id" :value="o.id" :label="o.label" />
+                                        </el-select>
+                                        <el-select
+                                            v-model="slot.options[row - 1].level"
+                                            size="small"
+                                            class="field-select-sm"
+                                            :disabled="slot.options[row - 1].id === 'none'"
+                                        >
+                                            <el-option v-for="lv in oghamMaxLevel(slot.options[row - 1].id)" :key="lv" :value="lv" :label="`${lv} 級`" />
+                                        </el-select>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </el-tab-pane>
 
@@ -2516,7 +2639,21 @@ onMounted(() => {
 
 .quick-actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
+}
+.ogham-slot {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border-primary, #374151);
+    border-radius: 8px;
+}
+.ogham-synergy-text {
+    white-space: pre-line;
+    margin: 0.25rem 0 0.75rem;
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #9ca3af);
 }
 
 /* ── 紀錄保存 / 讀取 ── */

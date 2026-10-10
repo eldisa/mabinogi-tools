@@ -436,6 +436,128 @@ export function getRaceSkillInfo(build: CharacterBuild): { label: string; percen
 }
 
 // ═══════════════════════════════════════════════════════
+//  歐甘（符文版本）：5 個欄位、每欄 3 個詞條，另有「要塞」「執行」兩種組合（點數 5～9）
+//  公式參考韓服計算器（oh-geom），詞條數值與台服歐甘資料的最高值一致；
+//  只算單次傷害，要塞化的犧牲加成、累計冷卻、位移距離等效果不進公式。
+// ═══════════════════════════════════════════════════════
+
+export type OghamOptionId = "charge" | "windmill" | "smash" | "axemastery" | "sanctuary" | "ironwall" | "condemnation" | "judgment" | "clash";
+
+export interface OghamOptionDef {
+    id: OghamOptionId;
+    label: string;
+    /** 每級加成：倍率類是「倍率百分點」（例如突擊 +3 = 突擊倍率 +3%），斧精通是最大傷害點數 */
+    perLevel: number;
+    maxLevel: number;
+    /** 特殊歐甘才能選的詞條（一般歐甘只能選才能技能類與斧精通） */
+    special: boolean;
+}
+
+export const OGHAM_OPTIONS: OghamOptionDef[] = [
+    { id: "charge", label: "突擊 傷害倍率增加（+3%／級）", perLevel: 3, maxLevel: 20, special: false },
+    { id: "windmill", label: "風車（旋風擺蓮腿）傷害倍率增加（+2%／級）", perLevel: 2, maxLevel: 20, special: false },
+    { id: "smash", label: "重擊 傷害倍率增加（+2.5%／級）", perLevel: 2.5, maxLevel: 20, special: false },
+    { id: "axemastery", label: "精通斧頭 最大傷害增加（+1／級）", perLevel: 1, maxLevel: 10, special: false },
+    { id: "sanctuary", label: "聖域展開 傷害倍率增加（+1%／級）", perLevel: 1, maxLevel: 10, special: true },
+    { id: "ironwall", label: "盾崩強襲 傷害倍率增加（+5%／級）", perLevel: 5, maxLevel: 10, special: true },
+    { id: "condemnation", label: "光輝的斷罪 2 階段起每階段傷害倍率增加（+0.8%／級）", perLevel: 0.8, maxLevel: 10, special: true },
+    { id: "judgment", label: "審判重擊 傷害倍率增加（+20%／級）", perLevel: 20, maxLevel: 10, special: true },
+    { id: "clash", label: "盾擊衝鋒 傷害倍率增加（+10%／級）", perLevel: 10, maxLevel: 10, special: true },
+];
+
+export type OghamSlotType = "none" | "normal" | "special";
+export interface OghamSlotOption {
+    id: OghamOptionId | "none";
+    level: number;
+}
+export interface OghamSlot {
+    type: OghamSlotType;
+    options: OghamSlotOption[];
+}
+export type OghamSynergyId = "none" | "fortress" | "execution";
+export interface OghamSettings {
+    synergy: OghamSynergyId;
+    /** 組合點數 5～9 */
+    synergyScore: number;
+    slots: OghamSlot[];
+}
+
+export const OGHAM_SLOT_COUNT = 5;
+export const OGHAM_OPTIONS_PER_SLOT = 3;
+export const OGHAM_SYNERGY_SCORES = [5, 6, 7, 8, 9] as const;
+/** 特殊歐甘最多裝備數：沒有組合 5 個，有組合 3 個 */
+export const oghamSpecialLimit = (synergy: OghamSynergyId): number => (synergy === "none" ? OGHAM_SLOT_COUNT : 3);
+
+export function createDefaultOghamSettings(): OghamSettings {
+    return {
+        synergy: "none",
+        synergyScore: 9,
+        slots: Array.from({ length: OGHAM_SLOT_COUNT }, (_, i) => ({
+            type: i < 3 ? "special" : "normal",
+            options: Array.from({ length: OGHAM_OPTIONS_PER_SLOT }, () => ({ id: "none" as const, level: 1 })),
+        })),
+    };
+}
+
+/** 各詞條加總（倍率類為倍率百分點、斧精通為最大傷害點數）；沒開符文版本時全部為 0 */
+export type OghamTotals = Record<OghamOptionId, number>;
+
+export function calculateOghamTotals(settings: Pick<ShieldKnightSettings, "oghamEnabled" | "ogham">): OghamTotals {
+    const totals: OghamTotals = { charge: 0, windmill: 0, smash: 0, axemastery: 0, sanctuary: 0, ironwall: 0, condemnation: 0, judgment: 0, clash: 0 };
+    if (!settings.oghamEnabled) return totals;
+    const limit = oghamSpecialLimit(settings.ogham.synergy);
+    let specialUsed = 0;
+    for (const slot of settings.ogham.slots.slice(0, OGHAM_SLOT_COUNT)) {
+        if (slot.type === "none") continue;
+        if (slot.type === "special") {
+            specialUsed += 1;
+            if (specialUsed > limit) continue; // 超過上限的特殊歐甘不計
+        }
+        const used = new Set<string>();
+        for (const opt of slot.options.slice(0, OGHAM_OPTIONS_PER_SLOT)) {
+            const def = OGHAM_OPTIONS.find((o) => o.id === opt.id);
+            if (!def || used.has(def.id) || (def.special && slot.type !== "special")) continue; // 同一顆不可重複、一般歐甘不能選特殊詞條
+            used.add(def.id);
+            totals[def.id] += def.perLevel * Math.min(def.maxLevel, Math.max(0, Math.round(opt.level)));
+        }
+    }
+    return totals;
+}
+
+/** 7 個秘法技能吃到的歐甘調整（倍率百分點）；光輝斷罪另有組合係數 */
+export interface OghamArcaneAdjust {
+    sanctuaryBase: number;
+    ironwallWindmill: number;
+    ironwallBase: number;
+    ironwallDefense: number;
+    ironwallHp: number;
+    judgmentBase: number;
+    clashBase: number;
+    /** 光輝斷罪第 2 階段係數 +x、第 3 階段係數 +2x（x = 詞條加總 / 100） */
+    condemnationStep: number;
+    /** 「執行」組合：三階段都用第 3 階段，倍率再乘這個係數（1.1～1.5）；不是執行組合就是 0 */
+    executionMultiplier: number;
+}
+
+export function oghamArcaneAdjust(settings: Pick<ShieldKnightSettings, "oghamEnabled" | "ogham">): OghamArcaneAdjust {
+    const t = calculateOghamTotals(settings);
+    const fortress = settings.oghamEnabled && settings.ogham.synergy === "fortress";
+    const execution = settings.oghamEnabled && settings.ogham.synergy === "execution";
+    const step = Math.min(9, Math.max(5, settings.ogham.synergyScore)) - 5;
+    return {
+        sanctuaryBase: t.sanctuary,
+        ironwallWindmill: fortress ? 5 + 5 * step : 0,
+        ironwallBase: t.ironwall + (fortress ? 200 + 100 * step : 0),
+        ironwallDefense: fortress ? 300 : 0,
+        ironwallHp: fortress ? 50 : 0,
+        judgmentBase: t.judgment,
+        clashBase: t.clash,
+        condemnationStep: t.condemnation / 100,
+        executionMultiplier: execution ? 1.1 + 0.1 * step : 0,
+    };
+}
+
+// ═══════════════════════════════════════════════════════
 //  魔法陣（最多選 3 個）
 // ═══════════════════════════════════════════════════════
 
@@ -819,7 +941,9 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     // 精靈武器攻擊力強化通常已包含在無狀態面板內：從面板扣掉（不吃攻擊係數）、最後再加回常數攻擊力；
     // 面板已計入模式下整組不參與，維持留在面板裡吃係數（同髒髒的規則）
     const spiritWeaponPart = settings.spiritWeaponAttackActive && !settings.dirtyMaxDamage.panelAlreadyIncludesDirty ? SPIRIT_WEAPON_ATTACK_BONUS[spiritWeaponType] : 0;
-    const cleanMaxDamage = calculateCleanMaxDamage(settings.panelMaxDamage, effectiveDirtyTotal + spiritWeaponPart);
+    const oghamTotals = calculateOghamTotals(settings);
+    // 歐甘的精通斧頭最大傷害算在乾淨最大傷害上（和面板一樣吃攻擊係數）；面板大傷若已含就不要再選這個詞條
+    const cleanMaxDamage = calculateCleanMaxDamage(settings.panelMaxDamage, effectiveDirtyTotal + spiritWeaponPart) + oghamTotals.axemastery;
     const constantAttackPower = calculateConstantAttackPower({
         spiritWeaponActive: spiritWeaponPart > 0,
         spiritWeaponType,
@@ -901,7 +1025,8 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const smashBase =
         BASE_SKILL_RATIOS.smash +
         sumReforgeLevels(settings.reforge, "smash") * REFORGE_PER_LEVEL.smash +
-        (hasMagicCircle("smash_damage") ? 100 : 0);
+        (hasMagicCircle("smash_damage") ? 100 : 0) +
+        oghamTotals.smash;
     const smashMultiplier = (isTwoHand ? 1.2 : 1) * (1 + (weapon.smashFinalIncreasePercent ?? 0) / 100);
     const smashAdditive = ((weapon.smashDamageIncreasePercent ?? 0) + tagPercent("smash_enhance")) / 100;
 
@@ -917,7 +1042,10 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
 
     // 突擊維持原本算法
     const chargeBase =
-        BASE_SKILL_RATIOS.charge + sumReforgeLevels(settings.reforge, "charge") * REFORGE_PER_LEVEL.charge + (hasMagicCircle("charge_damage") ? 60 : 0);
+        BASE_SKILL_RATIOS.charge +
+        sumReforgeLevels(settings.reforge, "charge") * REFORGE_PER_LEVEL.charge +
+        (hasMagicCircle("charge_damage") ? 60 : 0) +
+        oghamTotals.charge;
     const chargeMultiplier = tags.has("charge_enhance") ? 1.15 : 1;
 
     // 猛擊 = (層數基礎+魔法陣+單手精靈武器20%) × (1+猛擊最終傷害增加) × (1+猛擊套裝+猛擊套裝象徵+連續技卡片)
@@ -929,7 +1057,8 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const mengJiAdditive = (tagPercent("bash_enhance") + tagPercent("bash_enhance_sp")) / 100;
 
     const smashRatio = smashBase * smashMultiplier * (1 + smashAdditive);
-    const windmillRatio = windmillBase * windmillMultiplier;
+    // 歐甘的風車詞條加在套裝倍率之後（不吃風車套裝的連乘）
+    const windmillRatio = windmillBase * windmillMultiplier + oghamTotals.windmill;
     const chargeRatio = chargeBase * chargeMultiplier;
     const mengJiRatio = mengJiBase * mengJiMultiplier * (1 + mengJiAdditive);
 
@@ -1118,6 +1247,8 @@ export interface ArcaneSharedParams {
     talentProtectionReduction: number;
     /** 才能額外傷害%（精靈武器弱點分析／實體化） */
     talentExtraDamagePercent: number;
+    /** 歐甘對各秘法技能倍率的調整（沒開符文版本時全部為 0） */
+    ogham: OghamArcaneAdjust;
 }
 
 /**
@@ -1150,7 +1281,7 @@ function finalizeArcaneSkill(
 
 export function calculateHolySanctuary(finalStats: FinalStats, shared: ArcaneSharedParams): SkillDamageResult {
     const terms = [
-        makeTerm("基礎傷害", 300, finalStats.maxDamage),
+        makeTerm("基礎傷害", 300 + shared.ogham.sanctuaryBase, finalStats.maxDamage),
         makeTerm("加護力", 150, finalStats.defensePower),
         makeTerm("最大生命", 20, finalStats.maxHp),
     ];
@@ -1197,13 +1328,14 @@ export function calculateShieldCharge(finalStats: FinalStats, chargeDamage: numb
     const chargeRatio = 150;
     const terms = [
         makeTerm("衝撞傷害", chargeRatio, chargeDamage),
-        makeTerm("基礎傷害", 800, finalStats.maxDamage),
+        makeTerm("基礎傷害", 800 + shared.ogham.clashBase, finalStats.maxDamage),
         makeTerm("加護力", 600, finalStats.defensePower),
         makeTerm("最大生命", 50, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
     const countedTalentSkillTargetDamage = (chargeRatio / 100) * chargeTargetDamage;
-    const arcaneOnlyRawDamage = (800 / 100) * finalStats.maxDamage + (600 / 100) * finalStats.defensePower + (50 / 100) * finalStats.maxHp;
+    const arcaneOnlyRawDamage =
+        ((800 + shared.ogham.clashBase) / 100) * finalStats.maxDamage + (600 / 100) * finalStats.defensePower + (50 / 100) * finalStats.maxHp;
     const finalDamage = finalizeArcaneSkill("shield-charge", finalStats, countedTalentSkillTargetDamage, arcaneOnlyRawDamage, shared);
     return {
         skillId: "shield-charge",
@@ -1218,16 +1350,20 @@ export function calculateShieldCharge(finalStats: FinalStats, chargeDamage: numb
 }
 
 export function calculateIronWallStrike(finalStats: FinalStats, windmillDamage: number, windmillTargetDamage: number, shared: ArcaneSharedParams): SkillDamageResult {
-    const windmillRatio = 150;
+    const adjust = shared.ogham;
+    const windmillRatio = 150 + adjust.ironwallWindmill;
+    const baseRatio = 1200 + adjust.ironwallBase;
+    const defenseRatio = 600 + adjust.ironwallDefense;
+    const hpRatio = 100 + adjust.ironwallHp;
     const terms = [
         makeTerm("風車傷害", windmillRatio, windmillDamage),
-        makeTerm("基礎傷害", 1200, finalStats.maxDamage),
-        makeTerm("加護力", 600, finalStats.defensePower),
-        makeTerm("最大生命", 100, finalStats.maxHp),
+        makeTerm("基礎傷害", baseRatio, finalStats.maxDamage),
+        makeTerm("加護力", defenseRatio, finalStats.defensePower),
+        makeTerm("最大生命", hpRatio, finalStats.maxHp),
     ];
     const rawDamage = sumTerms(terms);
     const countedTalentSkillTargetDamage = (windmillRatio / 100) * windmillTargetDamage;
-    const arcaneOnlyRawDamage = (1200 / 100) * finalStats.maxDamage + (600 / 100) * finalStats.defensePower + (100 / 100) * finalStats.maxHp;
+    const arcaneOnlyRawDamage = (baseRatio / 100) * finalStats.maxDamage + (defenseRatio / 100) * finalStats.defensePower + (hpRatio / 100) * finalStats.maxHp;
     const finalDamage = finalizeArcaneSkill("iron-wall-strike", finalStats, countedTalentSkillTargetDamage, arcaneOnlyRawDamage, shared);
     return {
         skillId: "iron-wall-strike",
@@ -1252,7 +1388,7 @@ export function calculateJudgementStrike(
     shared: ArcaneSharedParams,
 ): SkillDamageResult {
     const windmillRatio = 200;
-    const baseRatio = 3500 + baseRatioBonus;
+    const baseRatio = 3500 + baseRatioBonus + shared.ogham.judgmentBase;
     const terms = [
         makeTerm("風車傷害", windmillRatio, windmillDamage),
         makeTerm("基礎傷害", baseRatio, finalStats.maxDamage),
@@ -1311,12 +1447,28 @@ export function calculateSacrificePunishment(finalStats: FinalStats, currentSacr
     };
 }
 
-const RADIANT_JUDGEMENT_STAGE_RATIOS = [
-    { stage: 1 as const, base: 1500, defensePower: 900, maxHp: 150, sacrificeGain: 0 },
-    { stage: 2 as const, base: 2250, defensePower: 1350, maxHp: 225, sacrificeGain: 1 },
-    { stage: 3 as const, base: 3000, defensePower: 1800, maxHp: 300, sacrificeGain: 2 },
-];
+const RADIANT_JUDGEMENT_UNIT_RATIO = { base: 1500, defensePower: 900, maxHp: 150 };
 const RADIANT_JUDGEMENT_WINDMILL_RATIO = 175;
+
+/**
+ * 光輝斷罪各階段倍率 = 單位倍率（1500／900／150）× 階段係數；
+ * 一般：1 階 ×1、2 階 ×(1.5 + x)、3 階 ×(2 + 2x)，x = 歐甘「2 階段起每階段」詞條加總 / 100，高潔誓約下犧牲 0／1／2；
+ * 「執行」組合：三階段都用 3 階係數，再乘 (1.1 + 0.1×(點數−5))，高潔誓約下每次犧牲 4。
+ */
+function radiantJudgementStageRatios(adjust: OghamArcaneAdjust) {
+    const execution = adjust.executionMultiplier > 0;
+    const factor3 = 2 + 2 * adjust.condemnationStep;
+    const factors = execution ? [factor3, factor3, factor3] : [1, 1.5 + adjust.condemnationStep, factor3];
+    const unitMultiplier = execution ? adjust.executionMultiplier : 1;
+    const sacrifice = execution ? [4, 4, 4] : [0, 1, 2];
+    return ([1, 2, 3] as const).map((stage, i) => ({
+        stage,
+        base: RADIANT_JUDGEMENT_UNIT_RATIO.base * unitMultiplier * factors[i],
+        defensePower: RADIANT_JUDGEMENT_UNIT_RATIO.defensePower * unitMultiplier * factors[i],
+        maxHp: RADIANT_JUDGEMENT_UNIT_RATIO.maxHp * unitMultiplier * factors[i],
+        sacrificeGain: sacrifice[i],
+    }));
+}
 
 /**
  * 光輝之審判已正式套用秘法技能公式：借用風車傷害的 175%（風車目標傷害，尚未乘才能增加/最終增加傷害）
@@ -1331,7 +1483,8 @@ export function calculateRadiantJudgement(
     shared: ArcaneSharedParams,
 ): SkillDamageResult {
     const countedTalentSkillTargetDamage = (RADIANT_JUDGEMENT_WINDMILL_RATIO / 100) * windmillTargetDamage;
-    const stages: RadiantJudgementStageResult[] = RADIANT_JUDGEMENT_STAGE_RATIOS.map((r) => {
+    const stageRatios = radiantJudgementStageRatios(shared.ogham);
+    const stages: RadiantJudgementStageResult[] = stageRatios.map((r) => {
         const arcaneOnlyRawDamage = (r.base / 100) * finalStats.maxDamage + (r.defensePower / 100) * finalStats.defensePower + (r.maxHp / 100) * finalStats.maxHp;
         const finalDamage = finalizeArcaneSkill("radiant-judgement", finalStats, countedTalentSkillTargetDamage, arcaneOnlyRawDamage, shared);
         return {
@@ -1341,7 +1494,8 @@ export function calculateRadiantJudgement(
         };
     });
 
-    const currentRatios = RADIANT_JUDGEMENT_STAGE_RATIOS[currentStage - 1];
+    const execution = shared.ogham.executionMultiplier > 0;
+    const currentRatios = stageRatios[currentStage - 1];
     const terms = [
         makeTerm("風車傷害", RADIANT_JUDGEMENT_WINDMILL_RATIO, windmillDamage),
         makeTerm("基礎傷害", currentRatios.base, finalStats.maxDamage),
@@ -1360,7 +1514,7 @@ export function calculateRadiantJudgement(
         finalDamage: current.finalDamage,
         sacrificeGain: current.sacrificeGain,
         sacrificeNote: nobleOathEnabled && currentRatios.sacrificeGain > 0 ? `高潔誓約：+${currentRatios.sacrificeGain} 犧牲` : undefined,
-        cooldownText: "CD 1.5 秒（使用後階段循環 1 → 2 → 3 → 1）",
+        cooldownText: execution ? "CD 2.5 秒（執行：常時 3 階段）" : "CD 1.5 秒（使用後階段循環 1 → 2 → 3 → 1）",
         stages,
     };
 }
@@ -1580,6 +1734,7 @@ export function calculateSkillsForSettings(
                 protectionReduction: calcResult.protectionReduction,
                 talentProtectionReduction: calcResult.talentProtectionReduction,
                 talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
+                ogham: oghamArcaneAdjust(settings),
             },
         ),
         calculateSmashHit(finalStats, smashRatio, smashDamage),
@@ -1691,6 +1846,7 @@ function calculateTotalOutputWithLevers(
                 protectionReduction: levers.protectionReduction,
                 talentProtectionReduction: levers.talentProtectionReduction,
                 talentExtraDamagePercent: levers.talentExtraDamagePercent,
+                ogham: oghamArcaneAdjust(settings),
             },
         ),
         calculateSmashHit(finalStats, smashRatioWithCombo, smashDamage),
@@ -2231,6 +2387,9 @@ export interface ShieldKnightSettings {
     manualWindmillBase30Active: boolean;
     /** 連續技卡片（只能裝備一張，6 連擊依序增傷，秘法技能不吃） */
     comboCardSkillId: ComboCardSkillId;
+    /** 符文版本（歐甘）：勾選才顯示歐甘分頁並套用歐甘效果，預設關閉 */
+    oghamEnabled: boolean;
+    ogham: OghamSettings;
 
     // 攻擊力
     /** 面板最大傷害（無狀態下，已含所有裝備/永久加成，不用另外加聖水/鍋子） */
@@ -2310,6 +2469,8 @@ export function createDefaultSettings(): ShieldKnightSettings {
         manualSmashEnhanceActive: false,
         manualWindmillBase30Active: false,
         comboCardSkillId: "none",
+        oghamEnabled: false,
+        ogham: createDefaultOghamSettings(),
 
         panelMaxDamage: 0,
         dirtyMaxDamage: {
