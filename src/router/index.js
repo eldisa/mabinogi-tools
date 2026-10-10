@@ -38,6 +38,7 @@ import Settings from '../views/Settings.vue';
 import AuthCallback from '../views/AuthCallback.vue';
 import HealCalculator from '../views/HealCalculator.vue';
 import ShieldKnightCalculator from '../views/ShieldKnightCalculator.vue';
+import GearValue from '../views/GearValue.vue';
 
 const routes = [
     {
@@ -128,6 +129,11 @@ const routes = [
             path: '/shield-knight',
             name: '聖盾騎士傷害計算器',
             component: ShieldKnightCalculator,
+        },
+        {
+            path: '/gear-value',
+            name: '裝備效益換算',
+            component: GearValue,
         },
         {
             path: '/reforge',

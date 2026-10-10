@@ -23,6 +23,8 @@ import {
     MAGIC_CIRCLE_OPTIONS,
     MAGIC_CIRCLE_LIMIT,
     createDefaultSettings,
+    buildMergedSettings,
+    USAGE_SCENARIOS,
     createDefaultSkillUsageCounts,
     calculateAll,
     SKILL_VISIBILITY_SETTING_KEYS,
@@ -315,24 +317,6 @@ const efficiencyGroups = computed(() => {
 
 // ── 新手引導／自動結論 ──
 const EXAMPLE_PANEL_MAX_DAMAGE = 2000;
-/** 技能次數情境範本（估算值，只是起點，請依自己的實際打法修改） */
-const USAGE_SCENARIOS: { id: string; label: string; counts: Partial<SkillUsageCounts> }[] = [
-    {
-        id: "boss",
-        label: "打王（長時間，秘法技能為主）",
-        counts: { "holy-sanctuary": 50, "shield-charge": 13, "iron-wall-strike": 50, "judgement-strike": 42, "sacrifice-punishment": 17, "radiant-judgement": 118, "meng-ji": 39, "smash-hit": 60, "windmill-hit": 60 },
-    },
-    {
-        id: "dungeon",
-        label: "副本練習（短時間）",
-        counts: { "holy-sanctuary": 15, "shield-charge": 4, "iron-wall-strike": 15, "judgement-strike": 13, "sacrifice-punishment": 5, "radiant-judgement": 36, "meng-ji": 12, "smash-hit": 18, "windmill-hit": 18 },
-    },
-    {
-        id: "talent",
-        label: "才能技能為主（重擊／風車連段）",
-        counts: { "holy-sanctuary": 10, "iron-wall-strike": 10, "radiant-judgement": 30, "meng-ji": 80, "smash-hit": 120, "windmill-hit": 120 },
-    },
-];
 const needsQuickStart = computed(() => settings.panelMaxDamage <= 0 || !hasAnyUsageCount.value);
 const selectedScenarioId = ref("");
 /** 套用次數情境：整組取代目前的次數，已有次數時先確認 */
@@ -687,52 +671,6 @@ async function savePreset() {
     } catch (action) {
         if (action === "cancel") saveAsNewPreset();
     }
-}
-
-function buildMergedSettings(data: Partial<ShieldKnightSettings> | undefined): ShieldKnightSettings {
-    const defaults = createDefaultSettings();
-    if (!data) return defaults;
-    // 注意：每個巢狀物件都要對著 defaults（未被污染的預設值）合併，不能對著 merged 合併——
-    // merged 在 Object.assign 之後，巢狀物件已經被舊存檔整組換掉，舊存檔缺的欄位會變 undefined。
-    const merged = { ...defaults, ...data };
-    merged.character = { ...defaults.character, ...(data.character ?? {}) };
-    merged.holyWater = { ...defaults.holyWater, ...(data.holyWater ?? {}) };
-    merged.reforge = Object.fromEntries(
-        REFORGE_SLOTS.map((slot) => {
-            const saved = (data.reforge as Record<string, Partial<Record<"smash" | "windmill" | "charge", number>>> | undefined)?.[slot.key];
-            return [slot.key, { smash: saved?.smash ?? 0, windmill: saved?.windmill ?? 0, charge: saved?.charge ?? 0 }];
-        }),
-    ) as ShieldKnightSettings["reforge"];
-    merged.magicCircleIds = Array.isArray(data.magicCircleIds) ? [...data.magicCircleIds] : [];
-    merged.dirtyMaxDamage = { ...defaults.dirtyMaxDamage, ...(data.dirtyMaxDamage ?? {}) };
-    merged.attackCoefficient = { ...defaults.attackCoefficient, ...(data.attackCoefficient ?? {}) };
-    merged.criticalRate = { ...defaults.criticalRate, ...(data.criticalRate ?? {}) };
-    merged.criticalDamage = { ...defaults.criticalDamage, ...(data.criticalDamage ?? {}) };
-    merged.extraDamage = { ...defaults.extraDamage, ...(data.extraDamage ?? {}) };
-    merged.arcaneExtraDamage = { ...defaults.arcaneExtraDamage, ...(data.arcaneExtraDamage ?? {}) };
-    merged.finalIncreaseDamage = {
-        combatServiceBuffActive: data.finalIncreaseDamage?.combatServiceBuffActive ?? defaults.finalIncreaseDamage.combatServiceBuffActive,
-        dakotaGlowActive: data.finalIncreaseDamage?.dakotaGlowActive ?? defaults.finalIncreaseDamage.dakotaGlowActive,
-        masterAbrasiveActive: data.finalIncreaseDamage?.masterAbrasiveActive ?? defaults.finalIncreaseDamage.masterAbrasiveActive,
-        fatalPierceActive: data.finalIncreaseDamage?.fatalPierceActive ?? defaults.finalIncreaseDamage.fatalPierceActive,
-    };
-    merged.skillUsageCounts = { ...defaults.skillUsageCounts, ...(data.skillUsageCounts ?? {}) };
-    merged.muliasRelic = { ...defaults.muliasRelic, ...(data.muliasRelic ?? {}) };
-    // 舊版有「省察的痕跡是否觸發中」勾選：沒勾且沒有覆蓋率的舊存檔，轉成覆蓋率 0%
-    const legacyRelic = data.muliasRelic as { reflectionTraceActive?: boolean; reflectionTraceCoveragePercent?: number } | undefined;
-    if (legacyRelic?.reflectionTraceActive === false && legacyRelic.reflectionTraceCoveragePercent === undefined) {
-        merged.muliasRelic.reflectionTraceCoveragePercent = 0;
-    }
-    delete (merged.muliasRelic as { reflectionTraceActive?: boolean }).reflectionTraceActive;
-    merged.armorBreak = { ...defaults.armorBreak, ...(data.armorBreak ?? {}) };
-    // 舊版省察細工分頭／身體兩個欄位，只取最高轉成單一等級
-    const legacy = data as { reflectionReforgeLevel1?: number; reflectionReforgeLevel2?: number };
-    if (data.reflectionReforgeLevel === undefined && (legacy.reflectionReforgeLevel1 || legacy.reflectionReforgeLevel2)) {
-        merged.reflectionReforgeLevel = Math.max(legacy.reflectionReforgeLevel1 ?? 0, legacy.reflectionReforgeLevel2 ?? 0);
-    }
-    delete (merged as Partial<typeof legacy>).reflectionReforgeLevel1;
-    delete (merged as Partial<typeof legacy>).reflectionReforgeLevel2;
-    return merged;
 }
 
 type ArmorBreakResult = { protBeforePierce: number; pierceResist: number; damageTakenPercent: number; critDamagePercent: number; meleePercent: number };
