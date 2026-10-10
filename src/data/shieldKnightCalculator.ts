@@ -154,7 +154,7 @@ export const WEAPON_PRESETS: Record<WeaponType, WeaponPreset[]> = {
     one_hand_axe: [
         { id: "none", label: "其他", extraDamagePercent: 0 },
         { id: "celtic_axe", label: "凱爾特系列單手斧", extraDamagePercent: 14, tags: ["bash_enhance_sp"] },
-        { id: "nightbringer_plunderer", label: "暗夜使者掠奪者", extraDamagePercent: 42, tags: ["windmill_enhance2"], smashDamageIncreasePercent: 5 },
+        { id: "nightbringer_plunderer", label: "暗夜使者掠奪者", extraDamagePercent: 42, tags: ["windmill_enhance2"], bashFinalIncreasePercent: 5 },
         {
             id: "soul_liberator_axe",
             label: "靈魂解放者單手斧",
