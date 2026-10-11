@@ -26,6 +26,8 @@ const props = withDefaults(
         allowedWeapons?: string[];
         /** 外部評分（例如換算成等同大傷）：有給就依分數排序、只列分數 > 0 的，並隱藏自訂權重 */
         scorer?: (enchant: Enchant) => number;
+        /** 有給就只顯示這個函式回傳 true 的能力（例如只列有換算值的必要詞條），同能力的條件效果只取第一筆，與 scorer 一致 */
+        showEffect?: (abilityId: string) => boolean;
         /** true = 只列與該武器類型相關的賦予；false = 只看裝備限制 */
         relevantOnly?: boolean;
     }>(),
@@ -78,10 +80,16 @@ const getPrimaryValue = (enchant: Enchant, weaponType: string): number => {
     return best;
 };
 
+const firstPerAbility = (enchant: Enchant) => {
+    const seen = new Set<string>();
+    return enchant.effect.filter((e) => !seen.has(e.id) && !!seen.add(e.id));
+};
+
 const formatEnchantEffects = (enchant: Enchant, weaponType: string): string => {
     const sign = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
     const relevant = props.relevantOnly ? RELEVANT_IDS[weaponType] : undefined;
-    const merged = mergeEffects(enchant);
+    const keep = props.showEffect;
+    const merged = keep ? firstPerAbility(enchant).filter((e) => keep(e.id)) : mergeEffects(enchant);
     // 只顯示對應武器的相關屬性；若無符合就不強制顯示其他屬性
     const toShow = relevant ? merged.filter((e) => relevant.has(e.id)) : merged;
     return toShow

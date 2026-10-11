@@ -144,6 +144,8 @@ const toRow = (key: string, name: string, tag: string, stats: ValuedStat[]): Que
 });
 
 // 賦予：用 EnchantQuickView（排版與賦予快速檢視相同），以效益換算的分數排序
+/** 只顯示有換算值的詞條（例如力量、暴擊率沒有效益就不列） */
+const enchantShowEffect = (abilityId: string): boolean => !!valueOfStat(profile.value, abilityLabel(abilityId), 1).weight;
 /** 賦予換算成等同大傷；同一個能力出現多筆通常是「使用某稱號時」之類的條件效果，只取第一筆（無條件的基本值），其餘不計 */
 const enchantScore = (e: Enchant): number => {
     const seen = new Set<string>();
@@ -403,6 +405,7 @@ const bestEntries = computed(() =>
                     v-if="queryKind === 'enchant'"
                     :allowed-weapons="profile.weaponTypes"
                     :scorer="enchantScore"
+                    :show-effect="enchantShowEffect"
                     :relevant-only="false"
                 />
                 <div v-else class="gv-hint">
