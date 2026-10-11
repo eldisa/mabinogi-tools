@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { enchants } from "../data/enchants";
+import { enchantsForSlot, slotsForWeapon } from "../data/enchantSlots";
+import WeaponTypeSelect from "../components/WeaponTypeSelect.vue";
 import { abilitiesMap } from "../data/abilities";
 import titleJsonData from "../data/title.json";
 import dollBagsData from "../data/doll_bags.json";
@@ -144,10 +146,29 @@ const toRow = (key: string, name: string, tag: string, stats: ValuedStat[]): Que
 
 // 賦予
 const enchantTypeFilter = ref<"all" | "prefix" | "suffix">("all");
+const enchantWeapon = ref(baseProfile.value.weaponTypes?.[0] ?? "單手武器+盾");
+const enchantSlot = ref("all");
+const enchantSlotOptions = computed(() => slotsForWeapon(enchantWeapon.value));
+watch(enchantWeapon, () => {
+    if (enchantSlot.value !== "all" && !enchantSlotOptions.value.some((s) => s.label === enchantSlot.value)) enchantSlot.value = "all";
+});
+/** 該武器類型各部位能裝的賦予（一個賦予可能能裝在多個部位） */
+const enchantsBySlot = computed(() => {
+    const byId = new Map<number, { enchant: (typeof enchants)[number]; slots: string[] }>();
+    for (const slot of enchantSlotOptions.value) {
+        if (enchantSlot.value !== "all" && slot.label !== enchantSlot.value) continue;
+        for (const e of enchantsForSlot(enchants, slot, enchantWeapon.value)) {
+            const hit = byId.get(e.id);
+            if (hit) hit.slots.push(slot.label);
+            else byId.set(e.id, { enchant: e, slots: [slot.label] });
+        }
+    }
+    return [...byId.values()];
+});
 const enchantRows = computed<QueryRow[]>(() =>
-    enchants
-        .filter((e) => enchantTypeFilter.value === "all" || e.type === enchantTypeFilter.value)
-        .map((e) => {
+    enchantsBySlot.value
+        .filter(({ enchant }) => enchantTypeFilter.value === "all" || enchant.type === enchantTypeFilter.value)
+        .map(({ enchant: e, slots }) => {
             // 同一個能力出現多筆通常是「使用某稱號時」之類的條件效果，只取第一筆（無條件的基本值），其餘不計
             const seen = new Set<string>();
             const effects = (e.effect ?? []).filter((ef) => !seen.has(ef.id) && !!seen.add(ef.id));
@@ -155,7 +176,7 @@ const enchantRows = computed<QueryRow[]>(() =>
             return toRow(
                 String(e.id),
                 e.name.tw,
-                `${e.type === "prefix" ? "接頭" : "接尾"}・${(e.limit ?? []).join("／") || "不限"}${hasConditional ? "・另有條件效果未計" : ""}`,
+                `${e.type === "prefix" ? "接頭" : "接尾"}・${slots.join("／")}${hasConditional ? "・另有條件效果未計" : ""}`,
                 // 每個能力取最大值換算
                 effects.map((ef) => valueOfStat(profile.value, abilityLabel(ef.id), ef.max)),
             );
@@ -404,6 +425,13 @@ const bestEntries = computed(() =>
                         <el-option value="prefix" label="接頭" />
                         <el-option value="suffix" label="接尾" />
                     </el-select>
+                    <template v-if="queryKind === 'enchant'">
+                        <WeaponTypeSelect v-model="enchantWeapon" :allowed="profile.weaponTypes" />
+                        <el-select v-model="enchantSlot" size="small" style="width: 110px">
+                            <el-option value="all" label="所有部位" />
+                            <el-option v-for="s in enchantSlotOptions" :key="s.label" :value="s.label" :label="s.label" />
+                        </el-select>
+                    </template>
                     <el-select v-if="queryKind === 'reforge'" v-model="reforgeQueryCategory" size="small" style="width: 160px">
                         <el-option v-for="o in categoryOptions" :key="o.value" :value="o.value" :label="o.label" />
                     </el-select>

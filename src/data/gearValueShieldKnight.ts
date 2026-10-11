@@ -43,6 +43,7 @@ export function buildShieldKnightProfile(items: EfficiencyLike[]): ValueProfile 
     return {
         id: "shield-knight",
         label: "聖盾騎士",
+        weaponTypes: ["單手武器+盾"],
         statWeights,
         levelWeights,
         aliases: {

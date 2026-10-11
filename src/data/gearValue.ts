@@ -17,6 +17,8 @@ export interface ValueProfile {
     levelWeights: Record<string, number>;
     /** 詞條別名 → 能力名稱（例如「精通斧最大傷害」→「最大傷害」） */
     aliases: Record<string, string>;
+    /** 這個職業能用的武器類型（enchantSlots.ts 的 QUICK_WEAPON_OPTIONS.label），賦予查詢只列這些；沒填 = 全部 */
+    weaponTypes?: string[];
 }
 
 export interface ValuedStat {
