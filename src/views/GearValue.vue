@@ -370,6 +370,7 @@ const bestEntries = computed(() =>
 
             <el-collapse class="gv-collapse">
                 <el-collapse-item title="效益表（每 1 單位等同多少大傷，可自行修改）" name="weights">
+                    <div class="gv-hint">聖盾騎士的「暴擊率」預設為 0：遊戲有暴擊率上限，只能靠卡莉亞赫的結界或活動 buff 拉高，裝備提供的暴擊率可忽略；「暴擊上限增加」才吃傷害效益的「暴擊率上限」。</div>
                     <table class="gv-table">
                         <thead>
                             <tr>

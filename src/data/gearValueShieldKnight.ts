@@ -9,7 +9,8 @@ type EfficiencyLike = Pick<DamageEfficiencyItem, "id" | "equivalentMaxDamage">;
 
 /** 效益檔裡聖盾騎士有用到的傷害效益項目 → 能力名稱／細工詞條名稱 */
 const STAT_FROM_EFFICIENCY: [DamageEfficiencyItem["id"], string[]][] = [
-    ["criticalRate", ["暴擊率"]],
+    // 計算器的暴擊率視為已達上限，「傷害效益」的暴擊率是「暴擊率上限」+1% 的價值，對應「暴擊上限增加」，不是一般的「暴擊率」
+    ["criticalRate", ["暴擊上限增加"]],
     ["criticalDamage", ["暴擊傷害"]],
     ["extraDamage", ["額外傷害"]],
     ["weaponExtraDamage", ["武器額外傷害"]],
@@ -40,6 +41,8 @@ export function buildShieldKnightProfile(items: EfficiencyLike[]): ValueProfile 
         const w = eq(id);
         if (w !== null) levelWeights[name] = w;
     }
+    // 遊戲有暴擊率上限，只能靠卡莉亞赫的結界或活動 buff 拉高，所以賦予／稱號／細工提供的「暴擊率」忽略（設 0）
+    statWeights["暴擊率"] = 0;
     return {
         id: "shield-knight",
         label: "聖盾騎士",
@@ -51,6 +54,8 @@ export function buildShieldKnightProfile(items: EfficiencyLike[]): ValueProfile 
             最大生命力: "最大生命值",
             精通斧最大傷害: "最大傷害",
             精通斧暴擊率: "暴擊率",
+            暴擊上限: "暴擊上限增加",
+            暴擊率上限: "暴擊上限增加",
         },
     };
 }
