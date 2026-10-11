@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { enchants } from "../data/enchants";
-import { enchantsForSlot, slotsForWeapon } from "../data/enchantSlots";
+import { enchantsForSlot, formatRank, slotsForWeapon } from "../data/enchantSlots";
 import WeaponTypeSelect from "../components/WeaponTypeSelect.vue";
 import { abilitiesMap } from "../data/abilities";
 import titleJsonData from "../data/title.json";
@@ -144,43 +144,59 @@ const toRow = (key: string, name: string, tag: string, stats: ValuedStat[]): Que
     value: sumValues(stats),
 });
 
-// 賦予
-const enchantTypeFilter = ref<"all" | "prefix" | "suffix">("all");
+// 賦予：依部位列出接頭／接尾（排版比照賦予快速檢視），每格取效益最高的前幾筆
 const enchantWeapon = ref(baseProfile.value.weaponTypes?.[0] ?? "單手武器+盾");
 const enchantSlot = ref("all");
+const enchantTopN = ref(5);
+const enchantNoPersonalize = ref(false);
 const enchantSlotOptions = computed(() => slotsForWeapon(enchantWeapon.value));
 watch(enchantWeapon, () => {
     if (enchantSlot.value !== "all" && !enchantSlotOptions.value.some((s) => s.label === enchantSlot.value)) enchantSlot.value = "all";
 });
-/** 該武器類型各部位能裝的賦予（一個賦予可能能裝在多個部位） */
-const enchantsBySlot = computed(() => {
-    const byId = new Map<number, { enchant: (typeof enchants)[number]; slots: string[] }>();
-    for (const slot of enchantSlotOptions.value) {
-        if (enchantSlot.value !== "all" && slot.label !== enchantSlot.value) continue;
-        for (const e of enchantsForSlot(enchants, slot, enchantWeapon.value)) {
-            const hit = byId.get(e.id);
-            if (hit) hit.slots.push(slot.label);
-            else byId.set(e.id, { enchant: e, slots: [slot.label] });
-        }
-    }
-    return [...byId.values()];
-});
-const enchantRows = computed<QueryRow[]>(() =>
-    enchantsBySlot.value
-        .filter(({ enchant }) => enchantTypeFilter.value === "all" || enchant.type === enchantTypeFilter.value)
-        .map(({ enchant: e, slots }) => {
-            // 同一個能力出現多筆通常是「使用某稱號時」之類的條件效果，只取第一筆（無條件的基本值），其餘不計
-            const seen = new Set<string>();
-            const effects = (e.effect ?? []).filter((ef) => !seen.has(ef.id) && !!seen.add(ef.id));
-            const hasConditional = (e.effect ?? []).length > effects.length;
-            return toRow(
-                String(e.id),
-                e.name.tw,
-                `${e.type === "prefix" ? "接頭" : "接尾"}・${slots.join("／")}${hasConditional ? "・另有條件效果未計" : ""}`,
-                // 每個能力取最大值換算
-                effects.map((ef) => valueOfStat(profile.value, abilityLabel(ef.id), ef.max)),
-            );
-        }),
+
+interface EnchantEntry {
+    id: number;
+    rank: string;
+    name: string;
+    personalize: boolean;
+    conditional: boolean;
+    stats: ValuedStat[];
+    effects: string;
+    value: number;
+}
+const toEnchantEntry = (e: (typeof enchants)[number]): EnchantEntry => {
+    // 同一個能力出現多筆通常是「使用某稱號時」之類的條件效果，只取第一筆（無條件的基本值），其餘不計
+    const seen = new Set<string>();
+    const effects = (e.effect ?? []).filter((ef) => !seen.has(ef.id) && !!seen.add(ef.id));
+    // 每個能力取最大值換算
+    const stats = effects.map((ef) => valueOfStat(profile.value, abilityLabel(ef.id), ef.max));
+    return {
+        id: e.id,
+        rank: formatRank(e.level),
+        name: e.name.tw,
+        personalize: e.personalize,
+        conditional: (e.effect ?? []).length > effects.length,
+        stats,
+        effects: stats.map((s) => `${s.name} ${s.amount}`).join("、"),
+        value: sumValues(stats),
+    };
+};
+const matchesSearch = (r: { name: string; effects: string }) => {
+    const keyword = search.value.trim();
+    return !keyword || r.name.includes(keyword) || r.effects.includes(keyword);
+};
+const enchantGrid = computed(() =>
+    enchantSlotOptions.value
+        .filter((slot) => enchantSlot.value === "all" || slot.label === enchantSlot.value)
+        .map((slot) => {
+            const entries = enchantsForSlot(enchants, slot, enchantWeapon.value, { noPersonalize: enchantNoPersonalize.value })
+                .map((e) => ({ type: e.type, entry: toEnchantEntry(e) }))
+                .filter(({ entry }) => (!onlyValued.value || entry.value > 0) && matchesSearch(entry))
+                .sort((a, b) => b.entry.value - a.entry.value);
+            const pick = (type: "prefix" | "suffix") => entries.filter((x) => x.type === type).slice(0, enchantTopN.value).map((x) => x.entry);
+            return { label: slot.label, prefix: pick("prefix"), suffix: pick("suffix") };
+        })
+        .filter((row) => row.prefix.length > 0 || row.suffix.length > 0),
 );
 
 // 稱號（只有文字說明，用已知能力名稱去解析）
@@ -272,10 +288,11 @@ const reforgeRows = computed<QueryRow[]>(() =>
 );
 
 const queryRows = computed<QueryRow[]>(() => {
-    const base = { enchant: enchantRows, title: titleRows, doll: dollRows, reforge: reforgeRows }[queryKind.value].value;
+    if (queryKind.value === "enchant") return [];
+    const base = { title: titleRows, doll: dollRows, reforge: reforgeRows }[queryKind.value].value;
     const keyword = search.value.trim();
     return base
-        .filter((r) => (!onlyValued.value || r.value > 0) && (!keyword || r.name.includes(keyword) || r.effects.includes(keyword) || r.tag.includes(keyword)))
+        .filter((r) => (!onlyValued.value || r.value > 0) && (!keyword || matchesSearch(r) || r.tag.includes(keyword)))
         .sort((a, b) => b.value - a.value);
 });
 const shownRows = computed(() => queryRows.value.slice(0, MAX_ROWS));
@@ -421,17 +438,16 @@ const bestEntries = computed(() =>
                         <el-radio-button value="doll">娃娃背包</el-radio-button>
                         <el-radio-button value="reforge">細工</el-radio-button>
                     </el-radio-group>
-                    <el-select v-if="queryKind === 'enchant'" v-model="enchantTypeFilter" size="small" style="width: 110px">
-                        <el-option value="all" label="接頭＋接尾" />
-                        <el-option value="prefix" label="接頭" />
-                        <el-option value="suffix" label="接尾" />
-                    </el-select>
                     <template v-if="queryKind === 'enchant'">
                         <WeaponTypeSelect v-model="enchantWeapon" :allowed="profile.weaponTypes" />
                         <el-select v-model="enchantSlot" size="small" style="width: 110px">
                             <el-option value="all" label="所有部位" />
                             <el-option v-for="s in enchantSlotOptions" :key="s.label" :value="s.label" :label="s.label" />
                         </el-select>
+                        <el-select v-model="enchantTopN" size="small" style="width: 90px">
+                            <el-option v-for="n in [3, 5, 10, 20]" :key="n" :value="n" :label="`前 ${n} 筆`" />
+                        </el-select>
+                        <el-checkbox v-model="enchantNoPersonalize">不綁專</el-checkbox>
                     </template>
                     <el-select v-if="queryKind === 'reforge'" v-model="reforgeQueryCategory" size="small" style="width: 160px">
                         <el-option v-for="o in categoryOptions" :key="o.value" :value="o.value" :label="o.label" />
@@ -439,10 +455,46 @@ const bestEntries = computed(() =>
                     <el-input v-model="search" size="small" clearable placeholder="搜尋名稱或效果" style="width: 220px" />
                     <el-checkbox v-model="onlyValued">只顯示有換算值的</el-checkbox>
                 </div>
-                <div class="gv-hint">
-                    依「相當大傷」由高到低排序，賦予與細工以最大值／滿突破計算；稱號只有文字說明，用已知能力名稱解析，可能有漏。共 {{ queryRows.length }} 筆，顯示前 {{ MAX_ROWS }} 筆。
+                <div v-if="queryKind === 'enchant'" class="gv-hint">
+                    依部位列出接頭／接尾，每格依「相當大傷」由高到低取前幾筆，以最大值計算；數字是這個賦予換算後等同的大傷。
                 </div>
-                <table class="gv-table">
+                <div v-else class="gv-hint">
+                    依「相當大傷」由高到低排序，細工以滿突破計算；稱號只有文字說明，用已知能力名稱解析，可能有漏。共 {{ queryRows.length }} 筆，顯示前 {{ MAX_ROWS }} 筆。
+                </div>
+                <table v-if="queryKind === 'enchant'" class="gv-table gv-grid">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px">部位</th>
+                            <th>接頭</th>
+                            <th>接尾</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="row in enchantGrid" :key="row.label">
+                            <td class="gv-slot">{{ row.label }}</td>
+                            <td v-for="side in [row.prefix, row.suffix]" :key="side === row.prefix ? 'p' : 's'">
+                                <span v-if="side.length === 0" class="gv-muted">—</span>
+                                <div v-for="e in side" :key="e.id" class="gv-ench">
+                                    <div class="gv-ench-head">
+                                        <span class="gv-rank">{{ e.rank }}</span>
+                                        <span class="gv-ench-name">{{ e.name }}</span>
+                                        <span v-if="e.personalize" class="gv-tag">專</span>
+                                        <span class="gv-ench-value">{{ fmt(e.value) }}</span>
+                                    </div>
+                                    <div class="gv-muted gv-ench-effects">
+                                        {{ e.effects }}
+                                        <span v-if="unmappedNames(e.stats).length">（未計入：{{ unmappedNames(e.stats).join("、") }}）</span>
+                                        <span v-if="e.conditional">（另有條件效果未計）</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="enchantGrid.length === 0">
+                            <td colspan="3" class="gv-muted">沒有符合的資料</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table v-else class="gv-table">
                     <thead>
                         <tr>
                             <th>名稱</th>
@@ -618,6 +670,58 @@ const bestEntries = computed(() =>
 }
 .gv-total {
     margin: 0.5rem 0;
+}
+.gv-grid td {
+    width: 45%;
+}
+.gv-grid td.gv-slot {
+    width: auto;
+    white-space: nowrap;
+    vertical-align: middle;
+    text-align: center;
+}
+.gv-ench {
+    padding: 3px 0;
+    border-bottom: 1px solid var(--color-border-primary, #374151);
+}
+.gv-ench:last-child {
+    border-bottom: none;
+}
+.gv-ench-head {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.gv-ench-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.gv-ench-value {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    color: #fcd34d;
+}
+.gv-ench-effects {
+    padding-left: 1.4rem;
+    font-size: 0.75rem;
+}
+.gv-rank {
+    min-width: 18px;
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fcd34d;
+    border: 1px solid #92400e;
+    border-radius: 3px;
+    padding: 0 2px;
+    line-height: 1.4;
+}
+.gv-tag {
+    font-size: 10px;
+    padding: 0 4px;
+    border: 1px solid #b45309;
+    border-radius: 3px;
+    color: #fbbf24;
 }
 .gv-tabs {
     margin-top: 1rem;

@@ -782,7 +782,7 @@ import { RefreshLeft, Plus, Close } from "@element-plus/icons-vue";
 import { Enchant, EnchantAbility } from "../types/Enchant";
 import { enchants, reward } from "../data/enchants";
 import { abilitiesMap, abilitiesValueWithPercentArray } from "../data/abilities";
-import { QUICK_WEAPON_OPTIONS, PRIMARY_IDS, RELEVANT_IDS, isGachaSpecial, enchantsForSlot, slotsForWeapon } from "../data/enchantSlots";
+import { formatRank, QUICK_WEAPON_OPTIONS, PRIMARY_IDS, RELEVANT_IDS, isGachaSpecial, enchantsForSlot, slotsForWeapon } from "../data/enchantSlots";
 import WeaponTypeSelect from "../components/WeaponTypeSelect.vue";
 
 // ── 自定義排序設定 ──────────────────────────────────────────────
@@ -1234,21 +1234,6 @@ const handleReset = () => {
     selectedCondition.value = "search";
     filterPersonalize.value = "all";
     sortBy.value = "default";
-};
-
-// 格式化賦予等級顯示 (1-6 => F-A, 7-15 => 9-1)
-const formatRank = (level: number): string => {
-    if (level >= 1 && level <= 6) {
-        // 1=>F, 2=>E, 3=>D, 4=>C, 5=>B, 6=>A
-        const ranks = ["F", "E", "D", "C", "B", "A"];
-        return ranks[level - 1];
-    } else if (level >= 7 && level <= 15) {
-        // 7=>9, 8=>8, ..., 15=>1
-        return String(16 - level);
-    } else {
-        // 超出範圍，直接顯示數字
-        return String(level);
-    }
 };
 
 // 渲染能力效果
