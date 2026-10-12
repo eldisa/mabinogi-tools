@@ -1945,7 +1945,12 @@ function buildLeverContext(settings: ShieldKnightSettings) {
         talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
     };
     const compute = (levers: DamageLevers, stats = finalStatsBase) => calculateTotalOutputWithLevers(levers, stats, ratios, settings);
-    return { calcResult, finalStatsBase, ratios, baseLevers, compute, baseTotal: compute(baseLevers) };
+    const baseTotal = compute(baseLevers);
+    // 傷害效益以「面板最大傷害 +1」為基準（裝備、賦予的最大傷害都先加進面板，之後才乘攻擊係數）。
+    // 槓桿的 maxDamage 是最終最大傷害，面板 +1 實際會變成 panelSlope 點（攻擊係數 × 戰場等加成），所以要換算
+    const panelSlope = calculateAll({ ...settings, panelMaxDamage: settings.panelMaxDamage + 1 }).finalStats.maxDamage - baseLevers.maxDamage;
+    const panelPointLevers: DamageLevers = { ...baseLevers, maxDamage: baseLevers.maxDamage + (panelSlope > 0 ? panelSlope : 1) };
+    return { calcResult, finalStatsBase, ratios, baseLevers, compute, baseTotal, panelSlope: panelSlope > 0 ? panelSlope : 1, panelPointLevers };
 }
 
 export interface HolyWaterComparisonItem {
@@ -1962,8 +1967,8 @@ export interface HolyWaterComparisonItem {
 
 /** 四種聖水能力各自「多一格、填滿上限」對總輸出的直接影響（已含暴擊期望值、破防、秘法技能吃到的 HP／防禦） */
 export function calculateHolyWaterComparison(settings: ShieldKnightSettings): HolyWaterComparisonItem[] {
-    const { baseLevers, compute, baseTotal } = buildLeverContext(settings);
-    const maxDamageDelta = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + 1 }) - baseTotal;
+    const { baseLevers, compute, baseTotal, panelPointLevers, panelSlope } = buildLeverContext(settings);
+    const maxDamageDelta = compute(panelPointLevers) - baseTotal;
     // HP／防禦加在高潔誓約之前的基礎值，整段重算，誓約的 %（HP 15%、防禦 10%）與上限會自動套用
     const withBaseStat = (key: "maxHp" | "defense" | "magicDefense", value: number) => {
         const raw = toRawCharacterStats(settings.character);
@@ -1971,7 +1976,7 @@ export function calculateHolyWaterComparison(settings: ShieldKnightSettings): Ho
     };
     return HOLY_WATER_ABILITIES.map((a) => {
         let total: number;
-        if (a.id === "maxDamage") total = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + a.max });
+        if (a.id === "maxDamage") total = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + a.max * panelSlope });
         else if (a.id === "criticalDamage") total = compute({ ...baseLevers, criticalDamagePercent: baseLevers.criticalDamagePercent + a.max });
         else total = withBaseStat(a.id, a.max);
         const deltaOutput = total - baseTotal;
@@ -1987,10 +1992,10 @@ export function calculateHolyWaterComparison(settings: ShieldKnightSettings): Ho
 }
 
 export function calculateDamageEfficiency(settings: ShieldKnightSettings): DamageEfficiencyItem[] {
-    const { calcResult, finalStatsBase, ratios, baseLevers, compute, baseTotal } = buildLeverContext(settings);
+    const { calcResult, finalStatsBase, ratios, baseLevers, compute, baseTotal, panelPointLevers } = buildLeverContext(settings);
 
     const probes: { id: DamageEfficiencyItem["id"]; label: string; unit: string; bump: DamageLevers }[] = [
-        { id: "maxDamage", label: "面板最大傷害／常數攻擊力", unit: "1 點大傷", bump: { ...baseLevers, maxDamage: baseLevers.maxDamage + 1 } },
+        { id: "maxDamage", label: "面板最大傷害", unit: "1 點大傷", bump: panelPointLevers },
         { id: "criticalDamage", label: "暴擊傷害", unit: "1%", bump: { ...baseLevers, criticalDamagePercent: baseLevers.criticalDamagePercent + 1 } },
         { id: "criticalRate", label: "暴擊率上限", unit: "1%", bump: { ...baseLevers, criticalRatePercent: baseLevers.criticalRatePercent + 1 } },
         {
@@ -2296,13 +2301,13 @@ export interface SpecialReformRow {
 
 /**
  * 特殊改造各階段的價值：把目前已選的 R／S 先拿掉當作「沒改造」，再逐階套上，
- * 量測總輸出增加量並換算成「相當大傷」。S 的最大傷害已含在面板內，這裡用「最終/面板」比例近似它吃到的攻擊係數。
+ * 量測總輸出增加量並換算成「相當大傷」。S 的最大傷害已含在面板內，換算成最終最大傷害時乘「面板 +1 對最終最大傷害的增幅」。
  */
 export function calculateSpecialReformTable(settings: ShieldKnightSettings): SpecialReformRow[] {
-    const { baseLevers, compute, baseTotal } = buildLeverContext(settings);
-    const maxDamageDelta = compute({ ...baseLevers, maxDamage: baseLevers.maxDamage + 1 }) - baseTotal;
+    const { baseLevers, compute, baseTotal, panelSlope, panelPointLevers } = buildLeverContext(settings);
+    const maxDamageDelta = compute(panelPointLevers) - baseTotal;
     const { maxStage, rStage: curR, sStage: curS } = resolveSpecialReform(settings);
-    const coefficientRatio = settings.panelMaxDamage > 0 ? baseLevers.maxDamage / settings.panelMaxDamage : 1;
+    const coefficientRatio = panelSlope;
 
     // 基準 = 完全沒有特殊改造：把目前選的 R／S 都拿掉（R 與 S 只能擇一，所以兩欄各自和「沒改造」比）
     const generalPercentWithCurrent = calculateGeneralExtraPercent({

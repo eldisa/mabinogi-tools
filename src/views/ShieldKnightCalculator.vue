@@ -1855,7 +1855,7 @@ onMounted(() => {
                     <!-- 傷害效益 -->
                     <el-tab-pane label="傷害效益" name="efficiency">
                         <div class="tab-body">
-                            <div class="field-section-label">各屬性 1 單位等同多少大傷（依目前設定 + 技能使用次數，微擾量測邊際效益）</div>
+                            <div class="field-section-label">各屬性 1 單位等同多少「面板最大傷害」（賦予、裝備上的大傷加在面板，之後才乘攻擊係數；依目前設定 + 技能使用次數，微擾量測邊際效益）</div>
                             <div v-if="hasAnyUsageCount" class="field-row">
                                 <el-checkbox v-model="efficiencySortByGain" />
                                 <span class="switch-label">依「總輸出增幅」由高到低排序</span>
