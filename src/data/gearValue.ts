@@ -55,17 +55,23 @@ export const profileStatNames = (profile: ValueProfile): string[] =>
 
 /**
  * 從稱號這類只有文字說明的效果，抓出已知能力的數值。
- * 支援「最大傷害增加25」「暴擊傷害 20% 增加」兩種寫法；中括號 [] 內視為負面效果，不計。
+ * 支援「最大傷害增加25」「最大傷害 25 增加」「暴擊傷害 20% 增加」「增加保護 5」幾種寫法；中括號 [] 內視為負面效果，不計。
+ * 名稱由長到短比對，比對到的字會從文字中劃掉，避免「魔法防禦 5 增加」又被當成「防禦 5 增加」重複計算。
  */
 export function parseEffectText(desc: string, statNames: string[]): { name: string; amount: number }[] {
-    const positive = desc.replace(/\[([^\]]*)\]/g, "");
+    let rest = desc.replace(/\[([^\]]*)\]/g, "");
     const result: { name: string; amount: number }[] = [];
-    for (const name of statNames) {
-        const esc = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const num = "(\\d+(?:\\.\\d+)?)";
+    for (const name of [...statNames].sort((a, b) => b.length - a.length)) {
+        const esc = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[值]?";
         const m =
-            positive.match(new RegExp(esc + "[值]?增加\\s*(\\d+(?:\\.\\d+)?)")) ??
-            positive.match(new RegExp(esc + "[值]?\\s*(\\d+(?:\\.\\d+)?)\\s*[%]?\\s*增加"));
-        if (m) result.push({ name, amount: Number(m[1]) });
+            rest.match(new RegExp(esc + "\\s*增加\\s*" + num)) ??
+            rest.match(new RegExp(esc + "\\s*" + num + "\\s*%?\\s*增加")) ??
+            rest.match(new RegExp("增加\\s*" + esc + "\\s*" + num));
+        if (m) {
+            result.push({ name, amount: Number(m[1]) });
+            rest = rest.replace(m[0], " ");
+        }
     }
     return result;
 }
