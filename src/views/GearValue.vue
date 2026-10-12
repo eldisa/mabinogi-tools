@@ -2,6 +2,10 @@
 import { computed, ref, watch } from "vue";
 import type { Enchant } from "../types/Enchant";
 import EnchantQuickView from "../components/EnchantQuickView.vue";
+import WeaponTypeSelect from "../components/WeaponTypeSelect.vue";
+import { enchants } from "../data/enchants";
+import { formatRank } from "../data/enchantSlots";
+import { buildBestSet } from "../data/gearValueBestSet";
 import { abilitiesMap } from "../data/abilities";
 import titleJsonData from "../data/title.json";
 import dollBagsData from "../data/doll_bags.json";
@@ -253,6 +257,28 @@ const queryRows = computed<QueryRow[]>(() => {
 const shownRows = computed(() => queryRows.value.slice(0, MAX_ROWS));
 const unmappedNames = (stats: ValuedStat[]) => stats.filter((s) => s.weight === null).map((s) => s.name);
 
+// ═══════════════ 最高效益配置 ═══════════════
+const bestWeapon = ref(profile.value.weaponTypes?.[0] ?? "單手武器+盾");
+const bestNoPersonalize = ref(false);
+const bestHideRobe = ref(false);
+const bestHideMoonCake = ref(false);
+const bestSet = computed(() =>
+    buildBestSet(enchants, bestWeapon.value, enchantScore, {
+        noPersonalize: bestNoPersonalize.value,
+        hideRobe: bestHideRobe.value,
+        hideMoonCake: bestHideMoonCake.value,
+    }),
+);
+const bestTotal = computed(() => bestSet.value.reduce((sum, s) => sum + (s.prefix ? enchantScore(s.prefix) : 0) + (s.suffix ? enchantScore(s.suffix) : 0), 0));
+/** 賦予的必要詞條摘要（同能力只取第一筆，與評分一致） */
+const enchantEffectText = (e: Enchant): string => {
+    const seen = new Set<string>();
+    return e.effect
+        .filter((ef) => enchantShowEffect(ef.id) && !seen.has(ef.id) && !!seen.add(ef.id))
+        .map((ef) => `${abilityLabel(ef.id)} ${ef.min === ef.max ? ef.max : `${ef.min}~${ef.max}`}`)
+        .join("、");
+};
+
 // ═══════════════ 細工評價 ═══════════════
 interface SetRow {
     name: string;
@@ -437,7 +463,51 @@ const bestEntries = computed(() =>
                 </table>
             </el-tab-pane>
 
-            <!-- 2. 細工評價 -->
+            <!-- 2. 最高效益配置 -->
+            <el-tab-pane label="最高效益配置">
+                <div class="gv-row">
+                    <label>武器類型</label>
+                    <WeaponTypeSelect v-model="bestWeapon" :allowed="profile.weaponTypes" />
+                    <el-checkbox v-model="bestNoPersonalize">不綁專（過濾轉專用）</el-checkbox>
+                    <el-checkbox v-model="bestHideRobe">裝備破袍（不用袍/翅膀欄）</el-checkbox>
+                    <el-checkbox v-model="bestHideMoonCake">不用月餅</el-checkbox>
+                </div>
+                <div class="gv-hint">
+                    每個部位挑接頭、接尾各一，同一個賦予不重複使用，整套總分最高（不是每格各取第一名）。以賦予最大值換算，同能力的條件效果不計。
+                </div>
+                <table class="gv-table">
+                    <thead>
+                        <tr>
+                            <th>部位</th>
+                            <th>接頭</th>
+                            <th>接尾</th>
+                            <th class="gv-num">部位小計</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="s in bestSet" :key="s.slot.label">
+                            <td>{{ s.slot.label }}</td>
+                            <td v-for="side in ([s.prefix, s.suffix] as (Enchant | null)[])" :key="side?.id ?? 'none'">
+                                <template v-if="side">
+                                    <b>{{ formatRank(side.level) }}</b>
+                                    {{ side.name.tw || side.name.en }}
+                                    <span v-if="side.personalize" class="gv-muted">（專）</span>
+                                    <span class="gv-muted">　{{ fmt(enchantScore(side)) }}</span>
+                                    <div class="gv-muted">{{ enchantEffectText(side) }}</div>
+                                </template>
+                                <span v-else class="gv-muted">—</span>
+                            </td>
+                            <td class="gv-num">{{ fmt((s.prefix ? enchantScore(s.prefix) : 0) + (s.suffix ? enchantScore(s.suffix) : 0)) }}</td>
+                        </tr>
+                        <tr v-if="bestSet.length === 0">
+                            <td colspan="4" class="gv-muted">沒有可用的賦予</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="gv-total">整套賦予合計：相當 <b>{{ fmt(bestTotal) }}</b> 大傷</div>
+            </el-tab-pane>
+
+            <!-- 3. 細工評價 -->
             <el-tab-pane label="細工評價">
                 <div class="gv-row">
                     <label>裝備部位</label>
