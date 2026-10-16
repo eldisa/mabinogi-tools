@@ -38,6 +38,7 @@ import {
     specialReformRCrit,
     specialReformSExtra,
     calculateSpecialReformTable,
+    calculateOghamEfficiency,
     CRITICAL_DAMAGE_SET_BONUS,
     CRITICAL_RATE_ITEM_BONUS,
     MULIAS_RELIC_LEVEL_OPTIONS,
@@ -439,6 +440,7 @@ watch(
     { immediate: true },
 );
 const specialReformRows = computed(() => calculateSpecialReformTable(settings));
+const oghamEfficiencyRows = computed(() => calculateOghamEfficiency(settings));
 
 // ── 技能傷害來源比例 ──
 const usageRows = computed(() => {
@@ -1934,8 +1936,40 @@ onMounted(() => {
                                 </table>
                             </div>
                             <div class="field-hint">
-                                S 的最大傷害已含在面板，這裡用「最終/面板」比例近似它吃到的攻擊係數；S 的追加傷害算進額外傷害那一桶。第 8 階只有靈魂解放者／日月劍可用。
+                                S 的最大傷害已含在面板，換算成最終最大傷害時乘「面板 +1 對最終最大傷害的增幅」；S 的追加傷害算進額外傷害那一桶。第 8 階只有靈魂解放者／日月劍可用。
                             </div>
+
+                            <template v-if="settings.oghamEnabled">
+                                <div class="field-section-label">歐甘詞條效益（在目前設定再加 1 級／滿級，相當多少面板大傷）</div>
+                                <div v-if="!hasAnyUsageCount" class="field-hint">請先在「技能使用次數」分頁設定至少一個技能的使用次數。</div>
+                                <div v-else class="equip-table-wrap">
+                                    <table class="equip-table">
+                                        <thead>
+                                            <tr>
+                                                <th>詞條</th>
+                                                <th>再加 1 級</th>
+                                                <th>滿級</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="row in oghamEfficiencyRows" :key="row.id">
+                                                <td class="equip-slot-label">{{ row.label }}{{ row.special ? "（特殊歐甘）" : "" }}</td>
+                                                <td>
+                                                    {{ row.levelEquivalent === null ? "-" : fmtDecimal(row.levelEquivalent) }}
+                                                    <span class="field-hint">（{{ row.levelPercent === null ? "-" : `+${fmtRatio(row.levelPercent)}%` }}）</span>
+                                                </td>
+                                                <td>
+                                                    {{ row.maxEquivalent === null ? "-" : fmtDecimal(row.maxEquivalent) }}
+                                                    <span class="field-hint">（{{ row.maxLevel }} 級，{{ row.maxPercent === null ? "-" : `+${fmtRatio(row.maxPercent)}%` }}）</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="field-hint">
+                                    詞條要裝在歐甘欄位才有效，特殊詞條只有特殊歐甘能選；若已經裝備同一詞條，這裡量的是繼續往上加的邊際效益。
+                                </div>
+                            </template>
 
                             <div class="field-section-label">儲存傷害效益（存下目前這份結果，未來「計算裝備提升幅度」會讀取這裡的快照來比較）</div>
                             <div class="field-row">

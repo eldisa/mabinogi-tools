@@ -480,6 +480,8 @@ export interface OghamSettings {
     /** 組合點數 5～9 */
     synergyScore: number;
     slots: OghamSlot[];
+    /** 只給傷害效益試算用的額外詞條加總（不存檔、不進分享代碼） */
+    probe?: Partial<Record<OghamOptionId, number>>;
 }
 
 export const OGHAM_SLOT_COUNT = 5;
@@ -521,6 +523,7 @@ export function calculateOghamTotals(settings: Pick<ShieldKnightSettings, "ogham
             totals[def.id] += def.perLevel * Math.min(def.maxLevel, Math.max(0, Math.round(opt.level)));
         }
     }
+    for (const [id, extra] of Object.entries(settings.ogham.probe ?? {})) totals[id as OghamOptionId] += extra ?? 0;
     return totals;
 }
 
@@ -2297,6 +2300,49 @@ export interface SpecialReformRow {
     sEquivalentMaxDamage: number | null;
     rDeltaPercent: number | null;
     sDeltaPercent: number | null;
+}
+
+export interface OghamEfficiencyRow {
+    id: OghamOptionId;
+    label: string;
+    special: boolean;
+    perLevel: number;
+    maxLevel: number;
+    /** 再多 1 級相當多少面板大傷／總輸出增幅%（總輸出為 0 時 null） */
+    levelEquivalent: number | null;
+    levelPercent: number | null;
+    /** 滿級（一個詞條 maxLevel 級）相當多少面板大傷／增幅% */
+    maxEquivalent: number | null;
+    maxPercent: number | null;
+}
+
+/**
+ * 歐甘各詞條的效益：在目前設定上再加 1 級／滿級，量測總輸出增加量並換算成相當多少面板大傷。
+ * 沒勾符文版本時回傳空陣列；已經裝備同一詞條的話，量到的是「再加上去」的邊際效益。
+ */
+export function calculateOghamEfficiency(settings: ShieldKnightSettings): OghamEfficiencyRow[] {
+    if (!settings.oghamEnabled) return [];
+    const { compute, baseTotal, panelPointLevers } = buildLeverContext(settings);
+    const perPanelPoint = compute(panelPointLevers) - baseTotal;
+    const probe = (id: OghamOptionId, amount: number) => {
+        const total = calculateTotalOutput({ ...settings, ogham: { ...settings.ogham, probe: { [id]: amount } } }, settings.skillUsageCounts) - baseTotal;
+        return { equivalent: perPanelPoint !== 0 ? total / perPanelPoint : null, percent: outputPercent(total, baseTotal) };
+    };
+    return OGHAM_OPTIONS.map((o) => {
+        const one = probe(o.id, o.perLevel);
+        const full = probe(o.id, o.perLevel * o.maxLevel);
+        return {
+            id: o.id,
+            label: o.label,
+            special: o.special,
+            perLevel: o.perLevel,
+            maxLevel: o.maxLevel,
+            levelEquivalent: one.equivalent,
+            levelPercent: one.percent,
+            maxEquivalent: full.equivalent,
+            maxPercent: full.percent,
+        };
+    });
 }
 
 /**
