@@ -2049,7 +2049,8 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             id: "talentIncreaseDamage",
             label: "才能增加傷害",
             unit: "1%",
-            bump: { ...baseLevers, talentIncreaseDamageMultiplier: baseLevers.talentIncreaseDamageMultiplier + 0.01 },
+            // 乘算來源：多一個 +1% 的來源 = 整個倍率 ×1.01
+            bump: { ...baseLevers, talentIncreaseDamageMultiplier: baseLevers.talentIncreaseDamageMultiplier * 1.01 },
         },
         {
             id: "finalIncreaseDamage",
@@ -2057,11 +2058,9 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             unit: "1%",
             bump: {
                 ...baseLevers,
-                finalIncreaseDamageMultiplier: baseLevers.finalIncreaseDamageMultiplier + 0.01,
-                // 秘法技能的倍率 = 最終增加傷害 × 省察的痕跡，加 0.01 同樣要乘上省察的痕跡那一項
-                arcaneFinalIncreaseDamageMultiplier:
-                    baseLevers.arcaneFinalIncreaseDamageMultiplier +
-                    0.01 * (baseLevers.arcaneFinalIncreaseDamageMultiplier / baseLevers.finalIncreaseDamageMultiplier),
+                // 乘算來源：多一個 +1% 的來源 = 整個倍率 ×1.01（秘法技能的倍率 = 最終增加傷害 × 省察的痕跡，同樣 ×1.01）
+                finalIncreaseDamageMultiplier: baseLevers.finalIncreaseDamageMultiplier * 1.01,
+                arcaneFinalIncreaseDamageMultiplier: baseLevers.arcaneFinalIncreaseDamageMultiplier * 1.01,
             },
         },
     ];
