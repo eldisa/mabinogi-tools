@@ -865,6 +865,8 @@ export interface CalculationResult {
     criticalDamageExpected: number;
     /** 通用額外傷害倍率＝(1+武器額外傷害)×(1+額外傷害) */
     generalExtraDamageMultiplier: number;
+    /** 才能額外／秘法額外併入「額外傷害那一桶」時要乘的桶外倍率＝(1+武器額外)×(1+破防暴擊時額外期望值) */
+    generalExtraScale: number;
     /** 武器額外傷害%（武器本身 + 單手武器搭配盾牌的額外傷害），併入通用額外傷害的其中一桶 */
     weaponExtraDamagePercent: number;
     /** 才能增加傷害倍率（種族技能×猛擊，乘算） */
@@ -982,6 +984,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     const weaponExtraDamagePercent = weapon.extraDamagePercent + (isOneHandWeapon ? (shield.oneHandWeaponExtraDamagePercent ?? 0) : 0);
     // 破防的「暴擊時通用額外傷害」（例如銳利目光）非暴擊不套用，用暴擊率換算成期望值近似，跟全引擎的期望值作法一致
     const critOnlyGeneralExtraPercent = ((armorBreak?.critDamagePercent ?? 0) * criticalRatePercent) / 100;
+    const generalExtraScale = (1 + weaponExtraDamagePercent / 100) * (1 + critOnlyGeneralExtraPercent / 100);
     const generalExtraDamageMultiplier =
         calculateGeneralExtraDamageMultiplier({
             ...settings.extraDamage,
@@ -1071,6 +1074,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
             skillRatioPercent,
             criticalDamagePercent: criticalDamageExpected,
             generalExtraDamageMultiplier,
+            generalExtraScale,
             talentExtraDamagePercent,
             talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier,
@@ -1141,6 +1145,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         criticalRatePercent,
         criticalDamageExpected,
         generalExtraDamageMultiplier,
+        generalExtraScale,
         talentIncreaseDamageMultiplier,
         finalIncreaseDamageMultiplier,
         arcaneFinalIncreaseDamageMultiplier,
@@ -1241,6 +1246,7 @@ function makeTerm(label: string, ratioPercent: number, statValue: number): Skill
 export interface ArcaneSharedParams {
     criticalDamagePercent: number;
     generalExtraDamageMultiplier: number;
+    generalExtraScale: number;
     talentIncreaseDamageMultiplier: number;
     arcaneExtraDamagePercent: number;
     finalIncreaseDamageMultiplier: number;
@@ -1273,6 +1279,7 @@ function finalizeArcaneSkill(
             talentExtraDamagePercent: shared.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: shared.talentIncreaseDamageMultiplier,
             generalExtraDamageMultiplier: shared.generalExtraDamageMultiplier,
+            generalExtraScale: shared.generalExtraScale,
             arcaneExtraDamagePercent: shared.arcaneExtraDamagePercent,
             finalIncreaseDamageMultiplier: shared.finalIncreaseDamageMultiplier,
             protectionReduction: shared.protectionReduction,
@@ -1574,6 +1581,7 @@ export function calculateChargeHit(settings: ShieldKnightSettings, critMode: Cri
             skillRatioPercent: abilities.chargeRatio,
             criticalDamagePercent,
             generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+            generalExtraScale: calcResult.generalExtraScale,
             talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
@@ -1609,6 +1617,7 @@ export function calculateMengJi(
     magicCircleActive: boolean,
     criticalDamagePercent: number,
     generalExtraDamageMultiplier: number,
+    generalExtraScale: number,
     talentIncreaseDamageMultiplier: number,
     finalIncreaseDamageMultiplier: number,
     protectionReduction = 1,
@@ -1622,6 +1631,7 @@ export function calculateMengJi(
             skillRatioPercent: ratio,
             criticalDamagePercent,
             generalExtraDamageMultiplier,
+            generalExtraScale,
             talentExtraDamagePercent,
             talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier,
@@ -1693,6 +1703,7 @@ export function calculateSkillsForSettings(
             skillRatioPercent,
             criticalDamagePercent: effectiveCritPercent,
             generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+            generalExtraScale: calcResult.generalExtraScale,
             talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
@@ -1731,6 +1742,7 @@ export function calculateSkillsForSettings(
             {
                 criticalDamagePercent: effectiveCritPercent,
                 generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+                generalExtraScale: calcResult.generalExtraScale,
                 talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
                 arcaneExtraDamagePercent: calcResult.arcaneExtraDamagePercent,
                 finalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
@@ -1749,6 +1761,7 @@ export function calculateSkillsForSettings(
             mengJiMagicCircleActive,
             effectiveCritPercent,
             calcResult.generalExtraDamageMultiplier,
+            calcResult.generalExtraScale,
             calcResult.talentIncreaseDamageMultiplier,
             calcResult.finalIncreaseDamageMultiplier,
             calcResult.protectionReduction,
@@ -1777,6 +1790,7 @@ interface DamageLevers {
     criticalDamagePercent: number;
     criticalRatePercent: number;
     generalExtraDamageMultiplier: number;
+    generalExtraScale: number;
     talentIncreaseDamageMultiplier: number;
     finalIncreaseDamageMultiplier: number;
     /** 秘法技能專用（含省察的痕跡），重擊/風車/猛擊不吃省察的痕跡 */
@@ -1806,6 +1820,7 @@ function calculateTotalOutputWithLevers(
             skillRatioPercent,
             criticalDamagePercent: criticalDamageExpected,
             generalExtraDamageMultiplier: levers.generalExtraDamageMultiplier,
+            generalExtraScale: levers.generalExtraScale,
             talentExtraDamagePercent: levers.talentExtraDamagePercent,
             talentIncreaseDamageMultiplier: levers.talentIncreaseDamageMultiplier,
             finalIncreaseDamageMultiplier: levers.finalIncreaseDamageMultiplier,
@@ -1843,6 +1858,7 @@ function calculateTotalOutputWithLevers(
             {
                 criticalDamagePercent: criticalDamageExpected,
                 generalExtraDamageMultiplier: levers.generalExtraDamageMultiplier,
+                generalExtraScale: levers.generalExtraScale,
                 talentIncreaseDamageMultiplier: levers.talentIncreaseDamageMultiplier,
                 arcaneExtraDamagePercent: levers.arcaneExtraDamagePercent,
                 finalIncreaseDamageMultiplier: levers.arcaneFinalIncreaseDamageMultiplier,
@@ -1861,6 +1877,7 @@ function calculateTotalOutputWithLevers(
             mengJiMagicCircleActive,
             criticalDamageExpected,
             levers.generalExtraDamageMultiplier,
+            levers.generalExtraScale,
             levers.talentIncreaseDamageMultiplier,
             levers.finalIncreaseDamageMultiplier,
             levers.protectionReduction,
@@ -1939,6 +1956,7 @@ function buildLeverContext(settings: ShieldKnightSettings) {
         criticalDamagePercent: calcResult.criticalDamagePercent,
         criticalRatePercent: calcResult.criticalRatePercent,
         generalExtraDamageMultiplier: calcResult.generalExtraDamageMultiplier,
+        generalExtraScale: calcResult.generalExtraScale,
         talentIncreaseDamageMultiplier: calcResult.talentIncreaseDamageMultiplier,
         finalIncreaseDamageMultiplier: calcResult.finalIncreaseDamageMultiplier,
         arcaneFinalIncreaseDamageMultiplier: calcResult.arcaneFinalIncreaseDamageMultiplier,
@@ -2010,13 +2028,16 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
                 generalExtraDamageMultiplier:
                     (baseLevers.generalExtraDamageMultiplier * (1 + (calcResult.weaponExtraDamagePercent + 1) / 100)) /
                     (1 + calcResult.weaponExtraDamagePercent / 100),
+                generalExtraScale:
+                    (baseLevers.generalExtraScale * (1 + (calcResult.weaponExtraDamagePercent + 1) / 100)) / (1 + calcResult.weaponExtraDamagePercent / 100),
             },
         },
         {
             id: "extraDamage",
             label: "額外傷害",
             unit: "1%",
-            bump: { ...baseLevers, generalExtraDamageMultiplier: baseLevers.generalExtraDamageMultiplier + 0.01 },
+            // 額外傷害那一桶 +1% = 通用倍率增加「桶外倍率 × 0.01」
+            bump: { ...baseLevers, generalExtraDamageMultiplier: baseLevers.generalExtraDamageMultiplier + baseLevers.generalExtraScale * 0.01 },
         },
         {
             id: "arcaneExtraDamage",
