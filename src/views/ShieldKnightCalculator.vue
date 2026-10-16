@@ -80,7 +80,7 @@ const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
 
 // 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
 const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
-const TAB_NAMES = ["character", "equipment", "attack", "critextra", "skill", "expensive", "ogham", "usage", "compare", "efficiency", "armorbreak"];
+const TAB_NAMES = ["character", "equipment", "critextra", "skill", "expensive", "ogham", "usage", "compare", "efficiency", "armorbreak"];
 const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
 function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean; applyCombo?: boolean } {
     try {
@@ -90,6 +90,7 @@ function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boo
     }
 }
 const displayPrefs = loadDisplayPrefs();
+// 舊版有獨立的「攻擊力」分頁（attack），已併入角色分頁
 const activeTab = ref(TAB_NAMES.includes(displayPrefs.tab ?? "") ? (displayPrefs.tab as string) : "character");
 
 const currentBuild = computed(() => CHARACTER_BUILDS.find((b) => b.id === settings.characterBuildId) ?? CHARACTER_BUILDS[0]);
@@ -271,7 +272,7 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     hymnBattlefield: "聖詠演奏：把戰場的序曲 % 的 10% 再加進額外傷害那一桶；需戰場的序曲有發動且有填 %。開啟 vs 關閉的整體價值。",
     spiritWeakness: "精靈武器弱點分析：才能額外傷害 +10%，只算才能技能與秘法技能借用的才能部分。開啟 vs 關閉的整體價值。",
     spiritTransform: "精靈武器實體化：才能額外傷害 +10%（強化後 +25%），只算才能技能與秘法技能借用的才能部分。這裡比較「開實體化（不含強化）」vs 關閉。",
-    battlefield: "戰場的序曲（攻擊力加成%）：以目前戰場% 再 +1% 計算，戰場%、狀態支援、力量團聚都會乘上攻擊係數，在「攻擊力」分頁設定。",
+    battlefield: "戰場的序曲（攻擊力加成%）：以目前戰場% 再 +1% 計算，戰場%、狀態支援、力量團聚都會乘上攻擊係數，在「角色與攻擊力」分頁設定。",
     statusSupport: "狀態支援（+12%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
     strengthGather: "力量團聚（+15%）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
     physicalPotion: "物理攻擊力增加藥水（×1.2）開啟 vs 關閉的整體價值，跟目前是否勾選無關。",
@@ -533,7 +534,7 @@ const skillImageId = (skillId: (typeof ALL_SKILL_META)[number]["id"]): number =>
 /** 最終面板每個條目點擊 info 顯示的詳細說明（公式結構，非即時代入數值） */
 const RESULT_DETAILS: Record<string, string> = {
     cleanMaxDamage: "乾淨最大傷害 = 面板最大傷害 − 髒髒總和（宗師／變身／寵物／辦桌／活動加成／聖水大傷）。",
-    dirtyMaxDamageTotal: "髒髒總和 = 一代宗師 + 變身（含細工等級）+ 寵物加成 + 辦桌 + 活動加成 + 聖水大傷，這些來源在「攻擊力」分頁設定，不吃攻擊係數（藥水/三項注魔）。",
+    dirtyMaxDamageTotal: "髒髒總和 = 一代宗師 + 變身（含細工等級）+ 寵物加成 + 辦桌 + 活動加成 + 聖水大傷，這些來源在「角色與攻擊力」分頁設定，不吃攻擊係數（藥水/三項注魔）。",
     constantAttackPower:
         "常數攻擊力 = 精靈武器攻擊力強化（依武器種類，先從面板扣掉再加回這裡）+ 秘法同步獎勵（聖盾無此加成，恆為 0）+ 盾牌固定加成（如鍋子 +40），跟髒髒總和一樣不吃攻擊係數，但兩者是不同來源、分開加總。",
     finalMaxDamage:
@@ -935,7 +936,7 @@ onMounted(() => {
         <el-alert v-if="needsQuickStart" type="info" :closable="false" class="verify-alert" title="快速開始：最少只要填 2 項">
             <ol class="quick-start-list">
                 <li>
-                    「<el-link type="primary" @click="activeTab = 'attack'">攻擊力</el-link>」分頁填<b>面板最大傷害</b>
+                    「<el-link type="primary" @click="activeTab = 'character'">角色與攻擊力</el-link>」分頁填<b>面板最大傷害</b>
                     <span v-if="settings.panelMaxDamage > 0">（已填）</span>
                 </li>
                 <li>
@@ -985,8 +986,8 @@ onMounted(() => {
                 </div>
 
                 <el-tabs v-model="activeTab" type="border-card" class="setting-tabs">
-                    <!-- 角色基本數值 -->
-                    <el-tab-pane label="角色" name="character">
+                    <!-- 角色基本數值＋攻擊力 -->
+                    <el-tab-pane label="角色與攻擊力" name="character">
                         <div class="tab-body">
                             <div class="field-section-label">角色基本數值</div>
                             <div class="field-row">
@@ -1027,7 +1028,7 @@ onMounted(() => {
                                 <label class="field-label">魔法保護</label>
                                 <el-input-number v-model="settings.character.magicProtection" :min="0" size="small" class="field-select" />
                             </div>
-                            <div class="field-hint">最大傷害改到「攻擊力」分頁用面板數值＋各項加成推算，這裡不用填。</div>
+                            <div class="field-hint">最大傷害改到下方「面板最大傷害」用面板數值＋各項加成推算，這裡不用填。</div>
                             <div class="field-hint" v-if="!settings.character.panelIncludesHolyWater">
                                 最大生命值／防禦請填未計入聖水的數值，聖水加成會在「裝備」分頁填寫後自動加總進來。
                             </div>
@@ -1045,6 +1046,130 @@ onMounted(() => {
                             </div>
                             <div class="field-hint">{{ currentRaceSkill.label }}</div>
                             <div class="field-hint">對於秘法技能，只增傷秘法技能的才能技能部分傷害。</div>
+
+                            <div class="field-section-label">面板最大傷害</div>
+                            <div class="field-row">
+                                <label class="field-label">面板最大傷害</label>
+                                <el-input-number v-model="settings.panelMaxDamage" :min="0" size="small" class="field-select" />
+                            </div>
+                            <div class="field-hint">
+                                請輸入無狀態下（未使用藥水/狀態支援/力量團聚等技能buff）的面板數值，未計入聖水加成；聖水大傷會在「裝備」分頁填寫後自動加總進來，鍋子等其他永久裝備加成也會自動加總。
+                            </div>
+
+                            <div class="field-section-label">髒髒最大傷害</div>
+                            <div class="field-row">
+                                <el-radio-group v-model="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" size="small">
+                                    <el-radio-button :value="false">面板未記入</el-radio-button>
+                                    <el-radio-button :value="true">面板已計入</el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div class="field-hint">
+                                面板未記入：以下欄位會從面板最大傷害扣除，算出乾淨最大傷害（照舊）。面板已計入：面板最大傷害已經含這些加成，以下欄位改為唯讀參考，不參與計算。
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.dirtyMaxDamage.masterGradeActive" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" />
+                                <span class="switch-label">一代宗師已滿（+30）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">寵物加成</label>
+                                <el-checkbox-group v-model="settings.dirtyMaxDamage.petIds" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty">
+                                    <el-checkbox v-for="p in PET_BONUS_OPTIONS" :key="p.id" :value="p.id" :label="`${p.label} (+${p.bonus})`" />
+                                </el-checkbox-group>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">辦桌</label>
+                                <el-input-number
+                                    v-model="settings.dirtyMaxDamage.banquetBonus"
+                                    :min="0"
+                                    size="small"
+                                    class="field-select"
+                                    :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
+                                />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">活動加成</label>
+                                <el-input-number
+                                    v-model="settings.dirtyMaxDamage.eventBonus"
+                                    :min="0"
+                                    size="small"
+                                    class="field-select"
+                                    :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
+                                />
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox
+                                    v-model="settings.dirtyMaxDamage.transformationActive"
+                                    :disabled="transformationReforgeLocked || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
+                                />
+                                <span class="switch-label">變身中：{{ currentTransformation.label }}（依角色型態決定，固定 +{{ currentTransformation.baseDamage }}）</span>
+                            </div>
+                            <div class="field-row" v-if="!transformationReforgeLocked">
+                                <el-checkbox
+                                    v-model="transformationReforgeEnabled"
+                                    :disabled="!settings.dirtyMaxDamage.transformationActive || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
+                                />
+                                <span class="switch-label">變身專屬細工</span>
+                                <el-select
+                                    v-model="settings.transformationReforgeLevel"
+                                    size="small"
+                                    class="field-select"
+                                    :disabled="!transformationReforgeEnabled || !settings.dirtyMaxDamage.transformationActive || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
+                                >
+                                    <el-option v-for="o in TRANSFORMATION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                                <span class="switch-label">（未突破 +{{ currentTransformation.untamedDamage }}，27~33 突破 +{{ currentTransformation.brokenDamage }}）</span>
+                            </div>
+
+                            <div class="field-section-label">常數攻擊力</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.spiritWeaponAttackActive" />
+                                <span class="switch-label">精靈武器攻擊力強化（依武器種類：雙手劍+50，單手斧+40）</span>
+                            </div>
+                            <div class="field-hint">
+                                精靈武器攻擊力通常已包含在無狀態面板內：計算時會先從面板扣掉（不吃攻擊係數），最後再加回常數攻擊力；「面板已計入」模式下不扣也不加。
+                            </div>
+
+                            <div class="field-section-label">攻擊係數</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackCoefficient.physicalPotionActive" />
+                                <span class="switch-label">物理攻擊力增加藥水（×1.2）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackCoefficient.tripleEnchantActive" disabled />
+                                <span class="switch-label">職業魔劍三項注魔（×1.1，僅魔劍職業適用，聖盾騎士非魔劍職業，暫時停用）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackCoefficient.statusSupportActive" />
+                                <span class="switch-label">[狀態支援]（+12%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackCoefficient.strengthGatherActive" />
+                                <span class="switch-label">[力量團聚]（+15%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackCoefficient.battlefieldActive" />
+                                <span class="switch-label">[戰場的序曲]</span>
+                                <el-input-number
+                                    v-model="settings.attackCoefficient.battlefieldPercent"
+                                    :min="0"
+                                    :step="0.01"
+                                    :precision="2"
+                                    size="small"
+                                    class="field-select"
+                                    :disabled="!settings.attackCoefficient.battlefieldActive"
+                                />
+                                <span class="switch-label">%（跟下面的「戰場上的狂吼」是不同的獨立加成）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackCoefficient.battleCryActive" />
+                                <span class="switch-label">[戰場上的狂吼]（31.2% + 細工樂器演奏等級×0.2%）</span>
+                            </div>
+                            <div class="field-row" v-if="settings.attackCoefficient.battleCryActive">
+                                <label class="field-label">樂器演奏細工等級</label>
+                                <el-select v-model="settings.attackCoefficient.battleCryReforgeLevel" size="small" class="field-select">
+                                    <el-option v-for="o in BATTLE_CRY_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                            </div>
                         </div>
                     </el-tab-pane>
 
@@ -1198,135 +1323,6 @@ onMounted(() => {
                             </div>
                             <div class="field-hint">
                                 同一技能連續使用 6 下，第 1~6 下依序增傷 0% / 10% / 22% / 37% / 57% / 87%（合計 213%），使用次數依 1→6 循環平均分配，單次傷害顯示分配後的加權平均；未填使用次數時以完整 6 連的平均（{{ fmtRatio(comboCardAveragePercent(0)) }}%）預覽。
-                            </div>
-                        </div>
-                    </el-tab-pane>
-
-                    <!-- 攻擊力 -->
-                    <el-tab-pane label="攻擊力" name="attack">
-                        <div class="tab-body">
-                            <div class="field-section-label">面板最大傷害</div>
-                            <div class="field-row">
-                                <label class="field-label">面板最大傷害</label>
-                                <el-input-number v-model="settings.panelMaxDamage" :min="0" size="small" class="field-select" />
-                            </div>
-                            <div class="field-hint">
-                                請輸入無狀態下（未使用藥水/狀態支援/力量團聚等技能buff）的面板數值，未計入聖水加成；聖水大傷會在「裝備」分頁填寫後自動加總進來，鍋子等其他永久裝備加成也會自動加總。
-                            </div>
-
-                            <div class="field-section-label">髒髒最大傷害</div>
-                            <div class="field-row">
-                                <el-radio-group v-model="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" size="small">
-                                    <el-radio-button :value="false">面板未記入</el-radio-button>
-                                    <el-radio-button :value="true">面板已計入</el-radio-button>
-                                </el-radio-group>
-                            </div>
-                            <div class="field-hint">
-                                面板未記入：以下欄位會從面板最大傷害扣除，算出乾淨最大傷害（照舊）。面板已計入：面板最大傷害已經含這些加成，以下欄位改為唯讀參考，不參與計算。
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.dirtyMaxDamage.masterGradeActive" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" />
-                                <span class="switch-label">一代宗師已滿（+30）</span>
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">寵物加成</label>
-                                <el-checkbox-group v-model="settings.dirtyMaxDamage.petIds" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty">
-                                    <el-checkbox v-for="p in PET_BONUS_OPTIONS" :key="p.id" :value="p.id" :label="`${p.label} (+${p.bonus})`" />
-                                </el-checkbox-group>
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">辦桌</label>
-                                <el-input-number
-                                    v-model="settings.dirtyMaxDamage.banquetBonus"
-                                    :min="0"
-                                    size="small"
-                                    class="field-select"
-                                    :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
-                                />
-                            </div>
-                            <div class="field-row">
-                                <label class="field-label">活動加成</label>
-                                <el-input-number
-                                    v-model="settings.dirtyMaxDamage.eventBonus"
-                                    :min="0"
-                                    size="small"
-                                    class="field-select"
-                                    :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
-                                />
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox
-                                    v-model="settings.dirtyMaxDamage.transformationActive"
-                                    :disabled="transformationReforgeLocked || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
-                                />
-                                <span class="switch-label">變身中：{{ currentTransformation.label }}（依角色型態決定，固定 +{{ currentTransformation.baseDamage }}）</span>
-                            </div>
-                            <div class="field-row" v-if="!transformationReforgeLocked">
-                                <el-checkbox
-                                    v-model="transformationReforgeEnabled"
-                                    :disabled="!settings.dirtyMaxDamage.transformationActive || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
-                                />
-                                <span class="switch-label">變身專屬細工</span>
-                                <el-select
-                                    v-model="settings.transformationReforgeLevel"
-                                    size="small"
-                                    class="field-select"
-                                    :disabled="!transformationReforgeEnabled || !settings.dirtyMaxDamage.transformationActive || settings.dirtyMaxDamage.panelAlreadyIncludesDirty"
-                                >
-                                    <el-option v-for="o in TRANSFORMATION_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
-                                <span class="switch-label">（未突破 +{{ currentTransformation.untamedDamage }}，27~33 突破 +{{ currentTransformation.brokenDamage }}）</span>
-                            </div>
-
-                            <div class="field-section-label">常數攻擊力</div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.spiritWeaponAttackActive" />
-                                <span class="switch-label">精靈武器攻擊力強化（依武器種類：雙手劍+50，單手斧+40）</span>
-                            </div>
-                            <div class="field-hint">
-                                精靈武器攻擊力通常已包含在無狀態面板內：計算時會先從面板扣掉（不吃攻擊係數），最後再加回常數攻擊力；「面板已計入」模式下不扣也不加。
-                            </div>
-
-                            <div class="field-section-label">攻擊係數</div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.attackCoefficient.physicalPotionActive" />
-                                <span class="switch-label">物理攻擊力增加藥水（×1.2）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.attackCoefficient.tripleEnchantActive" disabled />
-                                <span class="switch-label">職業魔劍三項注魔（×1.1，僅魔劍職業適用，聖盾騎士非魔劍職業，暫時停用）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.attackCoefficient.statusSupportActive" />
-                                <span class="switch-label">[狀態支援]（+12%）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.attackCoefficient.strengthGatherActive" />
-                                <span class="switch-label">[力量團聚]（+15%）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.attackCoefficient.battlefieldActive" />
-                                <span class="switch-label">[戰場的序曲]</span>
-                                <el-input-number
-                                    v-model="settings.attackCoefficient.battlefieldPercent"
-                                    :min="0"
-                                    :step="0.01"
-                                    :precision="2"
-                                    size="small"
-                                    class="field-select"
-                                    :disabled="!settings.attackCoefficient.battlefieldActive"
-                                />
-                                <span class="switch-label">%（跟下面的「戰場上的狂吼」是不同的獨立加成）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.attackCoefficient.battleCryActive" />
-                                <span class="switch-label">[戰場上的狂吼]（31.2% + 細工樂器演奏等級×0.2%）</span>
-                            </div>
-                            <div class="field-row" v-if="settings.attackCoefficient.battleCryActive">
-                                <label class="field-label">樂器演奏細工等級</label>
-                                <el-select v-model="settings.attackCoefficient.battleCryReforgeLevel" size="small" class="field-select">
-                                    <el-option v-for="o in BATTLE_CRY_REFORGE_LEVEL_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
-                                </el-select>
                             </div>
                         </div>
                     </el-tab-pane>
