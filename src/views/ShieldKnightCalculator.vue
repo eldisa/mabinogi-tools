@@ -73,6 +73,7 @@ import {
 } from "../data/shieldKnightCalculator";
 import { getSkillIcon } from "../utils/image";
 import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
+import SlotComparison from "../components/SlotComparison.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -80,7 +81,7 @@ const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
 
 // 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
 const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
-const TAB_NAMES = ["character", "equipment", "critextra", "skill", "expensive", "ogham", "usage", "compare", "efficiency", "armorbreak"];
+const TAB_NAMES = ["character", "equipment", "critextra", "skill", "expensive", "ogham", "usage", "compare", "slotcompare", "efficiency", "armorbreak"];
 const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
 function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean; applyCombo?: boolean } {
     try {
@@ -1847,6 +1848,13 @@ onMounted(() => {
                                     </table>
                                 </div>
                             </template>
+                        </div>
+                    </el-tab-pane>
+
+                    <!-- 部位比較 -->
+                    <el-tab-pane label="部位比較" name="slotcompare">
+                        <div class="tab-body">
+                            <SlotComparison :settings="settings" />
                         </div>
                     </el-tab-pane>
 
