@@ -77,7 +77,6 @@ const menuGroups = ref([
             { name: "破保數據", path: "/protection-break", icon: markRaw(TrendCharts) },
             { name: "音樂計算機", path: "/music-calculator", icon: markRaw(Headset) },
             { name: "治癒計算機", path: "/heal-calculator", icon: markRaw(MagicStick), note: "暫譯・公式還原自第三方網站" },
-            { name: "裝備效益換算", path: "/gear-value", icon: markRaw(TrendCharts), note: "目前支援聖盾騎士" },
             { name: "聖盾騎士傷害計算器", path: "/shield-knight", icon: markRaw(Umbrella), note: "MVP・技能倍率尚未對照實測傷害校正" },
         ],
     },
