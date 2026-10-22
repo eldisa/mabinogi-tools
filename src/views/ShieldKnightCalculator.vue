@@ -81,7 +81,9 @@ const settings = reactive<ShieldKnightSettings>(createDefaultSettings());
 
 // 畫面偏好（分頁／暴擊顯示模式／技能卡片顯示）：只存這台瀏覽器，跟計算設定的存檔分開，重新整理後還原
 const DISPLAY_PREFS_KEY = "shield_knight_calc_display_v1";
-const TAB_NAMES = ["character", "equipment", "critextra", "skill", "expensive", "ogham", "usage", "compare", "slotcompare", "efficiency", "armorbreak"];
+// 部位比較尚未定案，先隱藏（改成 true 即可恢復分頁）
+const SHOW_SLOT_COMPARE = false;
+const TAB_NAMES = ["character", "equipment", "critextra", "skill", "expensive", "ogham", "usage", "compare", ...(SHOW_SLOT_COMPARE ? ["slotcompare"] : []), "efficiency", "armorbreak"];
 const CRIT_MODES: CritDisplayMode[] = ["noCrit", "crit", "expected"];
 function loadDisplayPrefs(): { tab?: string; critMode?: string; showTalent?: boolean; showArcane?: boolean; applyCombo?: boolean } {
     try {
@@ -1852,7 +1854,7 @@ onMounted(() => {
                     </el-tab-pane>
 
                     <!-- 部位比較 -->
-                    <el-tab-pane label="部位比較" name="slotcompare">
+                    <el-tab-pane v-if="SHOW_SLOT_COMPARE" label="部位比較" name="slotcompare">
                         <div class="tab-body">
                             <SlotComparison :settings="settings" />
                         </div>
