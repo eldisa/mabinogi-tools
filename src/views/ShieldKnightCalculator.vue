@@ -936,6 +936,8 @@ onMounted(() => {
             <span class="page-subtitle">角色 / 裝備 → 攻擊力 → 暴擊與額外傷害 → 最終面板 → 技能傷害拆解</span>
         </h1>
 
+        <el-alert type="warning" :closable="false" show-icon class="verify-alert" title="此計算部分仍待驗證" />
+
         <el-alert v-if="needsQuickStart" type="info" :closable="false" class="verify-alert" title="快速開始：最少只要填 2 項">
             <ol class="quick-start-list">
                 <li>
