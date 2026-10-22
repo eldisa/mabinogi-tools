@@ -442,7 +442,7 @@ export interface TalentSkillTargetDamageInput {
  * 才能技能初始傷害 = 最終攻擊力 × 技能傷害倍率 × 暴擊傷害期望值
  * 才能技能目標傷害 = 初始傷害 × 保護減算 − 防禦減算
  *
- * 這是才能技能傷害算到一半的中間值（還沒乘「(1+通用額外傷害+才能額外傷害)×才能增加傷害×最終增加傷害」），
+ * 這是才能技能傷害算到一半的中間值（還沒乘「(1+武器額外)(1+一般額外+才能額外)×才能增加傷害×最終增加傷害」），
  * 秘法技能借用某個才能技能時，「採計的才能技能目標傷害」就是用這個函式算出來的值。
  */
 export function calculateTalentSkillTargetDamage(input: TalentSkillTargetDamageInput): number {
@@ -453,6 +453,11 @@ export function calculateTalentSkillTargetDamage(input: TalentSkillTargetDamageI
 export interface TalentSkillDamageInput extends TalentSkillTargetDamageInput {
     /** (1+通用額外傷害) 的完整倍率，見 calculateGeneralExtraDamageMultiplier */
     generalExtraDamageMultiplier: number;
+    /**
+     * 才能額外傷害是併入「額外傷害那一桶」(1+一般額外+才能額外)，所以加進去的 % 要乘上桶外的倍率（(1+武器額外)×其他桶外乘區）；
+     * 沒給就當 1（桶外沒有其他乘區）
+     */
+    generalExtraScale?: number;
     /** 才能額外傷害加總%（精靈武器弱點分析/狂暴化/實體化、零秒狙擊等，聖盾通常為 0） */
     talentExtraDamagePercent: number;
     talentIncreaseDamageMultiplier: number;
@@ -462,11 +467,11 @@ export interface TalentSkillDamageInput extends TalentSkillTargetDamageInput {
 }
 
 /**
- * 才能技能最終傷害 = [ 才能技能目標傷害 × (1+通用額外傷害+才能額外傷害) × 才能增加傷害 × 最終增加傷害 ] + 追加傷害
+ * 才能技能最終傷害 = [ 才能技能目標傷害 × (1+武器額外)(1+一般額外+才能額外) × 才能增加傷害 × 最終增加傷害 ] + 追加傷害
  */
 export function calculateTalentSkillDamage(input: TalentSkillDamageInput): number {
     const target = calculateTalentSkillTargetDamage(input);
-    const extraMultiplier = input.generalExtraDamageMultiplier + input.talentExtraDamagePercent / 100;
+    const extraMultiplier = input.generalExtraDamageMultiplier + (input.generalExtraScale ?? 1) * (input.talentExtraDamagePercent / 100);
     return target * extraMultiplier * input.talentIncreaseDamageMultiplier * input.finalIncreaseDamageMultiplier + (input.bonusFlatDamage ?? 0);
 }
 
@@ -482,9 +487,13 @@ export interface ArcaneSkillDamageInput {
     talentExtraDamagePercent: number;
     talentIncreaseDamageMultiplier: number;
     generalExtraDamageMultiplier: number;
+    /** 同 TalentSkillDamageInput.generalExtraScale：秘法額外傷害併入額外傷害那一桶 */
+    generalExtraScale?: number;
     arcaneExtraDamagePercent: number;
     finalIncreaseDamageMultiplier: number;
     protectionReduction?: number;
+    /** 借用的才能技能部分用的保護減算（雙重穿刺：穿刺等級 ×2）；沒給就和秘法部分用同一個 */
+    talentProtectionReduction?: number;
     defenseReduction?: number;
     bonusFlatDamage?: number;
 }
@@ -492,15 +501,16 @@ export interface ArcaneSkillDamageInput {
 /**
  * 秘法技能初始傷害 = [ 採計的才能技能目標傷害 × (1+才能額外傷害) × 才能增加傷害 ]
  *                  + [ 秘法技能自己的傷害加總 × 暴擊傷害期望值 ]
- * 秘法技能目標傷害 = 初始傷害 × 保護減算 − 防禦減算
- * 秘法技能最終傷害 = [ 目標傷害 × (1+通用額外傷害+秘法額外傷害) × 最終增加傷害 ] + 追加傷害
+ * 秘法技能目標傷害 = 才能部分 × 才能保護減算（雙重穿刺）+ 秘法部分 × 保護減算 − 防禦減算
+ * 秘法技能最終傷害 = [ 目標傷害 × (1+武器額外)(1+一般額外+秘法額外) × 最終增加傷害 ] + 追加傷害
+ * （秘法額外傷害是「加」在額外傷害那一桶裡，不是獨立乘區：(1+武器額外)×(1+一般額外+秘法額外)；韓服計算器才是乘算）
  */
 export function calculateArcaneSkillDamage(input: ArcaneSkillDamageInput): number {
     const talentPortion = input.countedTalentSkillTargetDamage * (1 + input.talentExtraDamagePercent / 100) * input.talentIncreaseDamageMultiplier;
     const arcanePortion = input.arcaneOnlyRawDamage * (input.criticalDamagePercent / 100);
-    const initial = talentPortion + arcanePortion;
-    const target = initial * (input.protectionReduction ?? 1) - (input.defenseReduction ?? 0);
-    const extraMultiplier = input.generalExtraDamageMultiplier + input.arcaneExtraDamagePercent / 100;
+    const protection = input.protectionReduction ?? 1;
+    const target = talentPortion * (input.talentProtectionReduction ?? protection) + arcanePortion * protection - (input.defenseReduction ?? 0);
+    const extraMultiplier = input.generalExtraDamageMultiplier + (input.generalExtraScale ?? 1) * (input.arcaneExtraDamagePercent / 100);
     return target * extraMultiplier * input.finalIncreaseDamageMultiplier + (input.bonusFlatDamage ?? 0);
 }
 

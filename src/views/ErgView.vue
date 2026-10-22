@@ -6,7 +6,9 @@ import {
     ergEffects,
     ergExpBetween,
     ergSMaterials,
+    ergBreakRate,
     parseMaterial,
+    ERG_CONSUMED_EACH_TRY,
     ERG_MAX_LEVEL,
     type ErgGrade,
 } from "../data/erg";
@@ -41,12 +43,13 @@ const matRows = computed(() => {
     return table ? breakthroughs.value.map((lv) => ({ lv, items: table[lv / 5 - 1] })) : null;
 });
 const matTotal = computed(() => {
-    const sum = new Map<string, number>();
+    const sum = new Map<string, { n: number; consumed: boolean }>();
     for (const { items } of matRows.value ?? []) {
-        for (const s of items) {
+        items.forEach((s, i) => {
             const [name, n] = parseMaterial(s);
-            sum.set(name, (sum.get(name) ?? 0) + n);
-        }
+            const cur = sum.get(name);
+            sum.set(name, { n: (cur?.n ?? 0) + n, consumed: i < ERG_CONSUMED_EACH_TRY });
+        });
     }
     return [...sum];
 });
@@ -167,19 +170,28 @@ const matTotal = computed(() => {
                             <template v-if="breakthroughs.length">
                                 <p class="text-sm text-gray-400 mb-2">需突破等級上限 {{ breakthroughs.length }} 次</p>
                                 <p v-if="!matRows" class="text-sm text-gray-500">
-                                    {{ matGrade === "S" ? "此武器材料尚未收錄" : "未收錄 B / A 等級材料。過往活動曾推出可直升 S35 的道具，建議優先考慮，能省下不少培養時間" }}
+                                    {{
+                                        matGrade === "S"
+                                            ? "此武器材料尚未收錄"
+                                            : "未收錄 B / A 等級材料。過往活動曾推出可直升 S35 的道具，建議優先考慮，能省下不少培養時間"
+                                    }}
                                 </p>
                                 <template v-else>
                                     <div class="rounded-lg px-4 py-3 border border-accent/40 bg-gray-900/50 mb-3">
-                                        <p class="text-sm text-gray-400 mb-2">材料合計</p>
+                                        <p class="text-sm text-gray-400 mb-1">材料合計（以每次突破一次成功計算）</p>
+                                        <p class="text-xs text-gray-500 mb-2">
+                                            <span class="consumed">橘色</span>
+                                            為每次挑戰都會消耗的材料，失敗也會扣除，實際需求會更多
+                                        </p>
                                         <div class="flex flex-wrap gap-2">
                                             <span
-                                                v-for="[name, n] in matTotal"
+                                                v-for="[name, m] in matTotal"
                                                 :key="name"
                                                 class="text-sm text-gray-200 bg-gray-700/60 rounded px-2 py-0.5"
+                                                :class="{ consumed: m.consumed }"
                                             >
                                                 {{ name }}
-                                                <span class="text-accent font-semibold">×{{ n }}</span>
+                                                <span class="font-semibold">×{{ m.n }}</span>
                                             </span>
                                         </div>
                                     </div>
@@ -190,8 +202,17 @@ const matTotal = computed(() => {
                                     >
                                         <p class="text-sm text-accent font-semibold mb-1">
                                             Lv.{{ row.lv }} → 上限 {{ row.lv + 5 }}
+                                            <span class="text-gray-400 font-normal ml-2">
+                                                單次成功率 {{ ergBreakRate[row.lv] }}%
+                                            </span>
                                         </p>
-                                        <p class="text-sm text-gray-300">{{ row.items.join("、") }}</p>
+                                        <p class="text-sm text-gray-300">
+                                            <span class="consumed">
+                                                每次消耗：{{ row.items.slice(0, ERG_CONSUMED_EACH_TRY).join("、") }}
+                                            </span>
+                                            <br />
+                                            成功時才消耗：{{ row.items.slice(ERG_CONSUMED_EACH_TRY).join("、") }}
+                                        </p>
                                     </div>
                                 </template>
                             </template>
@@ -205,3 +226,9 @@ const matTotal = computed(() => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.consumed {
+    color: #fb923c;
+}
+</style>

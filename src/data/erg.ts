@@ -470,7 +470,7 @@ const BOW = items([
 
 const build = (rows: string[][], item: string[], weapons: string[]) => rows.map((r, i) => [...r, item[i], weapons[i]]);
 
-/** 各武器 S 等級第 1–9 次突破材料；治癒杖尚未收錄 */
+/** 各武器 S 等級第 1–9 次突破材料 */
 export const ergSMaterials: Record<string, string[][]> = {
     單手劍: build(MELEE_ROWS, ONE_HAND, MELEE_WEAPONS),
     單手斧: build(MELEE_ROWS, ONE_HAND, MELEE_WEAPONS),
@@ -497,6 +497,7 @@ export const ergSMaterials: Record<string, string[][]> = {
     ),
     "弓、弩": build(MAGIC_ROWS, BOW, MAGIC_WEAPONS),
     "魔杖(短杖)": build(MAGIC_ROWS, WAND, MAGIC_WEAPONS),
+    治癒杖: build(MAGIC_ROWS, WAND, MAGIC_WEAPONS),
     "集魔杖(長杖)": build(MAGIC_ROWS, WAND, MAGIC_WEAPONS),
     鐮刀: build(MAGIC_ROWS, WAND, SCYTHE_WEAPONS),
     鋼瓶: build(
@@ -581,3 +582,19 @@ export const parseMaterial = (s: string): [string, number] => {
     const m = s.match(/^(.*?)\s*(\d+)個$/);
     return m ? [m[1], Number(m[2])] : [s, 1];
 };
+
+/** B/A/S 各等級突破上限的單次成功率（%） */
+export const ergBreakRate: Record<number, number> = {
+    5: 90,
+    10: 60,
+    15: 30,
+    20: 15,
+    25: 5,
+    30: 2,
+    35: 1,
+    40: 0.7,
+    45: 0.3,
+};
+
+/** 突破材料中，每次挑戰（不論成敗）都會消耗的前幾項 */
+export const ERG_CONSUMED_EACH_TRY = 3;
