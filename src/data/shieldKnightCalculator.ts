@@ -1052,7 +1052,8 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         sumReforgeLevels(settings.reforge, "charge") * REFORGE_PER_LEVEL.charge +
         (hasMagicCircle("charge_damage") ? 60 : 0) +
         oghamTotals.charge;
-    const chargeMultiplier = tags.has("charge_enhance") ? 1.15 : 1;
+    // 突擊大師稱號：突擊傷害 +15%，與突擊套裝 ×1.15 是各自獨立的乘區（hatsu 的算式為 (1+套裝+稱號)×(1+另一組套裝)，這裡假設稱號與 ×1.15 不同組）
+    const chargeMultiplier = (1 + (settings.chargeMasterTitleActive ? 0.15 : 0)) * (tags.has("charge_enhance") ? 1.15 : 1);
 
     // 猛擊 = (層數基礎+魔法陣+單手精靈武器20%) × (1+猛擊最終傷害增加) × (1+猛擊套裝+猛擊套裝象徵+連續技卡片)
     const mengJiBase =
@@ -1927,6 +1928,7 @@ export interface DamageEfficiencyItem {
         | "weaponExtraDamage"
         | "manualWindmillBase30"
         | "manualChargeEnhance"
+        | "chargeMasterTitle"
         | "manualSmashEnhance";
     label: string;
     unit: string;
@@ -2130,6 +2132,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             | "physicalPotion"
             | "manualWindmillBase30"
             | "manualChargeEnhance"
+            | "chargeMasterTitle"
             | "manualSmashEnhance";
         label: string;
         unit?: string;
@@ -2209,6 +2212,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         { id: "physicalPotion", label: "物理攻擊力增加藥水（×1.2）", isOn: settings.attackCoefficient.physicalPotionActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, physicalPotionActive: on } }) },
         { id: "manualWindmillBase30", label: "風車基礎倍率 +30%", isOn: settings.manualWindmillBase30Active, set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
         { id: "manualChargeEnhance", label: "突擊最終倍率 ×1.15", isOn: settings.manualChargeEnhanceActive, set: (on) => ({ ...settings, manualChargeEnhanceActive: on }) },
+        { id: "chargeMasterTitle", label: "突擊大師稱號（突擊傷害 +15%）", isOn: settings.chargeMasterTitleActive, set: (on) => ({ ...settings, chargeMasterTitleActive: on }) },
         { id: "manualSmashEnhance", label: "重擊套裝 +15%", isOn: settings.manualSmashEnhanceActive, set: (on) => ({ ...settings, manualSmashEnhanceActive: on }) },
     ];
     const toggleResults = togglePairs.map((p) => {
@@ -2452,6 +2456,8 @@ export interface ShieldKnightSettings {
     raceSkillActive: boolean;
     /** 突擊最終倍率 ×1.15（charge_enhance）：除了「無 / 其他」與鍋子，可選的盾牌都內建；這個手動勾選給沒選盾牌或其他來源用（效果不疊加） */
     manualChargeEnhanceActive: boolean;
+    /** 突擊大師稱號：突擊傷害 +15%（盾擊衝鋒借用的突擊傷害也會吃到） */
+    chargeMasterTitleActive: boolean;
     /** 重擊套裝 +15%（smash_enhance，加進重擊最後一格），目前沒有已知裝備資料來源，先開放手動勾選 */
     manualSmashEnhanceActive: boolean;
     /** 風車套裝 +30%（莊嚴騎士，windmill_enhance，最終乘算），手動勾選；欄位名沿用舊存檔的 Base30 */
@@ -2537,6 +2543,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         characterBuildId: "holy_knight",
         raceSkillActive: false,
         manualChargeEnhanceActive: false,
+        chargeMasterTitleActive: false,
         manualSmashEnhanceActive: false,
         manualWindmillBase30Active: false,
         comboCardSkillId: "none",
