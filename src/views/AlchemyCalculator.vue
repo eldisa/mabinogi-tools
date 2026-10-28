@@ -258,6 +258,35 @@ const RESULT_DETAILS: Record<string, string> = {
                             </div>
                             <div class="field-hint">能力值未到上限時，屬性能量累積到一定程度會提升四屬性（面板請填提升後的數值）。化學狂歡、召喚噩夢消耗能量後才計算傷害，會自動扣掉這個值；能力值已到上限填 0（2026-10-29 實測）。</div>
 
+                            <div class="field-section-label">鍊金攻擊力 buff</div>
+                            <div class="field-hint">開了以下 buff 時，上方面板請填「沒開這些 buff」的數值，避免重複計算。最終 = ((面板 − 常數) × 係數 + 常數) × (1 + 戰場序曲% × 係數) × (1 + 狀態支援% × 係數) × (1 + 力量團聚% × 係數)；係數平常 1，喝鍊金攻擊力藥水 1.2。</div>
+                            <div class="field-row">
+                                <label class="field-label">戰場的序曲（活潑版）%</label>
+                                <el-input-number v-model="settings.attackBuff.battlefieldPercent" :min="0" :max="100" :step="0.01" :precision="2" size="small" class="field-select-sm" aria-label="戰場的序曲（活潑版）%" />
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackBuff.statusSupport" />
+                                <span class="switch-label">狀態支援（+12%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackBuff.strengthGather" />
+                                <span class="switch-label">力量團聚（+15%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackBuff.potion" />
+                                <span class="switch-label">鍊金攻擊力增加藥水（係數 ×1.2）</span>
+                            </div>
+                            <div class="field-section-label">常數攻擊力（不吃係數與 buff%）</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackBuff.arcanePassive" />
+                                <span class="switch-label">秘法被動（4 屬 +200）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.attackBuff.grandmaster" />
+                                <span class="switch-label">鍊金術宗師（火 +20、水 +15、風 +30、土 +30）</span>
+                            </div>
+                            <div class="field-hint">精靈武器 4 屬 +30 跟著「暴擊與額外傷害」分頁的精靈武器勾選。</div>
+
                             <div class="field-section-label">精通區</div>
                             <div class="field-hint">精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶，細工實際生效為說明的一半。</div>
                             <div class="field-row">

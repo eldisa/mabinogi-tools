@@ -1,4 +1,5 @@
 import { protRate } from "../utils/protectionCompare";
+import { calculateFinalMaxDamage } from "./mabinogiCombat";
 
 /**
  * 鍊金術傷害計算器（2026-10-23～25 實測＋韓服計算器對照，見 docs/alchemy-calculator-notes.md、damage-formula-common.md）
@@ -66,6 +67,11 @@ export const NIGHTMARE_RATIOS = [2, 2, 2.5, 3.3, 4.8];
 /** 化學狂歡後續爆炸：段數 = 消耗能量 + 1（0～4），每段 = (高壓火爆部分 + 平均 × 900% × 50% × 遺物) × 元素組合（每次施放各段同值） */
 export const CHEMICAL_FOLLOW_UP_AVG_RATIO = 0.5;
 
+/** 鍊金常數攻擊力（不吃藥水係數與 buff%）：秘法被動 4 屬 +200、精靈武器 4 屬 +30、宗師 火 20／水 15／風 30／土 30（屬性共鳴面板實測吻合） */
+export const ARCANE_PASSIVE_CONSTANT = 200;
+export const SPIRIT_WEAPON_ALCH_CONSTANT = 30;
+export const GRANDMASTER_CONSTANT: Record<Element, number> = { fire: 20, water: 15, wind: 30, earth: 30 };
+
 export const SKILL_META = [
     { id: "waterCannon", label: "水炮（5 集氣）", imageId: 35004, arcane: false },
     { id: "flamer", label: "火焰噴射（整段）", imageId: 35008, arcane: false },
@@ -87,6 +93,8 @@ export interface AlchemySettings {
     alchDamage: Record<Element, number>; // 角色資訊的屬性鍊金傷害
     tempAlchDamage: number; // 寵物等面板沒有的四屬性鍊金傷害
     energyBonus: number; // 屬性能量累積觸發的四屬性提升（面板含此值）；化學狂歡、召喚噩夢消耗能量後扣掉
+    // 鍊金攻擊力 buff：面板填沒開這些 buff 的數值，依「(基礎 × 係數 + 常數) × Π(1 + buff% × 係數)」換算
+    attackBuff: { battlefieldPercent: number; statusSupport: boolean; strengthGather: boolean; potion: boolean; arcanePassive: boolean; grandmaster: boolean };
     cylinderPercent: number;
     masteryReforge: Record<Element, number>;
     reforge: Record<ReforgeKey, number>;
@@ -117,6 +125,7 @@ export function createDefaultSettings(): AlchemySettings {
         alchDamage: { fire: 2000, water: 2000, wind: 2000, earth: 2000 },
         tempAlchDamage: 0,
         energyBonus: 0,
+        attackBuff: { battlefieldPercent: 0, statusSupport: false, strengthGather: false, potion: false, arcanePassive: true, grandmaster: false },
         cylinderPercent: 30,
         masteryReforge: { fire: 0, water: 0, wind: 0, earth: 0 },
         reforge: Object.fromEntries(REFORGE_FIELDS.map((f) => [f.key, 0])) as Record<ReforgeKey, number>,
@@ -199,9 +208,29 @@ export function calculateArmor(s: AlchemySettings) {
     };
 }
 
+/** 鍊金常數攻擊力（各屬性） */
+export function calculateAlchConstant(s: AlchemySettings, el: Element): number {
+    const b = s.attackBuff;
+    return (b.arcanePassive ? ARCANE_PASSIVE_CONSTANT : 0) + (s.critDamage.spiritWeapon ? SPIRIT_WEAPON_ALCH_CONSTANT : 0) + (b.grandmaster ? GRANDMASTER_CONSTANT[el] : 0);
+}
+
 export function calculateAlchDamage(s: AlchemySettings, spent = false) {
-    const add = s.tempAlchDamage - (spent ? s.energyBonus : 0);
-    const el = Object.fromEntries(ELEMENTS.map((e) => [e, s.alchDamage[e] + add])) as Record<Element, number>;
+    const b = s.attackBuff;
+    const buffState = {
+        physicalPotionActive: b.potion,
+        tripleEnchantActive: false,
+        statusSupportActive: b.statusSupport,
+        strengthGatherActive: b.strengthGather,
+        battlefieldActive: b.battlefieldPercent > 0,
+        battlefieldPercent: b.battlefieldPercent,
+        battleCryActive: false,
+        battleCryReforgeLevel: 0,
+    };
+    const buffed = (e: Element) => {
+        const constant = calculateAlchConstant(s, e);
+        return calculateFinalMaxDamage(s.alchDamage[e] - (spent ? s.energyBonus : 0) - constant, 0, constant, buffState);
+    };
+    const el = Object.fromEntries(ELEMENTS.map((e) => [e, buffed(e) + s.tempAlchDamage])) as Record<Element, number>;
     return { ...el, average: ELEMENTS.reduce((sum, e) => sum + el[e], 0) / ELEMENTS.length };
 }
 
