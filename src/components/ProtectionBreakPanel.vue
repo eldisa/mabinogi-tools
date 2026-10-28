@@ -111,11 +111,12 @@ const loadConfig = (key: string) => {
 };
 // single：只有一組設定（聖盾騎士計算器用），設定另存，不影響破保數據頁的 A/B
 // pierce：single 時由呼叫端提供銳利等級（取代內部值）；A/B 模式忽略
-const props = defineProps<{ single?: boolean; pierce?: number }>();
-const keyPrefix = props.single ? "prot-break:single" : "prot-break";
+// side：對外輸出物理或魔法側結果（預設物理）；storageKey：single 時另用一組存檔（魔法計算器不和聖盾共用）
+const props = defineProps<{ single?: boolean; pierce?: number; side?: "phys" | "magic"; storageKey?: string }>();
+const keyPrefix = props.storageKey ?? (props.single ? "prot-break:single" : "prot-break");
 const protCalc = useLocalStorage(`${keyPrefix}:compare`, { ...DEFAULT_PROT_COMPARE });
 protCalc.value = { ...DEFAULT_PROT_COMPARE, ...protCalc.value }; // 舊存檔補自訂怪物欄位
-const cfgA = loadConfig(props.single ? "prot-break:single:cfg" : "prot-break:cfg-a");
+const cfgA = loadConfig(props.single ? `${keyPrefix}:cfg` : "prot-break:cfg-a");
 const cfgB = loadConfig("prot-break:cfg-b");
 const configs = computed(() =>
     props.single
@@ -131,7 +132,7 @@ const copyBtoA = () => (cfgA.value = cloneConfig(cfgB.value));
 
 // 各區塊摺疊狀態、物理／魔法結果顯示（只影響畫面，不影響 emit）
 const collapsed = useLocalStorage(`${keyPrefix}:collapsed`, { monster: false, A: false, B: false, phys: false, magic: false });
-const showSide = useLocalStorage(`${keyPrefix}:sides`, { phys: true, magic: true });
+const showSide = useLocalStorage(`${keyPrefix}:sides`, props.side ? { phys: props.side === "phys", magic: props.side === "magic" } : { phys: true, magic: true });
 
 // 來源分類收合（A/B 共用，兩欄才能對齊）；未設定過時：第一類或有啟用來源的分類展開
 const groupOpen = useLocalStorage<Record<string, boolean>>(`${keyPrefix}:groups`, {});
@@ -235,7 +236,7 @@ const SIDES: { key: Side; label: string }[] = [
     { key: "phys", label: "物理" },
     { key: "magic", label: "魔法" },
 ];
-// 對外輸出 A 組物理側結果（聖盾騎士計算器用）；掛載時與 A 組／怪物設定變動時發送
+// 對外輸出 A 組 side 側結果（聖盾：物理、魔法計算器：魔法）；掛載時與 A 組／怪物設定變動時發送
 // protBeforePierce／pierceResist：讓呼叫端用自己的銳利等級重算（聖盾頁銳利由各配置提供）
 const emit = defineEmits<{
     result: [
@@ -250,7 +251,7 @@ const emit = defineEmits<{
     ];
 }>();
 const resultA = computed(() => {
-    const r = resultOf(cfgA.value, "phys");
+    const r = resultOf(cfgA.value, props.side ?? "phys");
     return {
         rateAfter: r.rateAfter,
         damageTakenPercent: r.dmgInc,
@@ -544,7 +545,7 @@ const sides = computed(() =>
         <p class="text-center text-xs text-gray-600 pb-6">
             同一狀態由多個來源施加時取數值較高者；不同狀態相加。先扣 %、再扣固定、最後扣銳利；保護無條件捨去後查表。<br />
             「還需」為額外的固定保護減少量。<template v-if="!single">差異百分比以實際傷害（保護減傷 × 所受傷害）計算，與比較基準無關：「B ±x%」以 A 為底；括號內「A／B 高 x%」以較低者為底，A、B 對調時數字不變。</template><br />
-            ＊近戰技能傷害、暴擊時通用額外傷害只適用部分攻擊，不計入總傷害倍率；召喚噩夢的最終傷害 +0.9594% 亦未計入。
+            ＊近戰技能傷害、暴擊時通用額外傷害只適用部分攻擊，不計入總傷害倍率。
         </p>
     </div>
 </template>

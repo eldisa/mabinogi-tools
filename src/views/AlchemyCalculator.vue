@@ -1,1490 +1,1120 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
+import { reactive, ref, computed, watch } from "vue";
+import { ElMessageBox } from "element-plus";
+import {
+    ELEMENTS,
+    ELEMENT_LABELS,
+    MASTERY_REFORGE_STEP,
+    MASTERY_REFORGE_MAX,
+    CYLINDER_OPTIONS,
+    REFORGE_FIELDS,
+    COMBO_META,
+    COMBO_MAX_CRYSTALS,
+    COMBO_OGHAM_MAX,
+    RELIC_MAX_LEVEL,
+    NIGHTMARE_RATIOS,
+    CHEMICAL_FOLLOW_UP_AVG_RATIO,
+    SKILL_META,
+    createDefaultSettings,
+    mergeSettings,
+    calculateAlchemy,
+    calculateTotalOutput,
+    flamerHits,
+    type ArcaneId,
+    type CritMode,
+    type AlchemySettings,
+} from "../data/alchemyCalculator";
+import { getSkillIcon } from "../utils/image";
+import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
 
-// ========== 全域基礎屬性 ==========
-const globalStats = reactive({
-    // A1 屬性傷害
-    waterDmg: 500, // 水屬性煉金傷害
-    fireDmg: 500, // 火屬性煉金傷害
-    // A2 平均傷害
-    avgDmg: 500, // 四屬性平均煉金傷害
-    // H 通用額外加成
-    commonExtra: 0, // 通用額外加成 %（裝等、農場物、圖騰、頭銜、特改、催化協同、犬靈等）
-    // I 暴擊傷害
-    critDmg: 150, // 暴擊傷害 %（基礎 150%）
-    // J 其他獨立加成
-    independentMulti: 0, // 其他獨立加成 %（戰鬥 VIP 1%、三眼、致命穿透、威光等）
-});
-
-// ========== 精通與效率 ==========
-const masteryStats = reactive({
-    // 精通效率基礎值
-    waterMasteryEff: 10, // 水精通效率 %（基礎 10%）
-    fireMasteryEff: 10, // 火精通效率 %（基礎 10%）
-    earthMasteryEff: 10, // 土精通效率 %（基礎 10%）
-    // 鑑定加成
-    waterMasteryAppraisal: false, // 水精通 20 級鑑定 +10%
-    fireMasteryAppraisal: false, // 火精通 20 級鑑定 +10%
-    earthMasteryAppraisal: false, // 土精通 20 級鑑定 +4%
-    // E 鋼瓶加成
-    cylinderBonus: 30, // 屬性鋼瓶加成 %
-    // G 才能額外
-    talentBonus: 0, // 才能額外加成 %（精靈武器、藍月亮等）
-});
-
-// ========== 套裝與組合式 ==========
-const gearStats = reactive({
-    // 套裝
-    crewSetBonus: 15, // 克雷套增幅 %
-    // 組合式設定
-    comboFinalDmgFire: 15, // 四火：最終傷害 % (化學狂歡用)
-    comboFinalDmgWater: 100, // 四水：最終傷害 % (螺旋爆裂用)
-    comboFinalDmgEarth: 20, // 四土：最終傷害 % (召喚夢魘用)
-    comboStatusEffect: 20, // 四火：異常狀態效果 %
-    comboHerbBlue: 15, // 藍草+曼德拉 % (水系)
-    comboHerbGreen: 15, // 綠草+曼德拉 % (土系)
-    comboHerbRed: 15, // 紅草+曼德拉 % (火系)
-});
-
-// ========== 催化協同參數 ==========
-const catalyticStats = reactive({
-    baseValue: 8, // 基礎值 %（四火+鏈接 = 8%）
-    herbBonus: 15, // 紅草+曼德拉 %
-    linkAttributeAvg: 0, // 平均屬性（每 500 +1%）
-});
-
-// ========== 水系技能參數 ==========
-const waterSkillStats = reactive({
-    // 水炮
-    waterCannonMultiplier: 60.7, // 水炮倍率 %（基礎）
-    waterCannonAppraisalLevel: 0, // 鑑定等級（每級 +0.6%）
-    waterCannonChargeLevel: 5, // 蓄力段數（1-5）
-    // 雷雨增幅
-    rainAmplify: 20, // 雷雨增幅 %（基礎 20%）
-    rainAmplifyAppraisalLevel: 0, // 鑑定等級（每級 +5%）
-    // 螺旋爆裂
-    spiralBurstMultiplier: 1080, // 地刺倍率 %（基礎）
-    spiralBurstRelicLevel: 0, // 遺物等級（每級 +20%）
-});
-
-// ========== 火系技能參數 ==========
-const fireSkillStats = reactive({
-    // 高溫爆發
-    heatBusterMultiplier: 130.5, // 高溫爆發倍率 %（基礎）
-    heatBusterAppraisalLevel: 0, // 鑑定等級（每級 +1%）
-    heatBusterPressure: 100, // 壓力值 %
-    // 厄格增幅
-    ergAmplify: 0, // 厄格增幅 %（S50 = 300%）
-    // 元素波動增幅
-    elementWaveAmplify: 25, // 元素波動增幅 %
-    // 化學狂歡
-    chemicalMultiplier: 900, // 瓶子倍率 %（基礎）
-    chemicalRelicLevel: 0, // 遺物等級（每級 +30%）
-    chemicalExplosionRate: 50, // 後續爆炸比例 %（30%+鏈接20%=50%）
-    // 火焰噴射
-    flameburstMultiplier: 33.5, // 火焰噴射倍率 %（基礎）
-    flameburstAppraisalLevel: 0, // 鑑定等級（每級 +0.3%）
-    flameburstChargeLevel: 5, // 蓄力段數（1-5）
-    flameburstHits: 5, // 火焰噴射段數（基礎 5）
-    flameburstHitAppraisal: 0, // 0=基礎5段, 1=15級8段, 2=20級9段
-    // 召喚夢魘
-    nightmareMultiplier: 600, // 大蛇倍率 %（4能量時）
-    nightmareEnergyLevel: 4, // 能量等級（1-4）
-    // 大蛇減益
-    nightmareDebuffBase: 0.65, // 減益基礎值 %（如最終傷害增加）
-    nightmareDebuffEnhance: 20, // 4能量減益效果提升 %
-    nightmareRelicLevel: 0, // 遺物等級（每級 +30%）
-});
-
-// 當前選中的 Tab
-const activeTab = ref("fire");
-
-// ========== 計算輔助函數 ==========
-const getFireMasteryEff = computed(() => {
-    let eff = masteryStats.fireMasteryEff;
-    if (masteryStats.fireMasteryAppraisal) eff += 10;
-    return eff / 100;
-});
-
-const getWaterMasteryEff = computed(() => {
-    let eff = masteryStats.waterMasteryEff;
-    if (masteryStats.waterMasteryAppraisal) eff += 10;
-    return eff / 100;
-});
-
-const getEarthMasteryEff = computed(() => {
-    let eff = masteryStats.earthMasteryEff;
-    if (masteryStats.earthMasteryAppraisal) eff += 4;
-    return eff / 100;
-});
-
-const getFlameburstHits = computed(() => {
-    if (fireSkillStats.flameburstHitAppraisal === 2) return 9;
-    if (fireSkillStats.flameburstHitAppraisal === 1) return 8;
-    return 5;
-});
-
-// ========== 催化協同計算 ==========
-// 公式: A × (1 + B + C) + D
-const catalyticSynergy = computed(() => {
-    const A = catalyticStats.baseValue / 100;
-    const B = catalyticStats.herbBonus / 100;
-    const C = getFireMasteryEff.value;
-    const D = Math.floor(catalyticStats.linkAttributeAvg / 500) / 100;
-
-    const synergy = A * (1 + B + C) + D;
-
-    return {
-        A,
-        B,
-        C,
-        D,
-        result: synergy,
-        resultPercent: (synergy * 100).toFixed(2),
-    };
-});
-
-// ========== 水炮計算 ==========
-// 公式: A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J)
-const waterCannonDamage = computed(() => {
-    const A1 = globalStats.waterDmg;
-    // B1: 水炮倍率 = (基礎 + 鑑定加成) × 蓄力段數 × 1.25（五蓄係數 6.25 / 5）
-    const baseMultiplier = waterSkillStats.waterCannonMultiplier + waterSkillStats.waterCannonAppraisalLevel * 0.6;
-    const chargeMultiplier =
-        waterSkillStats.waterCannonChargeLevel === 5 ? 6.25 : waterSkillStats.waterCannonChargeLevel;
-    const B1 = (baseMultiplier / 100) * chargeMultiplier;
-    // C: 雷雨增幅
-    const C = (waterSkillStats.rainAmplify + waterSkillStats.rainAmplifyAppraisalLevel * 5) / 100;
-    // D: 套裝增幅（克雷套）
-    const D = gearStats.crewSetBonus / 100;
-    // E: 鋼瓶加成
-    const E = masteryStats.cylinderBonus / 100;
-    // F: 水精通效率
-    const F = getWaterMasteryEff.value;
-    // G: 才能額外
-    const G = masteryStats.talentBonus / 100;
-    // H: 通用額外
-    const H = globalStats.commonExtra / 100;
-    // I: 暴擊傷害
-    const I = globalStats.critDmg / 100;
-    // J: 其他獨立加成
-    const J = globalStats.independentMulti / 100;
-
-    const damage = A1 * B1 * (1 + C) * (1 + D) * (1 + E) * (1 + F / 2) * (1 + G + H) * (1 + I) * (1 + J);
-
-    return {
-        A1,
-        B1,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        baseMultiplier,
-        chargeMultiplier,
-        result: damage,
-    };
-});
-
-// ========== 螺旋爆裂（地刺）計算 ==========
-// 公式: (X + Y) × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M))
-// X = A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G)
-// Y = A2 × B2
-const spiralBurstDamage = computed(() => {
-    const A1 = globalStats.waterDmg;
-    const A2 = globalStats.avgDmg;
-    // B1: 固定五蓄倍率
-    const baseMultiplier = waterSkillStats.waterCannonMultiplier + waterSkillStats.waterCannonAppraisalLevel * 0.6;
-    const B1 = (baseMultiplier / 100) * 6.25;
-    // B2: 地刺倍率
-    const B2 = (waterSkillStats.spiralBurstMultiplier + waterSkillStats.spiralBurstRelicLevel * 20) / 100;
-    // C: 雷雨增幅
-    const C = (waterSkillStats.rainAmplify + waterSkillStats.rainAmplifyAppraisalLevel * 5) / 100;
-    // D: 套裝增幅
-    const D = gearStats.crewSetBonus / 100;
-    // E: 鋼瓶加成
-    const E = masteryStats.cylinderBonus / 100;
-    // F: 水精通效率
-    const F = getWaterMasteryEff.value;
-    // G: 才能額外
-    const G = masteryStats.talentBonus / 100;
-    // H: 通用額外
-    const H = globalStats.commonExtra / 100;
-    // I: 暴擊傷害
-    const I = globalStats.critDmg / 100;
-    // J: 其他獨立加成
-    const J = globalStats.independentMulti / 100;
-    // K: 組合式最終傷害（四水）
-    const K = gearStats.comboFinalDmgWater / 100;
-    // L: 藍草+曼德拉
-    const L = gearStats.comboHerbBlue / 100;
-    // M: 水精通效率
-    const M = getWaterMasteryEff.value;
-
-    // X = A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G)
-    const X = A1 * B1 * (1 + C) * (1 + D) * (1 + E) * (1 + F / 2) * (1 + G);
-    // Y = A2 × B2
-    const Y = A2 * B2;
-
-    const damage = (X + Y) * (1 + H) * (1 + I) * (1 + J) * (1 + K * (1 + L + M));
-
-    return {
-        A1,
-        A2,
-        B1,
-        B2,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        K,
-        L,
-        M,
-        X,
-        Y,
-        result: damage,
-    };
-});
-
-// ========== 高溫爆發計算 ==========
-// 公式: A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J) × 壓力值
-const heatBusterDamage = computed(() => {
-    const A1 = globalStats.fireDmg;
-    // B1: 高溫爆發倍率
-    const B1 = (fireSkillStats.heatBusterMultiplier + fireSkillStats.heatBusterAppraisalLevel * 1) / 100;
-    // C: 厄格增幅
-    const C = fireSkillStats.ergAmplify / 100;
-    // D: 元素波動增幅
-    const D = fireSkillStats.elementWaveAmplify / 100;
-    // E: 鋼瓶加成
-    const E = masteryStats.cylinderBonus / 100;
-    // F: 火精通效率
-    const F = getFireMasteryEff.value;
-    // G: 才能額外
-    const G = masteryStats.talentBonus / 100;
-    // H: 通用額外
-    const H = globalStats.commonExtra / 100;
-    // I: 暴擊傷害
-    const I = globalStats.critDmg / 100;
-    // J: 其他獨立加成
-    const J = globalStats.independentMulti / 100;
-    // 壓力值
-    const pressure = fireSkillStats.heatBusterPressure / 100;
-
-    const damage = A1 * B1 * (1 + C) * (1 + D) * (1 + E) * (1 + F / 2) * (1 + G + H) * (1 + I) * (1 + J) * pressure;
-
-    return {
-        A1,
-        B1,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        pressure,
-        result: damage,
-    };
-});
-
-// ========== 化學狂歡（瓶子）計算 ==========
-// 公式: (X + Y) × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M))
-// X = A1 × B1 × (1+C) × (1+E) × (1+F/2) × (1+G)（不含元素波動 D）
-// Y = A2 × B2
-const chemicalDamage = computed(() => {
-    const A1 = globalStats.fireDmg;
-    const A2 = globalStats.avgDmg;
-    // B1: 高溫爆發倍率
-    const B1 = (fireSkillStats.heatBusterMultiplier + fireSkillStats.heatBusterAppraisalLevel * 1) / 100;
-    // B2: 瓶子倍率
-    const B2 = (fireSkillStats.chemicalMultiplier + fireSkillStats.chemicalRelicLevel * 30) / 100;
-    // C: 厄格增幅
-    const C = fireSkillStats.ergAmplify / 100;
-    // E: 鋼瓶加成
-    const E = masteryStats.cylinderBonus / 100;
-    // F: 火精通效率
-    const F = getFireMasteryEff.value;
-    // G: 才能額外
-    const G = masteryStats.talentBonus / 100;
-    // H: 通用額外
-    const H = globalStats.commonExtra / 100;
-    // I: 暴擊傷害
-    const I = globalStats.critDmg / 100;
-    // J: 其他獨立加成
-    const J = globalStats.independentMulti / 100;
-    // K: 組合式最終傷害（四火）
-    const K = gearStats.comboFinalDmgFire / 100;
-    // L: 紅草+曼德拉
-    const L = gearStats.comboHerbRed / 100;
-    // M: 火精通效率
-    const M = getFireMasteryEff.value;
-
-    // X = A1 × B1 × (1+C) × (1+E) × (1+F/2) × (1+G)（不含元素波動）
-    const X = A1 * B1 * (1 + C) * (1 + E) * (1 + F / 2) * (1 + G);
-    // Y = A2 × B2
-    const Y = A2 * B2;
-
-    const damage = (X + Y) * (1 + H) * (1 + I) * (1 + J) * (1 + K * (1 + L + M));
-
-    // 後續爆炸傷害
-    const explosionRate = fireSkillStats.chemicalExplosionRate / 100;
-    const explosionDamage = damage * explosionRate;
-
-    return {
-        A1,
-        A2,
-        B1,
-        B2,
-        C,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        K,
-        L,
-        M,
-        X,
-        Y,
-        result: damage,
-        explosionRate,
-        explosionDamage,
-    };
-});
-
-// ========== 火焰噴射計算 ==========
-// 公式: A1 × B1 × (1+C) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J)
-const flameburstDamage = computed(() => {
-    const A1 = globalStats.fireDmg;
-    // B1: 火焰噴射倍率 = (基礎 + 鑑定加成) × 蓄力段數
-    const baseMultiplier = fireSkillStats.flameburstMultiplier + fireSkillStats.flameburstAppraisalLevel * 0.3;
-    const B1 = (baseMultiplier / 100) * fireSkillStats.flameburstChargeLevel;
-    // C: 套裝增幅（克雷套）
-    const C = gearStats.crewSetBonus / 100;
-    // E: 鋼瓶加成
-    const E = masteryStats.cylinderBonus / 100;
-    // F: 火精通效率
-    const F = getFireMasteryEff.value;
-    // G: 才能額外
-    const G = masteryStats.talentBonus / 100;
-    // H: 通用額外
-    const H = globalStats.commonExtra / 100;
-    // I: 暴擊傷害
-    const I = globalStats.critDmg / 100;
-    // J: 其他獨立加成
-    const J = globalStats.independentMulti / 100;
-
-    const damage = A1 * B1 * (1 + C) * (1 + E) * (1 + F / 2) * (1 + G + H) * (1 + I) * (1 + J);
-
-    return {
-        A1,
-        B1,
-        C,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        baseMultiplier,
-        result: damage,
-    };
-});
-
-// ========== 召喚夢魘減益計算 ==========
-// 公式: A × (1+B) × (1 + C×(1+D+E))
-const nightmareDebuff = computed(() => {
-    // A: 減益基礎值
-    const A = fireSkillStats.nightmareDebuffBase / 100;
-    // B: 減益效果提升（4能量基礎 + 遺物加成）
-    const B = (fireSkillStats.nightmareDebuffEnhance + fireSkillStats.nightmareRelicLevel * 30) / 100;
-    // C: 組合式異常狀態效果（四火）
-    const C = gearStats.comboStatusEffect / 100;
-    // D: 紅草+曼德拉
-    const D = gearStats.comboHerbRed / 100;
-    // E: 火精通效率
-    const E = getFireMasteryEff.value;
-
-    const debuff = A * (1 + B) * (1 + C * (1 + D + E));
-
-    return {
-        A,
-        B,
-        C,
-        D,
-        E,
-        result: debuff,
-        resultPercent: (debuff * 100).toFixed(2),
-    };
-});
-
-// ========== 召喚夢魘傷害計算 ==========
-// 公式: (A2 + X) × B2 × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M))
-// X = A1 × B1 × (1+C) × D × (1+E) × (1+F/2) × (1+G)
-const nightmareDamage = computed(() => {
-    const A1 = globalStats.fireDmg;
-    const A2 = globalStats.avgDmg;
-    // B1: 火焰噴射倍率（五蓄）
-    const baseMultiplier = fireSkillStats.flameburstMultiplier + fireSkillStats.flameburstAppraisalLevel * 0.3;
-    const B1 = (baseMultiplier / 100) * 5; // 固定五蓄
-    // B2: 大蛇倍率
-    const B2 = fireSkillStats.nightmareMultiplier / 100;
-    // C: 套裝增幅（克雷套）
-    const C = gearStats.crewSetBonus / 100;
-    // D: 火焰噴射段數
-    const D = getFlameburstHits.value;
-    // E: 鋼瓶加成
-    const E = masteryStats.cylinderBonus / 100;
-    // F: 火精通效率
-    const F = getFireMasteryEff.value;
-    // G: 才能額外
-    const G = masteryStats.talentBonus / 100;
-    // H: 通用額外
-    const H = globalStats.commonExtra / 100;
-    // I: 暴擊傷害
-    const I = globalStats.critDmg / 100;
-    // J: 其他獨立加成
-    const J = globalStats.independentMulti / 100;
-    // K: 組合式最終傷害（四土）
-    const K = gearStats.comboFinalDmgEarth / 100;
-    // L: 綠草+曼德拉
-    const L = gearStats.comboHerbGreen / 100;
-    // M: 土精通效率
-    const M = getEarthMasteryEff.value;
-
-    // X = A1 × B1 × (1+C) × D × (1+E) × (1+F/2) × (1+G)
-    const X = A1 * B1 * (1 + C) * D * (1 + E) * (1 + F / 2) * (1 + G);
-
-    // 基礎傷害 = (A2 + X) × B2 × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M))
-    const baseDamage = (A2 + X) * B2 * (1 + H) * (1 + I) * (1 + J) * (1 + K * (1 + L + M));
-
-    // 加上減益效果（大蛇可吃到自身減益）
-    const debuffMultiplier = 1 + nightmareDebuff.value.result;
-    const finalDamage = baseDamage * debuffMultiplier;
-
-    return {
-        A1,
-        A2,
-        B1,
-        B2,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J,
-        K,
-        L,
-        M,
-        X,
-        baseDamage,
-        debuffMultiplier,
-        result: finalDamage,
-    };
-});
-
-// 格式化數字
-const formatNumber = (num: number) => {
-    return num.toLocaleString("zh-TW", { maximumFractionDigits: 2 });
+const settings = reactive<AlchemySettings>(createDefaultSettings());
+const ARCANE_IDS: ArcaneId[] = ["spiral", "chemical", "nightmare"];
+const ARCANE_LABELS: Record<ArcaneId, string> = { spiral: "地裂螺旋", chemical: "化學狂歡", nightmare: "召喚噩夢" };
+const RELIC_NOTES: Record<ArcaneId, string> = {
+    spiral: "秘法部分 ×(1 + 2%／級)，10 級 ×1.2（說明 200% ÷ 10）",
+    chemical: "秘法部分 ×(1 + 3%／級)，10 級 ×1.3（說明 300% ÷ 10），第一次與後續爆炸相同",
+    nightmare: "4 能量額外傷害值倍率 +5%／級，10 級 480% → 530%",
 };
 
-// 預設配置
-const applyPreset = (preset: string) => {
-    if (preset === "basic") {
-        masteryStats.fireMasteryEff = 10;
-        masteryStats.waterMasteryEff = 10;
-        masteryStats.earthMasteryEff = 10;
-        masteryStats.fireMasteryAppraisal = false;
-        masteryStats.waterMasteryAppraisal = false;
-        masteryStats.earthMasteryAppraisal = false;
-        masteryStats.cylinderBonus = 30;
-        gearStats.crewSetBonus = 0;
-        fireSkillStats.flameburstHitAppraisal = 0;
-        fireSkillStats.nightmareRelicLevel = 0;
-        waterSkillStats.rainAmplifyAppraisalLevel = 0;
-        fireSkillStats.ergAmplify = 0;
-    } else if (preset === "advanced") {
-        masteryStats.fireMasteryEff = 10;
-        masteryStats.waterMasteryEff = 10;
-        masteryStats.earthMasteryEff = 10;
-        masteryStats.fireMasteryAppraisal = true;
-        masteryStats.waterMasteryAppraisal = true;
-        masteryStats.earthMasteryAppraisal = true;
-        masteryStats.cylinderBonus = 30;
-        gearStats.crewSetBonus = 15;
-        fireSkillStats.flameburstHitAppraisal = 1;
-        fireSkillStats.nightmareRelicLevel = 5;
-        waterSkillStats.rainAmplifyAppraisalLevel = 10;
-        fireSkillStats.ergAmplify = 150;
-    } else if (preset === "maxed") {
-        masteryStats.fireMasteryEff = 10;
-        masteryStats.waterMasteryEff = 10;
-        masteryStats.earthMasteryEff = 10;
-        masteryStats.fireMasteryAppraisal = true;
-        masteryStats.waterMasteryAppraisal = true;
-        masteryStats.earthMasteryAppraisal = true;
-        masteryStats.cylinderBonus = 30;
-        gearStats.crewSetBonus = 15;
-        fireSkillStats.flameburstHitAppraisal = 2;
-        fireSkillStats.nightmareRelicLevel = 10;
-        waterSkillStats.rainAmplifyAppraisalLevel = 20;
-        fireSkillStats.ergAmplify = 300;
-        fireSkillStats.flameburstAppraisalLevel = 20;
-        fireSkillStats.heatBusterAppraisalLevel = 20;
-        waterSkillStats.waterCannonAppraisalLevel = 20;
+// 畫面偏好（分頁／暴擊顯示模式）：只存這台瀏覽器
+const DISPLAY_PREFS_KEY = "alchemy_calc_display_v1";
+const TAB_NAMES = ["attack", "reforge", "critextra", "skill", "armorbreak", "usage"];
+const CRIT_MODES: CritMode[] = ["noCrit", "crit", "expected"];
+function readJson<T>(key: string): T | null {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? (JSON.parse(raw) as T) : null;
+    } catch {
+        return null;
     }
+}
+function writeJson(key: string, value: unknown) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+        /* 瀏覽器禁用儲存時忽略 */
+    }
+}
+const displayPrefs = readJson<{ tab?: string; critMode?: string }>(DISPLAY_PREFS_KEY) ?? {};
+const activeTab = ref(TAB_NAMES.includes(displayPrefs.tab ?? "") ? (displayPrefs.tab as string) : "attack");
+const critDisplayMode = ref<CritMode>(CRIT_MODES.includes(displayPrefs.critMode as CritMode) ? (displayPrefs.critMode as CritMode) : "expected");
+watch([activeTab, critDisplayMode], () => writeJson(DISPLAY_PREFS_KEY, { tab: activeTab.value, critMode: critDisplayMode.value }));
+
+// ── 破防：面板發出魔法側結果，存進 settings（跟著存檔走），是否套用由 settings.armorBreak.enabled 決定 ──
+type ArmorBreakResult = { protBeforePierce: number; pierceResist: number; damageTakenPercent: number; critDamagePercent: number };
+// 讀取存檔會蓋掉 settings.armorBreak，留一份面板最新結果，讀檔後再套回去（面板畫面才是目前的破防組合）
+let latestArmorBreak: ArmorBreakResult | null = null;
+function onArmorBreakResult(r: ArmorBreakResult) {
+    latestArmorBreak = r;
+    Object.assign(settings.armorBreak, {
+        protBeforePierce: r.protBeforePierce,
+        pierceResist: r.pierceResist,
+        damageTakenPercent: r.damageTakenPercent,
+        critExtraPercent: r.critDamagePercent, // 面板欄位名沿用：其實是暴擊時通用額外傷害（銳利目光）
+    });
+}
+
+// ── 計算 ──
+const calcResult = computed(() => calculateAlchemy(settings));
+const cardSkills = computed(() => calculateAlchemy(settings, critDisplayMode.value).skills);
+const totalOutput = computed(() => calculateTotalOutput(settings));
+const hasAnyUsage = computed(() => SKILL_META.some((s) => settings.usage[s.id] > 0));
+const usageRows = computed(() =>
+    calcResult.value.skills.map((sk) => {
+        const subtotal = sk.damage * (settings.usage[sk.id] ?? 0);
+        return { ...sk, subtotal, share: totalOutput.value > 0 ? (subtotal / totalOutput.value) * 100 : 0 };
+    }),
+);
+const expandedSkillIds = ref<string[]>([]);
+function toggleExpanded(id: string) {
+    const i = expandedSkillIds.value.indexOf(id);
+    if (i >= 0) expandedSkillIds.value.splice(i, 1);
+    else expandedSkillIds.value.push(id);
+}
+
+const fmtInt = (n: number): string => Math.round(n).toLocaleString("zh-Hant");
+const fmtRatio = (n: number): string => String(Math.round(n * 100) / 100);
+const fmtPct = (ratio: number): string => `${fmtRatio(ratio * 100)}%`;
+const fmtMultiplier = (n: number): string => `×${n.toFixed(4)}`;
+
+// ═══════════════════════════════════════════════════════
+//  儲存 / 讀取（本機）＋ 自動存檔
+// ═══════════════════════════════════════════════════════
+const PRESET_KEY = "alchemy_calc_presets_v2";
+const AUTOSAVE_KEY = "alchemy_calc_autosave_v2";
+interface AlchemyPreset {
+    name: string;
+    timestamp: number;
+    data: AlchemySettings;
+}
+const storedPresets = readJson<AlchemyPreset[]>(PRESET_KEY);
+const presets = ref<AlchemyPreset[]>(Array.isArray(storedPresets) ? storedPresets : []);
+const newPresetName = ref("");
+const showPresetPanel = ref(false);
+const loadedPresetTimestamp = ref<number | null>(null);
+const loadedPreset = computed(() => presets.value.find((p) => p.timestamp === loadedPresetTimestamp.value) ?? null);
+const persistPresets = () => writeJson(PRESET_KEY, presets.value);
+
+function applyLoadedSettings(data: unknown) {
+    Object.assign(settings, mergeSettings(data));
+    if (latestArmorBreak) onArmorBreakResult(latestArmorBreak);
+}
+function saveAsNewPreset() {
+    const timestamp = Date.now();
+    presets.value.push({ name: newPresetName.value.trim() || `配置 ${presets.value.length + 1}`, timestamp, data: JSON.parse(JSON.stringify(settings)) });
+    newPresetName.value = "";
+    loadedPresetTimestamp.value = timestamp;
+    persistPresets();
+}
+async function savePreset() {
+    const target = loadedPreset.value;
+    if (!target) return saveAsNewPreset();
+    try {
+        await ElMessageBox.confirm(`目前讀取的是「${target.name}」，要更新這個存檔，還是另存新檔？`, "儲存", {
+            confirmButtonText: "更新此存檔",
+            cancelButtonText: "另存新檔",
+            distinguishCancelAndClose: true,
+            type: "info",
+        });
+        target.data = JSON.parse(JSON.stringify(settings));
+        target.timestamp = Date.now();
+        loadedPresetTimestamp.value = target.timestamp;
+        persistPresets();
+    } catch (action) {
+        if (action === "cancel") saveAsNewPreset();
+    }
+}
+function loadPreset(idx: number) {
+    const p = presets.value[idx];
+    if (!p) return;
+    applyLoadedSettings(p.data);
+    loadedPresetTimestamp.value = p.timestamp;
+}
+function deletePreset(idx: number) {
+    if (presets.value[idx]?.timestamp === loadedPresetTimestamp.value) loadedPresetTimestamp.value = null;
+    presets.value.splice(idx, 1);
+    persistPresets();
+}
+function renamePreset(idx: number, name: string) {
+    const p = presets.value[idx];
+    if (!p) return;
+    p.name = name.trim() || p.name;
+    persistPresets();
+}
+const fmtDate = (ts: number) => new Date(ts).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+function resetAll() {
+    applyLoadedSettings(createDefaultSettings());
+    loadedPresetTimestamp.value = null;
+}
+
+const autosaved = readJson<unknown>(AUTOSAVE_KEY);
+if (autosaved) applyLoadedSettings(autosaved);
+let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
+watch(
+    settings,
+    () => {
+        clearTimeout(autosaveTimer);
+        autosaveTimer = setTimeout(() => writeJson(AUTOSAVE_KEY, settings), 500);
+    },
+    { deep: true },
+);
+
+const RESULT_DETAILS: Record<string, string> = {
+    alchDamage: "角色資訊上的屬性鍊金傷害，加上臨時加成（寵物等）。秘法部分用四屬性平均計算。",
+    masteryZone:
+        "精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶（四屬性 +30% 鋼瓶 ×1.30）；細工說明每級 0.5%（土 0.2%），實際生效一半。火／水、鋼瓶獨立乘算已實測（2026-10-25）。秘法的平均部分不吃精通區。",
+    crit: "暴擊 = 本次傷害 + 最大傷害 × (150% + 暴擊傷害加成)，這裡一律以最大傷害計算，所以暴擊時 = 最大傷害 × (250% + 加成)。期望值 = 沒暴擊 + (暴擊 − 沒暴擊) × 暴擊率。",
+    talentExtra: "才能技能：(1 + 武器額外) × (1 + 通用額外 + 才能額外)，武器額外獨立乘算（2026-10-25 實測，和物理公式一致）。",
+    arcaneExtra: "秘法技能：才能部分先 × (1 + 才能額外) × 武器詞條，整體再 × (1 + 武器額外) × (1 + 通用額外 + 秘法額外)。秘法部分沒有平均加成。",
+    independent: "優質戰鬥服務 1%、感應藥水 3%、其他獨立加成，各自獨立相乘。",
+    totalOutput: "總輸出 = Σ（每個技能單次傷害期望值 × 使用次數），在「技能使用次數」分頁設定。",
 };
 </script>
 
 <template>
-    <div class="alchemy-calculator">
-        <div class="deprecation-banner">
-            ⚠️ 本計算機建立在改版前，現已和版本脫節，不構成任何參考建議，請使用者好自為之。
-        </div>
-
+    <div class="alchemy-calc">
         <h1 class="page-title">
-            <span class="text-gradient">煉金術傷害計算器</span>
+            <span class="text-gradient">鍊金術傷害計算器</span>
+            <span class="page-subtitle">鍊金傷害 → 精通細工 → 暴擊增傷 → 技能設定 → 技能傷害拆解</span>
         </h1>
 
-        <div class="calculator-layout">
-            <!-- 左側：全域屬性 -->
-            <aside class="global-panel">
-                <div class="panel-header">
-                    <h2>全域屬性</h2>
-                    <div class="preset-buttons">
-                        <el-button size="small" @click="applyPreset('basic')">基礎</el-button>
-                        <el-button size="small" @click="applyPreset('advanced')">進階</el-button>
-                        <el-button size="small" type="primary" @click="applyPreset('maxed')">滿配</el-button>
+        <div class="sim-layout">
+            <!-- ════════ 左側 — 設定 ════════ -->
+            <div class="form-panel">
+                <el-card class="preset-card">
+                    <div
+                        class="preset-head"
+                        :class="{ open: showPresetPanel }"
+                        role="button"
+                        tabindex="0"
+                        :aria-expanded="showPresetPanel"
+                        @click="showPresetPanel = !showPresetPanel"
+                        @keyup.enter="showPresetPanel = !showPresetPanel"
+                    >
+                        <span class="preset-head-title">💾 儲存 / 讀取</span>
+                        <span class="preset-head-count">{{ presets.length }} 套</span>
+                        <span v-if="loadedPreset" class="preset-loaded">目前讀取：{{ loadedPreset.name }}</span>
+                        <span class="preset-head-chevron" :style="{ transform: showPresetPanel ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
                     </div>
+                    <template v-if="showPresetPanel">
+                        <div class="preset-save-row">
+                            <el-input v-model="newPresetName" placeholder="配置名稱（留空自動命名）" size="small" clearable maxlength="40" @keyup.enter="savePreset" />
+                            <el-button type="primary" size="small" @click="savePreset">儲存目前設定</el-button>
+                        </div>
+                        <div v-if="presets.length === 0" class="preset-empty">尚無儲存配置</div>
+                        <div v-else class="preset-list">
+                            <div v-for="(preset, idx) in presets" :key="preset.timestamp" class="preset-item" :class="{ 'preset-item-loaded': preset.timestamp === loadedPresetTimestamp }">
+                                <el-input :model-value="preset.name" size="small" maxlength="40" class="preset-name-input" @change="(v: string) => renamePreset(idx, v)" />
+                                <span class="preset-date">{{ fmtDate(preset.timestamp) }}</span>
+                                <el-button size="small" plain @click="loadPreset(idx)">讀取</el-button>
+                                <el-button size="small" type="danger" plain aria-label="刪除" @click="deletePreset(idx)">✕</el-button>
+                            </div>
+                        </div>
+                    </template>
+                </el-card>
+
+                <div class="quick-actions">
+                    <el-button size="small" plain @click="resetAll">重置設定</el-button>
                 </div>
 
-                <!-- 基礎屬性 -->
-                <div class="stat-section">
-                    <h3>基礎屬性 (A1, A2)</h3>
-                    <div class="stat-row">
-                        <label>火煉金傷害</label>
-                        <el-input-number v-model="globalStats.fireDmg" :min="0" :max="9999" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>水煉金傷害</label>
-                        <el-input-number v-model="globalStats.waterDmg" :min="0" :max="9999" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>四屬平均傷害</label>
-                        <el-input-number v-model="globalStats.avgDmg" :min="0" :max="9999" size="small" />
-                    </div>
-                </div>
+                <el-tabs v-model="activeTab" type="border-card" class="setting-tabs">
+                    <!-- 鍊金傷害 -->
+                    <el-tab-pane label="鍊金傷害" name="attack">
+                        <div class="tab-body">
+                            <div class="field-section-label">屬性鍊金傷害</div>
+                            <div v-for="el in ELEMENTS" :key="el" class="field-row">
+                                <label class="field-label">{{ ELEMENT_LABELS[el] }}屬性鍊金傷害</label>
+                                <el-input-number v-model="settings.alchDamage[el]" :min="0" :max="99999" :precision="0" size="small" class="field-select" />
+                            </div>
+                            <div class="field-hint">請填角色資訊上的數值（不含寵物等臨時加成）。</div>
+                            <div class="field-row">
+                                <label class="field-label">臨時鍊金傷害</label>
+                                <el-input-number v-model="settings.tempAlchDamage" :min="0" :max="9999" :precision="0" size="small" class="field-select" />
+                            </div>
+                            <div class="field-hint">寵物 buff 等角色資訊沒有顯示的四屬性鍊金傷害，四個屬性同時加。</div>
+                            <div class="field-row">
+                                <label class="field-label">屬性能量加成（每屬性）</label>
+                                <el-input-number v-model="settings.energyBonus" :min="0" :max="999" :precision="0" size="small" class="field-select" aria-label="屬性能量加成（每屬性）" />
+                            </div>
+                            <div class="field-hint">能力值未到上限時，屬性能量累積到一定程度會提升四屬性（面板請填提升後的數值）。化學狂歡、召喚噩夢消耗能量後才計算傷害，會自動扣掉這個值；能力值已到上限填 0（2026-10-29 實測）。</div>
 
-                <!-- 通用加成 -->
-                <div class="stat-section">
-                    <h3>通用加成 (H, I, J)</h3>
-                    <div class="stat-row">
-                        <label>通用額外 (H) %</label>
-                        <el-input-number v-model="globalStats.commonExtra" :min="0" :max="500" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>暴擊傷害 (I) %</label>
-                        <el-input-number v-model="globalStats.critDmg" :min="100" :max="500" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>獨立加成 (J) %</label>
-                        <el-input-number v-model="globalStats.independentMulti" :min="0" :max="100" size="small" />
-                    </div>
-                </div>
+                            <div class="field-section-label">精通區</div>
+                            <div class="field-hint">精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶，細工實際生效為說明的一半。</div>
+                            <div class="field-row">
+                                <label class="field-label">鋼瓶</label>
+                                <el-select v-model="settings.cylinderPercent" size="small" class="field-select-wide">
+                                    <el-option v-for="o in CYLINDER_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
+                                </el-select>
+                            </div>
+                            <div class="field-hint">鋼瓶獨立乘算，只有水炮、火焰噴射、高壓火爆（說明有「使用對應屬性的鋼瓶時增加 30%」）吃；四屬性 +30% 與一般鋼瓶已實測，其他未實測。</div>
+                        </div>
+                    </el-tab-pane>
 
-                <!-- 精通效率 -->
-                <div class="stat-section">
-                    <h3>精通效率 (F)</h3>
-                    <div class="stat-row">
-                        <label>火精通效率 %</label>
-                        <el-input-number v-model="masteryStats.fireMasteryEff" :min="0" :max="50" size="small" />
-                    </div>
-                    <div class="stat-row checkbox-row">
-                        <el-checkbox v-model="masteryStats.fireMasteryAppraisal">20 級鑑定 (+10%)</el-checkbox>
-                    </div>
-                    <div class="stat-row">
-                        <label>水精通效率 %</label>
-                        <el-input-number v-model="masteryStats.waterMasteryEff" :min="0" :max="50" size="small" />
-                    </div>
-                    <div class="stat-row checkbox-row">
-                        <el-checkbox v-model="masteryStats.waterMasteryAppraisal">20 級鑑定 (+10%)</el-checkbox>
-                    </div>
-                    <div class="stat-row">
-                        <label>土精通效率 %</label>
-                        <el-input-number v-model="masteryStats.earthMasteryEff" :min="0" :max="50" size="small" />
-                    </div>
-                    <div class="stat-row checkbox-row">
-                        <el-checkbox v-model="masteryStats.earthMasteryAppraisal">20 級鑑定 (+4%)</el-checkbox>
-                    </div>
-                </div>
-
-                <!-- 裝備加成 -->
-                <div class="stat-section">
-                    <h3>裝備加成 (E, G)</h3>
-                    <div class="stat-row">
-                        <label>鋼瓶加成 (E) %</label>
-                        <el-input-number v-model="masteryStats.cylinderBonus" :min="0" :max="100" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>才能額外 (G) %</label>
-                        <el-input-number v-model="masteryStats.talentBonus" :min="0" :max="100" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>克雷套增幅 %</label>
-                        <el-input-number v-model="gearStats.crewSetBonus" :min="0" :max="50" size="small" />
-                    </div>
-                </div>
-
-                <!-- 組合式設定 -->
-                <div class="stat-section">
-                    <h3>組合式設定 (K, L)</h3>
-                    <div class="stat-row">
-                        <label>四火最終傷害 %</label>
-                        <el-input-number v-model="gearStats.comboFinalDmgFire" :min="0" :max="100" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>四水最終傷害 %</label>
-                        <el-input-number v-model="gearStats.comboFinalDmgWater" :min="0" :max="200" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>四土最終傷害 %</label>
-                        <el-input-number v-model="gearStats.comboFinalDmgEarth" :min="0" :max="100" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>四火異常效果 %</label>
-                        <el-input-number v-model="gearStats.comboStatusEffect" :min="0" :max="100" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>紅草+曼德拉 %</label>
-                        <el-input-number v-model="gearStats.comboHerbRed" :min="0" :max="50" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>藍草+曼德拉 %</label>
-                        <el-input-number v-model="gearStats.comboHerbBlue" :min="0" :max="50" size="small" />
-                    </div>
-                    <div class="stat-row">
-                        <label>綠草+曼德拉 %</label>
-                        <el-input-number v-model="gearStats.comboHerbGreen" :min="0" :max="50" size="small" />
-                    </div>
-                </div>
-            </aside>
-
-            <!-- 右側：技能計算 -->
-            <main class="skill-panel">
-                <el-tabs v-model="activeTab" class="skill-tabs">
-                    <!-- 火系 Tab -->
-                    <el-tab-pane label="火系技能" name="fire">
-                        <div class="skill-content">
-                            <!-- 火焰噴射 -->
-                            <div class="skill-card">
-                                <h3>火焰噴射參數</h3>
-                                <div class="skill-inputs">
-                                    <div class="input-row">
-                                        <label>基礎倍率 % (每級鑑定 +0.3%)</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.flameburstMultiplier"
-                                            :min="1"
-                                            :max="100"
-                                            :step="0.1"
-                                            :precision="1"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>鑑定等級</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.flameburstAppraisalLevel"
-                                            :min="0"
-                                            :max="33"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>蓄力段數</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.flameburstChargeLevel"
-                                            :min="1"
-                                            :max="5"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>噴射段數</label>
-                                        <el-select v-model="fireSkillStats.flameburstHitAppraisal" size="small">
-                                            <el-option :value="0" label="基礎 5 段" />
-                                            <el-option :value="1" label="15 級鑑定 8 段" />
-                                            <el-option :value="2" label="20 級鑑定 9 段" />
-                                        </el-select>
-                                    </div>
-                                </div>
+                    <!-- 精通與細工 -->
+                    <el-tab-pane label="精通與細工" name="reforge">
+                        <div class="tab-body">
+                            <div class="field-section-label">精通效率細工（加進精通區）</div>
+                            <div v-for="el in ELEMENTS" :key="el" class="field-row">
+                                <label class="field-label">精通{{ ELEMENT_LABELS[el] }}鍊金術 效率</label>
+                                <el-input-number v-model="settings.masteryReforge[el]" :min="0" :max="MASTERY_REFORGE_MAX" :precision="0" size="small" class="field-select-sm" :aria-label="`精通${ELEMENT_LABELS[el]}鍊金術效率 等級`" />
+                                <span class="switch-label">每級 +{{ fmtPct(MASTERY_REFORGE_STEP[el]) }}</span>
                             </div>
 
-                            <div class="result-card">
-                                <h3>火焰噴射傷害</h3>
-                                <div class="result-value">{{ formatNumber(flameburstDamage.result) }}</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">A1 × B1 × (1+C) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J)</p>
-                                    <div class="breakdown-grid">
-                                        <span>A1 = {{ flameburstDamage.A1 }}</span>
-                                        <span>
-                                            B1 = {{ flameburstDamage.B1.toFixed(4) }} ({{
-                                                flameburstDamage.baseMultiplier.toFixed(1)
-                                            }}% × {{ fireSkillStats.flameburstChargeLevel }})
-                                        </span>
-                                        <span>C = {{ (flameburstDamage.C * 100).toFixed(1) }}%</span>
-                                        <span>E = {{ (flameburstDamage.E * 100).toFixed(1) }}%</span>
-                                        <span>F = {{ (flameburstDamage.F * 100).toFixed(1) }}%</span>
-                                        <span>G = {{ (flameburstDamage.G * 100).toFixed(1) }}%</span>
-                                        <span>H = {{ (flameburstDamage.H * 100).toFixed(1) }}%</span>
-                                        <span>I = {{ (flameburstDamage.I * 100).toFixed(1) }}%</span>
-                                        <span>J = {{ (flameburstDamage.J * 100).toFixed(1) }}%</span>
-                                    </div>
-                                </div>
+                            <div class="field-section-label">技能細工（鑑定）等級</div>
+                            <div class="equip-table-wrap">
+                                <table class="equip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>細工</th>
+                                            <th>每級</th>
+                                            <th>等級</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="f in REFORGE_FIELDS" :key="f.key">
+                                            <td class="equip-slot-label">{{ f.label }}</td>
+                                            <td>{{ f.perLevel }}</td>
+                                            <td>
+                                                <el-input-number v-model="settings.reforge[f.key]" :min="0" :max="f.max" :precision="0" size="small" class="equip-input" :aria-label="`${f.label} 等級`" />
+                                                <span class="field-max">/ {{ f.max }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
+                            <div class="field-hint">身上其他道具給的鑑定等級（例如水炮鑑定 +3）也要加進來。火焰噴射段數：{{ fmtRatio(flamerHits(settings)) }}</div>
 
-                            <!-- 召喚夢魘 -->
-                            <div class="skill-card">
-                                <h3>召喚夢魘（大蛇）參數</h3>
-                                <div class="skill-inputs">
-                                    <div class="input-row">
-                                        <label>大蛇倍率 % (4 能量)</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.nightmareMultiplier"
-                                            :min="100"
-                                            :max="2000"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>減益基礎值 %</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.nightmareDebuffBase"
-                                            :min="0"
-                                            :max="10"
-                                            :step="0.01"
-                                            :precision="2"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>4 能量減益提升 %</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.nightmareDebuffEnhance"
-                                            :min="0"
-                                            :max="100"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>遺物等級 (每級 +30%)</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.nightmareRelicLevel"
-                                            :min="0"
-                                            :max="10"
-                                            size="small"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="result-card secondary">
-                                <h3>大蛇減益效果</h3>
-                                <div class="result-value">+{{ nightmareDebuff.resultPercent }}%</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">A × (1+B) × (1 + C×(1+D+E))</p>
-                                    <div class="breakdown-grid">
-                                        <span>A = {{ (nightmareDebuff.A * 100).toFixed(2) }}%</span>
-                                        <span>B = {{ (nightmareDebuff.B * 100).toFixed(0) }}%</span>
-                                        <span>C = {{ (nightmareDebuff.C * 100).toFixed(0) }}%</span>
-                                        <span>D = {{ (nightmareDebuff.D * 100).toFixed(0) }}%</span>
-                                        <span>E = {{ (nightmareDebuff.E * 100).toFixed(1) }}%</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="result-card">
-                                <h3>召喚夢魘傷害</h3>
-                                <div class="result-value">{{ formatNumber(nightmareDamage.result) }}</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">
-                                        (A2 + X) × B2 × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M)) × 減益
-                                    </p>
-                                    <p class="formula">X = A1 × B1 × (1+C) × D × (1+E) × (1+F/2)× (1+G)</p>
-                                    <div class="breakdown-grid">
-                                        <span>A2 = {{ nightmareDamage.A2 }}</span>
-                                        <span>X = {{ formatNumber(nightmareDamage.X) }}</span>
-                                        <span>B2 = {{ (nightmareDamage.B2 * 100).toFixed(0) }}%</span>
-                                        <span>K = {{ (nightmareDamage.K * 100).toFixed(0) }}%</span>
-                                        <span>L = {{ (nightmareDamage.L * 100).toFixed(0) }}%</span>
-                                        <span>M = {{ (nightmareDamage.M * 100).toFixed(1) }}%</span>
-                                    </div>
-
-                                    <div class="breakdown-grid">
-                                        <span>A1 = {{ nightmareDamage.A1 }}</span>
-                                        <span>B1 = {{ (nightmareDamage.B1 * 100).toFixed(0) }}%</span>
-                                        <span>段數 D = {{ nightmareDamage.D }}</span>
-                                        <span>C = {{ (nightmareDamage.C * 100).toFixed(0) }}%</span>
-                                        <span>E = {{ (nightmareDamage.E * 100).toFixed(0) }}%</span>
-                                        <span>F = {{ (nightmareDamage.F * 100).toFixed(0) }}%</span>
-                                        <span>G = {{ (nightmareDamage.G * 100).toFixed(1) }}%</span>
-                                    </div>
-                                    <div class="intermediate-values">
-                                        <p>基礎傷害: {{ formatNumber(nightmareDamage.baseDamage) }}</p>
-                                        <p>減益乘數: ×{{ nightmareDamage.debuffMultiplier.toFixed(4) }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 高溫爆發 -->
-                            <div class="skill-card">
-                                <h3>高溫爆發參數</h3>
-                                <div class="skill-inputs">
-                                    <div class="input-row">
-                                        <label>基礎倍率 % (每級鑑定 +1%)</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.heatBusterMultiplier"
-                                            :min="1"
-                                            :max="300"
-                                            :step="0.5"
-                                            :precision="1"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>鑑定等級</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.heatBusterAppraisalLevel"
-                                            :min="0"
-                                            :max="33"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>壓力值 %</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.heatBusterPressure"
-                                            :min="0"
-                                            :max="500"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>厄格增幅 % (S50=300%)</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.ergAmplify"
-                                            :min="0"
-                                            :max="500"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>元素波動增幅 %</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.elementWaveAmplify"
-                                            :min="0"
-                                            :max="100"
-                                            size="small"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="result-card">
-                                <h3>高溫爆發傷害</h3>
-                                <div class="result-value">{{ formatNumber(heatBusterDamage.result) }}</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">
-                                        A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J) × 壓力
-                                    </p>
-                                    <div class="breakdown-grid">
-                                        <span>A1 = {{ heatBusterDamage.A1 }}</span>
-                                        <span>B1 = {{ (heatBusterDamage.B1 * 100).toFixed(1) }}%</span>
-                                        <span>C(厄格) = {{ (heatBusterDamage.C * 100).toFixed(0) }}%</span>
-                                        <span>D(波動) = {{ (heatBusterDamage.D * 100).toFixed(0) }}%</span>
-                                        <span>壓力 = {{ (heatBusterDamage.pressure * 100).toFixed(0) }}%</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 化學狂歡 -->
-                            <div class="skill-card">
-                                <h3>化學狂歡（瓶子）參數</h3>
-                                <div class="skill-inputs">
-                                    <div class="input-row">
-                                        <label>瓶子倍率 % (每級遺物 +30%)</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.chemicalMultiplier"
-                                            :min="100"
-                                            :max="2000"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>遺物等級</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.chemicalRelicLevel"
-                                            :min="0"
-                                            :max="10"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>後續爆炸比例 %</label>
-                                        <el-input-number
-                                            v-model="fireSkillStats.chemicalExplosionRate"
-                                            :min="0"
-                                            :max="100"
-                                            size="small"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="result-card">
-                                <h3>化學狂歡傷害</h3>
-                                <div class="result-value">{{ formatNumber(chemicalDamage.result) }}</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">(X + Y) × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M))</p>
-                                    <div class="breakdown-grid">
-                                        <span>X = {{ formatNumber(chemicalDamage.X) }}</span>
-                                        <span>Y = {{ formatNumber(chemicalDamage.Y) }}</span>
-                                        <span>B2 = {{ (chemicalDamage.B2 * 100).toFixed(0) }}%</span>
-                                        <span>K = {{ (chemicalDamage.K * 100).toFixed(0) }}%</span>
-                                    </div>
-                                    <div class="intermediate-values">
-                                        <p>
-                                            後續爆炸 ({{ chemicalDamage.explosionRate * 100 }}%):
-                                            {{ formatNumber(chemicalDamage.explosionDamage) }}
-                                        </p>
-                                    </div>
-                                </div>
+                            <div class="field-section-label">秘法遺物等級</div>
+                            <div v-for="id in ARCANE_IDS" :key="id" class="field-row">
+                                <label class="field-label">{{ ARCANE_LABELS[id] }}</label>
+                                <el-input-number v-model="settings.relic[id]" :min="0" :max="RELIC_MAX_LEVEL" :precision="0" size="small" class="field-select-sm" />
+                                <span class="switch-label">{{ RELIC_NOTES[id] }}</span>
                             </div>
                         </div>
                     </el-tab-pane>
 
-                    <!-- 水系 Tab -->
-                    <el-tab-pane label="水系技能" name="water">
-                        <div class="skill-content">
-                            <!-- 水炮設定 -->
-                            <div class="skill-card">
-                                <h3>水炮參數</h3>
-                                <div class="skill-inputs">
-                                    <div class="input-row">
-                                        <label>基礎倍率 % (每級鑑定 +0.6%)</label>
-                                        <el-input-number
-                                            v-model="waterSkillStats.waterCannonMultiplier"
-                                            :min="1"
-                                            :max="200"
-                                            :step="0.1"
-                                            :precision="1"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>鑑定等級</label>
-                                        <el-input-number
-                                            v-model="waterSkillStats.waterCannonAppraisalLevel"
-                                            :min="0"
-                                            :max="33"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>蓄力段數 (5 蓄 = ×6.25)</label>
-                                        <el-input-number
-                                            v-model="waterSkillStats.waterCannonChargeLevel"
-                                            :min="1"
-                                            :max="5"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>雷雨增幅 % (每級鑑定 +5%)</label>
-                                        <el-input-number
-                                            v-model="waterSkillStats.rainAmplify"
-                                            :min="0"
-                                            :max="100"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>雷雨鑑定等級</label>
-                                        <el-input-number
-                                            v-model="waterSkillStats.rainAmplifyAppraisalLevel"
-                                            :min="0"
-                                            :max="25"
-                                            size="small"
-                                        />
-                                    </div>
-                                </div>
+                    <!-- 暴擊與額外傷害 -->
+                    <el-tab-pane label="暴擊與額外傷害" name="critextra">
+                        <div class="tab-body">
+                            <div class="field-section-label">暴擊率</div>
+                            <div class="field-row">
+                                <label class="field-label">面板暴擊率 %</label>
+                                <el-input-number v-model="settings.crit.panelRatePercent" :min="0" :max="100" :step="0.5" :precision="1" size="small" class="field-select-sm" />
                             </div>
 
-                            <div class="result-card">
-                                <h3>水炮傷害</h3>
-                                <div class="result-value">{{ formatNumber(waterCannonDamage.result) }}</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">
-                                        A1 × B1 × (1+C) × (1+D) × (1+E) × (1+F/2) × (1+G+H) × (1+I) × (1+J)
-                                    </p>
-                                    <div class="breakdown-grid">
-                                        <span>A1 = {{ waterCannonDamage.A1 }}</span>
-                                        <span>
-                                            B1 = {{ waterCannonDamage.B1.toFixed(4) }} ({{
-                                                waterCannonDamage.baseMultiplier.toFixed(1)
-                                            }}% × {{ waterCannonDamage.chargeMultiplier }})
-                                        </span>
-                                        <span>C(雷雨) = {{ (waterCannonDamage.C * 100).toFixed(0) }}%</span>
-                                        <span>D(套裝) = {{ (waterCannonDamage.D * 100).toFixed(0) }}%</span>
-                                        <span>E = {{ (waterCannonDamage.E * 100).toFixed(0) }}%</span>
-                                        <span>F = {{ (waterCannonDamage.F * 100).toFixed(1) }}%</span>
-                                    </div>
-                                </div>
+                            <div class="field-section-label">暴擊傷害（基礎 250%）</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.critDamage.grade" />
+                                <span class="switch-label">評價滿（+10%）</span>
                             </div>
-
-                            <!-- 螺旋爆裂設定 -->
-                            <div class="skill-card">
-                                <h3>螺旋爆裂（地刺）參數</h3>
-                                <div class="skill-inputs">
-                                    <div class="input-row">
-                                        <label>地刺倍率 % (每級遺物 +20%)</label>
-                                        <el-input-number
-                                            v-model="waterSkillStats.spiralBurstMultiplier"
-                                            :min="100"
-                                            :max="3000"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>遺物等級</label>
-                                        <el-input-number
-                                            v-model="waterSkillStats.spiralBurstRelicLevel"
-                                            :min="0"
-                                            :max="10"
-                                            size="small"
-                                        />
-                                    </div>
-                                </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.critDamage.spiritWeapon" />
+                                <span class="switch-label">精靈武器（+15%）</span>
                             </div>
+                            <div class="field-row">
+                                <label class="field-label">其他 %</label>
+                                <el-input-number v-model="settings.critDamage.other" :min="0" :max="300" :precision="0" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-hint">裝備 R 改、套裝、農場物、圖騰等暴擊傷害加總。暴擊傷害合計：{{ fmtRatio(calcResult.critDamagePercent) }}%</div>
 
-                            <div class="result-card">
-                                <h3>螺旋爆裂傷害</h3>
-                                <div class="result-value">{{ formatNumber(spiralBurstDamage.result) }}</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">(X + Y) × (1+H) × (1+I) × (1+J) × (1 + K×(1+L+M))</p>
-                                    <div class="breakdown-grid">
-                                        <span>X = {{ formatNumber(spiralBurstDamage.X) }}</span>
-                                        <span>Y = {{ formatNumber(spiralBurstDamage.Y) }}</span>
-                                        <span>B2 = {{ (spiralBurstDamage.B2 * 100).toFixed(0) }}%</span>
-                                        <span>K = {{ (spiralBurstDamage.K * 100).toFixed(0) }}%</span>
-                                        <span>L = {{ (spiralBurstDamage.L * 100).toFixed(0) }}%</span>
-                                        <span>M = {{ (spiralBurstDamage.M * 100).toFixed(1) }}%</span>
-                                    </div>
-                                </div>
+                            <div class="field-section-label">額外傷害 %</div>
+                            <div class="field-row">
+                                <label class="field-label">武器額外傷害</label>
+                                <el-input-number v-model="settings.extra.weapon" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">通用額外傷害</label>
+                                <el-input-number v-model="settings.extra.general" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">才能額外傷害</label>
+                                <el-input-number v-model="settings.extra.talent" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">鍊金術才能傷害（武器詞條）</label>
+                                <el-input-number v-model="settings.extra.talentSkill" :min="0" :max="100" :step="0.01" :precision="2" size="small" class="field-select-sm" aria-label="鍊金術才能傷害（武器詞條）%" />
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.spiritWeakness" />
+                                <span class="switch-label">精靈武器 弱點分析 5 等（目標有出血／暈眩／防保減少時，才能額外 +10%）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">秘法額外傷害</label>
+                                <el-input-number v-model="settings.extra.arcane" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-hint">(1 + 武器額外) × (1 + 通用額外 + 才能額外／秘法額外)；才能額外只算才能技能與秘法借用的才能部分；秘法額外只算秘法技能。優質戰鬥服務在下方獨立加成；活動道具 1% 有效，填在下方獨立加成的「其他 %」。藍月亮（拉狄卡的氣息）、弱點分析等「才能技能傷害」和通用額外相加；武器詞條「鍊金術才能傷害」另外獨立乘算，秘法技能只乘才能部分（2026-10-27～29 實測）。</div>
+
+                            <div class="field-section-label">獨立加成（各自獨立相乘）</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.independent.battleService" />
+                                <span class="switch-label">優質戰鬥服務（+1%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.independent.sensePotion" />
+                                <span class="switch-label">名匠的感應藥水（+3%）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">其他 %</label>
+                                <el-input-number v-model="settings.independent.otherPercent" :min="0" :max="100" :step="0.5" :precision="1" size="small" class="field-select-sm" />
                             </div>
                         </div>
                     </el-tab-pane>
 
-                    <!-- 催化協同 Tab -->
-                    <el-tab-pane label="催化協同" name="catalytic">
-                        <div class="skill-content">
-                            <div class="skill-card">
-                                <h3>催化協同參數</h3>
-                                <div class="skill-inputs">
-                                    <div class="input-row">
-                                        <label>基礎值 (A) % (四火+鏈接=8%)</label>
-                                        <el-input-number
-                                            v-model="catalyticStats.baseValue"
-                                            :min="0"
-                                            :max="50"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>紅草+曼德拉 (B) %</label>
-                                        <el-input-number
-                                            v-model="catalyticStats.herbBonus"
-                                            :min="0"
-                                            :max="50"
-                                            size="small"
-                                        />
-                                    </div>
-                                    <div class="input-row">
-                                        <label>平均屬性（每 500 +1%）</label>
-                                        <el-input-number
-                                            v-model="catalyticStats.linkAttributeAvg"
-                                            :min="0"
-                                            :max="5000"
-                                            :step="100"
-                                            size="small"
-                                        />
-                                    </div>
-                                </div>
+                    <!-- 技能設定 -->
+                    <el-tab-pane label="技能設定" name="skill">
+                        <div class="tab-body">
+                            <div class="field-section-label">才能技能</div>
+                            <div class="field-row">
+                                <label class="field-label">火焰噴射集氣</label>
+                                <el-input-number v-model="settings.flamerCharge" :min="1" :max="5" :precision="0" size="small" class="field-select-sm" />
+                                <span class="switch-label">召喚噩夢固定用 5 集氣</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">召喚噩夢消耗能量</label>
+                                <el-radio-group v-model="settings.nightmareEnergy" size="small">
+                                    <el-radio-button v-for="(r, i) in NIGHTMARE_RATIOS" :key="i" :value="i">{{ i }} 個（{{ fmtPct(r) }}）</el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">化學狂歡消耗能量</label>
+                                <el-radio-group v-model="settings.chemicalEnergy" size="small">
+                                    <el-radio-button v-for="n in [0, 1, 2, 3, 4]" :key="n" :value="n">{{ n }} 個（後續 {{ n + 1 }} 段）</el-radio-button>
+                                </el-radio-group>
+                            </div>
+                            <div class="field-hint">化學狂歡後續爆炸每段 = (高壓火爆部分 + 平均 × 900% × {{ fmtPct(CHEMICAL_FOLLOW_UP_AVG_RATIO) }} × 遺物) × 元素組合，段數 = 能量 + 1，每次施放各段同值（2026-10-29 實測）。</div>
+                            <div class="field-row">
+                                <label class="field-label">武器 高壓火爆傷害 %</label>
+                                <el-input-number v-model="settings.heatBusterWeaponPercent" :min="0" :max="1000" :precision="0" size="small" class="field-select-sm" />
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.elementWave" />
+                                <span class="switch-label">元素波動（高壓火爆 +25%；化學狂歡不吃）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.rain" />
+                                <span class="switch-label">造雨（水炮 +20%，細工每級 +5%；地裂螺旋的水炮部分也吃）</span>
                             </div>
 
-                            <div class="result-card">
-                                <h3>催化協同效果</h3>
-                                <div class="result-value">+{{ catalyticSynergy.resultPercent }}%</div>
-                                <div class="formula-breakdown">
-                                    <p class="formula">A × (1 + B + C) + D</p>
-                                    <div class="breakdown-grid">
-                                        <span>A = {{ (catalyticSynergy.A * 100).toFixed(0) }}%</span>
-                                        <span>B = {{ (catalyticSynergy.B * 100).toFixed(0) }}%</span>
-                                        <span>C(火精通) = {{ (catalyticSynergy.C * 100).toFixed(1) }}%</span>
-                                        <span>D(屬性) = {{ (catalyticSynergy.D * 100).toFixed(0) }}%</span>
-                                    </div>
-                                    <div class="intermediate-values">
-                                        <p>
-                                            計算過程: {{ (catalyticSynergy.A * 100).toFixed(0) }}% × (1 +
-                                            {{ (catalyticSynergy.B * 100).toFixed(0) }}% +
-                                            {{ (catalyticSynergy.C * 100).toFixed(1) }}%) +
-                                            {{ (catalyticSynergy.D * 100).toFixed(0) }}%
-                                        </p>
-                                    </div>
-                                </div>
+                            <div class="field-section-label">套裝效果</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.sets.waterCannon" />
+                                <span class="switch-label">水炮強化（克雷西達套，水炮 +15%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.sets.flamer" />
+                                <span class="switch-label">火焰噴射強化（克雷西達套，火焰噴射 +15%）</span>
                             </div>
 
-                            <div class="info-card">
-                                <h4>說明</h4>
-                                <ul>
-                                    <li>催化協同的效果會加入到「通用額外 (H)」中</li>
-                                    <li>C 使用火煉金術精通效率，基礎 10%，20 級鑑定 +10%</li>
-                                    <li>D 每 500 點平均屬性增加 1%，向下取整</li>
-                                </ul>
+                            <template v-for="id in ARCANE_IDS" :key="id">
+                                <div class="field-section-label">元素組合：{{ ARCANE_LABELS[id] }}（{{ ELEMENT_LABELS[COMBO_META[id].element] }}，每個結晶 +{{ fmtPct(COMBO_META[id].perCrystal) }}）</div>
+                                <div class="field-row">
+                                    <label class="field-label">{{ ELEMENT_LABELS[COMBO_META[id].element] }}結晶數</label>
+                                    <el-input-number v-model="settings.combo[id].crystals" :min="0" :max="COMBO_MAX_CRYSTALS" :precision="0" size="small" class="field-select-sm" />
+                                    <span class="switch-label">{{ COMBO_META[id].effect }}</span>
+                                </div>
+                                <div class="field-row">
+                                    <el-checkbox v-model="settings.combo[id].elementHerb" />
+                                    <span class="switch-label">屬性藥草（+10%）</span>
+                                    <el-checkbox v-model="settings.combo[id].mandrake" />
+                                    <span class="switch-label">曼德拉草（+5%）</span>
+                                </div>
+                                <div class="field-row">
+                                    <label class="field-label">Ogham 效果 %</label>
+                                    <el-input-number v-model="settings.combo[id].oghamPercent" :min="0" :max="COMBO_OGHAM_MAX" :step="0.2" :precision="1" size="small" class="field-select-sm" />
+                                    <span class="switch-label">（{{ ELEMENT_LABELS[COMBO_META[id].element] }}鍊金術效果）最終傷害倍率增加，最多 5 條 × 0.2%</span>
+                                </div>
+                            </template>
+                            <div class="field-hint">元素組合 = 1 + 結晶效果 × (1 + 藥草 + 效率)，效率 = 10% + 精通效率細工（遊戲畫面只顯示結晶效果）。化學狂歡的第一次與後續爆炸都吃火效果。</div>
+                        </div>
+                    </el-tab-pane>
+
+                    <!-- 破防 -->
+                    <el-tab-pane label="破防" name="armorbreak">
+                        <div class="tab-body">
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.armorBreak.enabled" />
+                                <span class="switch-label">
+                                    套用破防結果到傷害計算（魔法側：保護減傷 {{ fmtPct(calcResult.armor.single) }}、所受傷害 +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊時通用額外傷害 +{{ fmtRatio(settings.armorBreak.critExtraPercent) }}%）
+                                </span>
                             </div>
+                            <div class="field-row">
+                                <label class="field-label">穿刺等級</label>
+                                <el-input-number v-model="settings.pierceLevel" :min="0" :max="11" :precision="0" size="small" class="field-select-sm" />
+                                <span class="switch-label">每級 −5 魔法保護（扣除怪物穿刺抵抗）</span>
+                            </div>
+                            <div class="field-section-label">秘法技能借用的才能部分</div>
+                            <el-radio-group v-model="settings.protectionMode" size="small">
+                                <el-radio-button value="reference">參考（韓服計算器）</el-radio-button>
+                                <el-radio-button value="twice">兩次保護減傷</el-radio-button>
+                                <el-radio-button value="doublePierce">雙倍穿刺</el-radio-button>
+                            </el-radio-group>
+                            <div class="field-hint">
+                                參考：才能部分 × 穿刺增益，整體再扣一次保護｜兩次保護減傷：才能部分先扣保護，整體再扣一次｜雙倍穿刺：才能部分用穿刺等級 ×2 扣一次保護（聖盾、魔法計算器）。尚未實測，木樁保護 0 時三者相同。
+                            </div>
+                        </div>
+                        <div class="pb-embed">
+                            <ProtectionBreakPanel single side="magic" storage-key="prot-break:alchemy" :pierce="settings.pierceLevel" @result="onArmorBreakResult" />
+                        </div>
+                    </el-tab-pane>
+
+                    <!-- 技能使用次數 -->
+                    <el-tab-pane label="技能使用次數" name="usage">
+                        <div class="tab-body">
+                            <div class="field-section-label">各技能使用次數（單次傷害為期望值）</div>
+                            <div class="equip-table-wrap">
+                                <table class="equip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>技能</th>
+                                            <th>單次傷害</th>
+                                            <th>使用次數</th>
+                                            <th>小計</th>
+                                            <th>占比</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="row in usageRows" :key="row.id">
+                                            <td class="equip-slot-label">
+                                                <img v-if="row.imageId" width="20" height="20" :src="getSkillIcon(row.imageId)" alt="" class="skill-icon-inline" />
+                                                {{ row.label }}
+                                            </td>
+                                            <td>{{ fmtInt(row.damage) }}</td>
+                                            <td>
+                                                <el-input-number
+                                                    v-model="settings.usage[row.id]"
+                                                    :min="0"
+                                                    :max="99999"
+                                                    :precision="0"
+                                                    :controls="false"
+                                                    size="small"
+                                                    class="equip-input"
+                                                    :aria-label="`${row.label} 使用次數`"
+                                                />
+                                            </td>
+                                            <td>{{ fmtInt(row.subtotal) }}</td>
+                                            <td>{{ fmtRatio(row.share) }}%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="field-hint">總輸出 ＝ Σ（單次傷害 × 使用次數）。</div>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
-            </main>
+            </div>
+
+            <!-- ════════ 右側 — 最終面板 ════════ -->
+            <div class="dashboard-panel">
+                <div class="result-card grade-inspiring">
+                    <div class="result-card-header">
+                        <span class="grade-name">最終面板</span>
+                    </div>
+                    <div class="result-group-label">
+                        鍊金傷害
+                        <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                            <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                            {{ RESULT_DETAILS.alchDamage }}
+                        </el-popover>
+                    </div>
+                    <div v-for="el in ELEMENTS" :key="el" class="result-row">
+                        <span class="result-label">{{ ELEMENT_LABELS[el] }}屬性</span>
+                        <span class="result-value sub">{{ fmtInt(calcResult.alch[el]) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">4 屬性平均</span>
+                        <span class="result-value">{{ fmtInt(calcResult.alch.average) }}</span>
+                    </div>
+                    <div class="result-group-label">
+                        精通區
+                        <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                            <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                            {{ RESULT_DETAILS.masteryZone }}
+                        </el-popover>
+                    </div>
+                    <div v-for="el in ELEMENTS" :key="el" class="result-row">
+                        <span class="result-label">{{ ELEMENT_LABELS[el] }}</span>
+                        <span class="result-value sub">{{ fmtMultiplier(calcResult.masteryZone[el]) }}</span>
+                    </div>
+                    <div class="result-group-label">暴擊</div>
+                    <div class="result-row">
+                        <span class="result-label">暴擊率</span>
+                        <span class="result-value sub">{{ fmtRatio(calcResult.critRatePercent) }}%</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">暴擊傷害</span>
+                        <span class="result-value sub">{{ fmtRatio(calcResult.critDamagePercent) }}%</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            暴擊期望值
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.crit }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value sub">{{ fmtMultiplier(calcResult.critMultiplier) }}</span>
+                    </div>
+                    <div class="result-group-label">增傷</div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            才能技能額外
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.talentExtra }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value sub">{{ fmtMultiplier(calcResult.talentExtra) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            秘法技能額外
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.arcaneExtra }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value sub">{{ fmtMultiplier(calcResult.arcaneExtra) }}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            獨立加成
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.independent }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value sub">{{ fmtMultiplier(calcResult.independent) }}</span>
+                    </div>
+                    <div class="result-group-label">總輸出（見「技能使用次數」分頁）</div>
+                    <div class="result-row">
+                        <span class="result-label">
+                            總輸出
+                            <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                {{ RESULT_DETAILS.totalOutput }}
+                            </el-popover>
+                        </span>
+                        <span class="result-value">{{ hasAnyUsage ? fmtInt(totalOutput) : "—" }}</span>
+                    </div>
+                </div>
+
+                <div class="util-copyrights">公式來源：玩家實測（水炮、火焰噴射、高壓火爆、地裂螺旋、化學狂歡、召喚噩夢）＋韓服計算器對照，其餘照參考。大作（마그눔 오푸스）台服尚未實裝，暫不列出。</div>
+            </div>
+        </div>
+
+        <!-- ════════ 技能傷害 ════════ -->
+        <div class="skill-section">
+            <div class="skill-section-header">
+                <h2 class="skill-section-title">技能傷害（最大傷害）</h2>
+                <el-radio-group v-model="critDisplayMode" size="small">
+                    <el-radio-button value="noCrit">沒暴擊</el-radio-button>
+                    <el-radio-button value="crit">暴擊</el-radio-button>
+                    <el-radio-button value="expected">期望值</el-radio-button>
+                </el-radio-group>
+            </div>
+            <div class="field-hint skill-section-hint">只影響這裡的卡片顯示；技能使用次數與總輸出固定用期望值計算。</div>
+            <div class="skill-grid">
+                <div v-for="skill in cardSkills" :key="skill.id" class="skill-card">
+                    <div class="skill-card-header">
+                        <span class="skill-name">
+                            <img v-if="skill.imageId" width="24" height="24" :src="getSkillIcon(skill.imageId)" alt="" />
+                            {{ skill.label }}
+                        </span>
+                        <span class="skill-damage">{{ fmtInt(skill.damage) }}</span>
+                    </div>
+                    <div class="skill-formula">{{ skill.formula }}</div>
+
+                    <div v-if="skill.parts.length > 1" class="skill-terms">
+                        <div v-for="p in skill.parts" :key="p.label" class="term-row">
+                            <span class="term-label">{{ p.label }}</span>
+                            <span class="term-value">{{ fmtInt(p.damage) }}</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="detail-toggle" :aria-expanded="expandedSkillIds.includes(skill.id)" @click="toggleExpanded(skill.id)">
+                        {{ expandedSkillIds.includes(skill.id) ? "▼" : "▶" }} 乘區拆解
+                    </button>
+                    <template v-if="expandedSkillIds.includes(skill.id)">
+                        <div v-for="p in skill.parts" :key="p.label" class="skill-terms">
+                            <div v-if="skill.parts.length > 1" class="part-label">{{ p.label }}</div>
+                            <div v-for="f in p.factors" :key="f.label" class="factor-row">
+                                <span class="term-label">
+                                    {{ f.label }}
+                                    <span v-if="f.note" class="factor-note">{{ f.note }}</span>
+                                </span>
+                                <span class="term-value">{{ f.int ? fmtInt(f.value) : fmtMultiplier(f.value) }}</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.alchemy-calculator {
+.alchemy-calc {
     min-height: 100vh;
     padding: 1.5rem;
+    box-sizing: border-box;
 }
-
-.deprecation-banner {
-    background: #451a03;
-    border: 1px solid #92400e;
-    color: #fbbf24;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-    line-height: 1.5;
-}
-
 .page-title {
-    font-size: 2rem;
-    text-align: center;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
+    font-size: 1.8rem;
 }
-
-.text-gradient {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.page-subtitle {
+    font-size: 1rem;
+    color: var(--color-text-muted, #6b7280);
+    font-weight: 400;
 }
-
-.calculator-layout {
-    display: flex;
+.sim-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
     gap: 1.5rem;
-    max-width: 1400px;
+    max-width: 1280px;
     margin: 0 auto;
+    align-items: flex-start;
 }
-
-/* 左側面板 */
-.global-panel {
-    width: 320px;
-    flex-shrink: 0;
-    background: var(--color-surface, #1f2937);
-    border: 1px solid var(--color-border, #374151);
-    border-radius: 12px;
-    padding: 1.25rem;
-    height: fit-content;
-    position: sticky;
-    top: 1rem;
-    max-height: calc(100vh - 2rem);
-    overflow-y: auto;
-}
-
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--color-gold-400, #fbbf24);
-}
-
-.panel-header h2 {
-    font-size: 1.25rem;
-    color: var(--color-text-primary, #f9fafb);
-    margin: 0;
-}
-
-.preset-buttons {
-    display: flex;
-    gap: 0.25rem;
-}
-
-.stat-section {
-    margin-bottom: 1.25rem;
-}
-
-.stat-section h3 {
-    font-size: 0.9rem;
-    color: var(--color-gold-400, #fbbf24);
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.25rem;
-    border-bottom: 1px solid var(--color-border, #374151);
-}
-
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.stat-row label {
-    font-size: 0.85rem;
-    color: var(--color-text-secondary, #d1d5db);
-}
-
-.stat-row .el-input-number {
-    width: 120px;
-}
-
-.checkbox-row {
-    justify-content: flex-start;
-}
-
-.checkbox-row .el-checkbox {
-    --el-checkbox-text-color: var(--color-text-secondary, #d1d5db);
-}
-
-/* 右側面板 */
-.skill-panel {
-    flex: 1;
-    min-width: 0;
-}
-
-.skill-tabs {
-    background: var(--color-surface, #1f2937);
-    border: 1px solid var(--color-border, #374151);
-    border-radius: 12px;
-    padding: 1rem;
-}
-
-.skill-tabs :deep(.el-tabs__header) {
-    margin-bottom: 1rem;
-}
-
-.skill-tabs :deep(.el-tabs__item) {
-    color: var(--color-text-secondary, #9ca3af);
-}
-
-.skill-tabs :deep(.el-tabs__item.is-active) {
-    color: var(--color-gold-400, #fbbf24);
-}
-
-.skill-tabs :deep(.el-tabs__active-bar) {
-    background-color: var(--color-gold-400, #fbbf24);
-}
-
-.skill-content {
+.form-panel {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    min-width: 0;
+}
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
 }
 
-.skill-card {
-    background: var(--color-background, #111827);
-    border: 1px solid var(--color-border, #374151);
-    border-radius: 8px;
-    padding: 1rem;
+/* ── 儲存 / 讀取 ── */
+.preset-card {
+    background: var(--color-bg-secondary, #1f2937);
+    border: 1px solid var(--color-border-primary, #374151);
+    border-radius: 12px;
 }
-
-.skill-card h3 {
-    font-size: 1rem;
-    color: var(--color-text-primary, #f9fafb);
+.preset-card :deep(.el-card__body) {
+    padding: 0.85rem 1rem;
+}
+.preset-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+}
+.preset-head.open {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border-primary, #374151);
+}
+.preset-head-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #d1d5db);
+}
+.preset-head-count {
+    font-size: 0.72rem;
+    color: var(--color-text-disabled, #6b7280);
+}
+.preset-loaded {
+    font-size: 0.72rem;
+    color: var(--color-accent-hover, #fcd34d);
+}
+.preset-item-loaded {
+    outline: 1px solid var(--color-accent-hover, #fcd34d);
+}
+.preset-head-chevron {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #9ca3af);
+    transition: transform 0.2s ease;
+}
+.preset-save-row {
+    display: flex;
+    gap: 0.5rem;
     margin-bottom: 0.75rem;
 }
-
-.skill-inputs {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
+.preset-empty {
+    font-size: 0.78rem;
+    color: var(--color-text-disabled, #6b7280);
+    padding: 0.4rem 0;
 }
-
-.input-row {
+.preset-list {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.4rem;
 }
-
-.input-row label {
-    font-size: 0.8rem;
-    color: var(--color-text-secondary, #9ca3af);
-}
-
-.input-row .el-input-number,
-.input-row .el-select {
-    width: 100%;
-}
-
-/* 結果卡片 */
-.result-card {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
-    border: 1px solid var(--color-gold-400, #fbbf24);
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-.result-card.secondary {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
-    border-color: #3b82f6;
-}
-
-.result-card h3 {
-    font-size: 1rem;
-    color: var(--color-text-primary, #f9fafb);
-    margin-bottom: 0.5rem;
-}
-
-.result-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--color-gold-400, #fbbf24);
-    margin-bottom: 0.75rem;
-}
-
-.result-card.secondary .result-value {
-    color: #3b82f6;
-}
-
-.formula-breakdown {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    padding: 0.75rem;
-}
-
-.formula {
-    font-size: 0.8rem;
-    color: var(--color-text-secondary, #9ca3af);
-    font-family: monospace;
-    margin-bottom: 0.5rem;
-    word-break: break-all;
-}
-
-.breakdown-grid {
+.preset-item {
     display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    padding: 0.35rem 0.6rem;
+}
+.preset-name-input {
+    flex: 1;
+    min-width: 80px;
+}
+.preset-date {
+    font-size: 0.7rem;
+    color: var(--color-text-disabled, #6b7280);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ── 設定分頁 ── */
+.setting-tabs {
+    border-radius: 12px;
+    overflow: hidden;
+}
+.setting-tabs :deep(.el-tabs__item) {
+    padding: 0 10px;
+}
+.tab-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding-top: 0.25rem;
+}
+.field-section-label {
+    margin: 0.5rem 0 0.1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-accent-hover, #fcd34d);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+    padding-bottom: 0.2rem;
+}
+.field-section-label:first-child {
+    margin-top: 0;
+}
+.field-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     flex-wrap: wrap;
-    gap: 0.5rem 1rem;
 }
-
-.breakdown-grid span {
-    font-size: 0.75rem;
+.field-select {
+    width: 220px;
+    max-width: 100%;
+    flex-shrink: 0;
+}
+.field-select-sm {
+    width: 120px;
+    max-width: 100%;
+    flex-shrink: 0;
+}
+.field-select-wide {
+    width: 400px;
+    max-width: 100%;
+}
+.field-label {
+    font-size: 0.83rem;
     color: var(--color-text-secondary, #d1d5db);
-    font-family: monospace;
+    width: 140px;
+    flex-shrink: 0;
+    line-height: 1.3;
+}
+.switch-label {
+    font-size: 0.83rem;
+    color: var(--color-text-secondary, #d1d5db);
+}
+.field-hint {
+    font-size: 0.72rem;
+    color: var(--color-text-disabled, #6b7280);
+    flex-basis: 100%;
+}
+.field-max {
+    margin-left: 0.3rem;
+    font-size: 0.72rem;
+    color: var(--color-text-disabled, #6b7280);
 }
 
-.intermediate-values {
+/* ── 小表格 ── */
+.equip-table-wrap {
+    overflow-x: auto;
+}
+.equip-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.78rem;
+}
+.equip-table th,
+.equip-table td {
+    padding: 0.3rem 0.35rem;
+    border-bottom: 1px solid var(--color-border-primary, #374151);
+    text-align: left;
+    white-space: nowrap;
+}
+.equip-table thead th {
+    color: var(--color-text-muted, #9ca3af);
+    font-weight: 600;
+}
+.equip-slot-label {
+    color: var(--color-text-secondary, #d1d5db);
+    font-weight: 600;
+}
+.skill-icon-inline {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.3rem;
+    border-radius: 4px;
+}
+.equip-input {
+    width: 90px;
+}
+
+/* ── 右側最終面板 ── */
+.dashboard-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: sticky;
+    top: 1rem;
+}
+.result-card {
+    background: var(--color-bg-secondary, #1f2937);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--color-border-primary, #374151);
+}
+.grade-inspiring {
+    border-color: var(--color-accent-primary, #fbbf24);
+}
+.result-card-header {
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-border-primary, #374151);
+}
+.grade-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-accent-hover, #fcd34d);
+}
+.result-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.2rem 0;
+    gap: 0.5rem;
+}
+.result-label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #9ca3af);
+}
+.info-icon {
+    margin-left: 0.3rem;
+    font-size: 0.78rem;
+    color: var(--color-text-disabled, #6b7280);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.info-icon:hover {
+    color: var(--color-accent-hover, #fcd34d);
+}
+.result-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-family: var(--font-family-mono, monospace);
+    color: var(--color-text-primary, #f9fafb);
+    white-space: nowrap;
+}
+.result-value.sub {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #9ca3af);
+}
+.result-group-label {
+    display: flex;
+    align-items: center;
     margin-top: 0.5rem;
     padding-top: 0.5rem;
-    border-top: 1px dashed var(--color-border, #374151);
+    border-top: 1px dashed var(--color-border-primary, #374151);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-text-disabled, #6b7280);
+}
+.util-copyrights {
+    font-size: 0.72rem;
+    color: var(--color-text-disabled, #6b7280);
+    line-height: 1.6;
 }
 
-.intermediate-values p {
-    font-size: 0.8rem;
-    color: var(--color-text-secondary, #9ca3af);
-    margin: 0.25rem 0;
+/* ── 技能傷害 ── */
+.skill-section {
+    max-width: 1280px;
+    margin: 1.5rem auto 0;
 }
-
-.info-card {
-    background: var(--color-background, #111827);
-    border: 1px solid var(--color-border, #374151);
-    border-radius: 8px;
-    padding: 1rem;
+.skill-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
 }
-
-.info-card h4 {
-    font-size: 0.9rem;
-    color: var(--color-gold-400, #fbbf24);
-    margin-bottom: 0.5rem;
-}
-
-.info-card ul {
+.skill-section-title {
+    font-size: 1.2rem;
     margin: 0;
-    padding-left: 1.25rem;
+    color: var(--color-text-primary, #f9fafb);
+}
+.skill-section-hint {
+    margin-bottom: 0.75rem;
+}
+.skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.skill-card {
+    background: var(--color-bg-secondary, #1f2937);
+    border: 1px solid var(--color-border-primary, #374151);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.skill-card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-border-primary, #374151);
+}
+.skill-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text-primary, #f9fafb);
+}
+.skill-name img {
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.skill-damage {
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: var(--font-family-mono, monospace);
+    color: var(--color-accent-hover, #fcd34d);
+    white-space: nowrap;
+}
+.skill-formula {
+    font-size: 0.72rem;
+    font-family: var(--font-family-mono, monospace);
+    color: var(--color-text-disabled, #6b7280);
+    word-break: break-all;
+}
+.skill-terms {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+.term-row,
+.factor-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--color-text-muted, #9ca3af);
+}
+.factor-note {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--color-text-disabled, #6b7280);
+}
+.term-value {
+    text-align: right;
+    font-family: var(--font-family-mono, monospace);
+    color: var(--color-text-secondary, #d1d5db);
+    white-space: nowrap;
+}
+.part-label {
+    margin-top: 0.3rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #7dd3fc;
+}
+.detail-toggle {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0.1rem 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--color-accent-hover, #fcd34d);
+}
+.detail-toggle:focus-visible {
+    outline: 2px solid var(--color-accent-hover, #fcd34d);
+    outline-offset: 2px;
 }
 
-.info-card li {
+/* 嵌入的破防面板：套用本頁的卡片／標題／表格樣式 */
+.pb-embed :deep(.pb-panel) {
+    font-size: 0.8rem;
+}
+.pb-embed :deep(.pb-panel .el-card) {
+    background: var(--color-bg-secondary, #1f2937) !important;
+    border: 1px solid var(--color-border-primary, #374151) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-bottom: 0.75rem !important;
+}
+.pb-embed :deep(.pb-panel .el-card__body) {
+    padding: 0.6rem 0.75rem;
+}
+.pb-embed :deep(.pb-panel h2) {
     font-size: 0.85rem;
-    color: var(--color-text-secondary, #9ca3af);
-    margin-bottom: 0.25rem;
+    color: var(--color-accent-hover, #fcd34d);
+}
+.pb-embed :deep(.pb-panel .cfg-grid) {
+    grid-template-columns: 1fr !important;
+}
+.pb-embed :deep(.pb-panel .cmp-table) {
+    font-size: 0.78rem;
 }
 
-/* 響應式 */
-@media (max-width: 1024px) {
-    .calculator-layout {
-        flex-direction: column;
-    }
-
-    .global-panel {
-        width: 100%;
-        position: static;
-        max-height: none;
-    }
-
-    .stat-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 0.5rem;
-    }
-
-    .stat-section h3 {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 640px) {
-    .alchemy-calculator {
-        padding: 1rem;
-    }
-
-    .page-title {
-        font-size: 1.5rem;
-    }
-
-    .skill-inputs {
+@media (max-width: 900px) {
+    .sim-layout {
         grid-template-columns: 1fr;
     }
-
-    .result-value {
-        font-size: 1.5rem;
+    .dashboard-panel {
+        position: static;
     }
-
-    .panel-header {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: flex-start;
+    .field-label {
+        width: 130px;
     }
 }
 </style>
