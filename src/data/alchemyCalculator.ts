@@ -4,11 +4,11 @@ import { calculateFinalMaxDamage } from "./mabinogiCombat";
 /**
  * 鍊金術傷害計算器（2026-10-23～25 實測＋韓服計算器對照，見 docs/alchemy-calculator-notes.md、damage-formula-common.md）
  *
- * 才能技能 = 屬性鍊金傷害 × (技能倍率 + 鑑定) × 集氣 × 精通區 × 套裝 × (1 + 武器額外) × (1 + 通用額外 + 才能額外)
+ * 才能技能 = 鍊金術傷害 × (技能倍率 + 鑑定) × 集氣 × 精通區 × 套裝 × (1 + 武器額外) × (1 + 通用額外 + 才能額外)
  *   精通區 = (1.07 + 精通效率細工) × (1 + 鋼瓶 30%)；鋼瓶獨立乘算（2026-10-25 實測）
- * 秘法技能 = [才能部分 × (1+才能額外) × 武器詞條 + 4 屬性平均 × 秘法倍率 × 遺物] × 元素組合 × (1 + 武器額外) × (1 + 通用額外 + 秘法額外)
+ * 秘法技能 = [才能部分 × (1+才能額外) × 黑暗聚能 + 4 屬性平均 × 秘法倍率 × 遺物] × 元素組合 × (1 + 武器額外) × (1 + 通用額外 + 秘法額外)
  *   召喚噩夢例外：(火焰噴射 5 集氣 + 4 屬性平均) × 額外傷害值倍率（2026-10-24 實測）
- *   元素組合 = 1 + 結晶效果 × (1 + 藥草 + 效率)；秘法部分沒有平均加成、不吃精通區與武器詞條（2026-10-28 三套裝備實測）
+ *   元素組合 = 1 + 結晶效果 × (1 + 藥草 + 效率)；秘法部分沒有平均加成、不吃精通區與黑暗聚能（2026-10-28 三套裝備實測）
  *   化學狂歡、召喚噩夢消耗能量，用扣掉「屬性能量加成」的面板（2026-10-29 實測）
  * 暴擊 = 本次傷害 + 最大傷害 × (150% + 暴擊傷害加成)，這裡一律以最大傷害計算
  */
@@ -16,7 +16,7 @@ import { calculateFinalMaxDamage } from "./mabinogiCombat";
 export type CritMode = "noCrit" | "crit" | "expected";
 export type Element = "fire" | "water" | "wind" | "earth";
 export type ArcaneId = "spiral" | "chemical" | "nightmare";
-/** 秘法技能借用的才能部分怎麼扣保護：參考（韓服計算器）／兩次減傷／雙倍穿刺（聖盾、魔法計算器） */
+/** 秘法技能借用的才能部分怎麼扣保護：參考（韓服計算器）／兩次減傷／雙倍銳利（聖盾、魔法計算器） */
 export type ProtectionMode = "reference" | "twice" | "doublePierce";
 
 export const ELEMENTS: Element[] = ["fire", "water", "wind", "earth"];
@@ -32,9 +32,9 @@ export const MASTERY_BASE = 1.05;
 /** 鋼瓶：獨立乘算，只限說明有「使用對應屬性的鋼瓶時增加 30%」的技能（水炮、火焰噴射、高壓火爆） */
 export const CYLINDER_OPTIONS = [
     { value: 0, label: "一般鋼瓶／塔座鋼瓶（×1.00）" },
-    { value: 9, label: "災難系屬性鋼瓶（×1.09，未實測）" },
-    { value: 18, label: "進階屬性鋼瓶（×1.18，未實測）" },
-    { value: 30, label: "四屬性 +30% 鋼瓶：凱爾特、兇猛暴君、暗夜使者…（×1.30）" },
+    { value: 9, label: "劇場產屬性鋼瓶（×1.09，未實測）" },
+    { value: 18, label: "商店進階屬性鋼瓶（×1.18，未實測）" },
+    { value: 30, label: "四屬性鋼瓶（×1.30）" },
 ];
 
 /** 最大傷害細工上限 33 = 手套 25 + 飾品 4 × 2 */
@@ -48,13 +48,13 @@ export const REFORGE_FIELDS = [
 export type ReforgeKey = (typeof REFORGE_FIELDS)[number]["key"];
 
 /** 元素組合：每個結晶的最終傷害（地裂螺旋 水 20%、化學狂歡 火 3.75%（主目標，第一次與後續爆炸都吃）、召喚噩夢 土 5%） */
-export const COMBO_META: Record<ArcaneId, { element: Element; perCrystal: number; effect: string }> = {
-    spiral: { element: "water", perCrystal: 0.2, effect: "水鍊金術效果：技能最終傷害" },
-    chemical: { element: "fire", perCrystal: 0.0375, effect: "火鍊金術效果：主目標最終傷害" },
-    nightmare: { element: "earth", perCrystal: 0.05, effect: "土鍊金術效果：技能最終傷害" },
+export const COMBO_META: Record<ArcaneId, { element: Element; perCrystal: number; effect: string; herb: string }> = {
+    spiral: { element: "water", perCrystal: 0.2, effect: "水鍊金術效果：技能最終傷害", herb: "魔力藥草" },
+    chemical: { element: "fire", perCrystal: 0.0375, effect: "火鍊金術效果：主目標最終傷害", herb: "生命藥草" },
+    nightmare: { element: "earth", perCrystal: 0.05, effect: "土鍊金術效果：技能最終傷害", herb: "基礎藥草" },
 };
 export const COMBO_MAX_CRYSTALS = 4;
-/** Ogham「(X 鍊金術效果) 最終傷害倍率增加」最多 5 條 × 0.2% */
+/** 符文詞條「(X 鍊金術效果) 最終傷害倍率增加」最多 5 條 × 0.2% */
 export const COMBO_OGHAM_MAX = 1;
 
 /** 遺物 0~10 級。地裂螺旋、化學狂歡：秘法部分 ×(1 + 說明數字 ÷ 10)，即每級 2%／3%（地裂 1、10 級，化學 3、5 級實測）；召喚噩夢：4 能量倍率 +5%／級 */
@@ -67,7 +67,7 @@ export const NIGHTMARE_RATIOS = [2, 2, 2.5, 3.3, 4.8];
 /** 化學狂歡後續爆炸：段數 = 消耗能量 + 1（0～4），每段 = (高壓火爆部分 + 平均 × 900% × 50% × 遺物) × 元素組合（每次施放各段同值） */
 export const CHEMICAL_FOLLOW_UP_AVG_RATIO = 0.5;
 
-/** 鍊金常數攻擊力（不吃藥水係數與 buff%）：秘法被動 4 屬 +200、精靈武器 4 屬 +30、宗師 火 20／水 15／風 30／土 30（屬性共鳴面板實測吻合） */
+/** 鍊金常數攻擊力（不吃藥水係數與 buff%）：4 屬性鍊金術傷害 +200、精靈武器 4 屬 +30、一代宗師戰鬥鍊金術師 火 20／水 15／風 30／土 30（屬性共鳴面板實測吻合） */
 export const ARCANE_PASSIVE_CONSTANT = 200;
 export const SPIRIT_WEAPON_ALCH_CONSTANT = 30;
 export const RESONANCE_RATE = 1.03;
@@ -91,18 +91,18 @@ interface ComboSettings {
 }
 
 export interface AlchemySettings {
-    alchDamage: Record<Element, number>; // 角色資訊的屬性鍊金傷害
-    tempAlchDamage: number; // 寵物等面板沒有的四屬性鍊金傷害
+    alchDamage: Record<Element, number>; // 角色資訊的鍊金術傷害
+    tempAlchDamage: number; // 寵物等面板沒有的四屬性鍊金術傷害
     energyBonus: number; // 屬性能量累積觸發的四屬性提升（面板含此值）；化學狂歡、召喚噩夢消耗能量後扣掉
-    // 鍊金攻擊力 buff：面板填沒開這些 buff 的數值，依「(基礎 × 係數 + 常數) × Π(1 + buff% × 係數)」換算
+    // 鍊金術傷害 buff：面板填沒開這些 buff 的數值，依「(基礎 × 係數 + 常數) × Π(1 + buff% × 係數)」換算
     attackBuff: { battlefieldPercent: number; statusSupport: boolean; strengthGather: boolean; potion: boolean; arcanePassive: boolean; grandmaster: boolean };
     resonance: boolean; // 屬性共鳴：非常數部分 ×1.03，且有完整造雨加成
     catalyst: boolean; // 觸媒效應（4 火＋全藥草）：通用額外 + 8% × (1 + 15% + 火效率) + floor(平均 ÷ 500)%
     cylinderPercent: number;
     masteryReforge: Record<Element, number>;
     reforge: Record<ReforgeKey, number>;
-    heatBusterWeaponPercent: number; // 武器「高壓火爆傷害 +300%」
-    sets: { waterCannon: boolean; flamer: boolean }; // 克雷西達套 +15%
+    heatBusterWeaponPercent: number; // 聚能 S50「高壓火爆傷害 +300%」
+    sets: { waterCannon: boolean; flamer: boolean }; // 克萊希達套裝 +15%
     flamerCharge: number;
     nightmareEnergy: number; // 召喚噩夢消耗的屬性能量 0~4
     chemicalEnergy: number; // 化學狂歡消耗的屬性能量 0~4
@@ -112,7 +112,7 @@ export interface AlchemySettings {
     relic: Record<ArcaneId, number>;
     crit: { panelRatePercent: number };
     critDamage: { grade: boolean; spiritWeapon: boolean; other: number };
-    extra: { weapon: number; general: number; talent: number; arcane: number; talentSkill: number }; // talentSkill：武器詞條「鍊金術才能傷害」，獨立乘算
+    extra: { weapon: number; general: number; talent: number; arcane: number; talentSkill: number }; // talentSkill：黑暗聚能「鍊金術才能技能傷害增加」，獨立乘算
     spiritWeakness: boolean; // 精靈武器弱點分析 5 等：目標有出血／暈眩／防保減少時才能額外 +10%
     independent: { battleService: boolean; sensePotion: boolean; otherPercent: number };
     protectionMode: ProtectionMode;
@@ -179,7 +179,7 @@ export interface Factor {
     /** 乘數（例如 1.35） */
     value: number;
     note?: string;
-    /** 以整數顯示（鍊金傷害、傷害），否則顯示為乘數 */
+    /** 以整數顯示（鍊金術傷害、傷害），否則顯示為乘數 */
     int?: boolean;
 }
 export interface DamagePart {
@@ -199,7 +199,7 @@ export interface SkillResult {
 const pct = (n: number) => `${Math.round(n * 10000) / 100}%`;
 const product = (factors: Factor[]) => factors.reduce((p, f) => p * f.value, 1);
 
-/** 破防：保護先扣破防、再扣穿刺（每級 −5，扣除怪物穿刺抵抗）後查減傷表 */
+/** 破防：保護先扣破防、再扣銳利（每級 −5，扣除怪物銳利抵抗）後查減傷表 */
 export function calculateArmor(s: AlchemySettings) {
     const ab = s.armorBreak;
     const netPierce = Math.max(0, s.pierceLevel - ab.pierceResist);
@@ -241,7 +241,7 @@ export function calculateAlchDamage(s: AlchemySettings, spent = false) {
     return { ...el, average: ELEMENTS.reduce((sum, e) => sum + el[e], 0) / ELEMENTS.length };
 }
 
-/** 觸媒效應 = 8% × (1 + 藥草 15% + 火效率) + floor(平均 ÷ 500)%，配方固定 4 火＋紅色藥草＋曼陀羅草（2026-10-27、10-29 實測） */
+/** 觸媒效應 = 8% × (1 + 藥草 15% + 火效率) + floor(平均 ÷ 500)%，配方固定 4 火＋生命藥草＋曼德拉草（2026-10-27、10-29 實測） */
 export function calculateCatalyst(s: AlchemySettings, average: number): number {
     if (!s.catalyst) return 0;
     const fireEff = 0.1 + s.masteryReforge.fire * MASTERY_REFORGE_STEP.fire * 2;
@@ -253,7 +253,7 @@ export function calculateMasteryZone(s: AlchemySettings, el: Element): number {
     return (MASTERY_BASE + s.masteryReforge[el] * MASTERY_REFORGE_STEP[el]) * (1 + s.cylinderPercent / 100);
 }
 
-/** 暴擊傷害％（含基礎 100%）= 250（100 + 暴擊 150）+ 評價 10 + 精靈武器 15 + 其他 */
+/** 暴擊傷害％（含基礎 100%）= 250（100 + 暴擊 150）+ 戰鬥系一代宗師全取得 10 + 精靈武器 15 + 其他 */
 export function calculateCritDamagePercent(s: AlchemySettings): number {
     const cd = s.critDamage;
     return 250 + (cd.grade ? 10 : 0) + (cd.spiritWeapon ? 15 : 0) + cd.other;
@@ -286,19 +286,19 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
     const fTalentExtra: Factor[] = [fWeapon, { label: "通用額外＋才能額外", value: 1 + G + T, note: `${pct(G)}${gNote} + ${pct(T)}` }];
     const fArcaneExtra: Factor[] = [fWeapon, { label: "通用額外＋秘法額外", value: 1 + G + A, note: `${pct(G)}${gNote} + ${pct(A)}` }];
     const fT: Factor = { label: "才能額外（只有才能部分）", value: 1 + T };
-    // 武器詞條「鍊金術才能傷害」：獨立乘算，不和才能額外（藍月亮等）同區；秘法技能只乘才能部分（2026-10-27～28 實測）
-    const fTalentSkill: Factor = { label: "鍊金術才能傷害（武器詞條）", value: 1 + s.extra.talentSkill / 100 };
+    // 黑暗聚能「鍊金術才能技能傷害增加」：獨立乘算，不和才能額外（拉狄卡的氣息等）同區；秘法技能只乘才能部分（2026-10-27～28 實測）
+    const fTalentSkill: Factor = { label: "鍊金術才能技能傷害增加（黑暗聚能）", value: 1 + s.extra.talentSkill / 100 };
     const fN: Factor = { label: "獨立加成（戰鬥服務、感應藥水、其他）", value: N };
     const fTaken: Factor = { label: "所受傷害增加（破防）", value: 1 + armor.damageTaken };
     const reductionFactor = (r: number, label = "保護減傷"): Factor[] => (r ? [{ label, value: 1 - r, note: pct(r) }] : []);
     const tail = [fN, ...(armor.damageTaken ? [fTaken] : [])];
-    const fAlch = (el: Element, a = alch): Factor => ({ label: `${ELEMENT_LABELS[el]}屬性鍊金傷害`, value: a[el], int: true });
+    const fAlch = (el: Element, a = alch): Factor => ({ label: `${ELEMENT_LABELS[el]}鍊金術傷害`, value: a[el], int: true });
     const fZone = (el: Element): Factor => ({
         label: `精通區（${ELEMENT_LABELS[el]}）`,
         value: zone(el),
         note: `(1 + (10% + 細工 ${pct(s.masteryReforge[el] * MASTERY_REFORGE_STEP[el] * 2)}) ÷ 2) × 鋼瓶 ${1 + s.cylinderPercent / 100}`,
     });
-    const fAvg = (a = alch): Factor => ({ label: "4 屬性鍊金傷害平均", value: a.average, int: true });
+    const fAvg = (a = alch): Factor => ({ label: "4 屬性鍊金術傷害平均", value: a.average, int: true });
 
     // ── 才能技能（不含暴擊、保護、額外傷害），秘法技能也借用 ──
     const waterRatio = 0.607 + rf("waterCannon") * 0.006;
@@ -309,7 +309,7 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
         { label: "5 集氣", value: 6.25, note: "5 × 1.25" },
         fZone("water"),
         { label: "造雨", value: 1 + rainBonus },
-        { label: "水炮強化（克雷西達套）", value: s.sets.waterCannon ? 1.15 : 1 },
+        { label: "水炮強化（克萊希達套裝）", value: s.sets.waterCannon ? 1.15 : 1 },
     ];
     const flamerRatio = 0.335 + rf("flamer") * 0.003;
     const flamerCore = (charge: number, hits: number, a = alch): Factor[] => [
@@ -317,14 +317,14 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
         { label: "火焰噴射倍率", value: flamerRatio, note: pct(flamerRatio) },
         { label: `${charge} 集氣`, value: charge },
         fZone("fire"),
-        { label: "火焰噴射強化（克雷西達套）", value: s.sets.flamer ? 1.15 : 1 },
+        { label: "火焰噴射強化（克萊希達套裝）", value: s.sets.flamer ? 1.15 : 1 },
         { label: "段數", value: hits, note: hits === 5 ? "基礎 5 段" : `5 + 0.2 × ${rf("flamerDuration")}` },
     ];
     const heatRatio = 1.305 + rf("heatBuster") * 0.01;
     const heatBusterCore = (a = alch): Factor[] => [
         fAlch("fire", a),
         { label: "高壓火爆倍率", value: heatRatio, note: pct(heatRatio) },
-        { label: "武器 高壓火爆傷害", value: 1 + s.heatBusterWeaponPercent / 100 },
+        { label: "聚能 S50 高壓火爆傷害", value: 1 + s.heatBusterWeaponPercent / 100 },
         fZone("fire"),
     ];
 
@@ -345,10 +345,10 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
     };
     const outerProtection = (): Factor[] => reductionFactor(armor.single);
     const talentPartProtection = (): Factor[] => {
-        if (s.protectionMode === "doublePierce") return reductionFactor(armor.double, "保護減傷（雙倍穿刺）");
+        if (s.protectionMode === "doublePierce") return reductionFactor(armor.double, "保護減傷（雙倍銳利）");
         if (s.protectionMode === "twice") return [...reductionFactor(armor.single, "保護減傷（才能部分先扣一次）"), ...outerProtection()];
         const gain = armor.none < 1 ? (1 - armor.single) / (1 - armor.none) : 1;
-        return [...(gain !== 1 ? [{ label: "穿刺增益（參考：才能部分）", value: gain, note: "(1−穿刺後減傷) ÷ (1−未穿刺減傷)" }] : []), ...outerProtection()];
+        return [...(gain !== 1 ? [{ label: "銳利增益（參考：才能部分）", value: gain, note: "(1−銳利後減傷) ÷ (1−未銳利減傷)" }] : []), ...outerProtection()];
     };
     const arcaneSkill = (id: ArcaneId, talentLabel: string, talentCore: Factor[], fixedFactors: Factor[], shared: Factor[] = [], avg = fAvg(), avgLabel = "秘法部分") => {
         const c = [combo(id)];
@@ -358,7 +358,7 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
         ];
     };
     const fRelic = (id: "spiral" | "chemical"): Factor => ({
-        label: "遺物",
+        label: "穆利亞斯的遺物",
         value: 1 + s.relic[id] * RELIC_ARCANE_STEP[id],
         note: `${s.relic[id]} 級 × ${pct(RELIC_ARCANE_STEP[id])}（說明數字 ÷ 10）`,
     });
@@ -369,16 +369,16 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
         skills.push({ id, label: m.label, imageId: m.imageId, damage: parts.reduce((sum, p) => sum + p.damage, 0), parts, formula });
     };
 
-    push("waterCannon", [talentSkill("水炮", waterCannonCore)], "水鍊金傷害·倍率·6.25·精通區·造雨·套裝·暴擊·(1+武器)·(1+通用+才能)");
-    push("flamer", [talentSkill("火焰噴射", flamerCore(s.flamerCharge, flamerHits(s)))],"火鍊金傷害·倍率·集氣·精通區·套裝·段數·暴擊·(1+武器)·(1+通用+才能)");
+    push("waterCannon", [talentSkill("水炮", waterCannonCore)], "水鍊金術傷害·倍率·6.25·精通區·造雨·套裝·暴擊·(1+武器)·(1+通用+才能)");
+    push("flamer", [talentSkill("火焰噴射", flamerCore(s.flamerCharge, flamerHits(s)))],"火鍊金術傷害·倍率·集氣·精通區·套裝·段數·暴擊·(1+武器)·(1+通用+才能)");
     // 元素波動 +25% 只加在高壓火爆本身，化學狂歡借用的高壓火爆部分不吃（2026-10-25 實測）
     const fElementWave: Factor = { label: "元素波動", value: s.elementWave ? 1.25 : 1 };
-    push("heatBuster", [talentSkill("高壓火爆", [...heatBusterCore(), fElementWave])], "火鍊金傷害·倍率·(1+武器加成)·元素波動·精通區·暴擊·(1+武器)·(1+通用+才能)");
+    push("heatBuster", [talentSkill("高壓火爆", [...heatBusterCore(), fElementWave])], "火鍊金術傷害·倍率·(1+武器加成)·元素波動·精通區·暴擊·(1+武器)·(1+通用+才能)");
 
     push(
         "spiral",
         arcaneSkill("spiral", "水炮部分（5 集氣）", waterCannonCore, [{ label: "地裂螺旋倍率", value: 10.8, note: "1080%" }, fRelic("spiral")]),
-        "[水炮·(1+才能額外)·武器詞條 + 平均·1080%·遺物] × 元素組合 × (1+武器)·(1+通用+秘法)",
+        "[水炮·(1+才能額外)·黑暗聚能 + 平均·1080%·遺物] × 元素組合 × (1+武器)·(1+通用+秘法)",
     );
 
     // 第一次爆炸 = 高壓火爆 + 平均 × 900%；後續爆炸 (能量 + 1) 段，每段 = 高壓火爆 + 平均 × 900% × 50%；遺物都乘平均部分、都吃火效果
@@ -394,7 +394,7 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
             ...arcaneSkill("chemical", "第一次爆炸：高壓火爆部分", heatBusterCore(alchSpent), [fChemicalRatio, fRelic("chemical")], [], spentAvg, "第一次爆炸：平均部分"),
             ...arcaneSkill("chemical", "後續爆炸：高壓火爆部分", heatBusterCore(alchSpent), [fFollowUpAvg, fRelic("chemical")], [fFollowUpHits], spentAvg, "後續爆炸：平均部分"),
         ],
-        "第一次爆炸 [高壓火爆·(1+才能額外)·武器詞條 + 平均·900%·遺物] + 後續 (能量+1) 段 × [高壓火爆·(1+才能額外)·武器詞條 + 平均·900%·50%·遺物]，各 × 元素組合 × (1+武器)·(1+通用+秘法)",
+        "第一次爆炸 [高壓火爆·(1+才能額外)·黑暗聚能 + 平均·900%·遺物] + 後續 (能量+1) 段 × [高壓火爆·(1+才能額外)·黑暗聚能 + 平均·900%·50%·遺物]，各 × 元素組合 × (1+武器)·(1+通用+秘法)",
     );
 
     // (火焰噴射 5 集氣 × 段數 + 平均) × 額外傷害值倍率；段數 5（10-24）與 8.6（持續時間 18 級）都實測吻合，平均部分不乘段數
@@ -409,7 +409,7 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
     push(
         "nightmare",
         arcaneSkill("nightmare", "火焰噴射部分（5 集氣 × 段數）", flamerCore(5, flamerHits(s), alchSpent), [], [fNightmareRatio], spentAvg),
-        "(火焰噴射 5 集氣·段數·(1+才能額外)·武器詞條 + 平均) × 額外傷害值倍率 × 元素組合 × (1+武器)·(1+通用+秘法)",
+        "(火焰噴射 5 集氣·段數·(1+才能額外)·黑暗聚能 + 平均) × 額外傷害值倍率 × 元素組合 × (1+武器)·(1+通用+秘法)",
     );
 
     return {
