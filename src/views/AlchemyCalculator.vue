@@ -20,6 +20,8 @@ import {
     calculateAlchemy,
     calculateTotalOutput,
     flamerHits,
+    calculateCatalyst,
+    calculateAlchDamage,
     type ArcaneId,
     type CritMode,
     type AlchemySettings,
@@ -78,6 +80,7 @@ function onArmorBreakResult(r: ArmorBreakResult) {
 const calcResult = computed(() => calculateAlchemy(settings));
 const cardSkills = computed(() => calculateAlchemy(settings, critDisplayMode.value).skills);
 const totalOutput = computed(() => calculateTotalOutput(settings));
+const catalystPercent = computed(() => (calculateCatalyst(settings, calculateAlchDamage(settings).average) * 100).toFixed(1));
 const hasAnyUsage = computed(() => SKILL_META.some((s) => settings.usage[s.id] > 0));
 const usageRows = computed(() =>
     calcResult.value.skills.map((sk) => {
@@ -276,6 +279,10 @@ const RESULT_DETAILS: Record<string, string> = {
                                 <el-checkbox v-model="settings.attackBuff.potion" />
                                 <span class="switch-label">鍊金攻擊力增加藥水（係數 ×1.2）</span>
                             </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.resonance" aria-label="屬性共鳴" />
+                                <span class="switch-label">屬性共鳴（(面板 − 常數) × 1.03 + 常數，並有完整造雨加成）</span>
+                            </div>
                             <div class="field-section-label">常數攻擊力（不吃係數與 buff%）</div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.attackBuff.arcanePassive" />
@@ -375,6 +382,11 @@ const RESULT_DETAILS: Record<string, string> = {
                                 <label class="field-label">通用額外傷害</label>
                                 <el-input-number v-model="settings.extra.general" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
                             </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.catalyst" aria-label="觸媒效應" />
+                                <span class="switch-label">觸媒效應（自動加進通用額外：{{ catalystPercent }}%）</span>
+                            </div>
+                            <div class="field-hint">觸媒效應（配方 4 火＋紅色藥草＋曼陀羅草）= 8% × (1 + 藥草 15% + 火效率) + 4 屬平均每 500 +1%（無條件捨去）。通用額外請填不含觸媒的值。</div>
                             <div class="field-row">
                                 <label class="field-label">才能額外傷害</label>
                                 <el-input-number v-model="settings.extra.talent" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />

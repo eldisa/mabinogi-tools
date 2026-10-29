@@ -70,6 +70,7 @@ export const CHEMICAL_FOLLOW_UP_AVG_RATIO = 0.5;
 /** 鍊金常數攻擊力（不吃藥水係數與 buff%）：秘法被動 4 屬 +200、精靈武器 4 屬 +30、宗師 火 20／水 15／風 30／土 30（屬性共鳴面板實測吻合） */
 export const ARCANE_PASSIVE_CONSTANT = 200;
 export const SPIRIT_WEAPON_ALCH_CONSTANT = 30;
+export const RESONANCE_RATE = 1.03;
 export const GRANDMASTER_CONSTANT: Record<Element, number> = { fire: 20, water: 15, wind: 30, earth: 30 };
 
 export const SKILL_META = [
@@ -95,6 +96,8 @@ export interface AlchemySettings {
     energyBonus: number; // 屬性能量累積觸發的四屬性提升（面板含此值）；化學狂歡、召喚噩夢消耗能量後扣掉
     // 鍊金攻擊力 buff：面板填沒開這些 buff 的數值，依「(基礎 × 係數 + 常數) × Π(1 + buff% × 係數)」換算
     attackBuff: { battlefieldPercent: number; statusSupport: boolean; strengthGather: boolean; potion: boolean; arcanePassive: boolean; grandmaster: boolean };
+    resonance: boolean; // 屬性共鳴：非常數部分 ×1.03，且有完整造雨加成
+    catalyst: boolean; // 觸媒效應（4 火＋全藥草）：通用額外 + 8% × (1 + 15% + 火效率) + floor(平均 ÷ 500)%
     cylinderPercent: number;
     masteryReforge: Record<Element, number>;
     reforge: Record<ReforgeKey, number>;
@@ -126,6 +129,8 @@ export function createDefaultSettings(): AlchemySettings {
         tempAlchDamage: 0,
         energyBonus: 0,
         attackBuff: { battlefieldPercent: 0, statusSupport: false, strengthGather: false, potion: false, arcanePassive: true, grandmaster: false },
+        resonance: true,
+        catalyst: true,
         cylinderPercent: 30,
         masteryReforge: { fire: 0, water: 0, wind: 0, earth: 0 },
         reforge: Object.fromEntries(REFORGE_FIELDS.map((f) => [f.key, 0])) as Record<ReforgeKey, number>,
@@ -228,10 +233,19 @@ export function calculateAlchDamage(s: AlchemySettings, spent = false) {
     };
     const buffed = (e: Element) => {
         const constant = calculateAlchConstant(s, e);
-        return calculateFinalMaxDamage(s.alchDamage[e] - (spent ? s.energyBonus : 0) - constant, 0, constant, buffState);
+        // 屬性共鳴 ×1.03 只乘非常數部分（2026-10-27 實測）；和藥水係數怎麼疊未實測，先相乘
+        const base = (s.alchDamage[e] - (spent ? s.energyBonus : 0) - constant) * (s.resonance ? RESONANCE_RATE : 1);
+        return calculateFinalMaxDamage(base, 0, constant, buffState);
     };
     const el = Object.fromEntries(ELEMENTS.map((e) => [e, buffed(e) + s.tempAlchDamage])) as Record<Element, number>;
     return { ...el, average: ELEMENTS.reduce((sum, e) => sum + el[e], 0) / ELEMENTS.length };
+}
+
+/** 觸媒效應 = 8% × (1 + 藥草 15% + 火效率) + floor(平均 ÷ 500)%，配方固定 4 火＋紅色藥草＋曼陀羅草（2026-10-27、10-29 實測） */
+export function calculateCatalyst(s: AlchemySettings, average: number): number {
+    if (!s.catalyst) return 0;
+    const fireEff = 0.1 + s.masteryReforge.fire * MASTERY_REFORGE_STEP.fire * 2;
+    return 0.08 * (1 + 0.15 + fireEff) + Math.floor(average / 500) / 100;
 }
 
 /** 精通區 = 1 + 精通鍊金術 + 屬性精通 + 鋼瓶 + 精通效率細工 */
@@ -262,11 +276,12 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
     // ── 額外傷害與獨立乘區 ──
     const sharpEye = isCrit ? armor.critExtra : 0;
     const W = s.extra.weapon / 100;
-    const G = s.extra.general / 100 + sharpEye;
+    const catalyst = calculateCatalyst(s, alch.average);
+    const G = s.extra.general / 100 + catalyst + sharpEye;
     const T = s.extra.talent / 100 + (s.spiritWeakness ? 0.1 : 0);
     const A = s.extra.arcane / 100;
     const N = (s.independent.battleService ? 1.01 : 1) * (s.independent.sensePotion ? 1.03 : 1) * (1 + s.independent.otherPercent / 100);
-    const gNote = sharpEye ? `（含暴擊時通用額外 ${pct(sharpEye)}）` : "";
+    const gNote = (catalyst ? `（含觸媒效應 ${pct(catalyst)}）` : "") + (sharpEye ? `（含暴擊時通用額外 ${pct(sharpEye)}）` : "");
     const fWeapon: Factor = { label: "武器額外", value: 1 + W };
     const fTalentExtra: Factor[] = [fWeapon, { label: "通用額外＋才能額外", value: 1 + G + T, note: `${pct(G)}${gNote} + ${pct(T)}` }];
     const fArcaneExtra: Factor[] = [fWeapon, { label: "通用額外＋秘法額外", value: 1 + G + A, note: `${pct(G)}${gNote} + ${pct(A)}` }];
@@ -287,7 +302,7 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
 
     // ── 才能技能（不含暴擊、保護、額外傷害），秘法技能也借用 ──
     const waterRatio = 0.607 + rf("waterCannon") * 0.006;
-    const rainBonus = s.rain ? 0.2 + rf("rain") * 0.05 : 0;
+    const rainBonus = s.rain || s.resonance ? 0.2 + rf("rain") * 0.05 : 0;
     const waterCannonCore: Factor[] = [
         fAlch("water"),
         { label: "水炮倍率", value: waterRatio, note: pct(waterRatio) },
