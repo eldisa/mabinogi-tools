@@ -32,6 +32,13 @@ import {
     type ArcaneId,
     type CritMode,
     type AlchemySettings,
+    DARK_CONDENSATION_MAX_LEVEL,
+    DARK_CONDENSATION_PER_LEVEL,
+    WEAPON_EXTRA_OPTIONS,
+    VITAL_PIERCE_PERCENT,
+    VITAL_PIERCE_ENHANCED_PERCENT,
+    calculatePresetOutput,
+    calculateEfficiency,
 } from "../data/alchemyCalculator";
 import { getSkillIcon } from "../utils/image";
 import ProtectionBreakPanel from "../components/ProtectionBreakPanel.vue";
@@ -47,7 +54,7 @@ const RELIC_NOTES: Record<ArcaneId, string> = {
 
 // 畫面偏好（分頁／暴擊顯示模式）：只存這台瀏覽器
 const DISPLAY_PREFS_KEY = "alchemy_calc_display_v1";
-const TAB_NAMES = ["attack", "reforge", "critextra", "skill", "armorbreak", "usage"];
+const TAB_NAMES = ["attack", "reforge", "critextra", "skill", "armorbreak", "usage", "compare", "efficiency"];
 const CRIT_MODES: CritMode[] = ["noCrit", "crit", "expected"];
 function readJson<T>(key: string): T | null {
     try {
@@ -64,10 +71,12 @@ function writeJson(key: string, value: unknown) {
         /* 瀏覽器禁用儲存時忽略 */
     }
 }
-const displayPrefs = readJson<{ tab?: string; critMode?: string }>(DISPLAY_PREFS_KEY) ?? {};
+const displayPrefs = readJson<{ tab?: string; critMode?: string; flamerSingle?: boolean }>(DISPLAY_PREFS_KEY) ?? {};
 const activeTab = ref(TAB_NAMES.includes(displayPrefs.tab ?? "") ? (displayPrefs.tab as string) : "attack");
 const critDisplayMode = ref<CritMode>(CRIT_MODES.includes(displayPrefs.critMode as CritMode) ? (displayPrefs.critMode as CritMode) : "expected");
-watch([activeTab, critDisplayMode], () => writeJson(DISPLAY_PREFS_KEY, { tab: activeTab.value, critMode: critDisplayMode.value }));
+// 火焰噴射卡片：顯示整段或單下（整段 ÷ 段數）
+const flamerSingle = ref(displayPrefs.flamerSingle === true);
+watch([activeTab, critDisplayMode, flamerSingle], () => writeJson(DISPLAY_PREFS_KEY, { tab: activeTab.value, critMode: critDisplayMode.value, flamerSingle: flamerSingle.value }));
 
 // ── 破防：面板發出魔法側結果，存進 settings（跟著存檔走），是否套用由 settings.armorBreak.enabled 決定 ──
 type ArmorBreakResult = { protBeforePierce: number; pierceResist: number; damageTakenPercent: number; critDamagePercent: number };
@@ -106,6 +115,23 @@ const fmtInt = (n: number): string => Math.round(n).toLocaleString("zh-Hant");
 const fmtRatio = (n: number): string => String(Math.round(n * 100) / 100);
 const fmtPct = (ratio: number): string => `${fmtRatio(ratio * 100)}%`;
 const fmtMultiplier = (n: number): string => `×${n.toFixed(4)}`;
+const cardDamage = (sk: { id: string; damage: number }) => (sk.id === "flamer" && flamerSingle.value ? sk.damage / Math.floor(flamerHits(settings)) : sk.damage);
+
+// 武器額外：常見值用下拉選，選「自訂」才顯示輸入框（值不在常見值裡時自動視為自訂）
+type WeaponSlot = "weaponMain" | "weaponOff";
+const weaponCustom = reactive<Record<WeaponSlot, boolean>>({ weaponMain: false, weaponOff: false });
+(["weaponMain", "weaponOff"] as WeaponSlot[]).forEach((k) =>
+    watch(
+        () => settings.extra[k],
+        (v) => (weaponCustom[k] = !WEAPON_EXTRA_OPTIONS.includes(v)),
+        { immediate: true },
+    ),
+);
+const weaponSelect = (k: WeaponSlot) => (weaponCustom[k] ? "custom" : settings.extra[k]);
+function onWeaponSelect(k: WeaponSlot, v: number | "custom") {
+    weaponCustom[k] = v === "custom";
+    if (v !== "custom") settings.extra[k] = v;
+}
 
 // ═══════════════════════════════════════════════════════
 //  儲存 / 讀取（本機）＋ 自動存檔
@@ -188,6 +214,28 @@ watch(
     },
     { deep: true },
 );
+
+// ── 裝備比較：最多 3 欄，各選一個存檔（未選 = 目前設定），技能使用次數一律用目前分頁的次數 ──
+const comparisonSlots = reactive<{ idx: number | null }[]>([{ idx: null }, { idx: null }, { idx: null }]);
+const comparisonResults = computed(() =>
+    comparisonSlots.map((slot) => {
+        const p = slot.idx === null ? null : presets.value[slot.idx];
+        return { name: p ? p.name : "目前設定", ...calculatePresetOutput(p ? p.data : settings, settings.usage) };
+    }),
+);
+const bestOf = (values: number[]) => Math.max(...values);
+
+// ── 傷害效益 ──
+const efficiencyRows = computed(() => (hasAnyUsage.value ? calculateEfficiency(settings) : []));
+const efficiencyGroups = computed(() => {
+    const groups: { label: string; rows: typeof efficiencyRows.value }[] = [];
+    for (const r of efficiencyRows.value) {
+        const g = groups.find((x) => x.label === r.group);
+        if (g) g.rows.push(r);
+        else groups.push({ label: r.group, rows: [r] });
+    }
+    return groups;
+});
 
 const RESULT_DETAILS: Record<string, string> = {
     alchDamage: "角色資訊上的鍊金術傷害，加上臨時加成（寵物、辦桌、活動）。秘法部分用四屬性平均計算。",
@@ -279,7 +327,7 @@ const RESULT_DETAILS: Record<string, string> = {
                             <div class="field-section-label">鍊金術傷害 buff</div>
                             <div class="field-hint">開了以下 buff 時，上方面板請填「沒開這些 buff」的數值，避免重複計算。最終 = ((面板 − 常數) × 係數 + 常數) × (1 + 活潑板% × 係數) × (1 + 狀態支援% × 係數) × (1 + 力量團聚% × 係數)；係數 = 鍊金術傷害增加藥水 1.2 × 屬性共鳴 1.03（沒有的項目當 1）。</div>
                             <div class="field-row">
-                                <label class="field-label">活潑板 鍊金術傷害增加 %</label>
+                                <label class="field-label" style="width: auto; white-space: nowrap">活潑板 鍊金術傷害增加 %</label>
                                 <el-input-number v-model="settings.attackBuff.battlefieldPercent" :min="0" :max="100" :step="0.01" :precision="2" size="small" class="field-select-sm" aria-label="活潑板 鍊金術傷害增加 %" />
                             </div>
                             <div class="field-row">
@@ -296,24 +344,36 @@ const RESULT_DETAILS: Record<string, string> = {
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.resonance" aria-label="屬性共鳴" />
-                                <span class="switch-label">屬性共鳴（係數 × 1.03，和藥水相乘、buff% 也吃；常數不乘；並有完整造雨加成）</span>
+                                <span class="switch-label">屬性共鳴（係數 × 1.03）</span>
+                                <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                    <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                    和藥水相乘、buff% 也吃；常數不乘；
+                                </el-popover>
                             </div>
-                            <div class="field-section-label">常數攻擊力（不吃係數與 buff%）</div>
+                            <div class="field-section-label">常數攻擊力</div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.attackBuff.arcanePassive" aria-label="4 屬性鍊金術傷害 +200" />
-                                <span class="switch-label">4 屬性鍊金術傷害 +200</span>
+                                <el-checkbox v-model="settings.attackBuff.arcanePassive" aria-label="禁忌煉金士 同步10" />
+                                <span class="switch-label">禁忌煉金士 同步10</span>
+                                <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                    <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                    4 屬性鍊金術傷害 +200
+                                </el-popover>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.attackBuff.grandmaster" aria-label="一代宗師戰鬥鍊金術師" />
-                                <span class="switch-label">一代宗師戰鬥鍊金術師（火 +20、水 +15、風 +30、土 +30）</span>
+                                <span class="switch-label">一代宗師戰鬥鍊金術師</span>
+                                <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                    <template #reference><el-icon class="info-icon" aria-label="說明"><InfoFilled /></el-icon></template>
+                                    火 +20、水 +15、風 +30、土 +30
+                                </el-popover>
                             </div>
                             <div class="field-hint">精靈武器 4 屬 +30 跟著「暴擊與額外傷害」分頁的精靈武器勾選。</div>
 
                             <div class="field-section-label">精通區</div>
                             <div class="field-hint">精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶，細工實際生效為說明的一半。</div>
                             <div class="field-row">
-                                <label class="field-label">鋼瓶</label>
-                                <el-select v-model="settings.cylinderPercent" size="small" class="field-select-wide" aria-label="鋼瓶">
+                                <label class="field-label">鋼瓶分類</label>
+                                <el-select v-model="settings.cylinderPercent" size="small" class="field-select-wide" aria-label="鋼瓶分類">
                                     <el-option v-for="o in CYLINDER_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
                             </div>
@@ -327,28 +387,35 @@ const RESULT_DETAILS: Record<string, string> = {
                             <div class="field-section-label">武器</div>
                             <div class="field-row">
                                 <label class="field-label">主手 額外傷害 %</label>
-                                <el-input-number v-model="settings.extra.weaponMain" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="主手 額外傷害 %" />
+                                <el-select :model-value="weaponSelect('weaponMain')" size="small" class="field-select-sm" aria-label="主手 額外傷害 %" @update:model-value="(v: number | 'custom') => onWeaponSelect('weaponMain', v)">
+                                    <el-option v-for="n in WEAPON_EXTRA_OPTIONS" :key="n" :value="n" :label="`${n}%`" />
+                                    <el-option value="custom" label="自訂" />
+                                </el-select>
+                                <el-input-number v-if="weaponCustom.weaponMain" v-model="settings.extra.weaponMain" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="主手 額外傷害 % 自訂" />
                             </div>
                             <div class="field-row">
                                 <label class="field-label">副手 額外傷害 %</label>
-                                <el-input-number v-model="settings.extra.weaponOff" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="副手 額外傷害 %" />
+                                <el-select :model-value="weaponSelect('weaponOff')" size="small" class="field-select-sm" aria-label="副手 額外傷害 %" @update:model-value="(v: number | 'custom') => onWeaponSelect('weaponOff', v)">
+                                    <el-option v-for="n in WEAPON_EXTRA_OPTIONS" :key="n" :value="n" :label="`${n}%`" />
+                                    <el-option value="custom" label="自訂" />
+                                </el-select>
+                                <el-input-number v-if="weaponCustom.weaponOff" v-model="settings.extra.weaponOff" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="副手 額外傷害 % 自訂" />
                             </div>
                             <div class="field-hint">武器額外 = 主手 + 副手（合計 {{ fmtRatio(settings.extra.weaponMain + settings.extra.weaponOff) }}%），獨立乘算。</div>
                             <div class="field-row">
                                 <label class="field-label">銳利等級</label>
                                 <el-input-number v-model="settings.pierceLevel" :min="0" :max="11" :precision="0" size="small" class="field-select-sm" aria-label="銳利等級" />
-                                <span class="switch-label">每級 −5 魔法保護（扣除怪物銳利抵抗），套用在「破防」分頁</span>
                             </div>
 
                             <div class="field-section-label">聚能</div>
                             <div class="field-row">
-                                <label class="field-label">聚能 S50 高壓火爆傷害 %</label>
-                                <el-input-number v-model="settings.heatBusterWeaponPercent" :min="0" :max="1000" :precision="0" size="small" class="field-select-sm" aria-label="聚能 S50 高壓火爆傷害 %" />
+                                <label class="field-label">高壓火爆傷害</label>
+                                <el-input-number v-model="settings.heatBusterWeaponPercent" :min="0" :max="1000" :precision="0" size="small" class="field-select-sm" aria-label="聚能 S50 高壓火爆傷害" />
                             </div>
                             <div class="field-row">
-                                <label class="field-label">黑暗聚能 鍊金術才能技能傷害增加 %</label>
-                                <el-input-number v-model="settings.extra.talentSkill" :min="0" :max="6" :step="0.12" :precision="2" size="small" class="field-select-sm" aria-label="黑暗聚能 鍊金術才能技能傷害增加 %" />
-                                <span class="switch-label">每級 +0.12%，50 級 6%</span>
+                                <label class="field-label">黑暗聚能等級</label>
+                                <el-input-number v-model="settings.darkCondensation" :min="0" :max="DARK_CONDENSATION_MAX_LEVEL" :precision="0" size="small" class="field-select-sm" aria-label="黑暗聚能等級" />
+                                <span class="switch-label">鍊金術才能技能傷害增加 {{ fmtPct((settings.darkCondensation * DARK_CONDENSATION_PER_LEVEL) / 100) }}</span>
                             </div>
                             <div class="field-hint">黑暗聚能獨立乘算，不和才能額外相加；秘法技能只乘借用的才能部分（2026-10-27～30 實測）。</div>
 
@@ -360,6 +427,10 @@ const RESULT_DETAILS: Record<string, string> = {
                             <div class="field-row">
                                 <el-checkbox v-model="settings.sets.flamer" aria-label="火焰噴射強化" />
                                 <span class="switch-label">火焰噴射強化（克萊希達套裝，火焰噴射 +15%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.sets.vitalPierce" aria-label="要害貫通強化" />
+                                <span class="switch-label">要害貫通強化（要害貫通 {{ VITAL_PIERCE_PERCENT }}% → {{ VITAL_PIERCE_ENHANCED_PERCENT }}%）</span>
                             </div>
 
                             <div class="field-section-label">精通效率細工（加進精通區）</div>
@@ -507,7 +578,7 @@ const RESULT_DETAILS: Record<string, string> = {
                             <div class="field-section-label">秘法額外傷害（只算秘法技能）</div>
                             <div class="field-row">
                                 <label class="field-label">布里萊赫的硬幣</label>
-                                <el-input-number v-model="settings.arcaneSources.coin" :min="0" :max="3" :step="0.05" :precision="2" size="small" class="field-select-sm" aria-label="布里萊赫的硬幣 秘法額外傷害 %" />
+                                <el-input-number v-model="settings.arcaneSources.coin" :min="0" :max="3" :step="0.15" :precision="2" size="small" class="field-select-sm" aria-label="布里萊赫的硬幣 秘法額外傷害 %" />
                                 <span class="switch-label">0.15～3%，沒有填 0</span>
                             </div>
                             <div class="field-row">
@@ -535,6 +606,10 @@ const RESULT_DETAILS: Record<string, string> = {
                                 <span class="switch-label">名匠的感應藥水（+3%）</span>
                             </div>
                             <div class="field-row">
+                                <el-checkbox v-model="settings.independent.vitalPierce" aria-label="要害貫通" />
+                                <span class="switch-label">要害貫通（+{{ settings.sets.vitalPierce ? VITAL_PIERCE_ENHANCED_PERCENT : VITAL_PIERCE_PERCENT }}%{{ settings.sets.vitalPierce ? "，含套裝強化" : "" }}）</span>
+                            </div>
+                            <div class="field-row">
                                 <label class="field-label">其他 %</label>
                                 <el-input-number v-model="settings.independent.otherPercent" :min="0" :max="100" :step="0.5" :precision="1" size="small" class="field-select-sm" aria-label="其他 獨立加成 %" />
                                 <span class="switch-label">活動道具 1% 等</span>
@@ -547,20 +622,15 @@ const RESULT_DETAILS: Record<string, string> = {
                         <div class="tab-body">
                             <div class="field-section-label">才能技能</div>
                             <div class="field-row">
-                                <label class="field-label">火焰噴射集氣</label>
-                                <el-input-number v-model="settings.flamerCharge" :min="1" :max="5" :precision="0" size="small" class="field-select-sm" />
-                                <span class="switch-label">召喚噩夢固定用 5 集氣</span>
-                            </div>
-                            <div class="field-row">
                                 <label class="field-label">召喚噩夢消耗能量</label>
                                 <el-radio-group v-model="settings.nightmareEnergy" size="small">
-                                    <el-radio-button v-for="(r, i) in NIGHTMARE_RATIOS" :key="i" :value="i">{{ i }} 個（{{ fmtPct(r) }}）</el-radio-button>
+                                    <el-radio-button v-for="(_, i) in NIGHTMARE_RATIOS" :key="i" :value="i">{{ i }} 個</el-radio-button>
                                 </el-radio-group>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">化學狂歡消耗能量</label>
                                 <el-radio-group v-model="settings.chemicalEnergy" size="small">
-                                    <el-radio-button v-for="n in [0, 1, 2, 3, 4]" :key="n" :value="n">{{ n }} 個（後續 {{ n + 1 }} 段）</el-radio-button>
+                                    <el-radio-button v-for="n in [0, 1, 2, 3, 4]" :key="n" :value="n">{{ n }} 個</el-radio-button>
                                 </el-radio-group>
                             </div>
                             <div class="field-hint">化學狂歡後續爆炸每段 = (高壓火爆部分 + 平均 × 900% × {{ fmtPct(CHEMICAL_FOLLOW_UP_AVG_RATIO) }} × 遺物) × 元素組合，段數 = 能量 + 1，每次施放各段同值（2026-10-29 實測）。</div>
@@ -672,6 +742,85 @@ const RESULT_DETAILS: Record<string, string> = {
                                 </table>
                             </div>
                             <div class="field-hint">總輸出 ＝ Σ（單次傷害 × 使用次數）。</div>
+                        </div>
+                    </el-tab-pane>
+
+                    <!-- 裝備比較 -->
+                    <el-tab-pane label="裝備比較" name="compare">
+                        <div class="tab-body">
+                            <div class="field-section-label">最多 3 欄，各選一個存檔比較（未選＝目前設定）；技能使用次數一律用「技能使用次數」分頁目前的值</div>
+                            <div v-if="presets.length === 0" class="field-hint">尚無儲存配置，請先在「儲存 / 讀取」保存至少一組設定。</div>
+                            <div v-for="(slot, idx) in comparisonSlots" :key="idx" class="field-row">
+                                <label class="field-label">配置 {{ idx + 1 }}</label>
+                                <el-select v-model="slot.idx" size="small" class="field-select-wide" clearable placeholder="目前設定" :aria-label="`配置 ${idx + 1}`">
+                                    <el-option v-for="(p, pIdx) in presets" :key="p.timestamp" :value="pIdx" :label="p.name" />
+                                </el-select>
+                            </div>
+                            <div class="equip-table-wrap">
+                                <table class="equip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>技能（期望值）</th>
+                                            <th v-for="(r, idx) in comparisonResults" :key="idx">{{ r.name }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(meta, i) in SKILL_META" :key="meta.id">
+                                            <td class="equip-slot-label">
+                                                <img width="20" height="20" :src="getSkillIcon(meta.imageId)" alt="" class="skill-icon-inline" />
+                                                {{ meta.label }}
+                                            </td>
+                                            <td
+                                                v-for="(r, idx) in comparisonResults"
+                                                :key="idx"
+                                                :class="{ 'comparison-best': r.skills[i].damage === bestOf(comparisonResults.map((x) => x.skills[i].damage)) }"
+                                            >
+                                                {{ fmtInt(r.skills[i].damage) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="equip-slot-label">總輸出（依技能使用次數）</td>
+                                            <td v-for="(r, idx) in comparisonResults" :key="idx" :class="{ 'comparison-best': hasAnyUsage && r.total === bestOf(comparisonResults.map((x) => x.total)) }">
+                                                <strong>{{ hasAnyUsage ? fmtInt(r.total) : "—" }}</strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </el-tab-pane>
+
+                    <!-- 傷害效益 -->
+                    <el-tab-pane label="傷害效益" name="efficiency">
+                        <div class="tab-body">
+                            <div class="field-section-label">各項加 1 單位，相當多少「四屬性面板鍊金術傷害」，以及總輸出增幅（依目前設定與技能使用次數）</div>
+                            <div v-if="!hasAnyUsage" class="field-hint">請先在「技能使用次數」分頁設定至少一個技能的使用次數。</div>
+                            <div v-else class="equip-table-wrap">
+                                <table class="equip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>項目</th>
+                                            <th>單位</th>
+                                            <th>等同鍊金術傷害</th>
+                                            <th>總輸出增幅</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template v-for="g in efficiencyGroups" :key="g.label">
+                                            <tr class="efficiency-group-row">
+                                                <td colspan="4">{{ g.label }}</td>
+                                            </tr>
+                                            <tr v-for="r in g.rows" :key="r.id">
+                                                <td class="equip-slot-label">{{ r.label }}</td>
+                                                <td>{{ r.unit }}</td>
+                                                <td>{{ fmtRatio(r.equivalentAlch) }}</td>
+                                                <td>+{{ (r.delta * 100).toFixed(3) }}%</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="field-hint">等同鍊金術傷害 = 該項的總輸出增幅 ÷ 四屬性面板鍊金術傷害各 +1 的增幅（面板值會再乘藥水、buff 係數）。已達上限或沒有增幅的項目不列出。</div>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -792,10 +941,14 @@ const RESULT_DETAILS: Record<string, string> = {
                     <div class="skill-card-header">
                         <span class="skill-name">
                             <img v-if="skill.imageId" width="24" height="24" :src="getSkillIcon(skill.imageId)" alt="" />
-                            {{ skill.label }}
+                            {{ skill.id === "flamer" ? (flamerSingle ? "火焰噴射（單下）" : "火焰噴射（整段）") : skill.label }}
                         </span>
-                        <span class="skill-damage">{{ fmtInt(skill.damage) }}</span>
+                        <span class="skill-damage">{{ fmtInt(cardDamage(skill)) }}</span>
                     </div>
+                    <el-radio-group v-if="skill.id === 'flamer'" v-model="flamerSingle" size="small" aria-label="火焰噴射顯示方式">
+                        <el-radio-button :value="false">整段</el-radio-button>
+                        <el-radio-button :value="true">單下（÷ {{ Math.floor(flamerHits(settings)) }} 段）</el-radio-button>
+                    </el-radio-group>
                     <div class="skill-formula">{{ skill.formula }}</div>
 
                     <div v-if="skill.parts.length > 1" class="skill-terms">
@@ -1031,6 +1184,18 @@ const RESULT_DETAILS: Record<string, string> = {
 .equip-slot-label {
     color: var(--color-text-secondary, #d1d5db);
     font-weight: 600;
+}
+.efficiency-group-row td {
+    padding-top: 0.7rem;
+    color: var(--color-accent-hover, #fcd34d);
+    font-weight: 600;
+    font-size: 0.78rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+}
+.comparison-best {
+    background: rgba(251, 191, 36, 0.12);
+    color: var(--color-accent-hover, #fcd34d);
+    font-weight: 700;
 }
 .skill-icon-inline {
     display: inline-block;
