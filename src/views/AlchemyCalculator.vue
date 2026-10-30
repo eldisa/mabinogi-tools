@@ -10,8 +10,15 @@ import {
     REFORGE_FIELDS,
     COMBO_META,
     COMBO_MAX_CRYSTALS,
-    COMBO_OGHAM_MAX,
+    COMBO_OGHAM_LINES,
     RELIC_MAX_LEVEL,
+    RELIC_DESC,
+    HAMSTER_ALCH_DAMAGE,
+    CYLINDER_REFORM_R_STAGES,
+    CRITICAL_DAMAGE_SET_BONUS,
+    cylinderReformRCrit,
+    calculateTalentExtraPercent,
+    calculateArcaneExtraPercent,
     NIGHTMARE_RATIOS,
     CHEMICAL_FOLLOW_UP_AVG_RATIO,
     SKILL_META,
@@ -183,11 +190,11 @@ watch(
 );
 
 const RESULT_DETAILS: Record<string, string> = {
-    alchDamage: "角色資訊上的鍊金術傷害，加上臨時加成（寵物等）。秘法部分用四屬性平均計算。",
+    alchDamage: "角色資訊上的鍊金術傷害，加上臨時加成（寵物、辦桌、活動）。秘法部分用四屬性平均計算。",
     masteryZone:
         "精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶（四屬性 +30% 鋼瓶 ×1.30）；細工說明每級 0.5%（土 0.2%），實際生效一半。火／水、鋼瓶獨立乘算已實測（2026-10-25）。秘法的平均部分不吃精通區。",
     crit: "暴擊 = 本次傷害 + 最大傷害 × (150% + 暴擊傷害加成)，這裡一律以最大傷害計算，所以暴擊時 = 最大傷害 × (250% + 加成)。期望值 = 沒暴擊 + (暴擊 − 沒暴擊) × 暴擊率。",
-    talentExtra: "才能技能：(1 + 武器額外) × (1 + 通用額外 + 才能額外)，武器額外獨立乘算（2026-10-25 實測，和物理公式一致）。",
+    talentExtra: "才能技能：(1 + 武器額外) × (1 + 通用額外 + 才能額外)，武器額外 = 主手 + 副手，獨立乘算（2026-10-25 實測，和物理公式一致）。",
     arcaneExtra: "秘法技能：才能部分先 × (1 + 才能額外) × 黑暗聚能，整體再 × (1 + 武器額外) × (1 + 通用額外 + 秘法額外)。秘法部分沒有平均加成。",
     independent: "優質戰鬥服務 1%、感應藥水 3%、其他獨立加成，各自獨立相乘。",
     totalOutput: "總輸出 = Σ（每個技能單次傷害期望值 × 使用次數），在「技能使用次數」分頁設定。",
@@ -198,7 +205,7 @@ const RESULT_DETAILS: Record<string, string> = {
     <div class="alchemy-calc">
         <h1 class="page-title">
             <span class="text-gradient">鍊金術傷害計算器</span>
-            <span class="page-subtitle">鍊金術傷害 → 精通細工 → 暴擊增傷 → 技能設定 → 技能傷害拆解</span>
+            <span class="page-subtitle">鍊金術傷害 → 裝備 → 暴擊增傷 → 技能設定 → 技能傷害拆解</span>
         </h1>
 
         <div class="sim-layout">
@@ -249,12 +256,20 @@ const RESULT_DETAILS: Record<string, string> = {
                                 <label class="field-label">{{ ELEMENT_LABELS[el] }}鍊金術傷害</label>
                                 <el-input-number v-model="settings.alchDamage[el]" :min="0" :max="99999" :precision="0" size="small" class="field-select" />
                             </div>
-                            <div class="field-hint">請填角色資訊上的數值（不含寵物等臨時加成）。</div>
+                            <div class="field-hint">請填角色資訊上的數值（不含寵物、辦桌、活動等臨時加成）。</div>
+                            <div class="field-section-label">臨時鍊金術傷害（四屬性同時加）</div>
                             <div class="field-row">
-                                <label class="field-label">臨時鍊金術傷害</label>
-                                <el-input-number v-model="settings.tempAlchDamage" :min="0" :max="9999" :precision="0" size="small" class="field-select" />
+                                <el-checkbox v-model="settings.tempAlch.hamster" aria-label="寵物加成 倉鼠" />
+                                <span class="switch-label">寵物加成：倉鼠（+{{ HAMSTER_ALCH_DAMAGE }}）</span>
                             </div>
-                            <div class="field-hint">寵物 buff 等角色資訊沒有顯示的四屬性鍊金術傷害，四個屬性同時加。</div>
+                            <div class="field-row">
+                                <label class="field-label">辦桌</label>
+                                <el-input-number v-model="settings.tempAlch.banquet" :min="0" :max="9999" :precision="0" size="small" class="field-select" aria-label="辦桌 鍊金術傷害" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">活動加成</label>
+                                <el-input-number v-model="settings.tempAlch.event" :min="0" :max="9999" :precision="0" size="small" class="field-select" aria-label="活動加成 鍊金術傷害" />
+                            </div>
                             <div class="field-row">
                                 <label class="field-label">屬性能量加成（每屬性）</label>
                                 <el-input-number v-model="settings.energyBonus" :min="0" :max="999" :precision="0" size="small" class="field-select" aria-label="屬性能量加成（每屬性）" />
@@ -262,34 +277,34 @@ const RESULT_DETAILS: Record<string, string> = {
                             <div class="field-hint">能力值未到上限時，屬性能量累積到一定程度會提升四屬性（面板請填提升後的數值）。化學狂歡、召喚噩夢消耗能量後才計算傷害，會自動扣掉這個值；能力值已到上限填 0（2026-10-29 實測）。</div>
 
                             <div class="field-section-label">鍊金術傷害 buff</div>
-                            <div class="field-hint">開了以下 buff 時，上方面板請填「沒開這些 buff」的數值，避免重複計算。最終 = ((面板 − 常數) × 係數 + 常數) × (1 + 戰場序曲% × 係數) × (1 + 狀態支援% × 係數) × (1 + 力量團聚% × 係數)；係數平常 1，喝鍊金術傷害藥水 1.2。</div>
+                            <div class="field-hint">開了以下 buff 時，上方面板請填「沒開這些 buff」的數值，避免重複計算。最終 = ((面板 − 常數) × 係數 + 常數) × (1 + 活潑板% × 係數) × (1 + 狀態支援% × 係數) × (1 + 力量團聚% × 係數)；係數 = 鍊金術傷害增加藥水 1.2 × 屬性共鳴 1.03（沒有的項目當 1）。</div>
                             <div class="field-row">
-                                <label class="field-label">戰場的序曲（活潑板）%</label>
-                                <el-input-number v-model="settings.attackBuff.battlefieldPercent" :min="0" :max="100" :step="0.01" :precision="2" size="small" class="field-select-sm" aria-label="戰場的序曲（活潑板）%" />
+                                <label class="field-label">活潑板 鍊金術傷害增加 %</label>
+                                <el-input-number v-model="settings.attackBuff.battlefieldPercent" :min="0" :max="100" :step="0.01" :precision="2" size="small" class="field-select-sm" aria-label="活潑板 鍊金術傷害增加 %" />
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.attackBuff.statusSupport" />
+                                <el-checkbox v-model="settings.attackBuff.statusSupport" aria-label="狀態支援" />
                                 <span class="switch-label">狀態支援（+12%）</span>
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.attackBuff.strengthGather" />
+                                <el-checkbox v-model="settings.attackBuff.strengthGather" aria-label="力量團聚" />
                                 <span class="switch-label">力量團聚（+15%）</span>
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.attackBuff.potion" />
+                                <el-checkbox v-model="settings.attackBuff.potion" aria-label="鍊金術傷害增加藥水" />
                                 <span class="switch-label">鍊金術傷害增加藥水（係數 ×1.2）</span>
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.resonance" aria-label="屬性共鳴" />
-                                <span class="switch-label">屬性共鳴（(面板 − 常數) × 1.03 + 常數，並有完整造雨加成）</span>
+                                <span class="switch-label">屬性共鳴（係數 × 1.03，和藥水相乘、buff% 也吃；常數不乘；並有完整造雨加成）</span>
                             </div>
                             <div class="field-section-label">常數攻擊力（不吃係數與 buff%）</div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.attackBuff.arcanePassive" />
+                                <el-checkbox v-model="settings.attackBuff.arcanePassive" aria-label="4 屬性鍊金術傷害 +200" />
                                 <span class="switch-label">4 屬性鍊金術傷害 +200</span>
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.attackBuff.grandmaster" />
+                                <el-checkbox v-model="settings.attackBuff.grandmaster" aria-label="一代宗師戰鬥鍊金術師" />
                                 <span class="switch-label">一代宗師戰鬥鍊金術師（火 +20、水 +15、風 +30、土 +30）</span>
                             </div>
                             <div class="field-hint">精靈武器 4 屬 +30 跟著「暴擊與額外傷害」分頁的精靈武器勾選。</div>
@@ -298,7 +313,7 @@ const RESULT_DETAILS: Record<string, string> = {
                             <div class="field-hint">精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶，細工實際生效為說明的一半。</div>
                             <div class="field-row">
                                 <label class="field-label">鋼瓶</label>
-                                <el-select v-model="settings.cylinderPercent" size="small" class="field-select-wide">
+                                <el-select v-model="settings.cylinderPercent" size="small" class="field-select-wide" aria-label="鋼瓶">
                                     <el-option v-for="o in CYLINDER_OPTIONS" :key="o.value" :value="o.value" :label="o.label" />
                                 </el-select>
                             </div>
@@ -306,14 +321,52 @@ const RESULT_DETAILS: Record<string, string> = {
                         </div>
                     </el-tab-pane>
 
-                    <!-- 精通與細工 -->
-                    <el-tab-pane label="精通與細工" name="reforge">
+                    <!-- 裝備 -->
+                    <el-tab-pane label="裝備" name="reforge">
                         <div class="tab-body">
+                            <div class="field-section-label">武器</div>
+                            <div class="field-row">
+                                <label class="field-label">主手 額外傷害 %</label>
+                                <el-input-number v-model="settings.extra.weaponMain" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="主手 額外傷害 %" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">副手 額外傷害 %</label>
+                                <el-input-number v-model="settings.extra.weaponOff" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="副手 額外傷害 %" />
+                            </div>
+                            <div class="field-hint">武器額外 = 主手 + 副手（合計 {{ fmtRatio(settings.extra.weaponMain + settings.extra.weaponOff) }}%），獨立乘算。</div>
+                            <div class="field-row">
+                                <label class="field-label">銳利等級</label>
+                                <el-input-number v-model="settings.pierceLevel" :min="0" :max="11" :precision="0" size="small" class="field-select-sm" aria-label="銳利等級" />
+                                <span class="switch-label">每級 −5 魔法保護（扣除怪物銳利抵抗），套用在「破防」分頁</span>
+                            </div>
+
+                            <div class="field-section-label">聚能</div>
+                            <div class="field-row">
+                                <label class="field-label">聚能 S50 高壓火爆傷害 %</label>
+                                <el-input-number v-model="settings.heatBusterWeaponPercent" :min="0" :max="1000" :precision="0" size="small" class="field-select-sm" aria-label="聚能 S50 高壓火爆傷害 %" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">黑暗聚能 鍊金術才能技能傷害增加 %</label>
+                                <el-input-number v-model="settings.extra.talentSkill" :min="0" :max="6" :step="0.12" :precision="2" size="small" class="field-select-sm" aria-label="黑暗聚能 鍊金術才能技能傷害增加 %" />
+                                <span class="switch-label">每級 +0.12%，50 級 6%</span>
+                            </div>
+                            <div class="field-hint">黑暗聚能獨立乘算，不和才能額外相加；秘法技能只乘借用的才能部分（2026-10-27～30 實測）。</div>
+
+                            <div class="field-section-label">套裝效果</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.sets.waterCannon" aria-label="水炮強化" />
+                                <span class="switch-label">水炮強化（克萊希達套裝，水炮 +15%）</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.sets.flamer" aria-label="火焰噴射強化" />
+                                <span class="switch-label">火焰噴射強化（克萊希達套裝，火焰噴射 +15%）</span>
+                            </div>
+
                             <div class="field-section-label">精通效率細工（加進精通區）</div>
                             <div v-for="el in ELEMENTS" :key="el" class="field-row">
                                 <label class="field-label">精通{{ ELEMENT_LABELS[el] }}鍊金術 效率</label>
                                 <el-input-number v-model="settings.masteryReforge[el]" :min="0" :max="MASTERY_REFORGE_MAX" :precision="0" size="small" class="field-select-sm" :aria-label="`精通${ELEMENT_LABELS[el]}鍊金術效率 等級`" />
-                                <span class="switch-label">每級 +{{ fmtPct(MASTERY_REFORGE_STEP[el]) }}</span>
+                                <span class="switch-label">每級 +{{ fmtPct(MASTERY_REFORGE_STEP[el] * 2) }}</span>
                             </div>
 
                             <div class="field-section-label">技能細工（鑑定）等級</div>
@@ -338,13 +391,17 @@ const RESULT_DETAILS: Record<string, string> = {
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="field-hint">身上其他道具給的鑑定等級（例如水炮鑑定 +3）也要加進來。火焰噴射段數：{{ fmtRatio(flamerHits(settings)) }}</div>
+                            <div class="field-hint">身上其他道具給的鑑定等級（例如水炮鑑定 +3）也要加進來。火焰噴射段數：{{ Math.floor(flamerHits(settings)) }}（捨去小數）；召喚噩夢借用時保留小數：{{ fmtRatio(flamerHits(settings)) }}</div>
 
                             <div class="field-section-label">穆利亞斯的遺物等級</div>
                             <div v-for="id in ARCANE_IDS" :key="id" class="field-row">
                                 <label class="field-label">{{ ARCANE_LABELS[id] }}</label>
-                                <el-input-number v-model="settings.relic[id]" :min="0" :max="RELIC_MAX_LEVEL" :precision="0" size="small" class="field-select-sm" />
-                                <span class="switch-label">{{ RELIC_NOTES[id] }}</span>
+                                <el-input-number v-model="settings.relic[id]" :min="0" :max="RELIC_MAX_LEVEL" :precision="0" size="small" class="field-select-sm" :aria-label="`${ARCANE_LABELS[id]} 穆利亞斯的遺物等級`" />
+                                <span class="switch-label">{{ RELIC_DESC[id](settings.relic[id]) }}</span>
+                                <el-popover trigger="click" :width="280" popper-class="detail-popover">
+                                    <template #reference><el-icon class="info-icon" aria-label="實際計算方式"><InfoFilled /></el-icon></template>
+                                    {{ RELIC_NOTES[id] }}
+                                </el-popover>
                             </div>
                         </div>
                     </el-tab-pane>
@@ -360,65 +417,127 @@ const RESULT_DETAILS: Record<string, string> = {
 
                             <div class="field-section-label">暴擊傷害（基礎 250%）</div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.critDamage.grade" />
+                                <el-checkbox v-model="settings.critDamage.grade" aria-label="戰鬥系一代宗師全取得" />
                                 <span class="switch-label">戰鬥系一代宗師全取得（+10%）</span>
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.critDamage.spiritWeapon" />
+                                <el-checkbox v-model="settings.critDamage.spiritWeapon" aria-label="精靈武器" />
                                 <span class="switch-label">精靈武器（+15%）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">其他 %</label>
-                                <el-input-number v-model="settings.critDamage.other" :min="0" :max="300" :precision="0" size="small" class="field-select-sm" />
+                                <label class="field-label">武器特殊改造 R</label>
+                                <el-select v-model="settings.critDamage.reformR" size="small" class="field-select" aria-label="武器特殊改造 R">
+                                    <el-option :value="0" label="無" />
+                                    <el-option v-for="n in CYLINDER_REFORM_R_STAGES" :key="n" :value="n" :label="`R${n}（暴擊傷害 +${cylinderReformRCrit(n)}%）`" />
+                                </el-select>
                             </div>
-                            <div class="field-hint">裝備 R 改、套裝、農場物、圖騰等暴擊傷害加總。暴擊傷害合計：{{ fmtRatio(calcResult.critDamagePercent) }}%</div>
+                            <div class="field-row">
+                                <label class="field-label">暴擊傷害套裝</label>
+                                <el-select v-model="settings.critDamage.setTier" size="small" class="field-select" aria-label="暴擊傷害套裝">
+                                    <el-option value="none" label="無" />
+                                    <el-option value="tier4" :label="`+${CRITICAL_DAMAGE_SET_BONUS.tier4}%`" />
+                                    <el-option value="tier7" :label="`+${CRITICAL_DAMAGE_SET_BONUS.tier7}%`" />
+                                    <el-option value="tier10" :label="`+${CRITICAL_DAMAGE_SET_BONUS.tier10}%（整套暮光）`" />
+                                </el-select>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.critDamage.totem" aria-label="艾爾班訓練所圖騰" />
+                                <span class="switch-label">艾爾班訓練所圖騰（+5%）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">娃娃背包</label>
+                                <el-input-number v-model="settings.critDamage.dollBag" :min="0" :max="5" :precision="0" size="small" class="field-select-sm" aria-label="娃娃背包 暴擊傷害 %" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">農場模型</label>
+                                <el-input-number v-model="settings.critDamage.farm" :min="0" :max="17" :precision="0" size="small" class="field-select-sm" aria-label="農場模型 暴擊傷害 %" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">稱號</label>
+                                <el-input-number v-model="settings.critDamage.title" :min="0" :max="3" :precision="0" size="small" class="field-select-sm" aria-label="稱號 暴擊傷害 %" />
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">布里萊赫的硬幣</label>
+                                <el-input-number v-model="settings.critDamage.coin" :min="0" :max="10" :precision="0" size="small" class="field-select-sm" aria-label="布里萊赫的硬幣 暴擊傷害 %" />
+                                <span class="switch-label">暴擊傷害 1～10%，沒有填 0</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">其他 %</label>
+                                <el-input-number v-model="settings.critDamage.other" :min="0" :max="300" :precision="0" size="small" class="field-select-sm" aria-label="其他 暴擊傷害 %" />
+                            </div>
+                            <div class="field-hint">暴擊傷害合計：{{ fmtRatio(calcResult.critDamagePercent) }}%（基礎 250% 含暴擊 R1）</div>
 
                             <div class="field-section-label">額外傷害 %</div>
-                            <div class="field-row">
-                                <label class="field-label">武器額外傷害</label>
-                                <el-input-number v-model="settings.extra.weapon" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
-                            </div>
+                            <div class="field-hint">武器額外（主手＋副手）在「裝備」分頁。</div>
                             <div class="field-row">
                                 <label class="field-label">通用額外傷害</label>
-                                <el-input-number v-model="settings.extra.general" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
+                                <el-input-number v-model="settings.extra.general" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="通用額外傷害 %" />
                             </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.catalyst" aria-label="觸媒效應" />
                                 <span class="switch-label">觸媒效應（自動加進通用額外：{{ catalystPercent }}%）</span>
                             </div>
                             <div class="field-hint">觸媒效應（配方 4 火＋生命藥草＋曼德拉草）= 8% × (1 + 藥草 15% + 火效率) + 4 屬平均每 500 +1%（無條件捨去）。通用額外請填不含觸媒的值。</div>
+
+                            <div class="field-section-label">才能額外傷害（只算才能技能與秘法借用的才能部分）</div>
                             <div class="field-row">
-                                <label class="field-label">才能額外傷害</label>
-                                <el-input-number v-model="settings.extra.talent" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" />
+                                <el-checkbox v-model="settings.talentSources.radica" aria-label="拉狄卡的氣息" />
+                                <span class="switch-label">拉狄卡的氣息（僅人類，+5%）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">鍊金術才能技能傷害增加（黑暗聚能）</label>
-                                <el-input-number v-model="settings.extra.talentSkill" :min="0" :max="6" :step="0.12" :precision="2" size="small" class="field-select-sm" aria-label="鍊金術才能技能傷害增加（黑暗聚能）%" />
-                                <span class="switch-label">每級 +0.12%，50 級 6%</span>
+                                <el-checkbox v-model="settings.spiritWeakness" aria-label="精靈武器 弱點分析" />
+                                <span class="switch-label">精靈武器 弱點分析 5 級（目標有出血／暈眩／防保減少時，+10%）</span>
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.spiritWeakness" />
-                                <span class="switch-label">精靈武器 弱點分析 5 等（目標有出血／暈眩／防保減少時，才能額外 +10%）</span>
+                                <el-checkbox v-model="settings.talentSources.spiritBerserk" aria-label="精靈武器 狂暴化" />
+                                <span class="switch-label">精靈武器 狂暴化 5 級（目標生命值 30% 以下時，+10%）</span>
                             </div>
                             <div class="field-row">
-                                <label class="field-label">秘法額外傷害</label>
-                                <el-input-number v-model="settings.extra.arcane" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="秘法額外傷害" />
-                                <span class="switch-label">布里萊赫的硬幣 0.15～3%，沒有填 0</span>
+                                <el-checkbox v-model="settings.talentSources.spiritTransform" aria-label="精靈武器 實體化" />
+                                <span class="switch-label">精靈武器 實體化（+10%）</span>
+                                <el-checkbox v-model="settings.talentSources.spiritTransformEnhance" :disabled="!settings.talentSources.spiritTransform" aria-label="實體化增益效果強化" />
+                                <span class="switch-label">增益效果強化 5 級（再 +15%）</span>
                             </div>
-                            <div class="field-hint">(1 + 武器額外) × (1 + 通用額外 + 才能額外／秘法額外)；才能額外只算才能技能與秘法借用的才能部分；秘法額外只算秘法技能。優質戰鬥服務在下方獨立加成；活動道具 1% 有效，填在下方獨立加成的「其他 %」。拉狄卡的氣息（僅人類）、弱點分析等「才能技能傷害」和通用額外相加；黑暗聚能「鍊金術才能技能傷害增加」另外獨立乘算，秘法技能只乘才能部分（2026-10-27～29 實測）。</div>
+                            <div class="field-row">
+                                <label class="field-label">其他 %</label>
+                                <el-input-number v-model="settings.extra.talent" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="其他 才能額外傷害 %" />
+                            </div>
+                            <div class="field-hint">才能額外合計：+{{ fmtRatio(calculateTalentExtraPercent(settings)) }}%，和通用額外相加。</div>
+
+                            <div class="field-section-label">秘法額外傷害（只算秘法技能）</div>
+                            <div class="field-row">
+                                <label class="field-label">布里萊赫的硬幣</label>
+                                <el-input-number v-model="settings.arcaneSources.coin" :min="0" :max="3" :step="0.05" :precision="2" size="small" class="field-select-sm" aria-label="布里萊赫的硬幣 秘法額外傷害 %" />
+                                <span class="switch-label">0.15～3%，沒有填 0</span>
+                            </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.arcaneSources.crown" aria-label="不完美的空想王冠" />
+                                <span class="switch-label">不完美的空想王冠（+3%）</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">月餅賦予接尾捲</label>
+                                <el-input-number v-model="settings.arcaneSources.mooncake" :min="0" :max="3" :precision="0" size="small" class="field-select-sm" aria-label="月餅賦予接尾捲 個數" />
+                                <span class="switch-label">每個 +1%，最多 3 個</span>
+                            </div>
+                            <div class="field-row">
+                                <label class="field-label">其他 %</label>
+                                <el-input-number v-model="settings.extra.arcane" :min="0" :max="300" :step="0.1" :precision="1" size="small" class="field-select-sm" aria-label="其他 秘法額外傷害 %" />
+                            </div>
+                            <div class="field-hint">秘法額外合計：+{{ fmtRatio(calculateArcaneExtraPercent(settings)) }}%，和通用額外相加。整體 = (1 + 武器額外) × (1 + 通用額外 + 才能額外／秘法額外)。</div>
 
                             <div class="field-section-label">獨立加成（各自獨立相乘）</div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.independent.battleService" />
+                                <el-checkbox v-model="settings.independent.battleService" aria-label="優質戰鬥服務" />
                                 <span class="switch-label">優質戰鬥服務（+1%）</span>
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.independent.sensePotion" />
+                                <el-checkbox v-model="settings.independent.sensePotion" aria-label="名匠的感應藥水" />
                                 <span class="switch-label">名匠的感應藥水（+3%）</span>
                             </div>
                             <div class="field-row">
                                 <label class="field-label">其他 %</label>
-                                <el-input-number v-model="settings.independent.otherPercent" :min="0" :max="100" :step="0.5" :precision="1" size="small" class="field-select-sm" />
+                                <el-input-number v-model="settings.independent.otherPercent" :min="0" :max="100" :step="0.5" :precision="1" size="small" class="field-select-sm" aria-label="其他 獨立加成 %" />
+                                <span class="switch-label">活動道具 1% 等</span>
                             </div>
                         </div>
                     </el-tab-pane>
@@ -446,45 +565,41 @@ const RESULT_DETAILS: Record<string, string> = {
                             </div>
                             <div class="field-hint">化學狂歡後續爆炸每段 = (高壓火爆部分 + 平均 × 900% × {{ fmtPct(CHEMICAL_FOLLOW_UP_AVG_RATIO) }} × 遺物) × 元素組合，段數 = 能量 + 1，每次施放各段同值（2026-10-29 實測）。</div>
                             <div class="field-row">
-                                <label class="field-label">聚能 S50 高壓火爆傷害 %</label>
-                                <el-input-number v-model="settings.heatBusterWeaponPercent" :min="0" :max="1000" :precision="0" size="small" class="field-select-sm" />
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.elementWave" />
+                                <el-checkbox v-model="settings.elementWave" aria-label="元素波動" />
                                 <span class="switch-label">元素波動（高壓火爆 +25%；化學狂歡不吃）</span>
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.rain" />
+                                <el-checkbox v-model="settings.rain" aria-label="造雨" />
                                 <span class="switch-label">造雨（水炮 +20%，細工每級 +5%；地裂螺旋的水炮部分也吃）</span>
                             </div>
-
-                            <div class="field-section-label">套裝效果</div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.sets.waterCannon" />
-                                <span class="switch-label">水炮強化（克萊希達套裝，水炮 +15%）</span>
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.sets.flamer" />
-                                <span class="switch-label">火焰噴射強化（克萊希達套裝，火焰噴射 +15%）</span>
-                            </div>
+                            <div class="field-hint">施放觸媒效應會自動發動元素波動與造雨。聚能 S50、套裝效果在「裝備」分頁。</div>
 
                             <template v-for="id in ARCANE_IDS" :key="id">
                                 <div class="field-section-label">元素組合：{{ ARCANE_LABELS[id] }}（{{ ELEMENT_LABELS[COMBO_META[id].element] }}，每個結晶 +{{ fmtPct(COMBO_META[id].perCrystal) }}）</div>
                                 <div class="field-row">
                                     <label class="field-label">{{ ELEMENT_LABELS[COMBO_META[id].element] }}結晶數</label>
-                                    <el-input-number v-model="settings.combo[id].crystals" :min="0" :max="COMBO_MAX_CRYSTALS" :precision="0" size="small" class="field-select-sm" />
+                                    <el-input-number v-model="settings.combo[id].crystals" :min="0" :max="COMBO_MAX_CRYSTALS" :precision="0" size="small" class="field-select-sm" :aria-label="`${ARCANE_LABELS[id]} 結晶數`" />
                                     <span class="switch-label">{{ COMBO_META[id].effect }}</span>
                                 </div>
                                 <div class="field-row">
-                                    <el-checkbox v-model="settings.combo[id].elementHerb" />
+                                    <el-checkbox v-model="settings.combo[id].elementHerb" :aria-label="COMBO_META[id].herb" />
                                     <span class="switch-label">{{ COMBO_META[id].herb }}（+10%）</span>
-                                    <el-checkbox v-model="settings.combo[id].mandrake" />
+                                    <el-checkbox v-model="settings.combo[id].mandrake" aria-label="曼德拉草" />
                                     <span class="switch-label">曼德拉草（+5%）</span>
                                 </div>
                                 <div class="field-row">
                                     <label class="field-label">符文詞條效果 %（台灣未開放）</label>
-                                    <el-input-number v-model="settings.combo[id].oghamPercent" :min="0" :max="COMBO_OGHAM_MAX" :step="0.2" :precision="1" size="small" class="field-select-sm" />
-                                    <span class="switch-label">（{{ ELEMENT_LABELS[COMBO_META[id].element] }}鍊金術效果）最終傷害倍率增加，最多 5 條 × 0.2%</span>
+                                    <el-input-number
+                                        v-model="settings.combo[id].oghamPercent"
+                                        :min="0"
+                                        :max="COMBO_OGHAM_LINES * COMBO_META[id].oghamPerLine"
+                                        :step="COMBO_META[id].oghamPerLine / 10"
+                                        :precision="2"
+                                        size="small"
+                                        class="field-select-sm"
+                                        :aria-label="`${ARCANE_LABELS[id]} 符文詞條效果 %`"
+                                    />
+                                    <span class="switch-label">（{{ ELEMENT_LABELS[COMBO_META[id].element] }}鍊金術效果）最終傷害倍率增加，每條最高 {{ COMBO_META[id].oghamPerLine }}%，最多 {{ COMBO_OGHAM_LINES }} 條</span>
                                 </div>
                             </template>
                             <div class="field-hint">元素組合 = 1 + 結晶效果 × (1 + 藥草 + 效率)，效率 = 10% + 精通效率細工（遊戲畫面只顯示結晶效果）。化學狂歡的第一次與後續爆炸都吃火效果。</div>
@@ -495,16 +610,12 @@ const RESULT_DETAILS: Record<string, string> = {
                     <el-tab-pane label="破防" name="armorbreak">
                         <div class="tab-body">
                             <div class="field-row">
-                                <el-checkbox v-model="settings.armorBreak.enabled" />
+                                <el-checkbox v-model="settings.armorBreak.enabled" aria-label="套用破防結果" />
                                 <span class="switch-label">
                                     套用破防結果到傷害計算（魔法側：保護減傷 {{ fmtPct(calcResult.armor.single) }}、所受傷害 +{{ fmtRatio(settings.armorBreak.damageTakenPercent) }}%、暴擊時通用額外傷害 +{{ fmtRatio(settings.armorBreak.critExtraPercent) }}%）
                                 </span>
                             </div>
-                            <div class="field-row">
-                                <label class="field-label">銳利等級</label>
-                                <el-input-number v-model="settings.pierceLevel" :min="0" :max="11" :precision="0" size="small" class="field-select-sm" />
-                                <span class="switch-label">每級 −5 魔法保護（扣除怪物銳利抵抗）</span>
-                            </div>
+                            <div class="field-hint">銳利等級：{{ settings.pierceLevel }}（在「裝備」分頁設定），每級 −5 魔法保護（扣除怪物銳利抵抗）。</div>
                             <div class="field-section-label">秘法技能借用的才能部分</div>
                             <el-radio-group v-model="settings.protectionMode" size="small">
                                 <el-radio-button value="reference">參考（韓服計算器）</el-radio-button>

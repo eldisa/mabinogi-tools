@@ -1,11 +1,12 @@
 import { protRate } from "../utils/protectionCompare";
-import { calculateFinalMaxDamage } from "./mabinogiCombat";
+import { calculateFinalMaxDamage, CRITICAL_DAMAGE_SET_BONUS, type CriticalDamageSetTier } from "./mabinogiCombat";
+import { SPECIAL_REFORM_R_CRIT_PERCENT } from "./shieldKnightCalculator";
 
 /**
  * 鍊金術傷害計算器（2026-10-23～25 實測＋韓服計算器對照，見 docs/alchemy-calculator-notes.md、damage-formula-common.md）
  *
  * 才能技能 = 鍊金術傷害 × (技能倍率 + 鑑定) × 集氣 × 精通區 × 套裝 × (1 + 武器額外) × (1 + 通用額外 + 才能額外)
- *   精通區 = (1.07 + 精通效率細工) × (1 + 鋼瓶 30%)；鋼瓶獨立乘算（2026-10-25 實測）
+ *   精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶；鋼瓶獨立乘算（2026-10-25 實測）
  * 秘法技能 = [才能部分 × (1+才能額外) × 黑暗聚能 + 4 屬性平均 × 秘法倍率 × 遺物] × 元素組合 × (1 + 武器額外) × (1 + 通用額外 + 秘法額外)
  *   召喚噩夢例外：(火焰噴射 5 集氣 + 4 屬性平均) × 額外傷害值倍率（2026-10-24 實測）
  *   元素組合 = 1 + 結晶效果 × (1 + 藥草 + 效率)；秘法部分沒有平均加成、不吃精通區與黑暗聚能（2026-10-28 三套裝備實測）
@@ -22,7 +23,7 @@ export type ProtectionMode = "reference" | "twice" | "doublePierce";
 export const ELEMENTS: Element[] = ["fire", "water", "wind", "earth"];
 export const ELEMENT_LABELS: Record<Element, string> = { fire: "火", water: "水", wind: "風", earth: "土" };
 
-/** 精通效率細工每級：說明的 0.5%（土 0.2%）÷ 2，火／水實測（土未測） */
+/** 精通效率細工每級：說明的 0.5%（土 0.2%）÷ 2，火／水／土實測 */
 export const MASTERY_REFORGE_STEP: Record<Element, number> = { fire: 0.0025, water: 0.0025, wind: 0.0025, earth: 0.001 };
 export const MASTERY_REFORGE_MAX = 25;
 
@@ -47,19 +48,27 @@ export const REFORGE_FIELDS = [
 ] as const;
 export type ReforgeKey = (typeof REFORGE_FIELDS)[number]["key"];
 
-/** 元素組合：每個結晶的最終傷害（地裂螺旋 水 20%、化學狂歡 火 3.75%（主目標，第一次與後續爆炸都吃）、召喚噩夢 土 5%） */
-export const COMBO_META: Record<ArcaneId, { element: Element; perCrystal: number; effect: string; herb: string }> = {
-    spiral: { element: "water", perCrystal: 0.2, effect: "水鍊金術效果：技能最終傷害", herb: "魔力藥草" },
-    chemical: { element: "fire", perCrystal: 0.0375, effect: "火鍊金術效果：主目標最終傷害", herb: "生命藥草" },
-    nightmare: { element: "earth", perCrystal: 0.05, effect: "土鍊金術效果：技能最終傷害", herb: "基礎藥草" },
+/**
+ * 元素組合：每個結晶的最終傷害（地裂螺旋 水 20%、化學狂歡 火 3.75%（主目標，第一次與後續爆炸都吃）、召喚噩夢 土 5%）
+ * 符文詞條「(X 鍊金術效果) 最終傷害倍率增加」每條最高：地裂螺旋 1%、化學狂歡／召喚噩夢 0.2%（韓服資料），最多 5 條
+ */
+export const COMBO_META: Record<ArcaneId, { element: Element; perCrystal: number; effect: string; herb: string; oghamPerLine: number }> = {
+    spiral: { element: "water", perCrystal: 0.2, effect: "水鍊金術效果：技能最終傷害", herb: "魔力藥草", oghamPerLine: 1 },
+    chemical: { element: "fire", perCrystal: 0.0375, effect: "火鍊金術效果：主目標最終傷害", herb: "生命藥草", oghamPerLine: 0.2 },
+    nightmare: { element: "earth", perCrystal: 0.05, effect: "土鍊金術效果：技能最終傷害", herb: "基礎藥草", oghamPerLine: 0.2 },
 };
 export const COMBO_MAX_CRYSTALS = 4;
-/** 符文詞條「(X 鍊金術效果) 最終傷害倍率增加」最多 5 條 × 0.2% */
-export const COMBO_OGHAM_MAX = 1;
+export const COMBO_OGHAM_LINES = 5;
 
 /** 遺物 0~10 級。地裂螺旋、化學狂歡：秘法部分 ×(1 + 說明數字 ÷ 10)，即每級 2%／3%（地裂 1、10 級，化學 3、5 級實測）；召喚噩夢：4 能量倍率 +5%／級 */
 export const RELIC_MAX_LEVEL = 10;
 export const RELIC_ARCANE_STEP: Record<"spiral" | "chemical", number> = { spiral: 0.02, chemical: 0.03 };
+/** 遺物說明原文（台服），數字 = 每級 × 等級 */
+export const RELIC_DESC: Record<ArcaneId, (lv: number) => string> = {
+    spiral: (lv) => `地裂螺旋傷害增加 ${lv * 20}%（上限 200%）`,
+    chemical: (lv) => `化學狂歡傷害增加 ${lv * 30}%（上限 300%）`,
+    nightmare: (lv) => `召喚噩夢消耗 4 個屬性能量，額外傷害值倍率增加 ${lv * 5}%（最大 50%）`,
+};
 
 /** 召喚噩夢：消耗屬性能量 0~4 個的額外傷害值倍率（不累加；0、1、4 能量實測，2、3 照參考） */
 export const NIGHTMARE_RATIOS = [2, 2, 2.5, 3.3, 4.8];
@@ -72,6 +81,12 @@ export const ARCANE_PASSIVE_CONSTANT = 200;
 export const SPIRIT_WEAPON_ALCH_CONSTANT = 30;
 export const RESONANCE_RATE = 1.03;
 export const GRANDMASTER_CONSTANT: Record<Element, number> = { fire: 20, water: 15, wind: 30, earth: 30 };
+/** 臨時鍊金術傷害：寵物倉鼠 +40 */
+export const HAMSTER_ALCH_DAMAGE = 40;
+/** 鋼瓶特殊改造 R 1~7 階的暴擊傷害%（和其他武器同表） */
+export const CYLINDER_REFORM_R_STAGES = 7;
+export const cylinderReformRCrit = (stage: number) => (stage > 0 ? (SPECIAL_REFORM_R_CRIT_PERCENT[stage - 1] ?? 0) : 0);
+export { CRITICAL_DAMAGE_SET_BONUS };
 
 export const SKILL_META = [
     { id: "waterCannon", label: "水炮（5 集氣）", imageId: 35004, arcane: false },
@@ -90,13 +105,26 @@ interface ComboSettings {
     oghamPercent: number;
 }
 
+export interface CritDamageSettings {
+    grade: boolean; // 戰鬥系一代宗師全取得 +10%
+    spiritWeapon: boolean; // 精靈武器 +15%（也給 4 屬 +30 常數）
+    reformR: number; // 鋼瓶特殊改造 R 階段 0~7
+    setTier: CriticalDamageSetTier;
+    totem: boolean; // 艾爾班訓練所圖騰 +5%
+    dollBag: number;
+    farm: number;
+    title: number;
+    coin: number; // 布里萊赫的硬幣 暴擊傷害 1~10%
+    other: number;
+}
+
 export interface AlchemySettings {
     alchDamage: Record<Element, number>; // 角色資訊的鍊金術傷害
-    tempAlchDamage: number; // 寵物等面板沒有的四屬性鍊金術傷害
+    tempAlch: { hamster: boolean; banquet: number; event: number }; // 面板沒有的四屬性鍊金術傷害：寵物倉鼠 +40、辦桌、活動
     energyBonus: number; // 屬性能量累積觸發的四屬性提升（面板含此值）；化學狂歡、召喚噩夢消耗能量後扣掉
     // 鍊金術傷害 buff：面板填沒開這些 buff 的數值，依「(基礎 × 係數 + 常數) × Π(1 + buff% × 係數)」換算
     attackBuff: { battlefieldPercent: number; statusSupport: boolean; strengthGather: boolean; potion: boolean; arcanePassive: boolean; grandmaster: boolean };
-    resonance: boolean; // 屬性共鳴：非常數部分 ×1.03，且有完整造雨加成
+    resonance: boolean; // 屬性共鳴：攻擊係數 ×1.03（buff% 也吃），且有完整造雨加成
     catalyst: boolean; // 觸媒效應（4 火＋全藥草）：通用額外 + 8% × (1 + 15% + 火效率) + floor(平均 ÷ 500)%
     cylinderPercent: number;
     masteryReforge: Record<Element, number>;
@@ -111,9 +139,12 @@ export interface AlchemySettings {
     combo: Record<ArcaneId, ComboSettings>;
     relic: Record<ArcaneId, number>;
     crit: { panelRatePercent: number };
-    critDamage: { grade: boolean; spiritWeapon: boolean; other: number };
-    extra: { weapon: number; general: number; talent: number; arcane: number; talentSkill: number }; // talentSkill：黑暗聚能「鍊金術才能技能傷害增加」，獨立乘算
+    critDamage: CritDamageSettings;
+    // 武器額外 = 主手 + 副手；talentSkill：黑暗聚能「鍊金術才能技能傷害增加」，獨立乘算；talent／arcane 為下列來源以外的其他值
+    extra: { weaponMain: number; weaponOff: number; general: number; talent: number; arcane: number; talentSkill: number };
     spiritWeakness: boolean; // 精靈武器弱點分析 5 等：目標有出血／暈眩／防保減少時才能額外 +10%
+    talentSources: { radica: boolean; spiritBerserk: boolean; spiritTransform: boolean; spiritTransformEnhance: boolean };
+    arcaneSources: { coin: number; crown: boolean; mooncake: number }; // 布里萊赫的硬幣 0.15~3%、不完美的空想王冠 3%、月餅賦予接尾捲 1% × 0~3
     independent: { battleService: boolean; sensePotion: boolean; otherPercent: number };
     protectionMode: ProtectionMode;
     pierceLevel: number;
@@ -126,9 +157,9 @@ const defaultCombo = (): ComboSettings => ({ crystals: 4, elementHerb: true, man
 export function createDefaultSettings(): AlchemySettings {
     return {
         alchDamage: { fire: 2000, water: 2000, wind: 2000, earth: 2000 },
-        tempAlchDamage: 0,
+        tempAlch: { hamster: false, banquet: 0, event: 0 },
         energyBonus: 0,
-        attackBuff: { battlefieldPercent: 0, statusSupport: false, strengthGather: false, potion: false, arcanePassive: true, grandmaster: false },
+        attackBuff: { battlefieldPercent: 80, statusSupport: true, strengthGather: false, potion: false, arcanePassive: true, grandmaster: true },
         resonance: true,
         catalyst: true,
         cylinderPercent: 30,
@@ -139,14 +170,16 @@ export function createDefaultSettings(): AlchemySettings {
         flamerCharge: 5,
         nightmareEnergy: 4,
         chemicalEnergy: 4,
-        rain: false,
-        elementWave: false,
+        rain: true,
+        elementWave: true,
         combo: { spiral: defaultCombo(), chemical: defaultCombo(), nightmare: defaultCombo() },
         relic: { spiral: 0, chemical: 0, nightmare: 0 },
         crit: { panelRatePercent: 50 },
-        critDamage: { grade: true, spiritWeapon: true, other: 0 },
-        extra: { weapon: 0, general: 0, talent: 0, arcane: 0, talentSkill: 0 },
+        critDamage: { grade: true, spiritWeapon: true, reformR: 0, setTier: "none", totem: false, dollBag: 0, farm: 0, title: 0, coin: 0, other: 0 },
+        extra: { weaponMain: 0, weaponOff: 0, general: 0, talent: 0, arcane: 0, talentSkill: 0 },
         spiritWeakness: false,
+        talentSources: { radica: false, spiritBerserk: false, spiritTransform: false, spiritTransformEnhance: false },
+        arcaneSources: { coin: 0, crown: false, mooncake: 0 },
         independent: { battleService: true, sensePotion: false, otherPercent: 0 },
         protectionMode: "reference",
         pierceLevel: 0,
@@ -171,6 +204,12 @@ export function mergeSettings(data: unknown): AlchemySettings {
     };
     const merged = merge(createDefaultSettings() as unknown as Record<string, unknown>, data) as unknown as AlchemySettings;
     if (!["reference", "twice", "doublePierce"].includes(merged.protectionMode)) merged.protectionMode = "reference";
+    if (!(merged.critDamage.setTier in CRITICAL_DAMAGE_SET_BONUS)) merged.critDamage.setTier = "none";
+    // 舊存檔：武器額外只有一個欄位、臨時鍊金術傷害只有一個數字 → 分別放進主手、活動
+    const old = data as { extra?: Record<string, unknown>; tempAlchDamage?: unknown; tempAlch?: unknown } | null;
+    const finite = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+    if (old?.extra && finite(old.extra.weapon) && !("weaponMain" in old.extra)) merged.extra.weaponMain = old.extra.weapon;
+    if (finite(old?.tempAlchDamage) && old?.tempAlch === undefined) merged.tempAlch.event = old.tempAlchDamage;
     return merged;
 }
 
@@ -230,15 +269,22 @@ export function calculateAlchDamage(s: AlchemySettings, spent = false) {
         battlefieldPercent: b.battlefieldPercent,
         battleCryActive: false,
         battleCryReforgeLevel: 0,
+        coefficientMultiplier: s.resonance ? RESONANCE_RATE : 1,
     };
     const buffed = (e: Element) => {
         const constant = calculateAlchConstant(s, e);
-        // 屬性共鳴 ×1.03 只乘非常數部分（2026-10-27 實測）；和藥水係數怎麼疊未實測，先相乘
-        const base = (s.alchDamage[e] - (spent ? s.energyBonus : 0) - constant) * (s.resonance ? RESONANCE_RATE : 1);
+        // 屬性共鳴 ×1.03 乘在攻擊係數上（和藥水相乘，buff% 也吃），常數部分不乘（2026-10-27、10-29 實測）
+        const base = s.alchDamage[e] - (spent ? s.energyBonus : 0) - constant;
         return calculateFinalMaxDamage(base, 0, constant, buffState);
     };
-    const el = Object.fromEntries(ELEMENTS.map((e) => [e, buffed(e) + s.tempAlchDamage])) as Record<Element, number>;
+    const temp = calculateTempAlchDamage(s);
+    const el = Object.fromEntries(ELEMENTS.map((e) => [e, buffed(e) + temp])) as Record<Element, number>;
     return { ...el, average: ELEMENTS.reduce((sum, e) => sum + el[e], 0) / ELEMENTS.length };
+}
+
+/** 臨時鍊金術傷害（四屬性同加）= 倉鼠 40 + 辦桌 + 活動 */
+export function calculateTempAlchDamage(s: AlchemySettings): number {
+    return (s.tempAlch.hamster ? HAMSTER_ALCH_DAMAGE : 0) + s.tempAlch.banquet + s.tempAlch.event;
 }
 
 /** 觸媒效應 = 8% × (1 + 藥草 15% + 火效率) + floor(平均 ÷ 500)%，配方固定 4 火＋生命藥草＋曼德拉草（2026-10-27、10-29 實測） */
@@ -248,21 +294,52 @@ export function calculateCatalyst(s: AlchemySettings, average: number): number {
     return 0.08 * (1 + 0.15 + fireEff) + Math.floor(average / 500) / 100;
 }
 
-/** 精通區 = 1 + 精通鍊金術 + 屬性精通 + 鋼瓶 + 精通效率細工 */
+/** 精通區 = (1 + (精通效率 10% + 細工) ÷ 2) × 鋼瓶 */
 export function calculateMasteryZone(s: AlchemySettings, el: Element): number {
     return (MASTERY_BASE + s.masteryReforge[el] * MASTERY_REFORGE_STEP[el]) * (1 + s.cylinderPercent / 100);
 }
 
-/** 暴擊傷害％（含基礎 100%）= 250（100 + 暴擊 150）+ 戰鬥系一代宗師全取得 10 + 精靈武器 15 + 其他 */
+/** 暴擊傷害％（含基礎 100%）= 250（100 + 暴擊 150）+ 一代宗師 10 + 精靈武器 15 + 鋼瓶 R + 套裝 + 圖騰 5 + 娃娃背包 + 農場 + 稱號 + 硬幣 + 其他（10/30 385% 實測） */
 export function calculateCritDamagePercent(s: AlchemySettings): number {
     const cd = s.critDamage;
-    return 250 + (cd.grade ? 10 : 0) + (cd.spiritWeapon ? 15 : 0) + cd.other;
+    return (
+        250 +
+        (cd.grade ? 10 : 0) +
+        (cd.spiritWeapon ? 15 : 0) +
+        cylinderReformRCrit(cd.reformR) +
+        CRITICAL_DAMAGE_SET_BONUS[cd.setTier] +
+        (cd.totem ? 5 : 0) +
+        cd.dollBag +
+        cd.farm +
+        cd.title +
+        cd.coin +
+        cd.other
+    );
+}
+
+/** 才能額外％ = 拉狄卡的氣息 5 + 弱點分析 10 + 狂暴化 10 + 實體化 10（強化再 +15）+ 其他 */
+export function calculateTalentExtraPercent(s: AlchemySettings): number {
+    const t = s.talentSources;
+    return (
+        s.extra.talent +
+        (t.radica ? 5 : 0) +
+        (s.spiritWeakness ? 10 : 0) +
+        (t.spiritBerserk ? 10 : 0) +
+        (t.spiritTransform ? 10 + (t.spiritTransformEnhance ? 15 : 0) : 0)
+    );
+}
+
+/** 秘法額外％ = 布里萊赫的硬幣 + 不完美的空想王冠 3 + 月餅賦予接尾捲 1 × 個數 + 其他 */
+export function calculateArcaneExtraPercent(s: AlchemySettings): number {
+    const a = s.arcaneSources;
+    return s.extra.arcane + a.coin + (a.crown ? 3 : 0) + a.mooncake;
 }
 
 export function calculateCritRatePercent(s: AlchemySettings): number {
     return Math.min(100, Math.max(0, s.crit.panelRatePercent));
 }
 
+/** 火焰噴射段數 = 5 + 0.2 × 持續時間細工：火焰噴射本身無條件捨去，召喚噩夢保留小數（8.6 段實測） */
 export const flamerHits = (s: AlchemySettings) => 5 + 0.2 * s.reforge.flamerDuration;
 
 function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
@@ -275,14 +352,14 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
 
     // ── 額外傷害與獨立乘區 ──
     const sharpEye = isCrit ? armor.critExtra : 0;
-    const W = s.extra.weapon / 100;
+    const W = (s.extra.weaponMain + s.extra.weaponOff) / 100;
     const catalyst = calculateCatalyst(s, alch.average);
     const G = s.extra.general / 100 + catalyst + sharpEye;
-    const T = s.extra.talent / 100 + (s.spiritWeakness ? 0.1 : 0);
-    const A = s.extra.arcane / 100;
+    const T = calculateTalentExtraPercent(s) / 100;
+    const A = calculateArcaneExtraPercent(s) / 100;
     const N = (s.independent.battleService ? 1.01 : 1) * (s.independent.sensePotion ? 1.03 : 1) * (1 + s.independent.otherPercent / 100);
     const gNote = (catalyst ? `（含觸媒效應 ${pct(catalyst)}）` : "") + (sharpEye ? `（含暴擊時通用額外 ${pct(sharpEye)}）` : "");
-    const fWeapon: Factor = { label: "武器額外", value: 1 + W };
+    const fWeapon: Factor = { label: "武器額外（主手＋副手）", value: 1 + W };
     const fTalentExtra: Factor[] = [fWeapon, { label: "通用額外＋才能額外", value: 1 + G + T, note: `${pct(G)}${gNote} + ${pct(T)}` }];
     const fArcaneExtra: Factor[] = [fWeapon, { label: "通用額外＋秘法額外", value: 1 + G + A, note: `${pct(G)}${gNote} + ${pct(A)}` }];
     const fT: Factor = { label: "才能額外（只有才能部分）", value: 1 + T };
@@ -318,7 +395,7 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
         { label: `${charge} 集氣`, value: charge },
         fZone("fire"),
         { label: "火焰噴射強化（克萊希達套裝）", value: s.sets.flamer ? 1.15 : 1 },
-        { label: "段數", value: hits, note: hits === 5 ? "基礎 5 段" : `5 + 0.2 × ${rf("flamerDuration")}` },
+        { label: "段數", value: hits, note: hits === 5 ? "基礎 5 段" : `5 + 0.2 × ${rf("flamerDuration")}${Number.isInteger(hits) ? "" : "（保留小數）"}` },
     ];
     const heatRatio = 1.305 + rf("heatBuster") * 0.01;
     const heatBusterCore = (a = alch): Factor[] => [
@@ -370,7 +447,7 @@ function calculateRun(s: AlchemySettings, isCrit: boolean, critLabel: Factor) {
     };
 
     push("waterCannon", [talentSkill("水炮", waterCannonCore)], "水鍊金術傷害·倍率·6.25·精通區·造雨·套裝·暴擊·(1+武器)·(1+通用+才能)");
-    push("flamer", [talentSkill("火焰噴射", flamerCore(s.flamerCharge, flamerHits(s)))],"火鍊金術傷害·倍率·集氣·精通區·套裝·段數·暴擊·(1+武器)·(1+通用+才能)");
+    push("flamer", [talentSkill("火焰噴射", flamerCore(s.flamerCharge, Math.floor(flamerHits(s))))], "火鍊金術傷害·倍率·集氣·精通區·套裝·段數（捨去小數）·暴擊·(1+武器)·(1+通用+才能)");
     // 元素波動 +25% 只加在高壓火爆本身，化學狂歡借用的高壓火爆部分不吃（2026-10-25 實測）
     const fElementWave: Factor = { label: "元素波動", value: s.elementWave ? 1.25 : 1 };
     push("heatBuster", [talentSkill("高壓火爆", [...heatBusterCore(), fElementWave])], "火鍊金術傷害·倍率·(1+武器加成)·元素波動·精通區·暴擊·(1+武器)·(1+通用+才能)");
