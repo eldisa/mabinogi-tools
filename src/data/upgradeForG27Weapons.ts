@@ -7,6 +7,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-1",
                 name: "靈魂解放者雙手劍專用改造1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 330000,
@@ -21,6 +22,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-2",
                 name: "靈魂解放者雙手劍專用改造2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 330000,
@@ -35,6 +37,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-3",
                 name: "淬火 1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 30,
                     gold: 77000,
@@ -48,6 +51,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-4",
                 name: "淬火 2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 30,
                     gold: 77000,
@@ -61,6 +65,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-5",
                 name: "修整劍身1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 40,
                     gold: 27000,
@@ -74,6 +79,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-6",
                 name: "修整劍身2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 50,
                     gold: 48000,
@@ -87,6 +93,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-craftman",
                 name: "工匠改造",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 97000,
@@ -102,6 +109,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-g-1",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "安德拉絲", "格拉納特", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 26000,
@@ -117,6 +125,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1200043-g-2",
                 name: "寶石改造",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 45000,
@@ -141,6 +150,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "艾頓", "安德拉絲", "格拉納特", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 23000,
@@ -170,6 +180,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-1",
                 name: "寶石改造",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 45000,
@@ -203,6 +214,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-2",
                 name: "修整劍身1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 40,
                     gold: 40000,
@@ -230,6 +242,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-3",
                 name: "修整劍身2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 45,
                     gold: 42000,
@@ -257,6 +270,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-4",
                 name: "修整劍身3",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 60,
                     gold: 47000,
@@ -280,6 +294,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-5",
                 name: "修整劍身4",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 90,
                     gold: 79000,
@@ -303,6 +318,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-6",
                 name: "削銳刀尖1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 40,
                     gold: 40000,
@@ -326,6 +342,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-7",
                 name: "削銳刀尖2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 45,
                     gold: 42000,
@@ -349,6 +366,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-8",
                 name: "磨利刀刃",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 23,
                     gold: 33000,
@@ -364,6 +382,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-9",
                 name: "靈魂解放者單手劍專用改造 1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 99000,
@@ -387,6 +406,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-10",
                 name: "靈魂解放者單手劍專用改造 2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 99000,
@@ -410,6 +430,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1000059-craftman",
                 name: "工匠改造",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 50000,
@@ -431,6 +452,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "庫魯格", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 19000,
@@ -460,6 +482,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-1",
                 name: "調整重量 1",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 10,
                     gold: 10000,
@@ -476,6 +499,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-2",
                 name: "調整重量 2",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -492,6 +516,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-3",
                 name: "調整重量 3",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 50,
                     gold: 27000,
@@ -508,6 +533,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-4",
                 name: "調整重量 4",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 60,
                     gold: 34000,
@@ -524,6 +550,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-5",
                 name: "淬火 1",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 5,
                     gold: 25000,
@@ -544,6 +571,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-6",
                 name: "淬火 2",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 15,
                     gold: 45000,
@@ -564,6 +592,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-7",
                 name: "淬火 3",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 25,
                     gold: 65000,
@@ -584,6 +613,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-8",
                 name: "淬火 4",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 35,
                     gold: 85000,
@@ -604,6 +634,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-9",
                 name: "淬火 5",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 45,
                     gold: 105000,
@@ -624,6 +655,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-10",
                 name: "輕量化1",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 10,
                     gold: 90000,
@@ -648,6 +680,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-11",
                 name: "修磨稜角",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 10,
                     gold: 90000,
@@ -668,6 +701,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-12",
                 name: "更換手把",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 30,
                     gold: 35000,
@@ -688,6 +722,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-13",
                 name: "庫魯格鐵錘強化",
+                npc: ["庫魯格"],
                 required: {
                     ep: 60,
                     gold: 48000,
@@ -716,6 +751,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-14",
                 name: "陶恩斯式鐵錘改造",
+                npc: ["陶恩斯"],
                 required: {
                     ep: 50,
                     gold: 49000,
@@ -744,6 +780,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-15",
                 name: "陶恩斯式鐵錘強化",
+                npc: ["陶恩斯"],
                 required: {
                     ep: 88,
                     gold: 88000,
@@ -772,6 +809,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-16",
                 name: "鐵錘寶石改造1",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 73000,
@@ -809,6 +847,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-craftman",
                 name: "工匠改造",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 60000,
@@ -841,6 +880,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-18",
                 name: "靈魂解放者單手鎚專用改造1",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 122000,
@@ -877,6 +917,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-19",
                 name: "靈魂解放者單手鎚專用改造2",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 122000,
@@ -909,6 +950,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-20",
                 name: "輕量化2",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -933,6 +975,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1010070-21",
                 name: "修磨稜角2",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -964,6 +1007,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "艾頓", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 21000,
@@ -993,6 +1037,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-1",
                 name: "調整重量",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 15,
                     gold: 10000,
@@ -1009,6 +1054,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-2",
                 name: "淬火1",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 20,
                     gold: 30000,
@@ -1029,6 +1075,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-3",
                 name: "淬火2",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 30,
                     gold: 40000,
@@ -1053,6 +1100,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-4",
                 name: "淬火3",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 50,
                     gold: 50000,
@@ -1077,6 +1125,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-5",
                 name: "淬火4",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 80,
                     gold: 90000,
@@ -1101,6 +1150,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-6",
                 name: "淬火5",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 100,
                     gold: 95000,
@@ -1121,6 +1171,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-7",
                 name: "輕量化1",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 20,
                     gold: 15000,
@@ -1137,6 +1188,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-8",
                 name: "輕量化2",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -1153,6 +1205,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-9",
                 name: "輕量化3",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 50,
                     gold: 35000,
@@ -1169,6 +1222,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-10",
                 name: "輕量化4",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 80,
                     gold: 40000,
@@ -1185,6 +1239,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-11",
                 name: "磨利斧刃1",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -1209,6 +1264,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-12",
                 name: "磨利斧刃2",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 20,
                     gold: 25000,
@@ -1225,6 +1281,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-13",
                 name: "磨利斧刃3",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 30,
                     gold: 50000,
@@ -1241,6 +1298,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-14",
                 name: "更換手把1",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 80,
                     gold: 80000,
@@ -1265,6 +1323,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-15",
                 name: "艾頓式靈魂解放者單手斧強化",
+                npc: ["艾頓"],
                 required: {
                     ep: 80,
                     gold: 42000,
@@ -1297,6 +1356,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-16",
                 name: "崔弗式靈魂解放者單手斧改造",
+                npc: ["崔弗"],
                 required: {
                     ep: 50,
                     gold: 10000,
@@ -1321,6 +1381,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-17",
                 name: "艾波里恩靈魂解放者單手斧特殊改造",
+                npc: ["卡隆"],
                 required: {
                     ep: 60,
                     gold: 15000,
@@ -1345,6 +1406,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-18",
                 name: "靈魂解放者單手斧寶石改造1",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 100,
                     gold: 18000,
@@ -1378,6 +1440,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-19",
                 name: "靈魂解放者單手斧專用改造1",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 100,
                     gold: 119000,
@@ -1406,6 +1469,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-20",
                 name: "靈魂解放者單手斧專用改造2",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 100,
                     gold: 119000,
@@ -1430,6 +1494,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-craftman",
                 name: "工匠改造",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 100,
                     gold: 89000,
@@ -1462,6 +1527,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-22",
                 name: "更換手把2",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 80,
                     gold: 80000,
@@ -1482,6 +1548,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1020004-23",
                 name: "磨利斧刃",
+                npc: ["艾頓", "佛格斯", "崔弗"],
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -1512,6 +1579,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "格拉納特", "卡隆"],
                 required: {
                     ep: 100,
                     gold: 25000,
@@ -1541,6 +1609,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-1",
                 name: "弓線強化3",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 25,
                     gold: 36000,
@@ -1561,6 +1630,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-2",
                 name: "弓線強化4",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 37,
                     gold: 66600,
@@ -1581,6 +1651,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-3",
                 name: "弓線強化5",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 55,
                     gold: 136000,
@@ -1601,6 +1672,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-4",
                 name: "瞄準器更換1",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 90,
                     gold: 159000,
@@ -1621,6 +1693,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-5",
                 name: "瞄準器更換2",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 90,
                     gold: 159000,
@@ -1645,6 +1718,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-6",
                 name: "瞄準器更換3",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 90,
                     gold: 159000,
@@ -1665,6 +1739,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-7",
                 name: "強化箭尖",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 70,
                     gold: 75000,
@@ -1681,6 +1756,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-8",
                 name: "靈魂解放者弓封印解除1",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -1705,6 +1781,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-9",
                 name: "靈魂解放者弓封印解除2",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -1725,6 +1802,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-craftman",
                 name: "工匠改造",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 100,
                     gold: 110000,
@@ -1757,6 +1835,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040054-11",
                 name: "靈魂解放者弓寶石改造",
+                npc: ["艾頓", "奈麗絲", "卡絲妮亞", "梅麗絲"],
                 required: {
                     ep: 100,
                     gold: 90000,
@@ -1796,6 +1875,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-0",
                 name: "強化弓柄1",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 10,
                     gold: 600,
@@ -1812,6 +1892,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-2",
                 name: "強化弓柄2",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 12,
                     gold: 1200,
@@ -1828,6 +1909,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-5",
                 name: "強化弓柄3",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 14,
                     gold: 1800,
@@ -1844,6 +1926,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-7",
                 name: "強化弓柄4",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 17,
                     gold: 2400,
@@ -1860,6 +1943,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-8",
                 name: "弓弦強化1",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 15,
                     gold: 1000,
@@ -1884,6 +1968,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-10",
                 name: "弓弦強化2",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 16,
                     gold: 2000,
@@ -1908,6 +1993,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-12",
                 name: "弓弦強化3",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 17,
                     gold: 3000,
@@ -1932,6 +2018,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-14",
                 name: "弓弦強化4",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 18,
                     gold: 4000,
@@ -1956,6 +2043,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-16",
                 name: "弓弦強化5",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 20,
                     gold: 5000,
@@ -1980,6 +2068,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-18",
                 name: "更換扣板機",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 15,
                     gold: 500,
@@ -1996,6 +2085,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-20",
                 name: "更換接頭",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 15,
                     gold: 500,
@@ -2012,6 +2102,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-22",
                 name: "強化弓身",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克"],
                 required: {
                     ep: 30,
                     gold: 8000,
@@ -2032,6 +2123,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-25",
                 name: "強化奈麗絲式弩",
+                npc: ["奈麗絲"],
                 required: {
                     ep: 70,
                     gold: 14000,
@@ -2064,6 +2156,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-27",
                 name: "改造阿蘭雯式弩",
+                npc: ["阿蘭雯"],
                 required: {
                     ep: 50,
                     gold: 12100,
@@ -2092,6 +2185,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-28",
                 name: "強化尼克式弩",
+                npc: ["尼克"],
                 required: {
                     ep: 60,
                     gold: 11200,
@@ -2124,6 +2218,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-29",
                 name: "改造尼克式弩",
+                npc: ["尼克"],
                 required: {
                     ep: 50,
                     gold: 9400,
@@ -2152,6 +2247,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-30",
                 name: "弩寶石改造1",
+                npc: ["艾頓", "阿蘭雯"],
                 required: {
                     ep: 100,
                     gold: 2300,
@@ -2181,6 +2277,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-craftman",
                 name: "工匠改造",
+                npc: ["艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -2208,6 +2305,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-32",
                 name: "靈魂解放者弩專用扳機更換",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克", "佛格斯"],
                 required: {
                     ep: 45,
                     gold: 47000,
@@ -2228,6 +2326,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-33",
                 name: "靈魂解放者弩專用弓線強化1",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克", "佛格斯"],
                 required: {
                     ep: 80,
                     gold: 97000,
@@ -2252,6 +2351,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-34",
                 name: "靈魂解放者弩專用弓線強化2",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克", "佛格斯"],
                 required: {
                     ep: 80,
                     gold: 97000,
@@ -2272,6 +2372,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-35",
                 name: "靈魂解放者弩專用改造",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克", "佛格斯"],
                 required: {
                     ep: 100,
                     gold: 88000,
@@ -2296,6 +2397,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-36",
                 name: "靈魂解放者弩專用收尾1",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克", "佛格斯"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2316,6 +2418,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1040055-37",
                 name: "靈魂解放者弩專用收尾2",
+                npc: ["奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "尼克", "佛格斯"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2342,6 +2445,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-0",
                 name: "寶石修復1",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 28000,
@@ -2371,6 +2475,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-1",
                 name: "魔杖寶石改造1",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 8800,
@@ -2400,6 +2505,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-2",
                 name: "增強3屬性自然力1",
+                npc: ["拜斯"],
                 required: {
                     ep: 15,
                     gold: 8000,
@@ -2411,6 +2517,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-4",
                 name: "增強3屬性自然力2",
+                npc: ["拜斯"],
                 required: {
                     ep: 30,
                     gold: 12000,
@@ -2423,6 +2530,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-7",
                 name: "增強3屬性自然力3",
+                npc: ["拜斯"],
                 required: {
                     ep: 50,
                     gold: 25000,
@@ -2434,6 +2542,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-8",
                 name: "增強3屬性自然力4",
+                npc: ["拜斯"],
                 required: {
                     ep: 90,
                     gold: 50000,
@@ -2445,6 +2554,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-10",
                 name: "自然力共鳴",
+                npc: ["拜斯"],
                 required: {
                     ep: 25,
                     gold: 8000,
@@ -2465,6 +2575,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-11",
                 name: "自然力加速 1",
+                npc: ["拜斯"],
                 required: {
                     ep: 30,
                     gold: 9500,
@@ -2481,6 +2592,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-12",
                 name: "自然力加速 2",
+                npc: ["拜斯"],
                 required: {
                     ep: 40,
                     gold: 14300,
@@ -2497,6 +2609,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-13",
                 name: "自然力加速 3",
+                npc: ["拜斯"],
                 required: {
                     ep: 50,
                     gold: 18700,
@@ -2513,6 +2626,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-14",
                 name: "自然力凝聚 1",
+                npc: ["拜斯"],
                 required: {
                     ep: 15,
                     gold: 8100,
@@ -2529,6 +2643,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-15",
                 name: "自然力凝聚 2",
+                npc: ["拜斯"],
                 required: {
                     ep: 25,
                     gold: 11500,
@@ -2545,6 +2660,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-16",
                 name: "自然力凝聚 3",
+                npc: ["拜斯"],
                 required: {
                     ep: 30,
                     gold: 14700,
@@ -2565,6 +2681,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-17",
                 name: "自然力凝聚 4",
+                npc: ["拜斯"],
                 required: {
                     ep: 40,
                     gold: 18200,
@@ -2581,6 +2698,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-18",
                 name: "輕量化",
+                npc: ["拜斯"],
                 required: {
                     ep: 28,
                     gold: 8600,
@@ -2597,6 +2715,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-craftman",
                 name: "工匠改造",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 30000,
@@ -2624,6 +2743,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-20",
                 name: "寶石修復 1",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -2653,6 +2773,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-21",
                 name: "三矛魔杖寶石改造 1",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 30000,
@@ -2682,6 +2803,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-22",
                 name: "靈魂解放者魔杖寶石改造",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 120000,
@@ -2715,6 +2837,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-23",
                 name: "靈魂解放者魔杖封印解除1",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2735,6 +2858,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-24",
                 name: "靈魂解放者魔杖封印解除2",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -2759,6 +2883,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-25",
                 name: "靈魂解放者魔自然力凝聚1",
+                npc: ["拜斯"],
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -2775,6 +2900,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1050017-26",
                 name: "靈魂解放者魔自然力凝聚2",
+                npc: ["拜斯"],
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -2801,6 +2927,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-0",
                 name: "調整袋子1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 12,
                     gold: 2200,
@@ -2825,6 +2952,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-1",
                 name: "調整袋子2",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 17,
                     gold: 3800,
@@ -2849,6 +2977,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-2",
                 name: "調整袋子3",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 22,
                     gold: 4300,
@@ -2873,6 +3002,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-3",
                 name: "核心零件強化1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 18,
                     gold: 2000,
@@ -2893,6 +3023,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-4",
                 name: "核心零件強化2",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 23,
                     gold: 2800,
@@ -2913,6 +3044,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-5",
                 name: "核心零件強化3",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 28,
                     gold: 5200,
@@ -2933,6 +3065,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-6",
                 name: "增加金屬板重量1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 15,
                     gold: 2500,
@@ -2957,6 +3090,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-7",
                 name: "增加金屬板重量2",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 20,
                     gold: 4000,
@@ -2981,6 +3115,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-8",
                 name: "增加金屬板重量3",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 25,
                     gold: 7000,
@@ -3005,6 +3140,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-9",
                 name: "修理手把寶石",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 100,
                     gold: 12000,
@@ -3034,6 +3170,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-10",
                 name: "靈魂解放者手把養成1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 50,
                     gold: 88000,
@@ -3050,6 +3187,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-11",
                 name: "靈魂解放者手把養成2",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 50,
                     gold: 88000,
@@ -3066,6 +3204,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-12",
                 name: "靈魂解放者手把客製化改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -3083,6 +3222,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-craftman",
                 name: "工匠改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 100,
                     gold: 90000,
@@ -3098,6 +3238,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-14",
                 name: "靈魂解放者手把寶石修理1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 100,
                     gold: 100000,
@@ -3127,6 +3268,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1070014-15",
                 name: "靈魂解放者手把寶石修理2",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯", "修斯"],
                 required: {
                     ep: 100,
                     gold: 100000,
@@ -3162,6 +3304,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-0",
                 name: "修磨刀刃",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 50,
                     gold: 59000,
@@ -3182,6 +3325,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-1",
                 name: "魔力賦予1",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 70,
                     gold: 77000,
@@ -3202,6 +3346,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-2",
                 name: "修磨把手",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 90,
                     gold: 83000,
@@ -3222,6 +3367,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-3",
                 name: "平衡錘輕量化",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 100,
                     gold: 99000,
@@ -3242,6 +3388,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-4",
                 name: "靈魂解放者鐮刀專用改造1",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 100,
                     gold: 157000,
@@ -3266,6 +3413,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-5",
                 name: "靈魂解放者鐮刀專用改造2",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 100,
                     gold: 157000,
@@ -3286,6 +3434,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-craftman",
                 name: "工匠改造",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 100,
                     gold: 50000,
@@ -3303,6 +3452,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-7",
                 name: "寶石修理",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -3332,6 +3482,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-8",
                 name: "寶石改造",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 100,
                     gold: 30000,
@@ -3365,6 +3516,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1090010-9",
                 name: "魔力賦予2",
+                npc: ["迪莉妮"],
                 required: {
                     ep: 70,
                     gold: 77000,
@@ -3387,6 +3539,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "庫魯格", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 23000,
@@ -3416,6 +3569,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-1",
                 name: "調整重量 1",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 20,
                     gold: 5000,
@@ -3432,6 +3586,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-2",
                 name: "調整重量 2",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 30,
                     gold: 10000,
@@ -3448,6 +3603,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-3",
                 name: "調整重量 3",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 40,
                     gold: 15000,
@@ -3464,6 +3620,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-4",
                 name: "調整重量 4",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 50,
                     gold: 20000,
@@ -3480,6 +3637,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-5",
                 name: "淬火 1",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 50,
                     gold: 25000,
@@ -3500,6 +3658,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-6",
                 name: "淬火 2",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 45,
                     gold: 45000,
@@ -3524,6 +3683,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-7",
                 name: "淬火 3",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 50,
                     gold: 65000,
@@ -3548,6 +3708,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-8",
                 name: "淬火 4",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 60,
                     gold: 77000,
@@ -3572,6 +3733,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-9",
                 name: "淬火 5",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 89000,
@@ -3596,6 +3758,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-10",
                 name: "輕量化1",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 133000,
@@ -3616,6 +3779,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-11",
                 name: "修磨稜角",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 10,
                     gold: 20000,
@@ -3632,6 +3796,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-12",
                 name: "更換手把",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 30,
                     gold: 30000,
@@ -3652,6 +3817,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-13",
                 name: "庫魯格鐵錘強化",
+                npc: ["庫魯格"],
                 required: {
                     ep: 60,
                     gold: 38400,
@@ -3680,6 +3846,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-14",
                 name: "陶恩斯式鐵錘改造",
+                npc: ["陶恩斯"],
                 required: {
                     ep: 50,
                     gold: 43300,
@@ -3708,6 +3875,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-15",
                 name: "陶恩斯式鐵錘強化",
+                npc: ["陶恩斯"],
                 required: {
                     ep: 88,
                     gold: 68500,
@@ -3740,6 +3908,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-16",
                 name: "鐵錘寶石改造",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -3777,6 +3946,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-craftman",
                 name: "工匠改造",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 90000,
@@ -3809,6 +3979,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-18",
                 name: "靈魂解放者雙手鎚用改造1",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 110000,
@@ -3841,6 +4012,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-19",
                 name: "靈魂解放者雙手鎚用改造2",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 110000,
@@ -3869,6 +4041,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1210067-20",
                 name: "輕量化2",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 133000,
@@ -3899,6 +4072,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "艾頓", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 21000,
@@ -3928,6 +4102,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-1",
                 name: "淬火 2",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -3952,6 +4127,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-2",
                 name: "淬火 3",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 85600,
@@ -3976,6 +4152,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-3",
                 name: "淬火 4",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 90,
                     gold: 95000,
@@ -4000,6 +4177,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-4",
                 name: "靈魂解放者雙手斧專用淬火",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 47000,
@@ -4028,6 +4206,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-5",
                 name: "靈魂解放者雙手斧寶石改造",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -4061,6 +4240,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-craftman",
                 name: "工匠改造",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -4093,6 +4273,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-7",
                 name: "靈魂解放者雙手斧專用改造1",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4121,6 +4302,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-8",
                 name: "靈魂解放者雙手斧專用改造2",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4149,6 +4331,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1220018-9",
                 name: "淬火 1",
+                npc: ["瓦安特", "陶恩斯", "庫魯格"],
                 required: {
                     ep: 70,
                     gold: 80000,
@@ -4183,6 +4366,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-0",
                 name: "寶石修復1",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 28000,
@@ -4212,6 +4396,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-1",
                 name: "自然力凝聚1",
+                npc: ["拜斯"],
                 required: {
                     ep: 25,
                     gold: 69000,
@@ -4232,6 +4417,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-2",
                 name: "自然力凝聚2",
+                npc: ["拜斯"],
                 required: {
                     ep: 30,
                     gold: 73000,
@@ -4252,6 +4438,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-3",
                 name: "自然力凝聚3",
+                npc: ["拜斯"],
                 required: {
                     ep: 35,
                     gold: 75000,
@@ -4272,6 +4459,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-4",
                 name: "自然力凝聚4",
+                npc: ["拜斯"],
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -4292,6 +4480,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-5",
                 name: "靈魂解放者集魔杖專用改造1",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4316,6 +4505,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-6",
                 name: "靈魂解放者集魔杖專用改造2",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4344,6 +4534,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-7",
                 name: "寶石修理",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -4373,6 +4564,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-8",
                 name: "靈魂解放者集魔杖寶石改造",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 80000,
@@ -4406,6 +4598,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1230039-9",
                 name: "自然力凝聚5",
+                npc: ["拜斯"],
                 required: {
                     ep: 50,
                     gold: 85000,
@@ -4436,6 +4629,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-0",
                 name: "淬火 1",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 50,
                     gold: 59000,
@@ -4460,6 +4654,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-1",
                 name: "淬火 2",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 60,
                     gold: 68000,
@@ -4484,6 +4679,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-2",
                 name: "淬火 3",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 70,
                     gold: 79000,
@@ -4508,6 +4704,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-3",
                 name: "磨利刀刃1",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -4532,6 +4729,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-4",
                 name: "磨利刀刃2",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 80,
                     gold: 90000,
@@ -4556,6 +4754,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-5",
                 name: "磨利刀刃3",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 90,
                     gold: 110000,
@@ -4580,6 +4779,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-6",
                 name: "靈魂解放者騎槍專用改造1",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 100,
                     gold: 153000,
@@ -4608,6 +4808,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-7",
                 name: "靈魂解放者騎槍專用改造2",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 100,
                     gold: 153000,
@@ -4636,6 +4837,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-craftman",
                 name: "工匠改造",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 100,
                     gold: 45000,
@@ -4668,6 +4870,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-9",
                 name: "寶石改造",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -4701,6 +4904,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1250026-10",
                 name: "寶石修理",
+                npc: ["陶恩斯", "艾頓", "奈麗絲"],
                 required: {
                     ep: 100,
                     gold: 10000,
@@ -4736,6 +4940,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "庫魯格", "格拉納特", "卡隆"],
                 required: {
                     ep: 100,
                     gold: 22000,
@@ -4765,6 +4970,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-1",
                 name: "鎖鏈研磨1(1改)",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 30,
                     gold: 3000,
@@ -4785,6 +4991,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-2",
                 name: "鎖鏈研磨2(1改)",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 30,
                     gold: 3000,
@@ -4801,6 +5008,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-3",
                 name: "鎖鏈研磨1(2改)",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 40,
                     gold: 6000,
@@ -4821,6 +5029,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-4",
                 name: "輕量化",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 50,
                     gold: 9000,
@@ -4841,6 +5050,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-5",
                 name: "靈魂解放者拳套封印解除",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 95,
                     gold: 100000,
@@ -4865,6 +5075,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-6",
                 name: "靈魂解放者拳套專用改造",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 150000,
@@ -4893,6 +5104,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-craftman",
                 name: "工匠改造",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 50000,
@@ -4910,6 +5122,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1260020-8",
                 name: "鎖鏈研磨2(2改)",
+                npc: ["普力斯", "卡隆", "艾頓", "艾琳", "佛格斯", "康娜", "梅麗絲", "奈麗絲", "尼克", "歐絲拉", "瓦安特", "庫魯格"],
                 required: {
                     ep: 40,
                     gold: 6000,
@@ -4940,6 +5153,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-0",
                 name: "彈匣替換",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 60,
                     gold: 6500,
@@ -4960,6 +5174,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-1",
                 name: "彈膛擴張",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 80,
                     gold: 8000,
@@ -4984,6 +5199,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-2",
                 name: "重量化 1",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 12,
                     gold: 1000,
@@ -5000,6 +5216,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-3",
                 name: "重量化 2",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 22,
                     gold: 2000,
@@ -5016,6 +5233,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-4",
                 name: "重量化 3",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 35,
                     gold: 3000,
@@ -5032,6 +5250,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-5",
                 name: "新增鋼線 1",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 20,
                     gold: 1500,
@@ -5048,6 +5267,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-6",
                 name: "新增鋼線 2",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 35,
                     gold: 3000,
@@ -5068,6 +5288,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-7",
                 name: "新增鋼線 3",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 50,
                     gold: 6000,
@@ -5088,6 +5309,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-8",
                 name: "槍管擴張",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 80,
                     gold: 15000,
@@ -5108,6 +5330,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-9",
                 name: "瞄準鏡裝置",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 80,
                     gold: 15000,
@@ -5128,6 +5351,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-craftman",
                 name: "工匠改造",
+                npc: ["Hector"],
                 required: {
                     ep: 100,
                     gold: 40000,
@@ -5155,6 +5379,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-11",
                 name: "寶石修理 1",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -5184,6 +5409,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-12",
                 name: "寶石改造 1",
+                npc: ["Hector"],
                 required: {
                     ep: 100,
                     gold: 30000,
@@ -5217,6 +5443,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-13",
                 name: "靈魂解放者雙槍專用改造1",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 100,
                     gold: 88000,
@@ -5249,6 +5476,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-14",
                 name: "靈魂解放者雙槍重量化1",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 70,
                     gold: 88000,
@@ -5265,6 +5493,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-15",
                 name: "靈魂解放者雙槍重量化2",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 70,
                     gold: 88000,
@@ -5285,6 +5514,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1270029-16",
                 name: "靈魂解放者雙槍專用改造2",
+                npc: ["Hector", "見習工程師"],
                 required: {
                     ep: 100,
                     gold: 88000,
@@ -5319,6 +5549,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-0",
                 name: "磨刃 1",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 12,
                     gold: 1000,
@@ -5335,6 +5566,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-1",
                 name: "磨刃 3",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 22,
                     gold: 2000,
@@ -5355,6 +5587,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-2",
                 name: "磨刃 2",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 50,
                     gold: 4000,
@@ -5375,6 +5608,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-3",
                 name: "磨刃 4",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 65,
                     gold: 6000,
@@ -5395,6 +5629,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-4",
                 name: "丟掉刃 1",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 20,
                     gold: 1500,
@@ -5415,6 +5650,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-5",
                 name: "丟掉刃 2",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 35,
                     gold: 3000,
@@ -5435,6 +5671,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-6",
                 name: "丟掉刃 3",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 50,
                     gold: 6500,
@@ -5459,6 +5696,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-7",
                 name: "削刃4",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 65,
                     gold: 15000,
@@ -5483,6 +5721,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-8",
                 name: "削刃4",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 65,
                     gold: 15000,
@@ -5507,6 +5746,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-9",
                 name: "削刃5",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 80,
                     gold: 20000,
@@ -5531,6 +5771,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-10",
                 name: "削刃5",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 80,
                     gold: 20000,
@@ -5555,6 +5796,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-11",
                 name: "刀刃強化",
+                npc: ["佛格斯", "艾頓", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆"],
                 required: {
                     ep: 80,
                     gold: 15000,
@@ -5575,6 +5817,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-12",
                 name: "手裏劍 寶石改造 1",
+                npc: ["安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "格拉納特", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -5608,6 +5851,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-13",
                 name: "手裏劍 寶石改造 2",
+                npc: ["安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "格拉納特", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 30000,
@@ -5641,6 +5885,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-14",
                 name: "靈魂解放者手裏劍專用改造1",
+                npc: ["佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 143000,
@@ -5669,6 +5914,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-15",
                 name: "靈魂解放者手裏劍專用改造2",
+                npc: ["佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 143000,
@@ -5697,6 +5943,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-craftman",
                 name: "工匠改造",
+                npc: ["佛格斯", "艾頓"],
                 required: {
                     ep: 100,
                     gold: 109000,
@@ -5724,6 +5971,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-17",
                 name: "靈魂解放者手裏劍特別改造1",
+                npc: ["佛格斯", "艾頓"],
                 required: {
                     ep: 80,
                     gold: 101000,
@@ -5748,6 +5996,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1280018-18",
                 name: "靈魂解放者手裏劍特別改造2",
+                npc: ["佛格斯", "艾頓"],
                 required: {
                     ep: 80,
                     gold: 101000,
@@ -5774,6 +6023,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-0",
                 name: "磨利刀尖",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 80,
                     gold: 8000,
@@ -5794,6 +6044,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-1",
                 name: "鎖鏈強化 1",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 20,
                     gold: 1500,
@@ -5810,6 +6061,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-2",
                 name: "鎖鏈強化 2",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 35,
                     gold: 3000,
@@ -5826,6 +6078,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-3",
                 name: "鎖鏈強化 3",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 50,
                     gold: 6000,
@@ -5842,6 +6095,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-4",
                 name: "磨利刀刃 1",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 20,
                     gold: 1500,
@@ -5862,6 +6116,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-5",
                 name: "磨利刀刃 2",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 35,
                     gold: 3000,
@@ -5882,6 +6137,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-6",
                 name: "磨利刀刃 3",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 50,
                     gold: 6000,
@@ -5902,6 +6158,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-7",
                 name: "艾頓式改造",
+                npc: ["艾頓"],
                 required: {
                     ep: 80,
                     gold: 15000,
@@ -5922,6 +6179,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-craftman",
                 name: "工匠改造",
+                npc: ["艾頓"],
                 required: {
                     ep: 100,
                     gold: 30000,
@@ -5949,6 +6207,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-9",
                 name: "寶石修復",
+                npc: ["佛格斯", "梅麗絲", "陶恩斯", "奈麗絲", "艾頓", "安德拉絲", "格拉納特", "卡芬", "卡隆", "康娜", "尼克"],
                 required: {
                     ep: 100,
                     gold: 15000,
@@ -5978,6 +6237,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-10",
                 name: "靈魂解放者鎖鏈鐮刃專用改造1",
+                npc: ["艾頓"],
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6006,6 +6266,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-11",
                 name: "靈魂解放者鎖鏈鐮刃專用改造2",
+                npc: ["艾頓"],
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6038,6 +6299,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-craftman-2",
                 name: "靈魂解放者鎖鏈鐮刃專用工匠改造",
+                npc: ["艾頓"],
                 required: {
                     ep: 100,
                     gold: 88000,
@@ -6053,6 +6315,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-13",
                 name: "靈魂解放者鎖鏈鐮刃磨利刀刃 1",
+                npc: ["艾頓"],
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6077,6 +6340,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1290021-14",
                 name: "靈魂解放者鎖鏈鐮刃磨利刀刃 2",
+                npc: ["艾頓"],
                 required: {
                     ep: 100,
                     gold: 125000,
@@ -6107,6 +6371,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-0",
                 name: "寶石修復1",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 28000,
@@ -6136,6 +6401,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-1",
                 name: "魔杖寶石改造1",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 8800,
@@ -6165,6 +6431,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-2",
                 name: "自然力凝聚1",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 50,
                     gold: 77000,
@@ -6176,6 +6443,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-3",
                 name: "自然力凝聚2",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 50,
                     gold: 77000,
@@ -6187,6 +6455,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-4",
                 name: "自然力共鳴3",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 70,
                     gold: 99500,
@@ -6203,6 +6472,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-5",
                 name: "自然力共鳴4",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 80,
                     gold: 105000,
@@ -6219,6 +6489,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-6",
                 name: "自然力共鳴5",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 110000,
@@ -6235,6 +6506,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-craftman",
                 name: "工匠改造",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 90000,
@@ -6262,6 +6534,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-8",
                 name: "靈魂解放者治癒魔杖封印解除1",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 130000,
@@ -6273,6 +6546,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1650001-9",
                 name: "靈魂解放者治癒魔杖封印解除2",
+                npc: ["麗莎", "皮諾拉", "史帝華", "希布林", "卡絲妮亞", "姬琳", "貝瑞克希德"],
                 required: {
                     ep: 100,
                     gold: 130000,
@@ -6290,6 +6564,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯"],
                 required: {
                     ep: 100,
                     gold: 13000,
@@ -6306,6 +6581,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-1",
                 name: "寶石防衛改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯"],
                 required: {
                     ep: 80,
                     gold: 7300,
@@ -6381,6 +6657,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-craftman-1",
                 name: "工匠改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -6413,6 +6690,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-5",
                 name: "表面強化",
+                npc: ["艾頓", "佛格斯", "奈麗絲", "尼克"],
                 required: {
                     ep: 40,
                     gold: 54000,
@@ -6429,6 +6707,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-6",
                 name: "靈魂解放者盾牌別改造1",
+                npc: ["艾頓", "佛格斯", "奈麗絲", "尼克"],
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6445,6 +6724,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-7",
                 name: "靈魂解放者盾牌別改造2",
+                npc: ["艾頓", "佛格斯", "奈麗絲", "尼克"],
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6461,6 +6741,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-8",
                 name: "靈魂解放者盾牌別改造3",
+                npc: ["艾頓", "佛格斯", "奈麗絲", "尼克"],
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6477,6 +6758,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-9",
                 name: "靈魂解放者盾牌專用改造1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "尼克"],
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6505,6 +6787,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-10",
                 name: "靈魂解放者盾牌專用改造2",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "尼克"],
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6533,6 +6816,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-craftman-2",
                 name: "靈魂解放者之盾專用工匠改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "尼克"],
                 required: {
                     ep: 80,
                     gold: 50000,
@@ -6565,6 +6849,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-12",
                 name: "靈魂解放者盾牌寶石修理",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "尼克"],
                 required: {
                     ep: 100,
                     gold: 25000,
@@ -6594,6 +6879,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400011-13",
                 name: "寶石改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "尼克"],
                 required: {
                     ep: 100,
                     gold: 35000,
@@ -6629,6 +6915,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯"],
                 required: {
                     ep: 100,
                     gold: 13000,
@@ -6645,6 +6932,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-1",
                 name: "寶石防衛改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯"],
                 required: {
                     ep: 80,
                     gold: 7300,
@@ -6720,6 +7008,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-craftman-1",
                 name: "工匠改造",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -6752,6 +7041,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-5",
                 name: "靈魂解放者戰士盾牌別改造 1",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6768,6 +7058,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-6",
                 name: "靈魂解放者戰士盾牌別改造 2",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6784,6 +7075,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-7",
                 name: "靈魂解放者戰士盾牌別改造 3",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 55,
                     gold: 80000,
@@ -6800,6 +7092,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-8",
                 name: "靈魂解放者戰士盾牌專用改造1",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6828,6 +7121,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-9",
                 name: "靈魂解放者戰士盾牌專用改造2",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 100,
                     gold: 60000,
@@ -6856,6 +7150,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-craftman",
                 name: "工匠改造",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 50000,
@@ -6888,6 +7183,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1400012-11",
                 name: "靈魂解放者戰士盾牌寶石修理",
+                npc: ["陶恩斯", "庫魯格"],
                 required: {
                     ep: 80,
                     gold: 25000,
@@ -6923,6 +7219,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯"],
                 required: {
                     ep: 100,
                     gold: 13000,
@@ -6939,6 +7236,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-1",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "艾頓", "梅麗絲", "安德拉絲", "親衛隊武器修理兵", "康娜", "卡隆", "卡芬", "格拉納特", "陶恩斯"],
                 required: {
                     ep: 100,
                     gold: 13000,
@@ -6955,6 +7253,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-2",
                 name: "更換扳機",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 20,
                     gold: 4000,
@@ -6971,6 +7270,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-3",
                 name: "{0}的輕量化1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 5,
                     gold: 500,
@@ -6987,6 +7287,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-4",
                 name: "{0}的輕量化2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 8,
                     gold: 800,
@@ -7003,6 +7304,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-5",
                 name: "{0}的輕量化3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 12,
                     gold: 1200,
@@ -7019,6 +7321,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-6",
                 name: "盾牌鋼瓶特殊改造 1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 30,
                     gold: 8600,
@@ -7035,6 +7338,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-7",
                 name: "盾牌鋼瓶特殊改造 2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 40,
                     gold: 9500,
@@ -7051,6 +7355,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-8",
                 name: "盾牌鋼瓶特殊改造 3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 45,
                     gold: 9500,
@@ -7067,6 +7372,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-9",
                 name: "魔法改造 1",
+                npc: ["拜斯"],
                 required: {
                     ep: 15,
                     gold: 20000,
@@ -7083,6 +7389,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-10",
                 name: "魔法改造 2",
+                npc: ["拜斯"],
                 required: {
                     ep: 20,
                     gold: 30000,
@@ -7103,6 +7410,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-11",
                 name: "魔法改造 3",
+                npc: ["拜斯"],
                 required: {
                     ep: 25,
                     gold: 40000,
@@ -7181,6 +7489,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-14",
                 name: "寶石修理",
+                npc: ["拜斯", "阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -7210,6 +7519,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-15",
                 name: "修理寶石 1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -7239,6 +7549,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-craftman-2",
                 name: "工匠改造",
+                npc: ["拜斯"],
                 required: {
                     ep: 100,
                     gold: 45000,
@@ -7255,6 +7566,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-17",
                 name: "靈魂解放者盾牌鋼瓶特別改造 1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 60000,
@@ -7266,6 +7578,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-18",
                 name: "靈魂解放者盾牌鋼瓶特別改造 2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 60000,
@@ -7277,6 +7590,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-19",
                 name: "靈魂解放者盾牌鋼瓶特別改造 3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 60000,
@@ -7288,6 +7602,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-20",
                 name: "靈魂解放者盾牌鋼瓶專用改造1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7304,6 +7619,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-21",
                 name: "靈魂解放者盾牌鋼瓶專用改造2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7320,6 +7636,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-22",
                 name: "靈魂解放者盾牌鋼瓶專用改造3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7336,6 +7653,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-23",
                 name: "靈魂解放者盾牌鋼瓶專用改造4",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 84000,
@@ -7352,6 +7670,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-craftman",
                 name: "靈魂解放者盾牌鋼瓶專用工匠改造",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 65000,
@@ -7368,6 +7687,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1440006-25",
                 name: "寶石修理",
+                npc: ["拜斯", "阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -7403,6 +7723,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-0",
                 name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "艾頓", "安德拉絲", "格拉納特", "卡芬"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -7432,6 +7753,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-1",
                 name: "更換扳機",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 20,
                     gold: 4000,
@@ -7503,6 +7825,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-7",
                 name: "四大屬性啟動2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7514,6 +7837,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-8",
                 name: "四大屬性啟動3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7525,6 +7849,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-9",
                 name: "四大屬性啟動4",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7536,6 +7861,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-10",
                 name: "四大屬性啟動5",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7547,6 +7873,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-11",
                 name: "火屬性啟動1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7558,6 +7885,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-12",
                 name: "火屬性啟動2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7569,6 +7897,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-13",
                 name: "火屬性啟動3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7580,6 +7909,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-14",
                 name: "火屬性啟動4",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7591,6 +7921,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-15",
                 name: "水屬性啟動1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7602,6 +7933,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-16",
                 name: "水屬性啟動2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7613,6 +7945,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-17",
                 name: "水屬性啟動3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7624,6 +7957,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-18",
                 name: "水屬性啟動4",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7635,6 +7969,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-19",
                 name: "土屬性啟動1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7646,6 +7981,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-20",
                 name: "土屬性啟動2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7657,6 +7993,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-21",
                 name: "土屬性啟動3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7668,6 +8005,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-22",
                 name: "土屬性啟動4",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7679,6 +8017,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-23",
                 name: "風屬性啟動1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 30,
                     gold: 20000,
@@ -7690,6 +8029,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-24",
                 name: "風屬性啟動2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 42,
                     gold: 32000,
@@ -7701,6 +8041,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-25",
                 name: "風屬性啟動3",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 50,
                     gold: 40000,
@@ -7712,6 +8053,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-26",
                 name: "風屬性啟動4",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 60,
                     gold: 70000,
@@ -7723,6 +8065,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-27",
                 name: "靈魂解放者鋼瓶專用改造1",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -7755,6 +8098,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-28",
                 name: "靈魂解放者鋼瓶專用改造2",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 170000,
@@ -7791,6 +8135,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1060011-29-craftman",
                 name: "靈魂解放者鋼瓶專用工匠改造",
+                npc: ["阿依巴", "多琳", "海蕾特"],
                 required: {
                     ep: 100,
                     gold: 50000,
@@ -7817,6 +8162,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-0",
                 name: "寶石修復",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 100,
                     gold: 20000,
@@ -7846,6 +8192,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-1",
                 name: "寶石改造1",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 100,
                     gold: 25000,
@@ -7870,6 +8217,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-2",
                 name: "乾燥",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 15,
                     gold: 1500,
@@ -7899,6 +8247,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-3",
                 name: "更換零件",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 20,
                     gold: 4000,
@@ -7928,6 +8277,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-4",
                 name: "內部清潔",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 20,
                     gold: 12000,
@@ -7957,6 +8307,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-5",
                 name: "調整共鳴",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 30,
                     gold: 15000,
@@ -7986,6 +8337,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-6",
                 name: "俐落的收尾",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 70,
                     gold: 45000,
@@ -8007,6 +8359,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-7-craftman",
                 name: "工匠改造",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 100,
                     gold: 65000,
@@ -8029,6 +8382,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-8",
                 name: "靈魂解放者里拉零件更換",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -8061,6 +8415,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-9",
                 name: "靈魂解放者里拉內部清理",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -8093,6 +8448,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-10",
                 name: "靈魂解放者里拉調整共鳴",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -8125,6 +8481,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-11",
                 name: "靈魂解放者里拉封印解除",
+                npc: ["安黛莉", "瓦爾特", "阿特"],
                 required: {
                     ep: 100,
                     gold: 130000,
@@ -8153,6 +8510,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-craftman-2",
                 name: "靈魂解放者里拉專用工匠改造",
+                npc: ["安黛莉", "瓦爾特", "阿特"],
                 required: {
                     ep: 100,
                     gold: 50000,
@@ -8168,6 +8526,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-13",
                 name: "靈魂解放者里拉寶石修理1",
+                npc: ["安黛莉", "瓦爾特", "阿特"],
                 required: {
                     ep: 100,
                     gold: 70000,
@@ -8197,6 +8556,7 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             {
                 id: "1080048-14",
                 name: "靈魂解放者里拉零件更換2",
+                npc: ["安黛莉", "瓦爾特", "依麗薩", "派瑞克", "阿特", "吉爾摩", "芭娜蕾", "希伯尼", "葛尼提斯", "伊菲", "蓋維", "雷德歐"],
                 required: {
                     ep: 70,
                     gold: 70000,
@@ -8228,5 +8588,335 @@ export const upgradeForG27Weapons: UpgradeMethodsForWeapons[] = [
             },
         ],
         weaponCategory: "instrument",
+    },
+    {
+        weaponId: 41233,
+        methods: [
+            {
+                id: "41233-1",
+                name: "淬火1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 20,
+                    gold: 45000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 5,
+                    },
+                ],
+                progress: [0, 1, 2, 3],
+            },
+            {
+                id: "41233-2",
+                name: "淬火2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 25,
+                    gold: 65000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 6,
+                    },
+                ],
+                progress: [1, 2, 3],
+            },
+            {
+                id: "41233-3",
+                name: "淬火3",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 30,
+                    gold: 90000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 7,
+                    },
+                ],
+                progress: [2, 3],
+            },
+            {
+                id: "41233-4",
+                name: "淬火4",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 35,
+                    gold: 95000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 8,
+                    },
+                ],
+                progress: [3],
+            },
+            {
+                id: "41233-5",
+                name: "修整劍身1",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 12,
+                    gold: 25000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 3,
+                    },
+                    {
+                        id: "balance",
+                        value: -1,
+                    },
+                    {
+                        id: "attack_min",
+                        value: 3,
+                    },
+                ],
+                progress: [0, 1, 2, 3],
+            },
+            {
+                id: "41233-6",
+                name: "修整劍身2",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 18,
+                    gold: 45000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 4,
+                    },
+                    {
+                        id: "balance",
+                        value: -2,
+                    },
+                    {
+                        id: "attack_min",
+                        value: 4,
+                    },
+                ],
+                progress: [1, 2, 3],
+            },
+            {
+                id: "41233-7",
+                name: "修整劍身3",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 26,
+                    gold: 75000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 5,
+                    },
+                    {
+                        id: "balance",
+                        value: -3,
+                    },
+                    {
+                        id: "attack_min",
+                        value: 5,
+                    },
+                ],
+                progress: [2, 3],
+            },
+            {
+                id: "41233-8",
+                name: "修整劍身4",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 33,
+                    gold: 95000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 6,
+                    },
+                    {
+                        id: "balance",
+                        value: -4,
+                    },
+                    {
+                        id: "attack_min",
+                        value: 6,
+                    },
+                ],
+                progress: [3],
+            },
+            {
+                id: "41233-9",
+                name: "更換握柄",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 25,
+                    gold: 21000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "attack_min",
+                        value: 10,
+                    },
+                    {
+                        id: "attack_max",
+                        value: -7,
+                    },
+                ],
+                progress: [0],
+            },
+            {
+                id: "41233-10",
+                name: "穹之奏鳴曲專用改造",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 100,
+                    gold: 120000,
+                    gems: [],
+                },
+                abilities: [
+                    {
+                        id: "critical",
+                        value: 5,
+                    },
+                    {
+                        id: "attack_max",
+                        value: 6,
+                    },
+                    {
+                        id: "lance_piercing",
+                        value: 2,
+                    },
+                    {
+                        id: "durability_max",
+                        value: -2,
+                    },
+                ],
+                progress: [4],
+            },
+            {
+                id: "41233-craftman",
+                name: "工匠改造",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 100,
+                    gold: 80000,
+                    gems: [],
+                },
+                abilities: [],
+                progress: [4],
+            },
+            {
+                id: "41233-g-1",
+                name: "寶石修復1",
+                npc: ["佛格斯", "奈麗絲", "親衛隊武器修理兵", "康娜", "卡隆", "阿蘭雯", "安德拉絲", "格拉納特", "卡芬"],
+                required: {
+                    ep: 100,
+                    gold: 26000,
+                    gems: [
+                        {
+                            name: "鑽石",
+                            requiredSize: 1,
+                        },
+                        {
+                            name: "碧玉",
+                            requiredSize: 1,
+                        },
+                        {
+                            name: "紅寶石",
+                            requiredSize: 1,
+                        },
+                    ],
+                },
+                abilities: [
+                    {
+                        id: "durability_max",
+                        value: 4,
+                    },
+                ],
+                progress: [5],
+            },
+            {
+                id: "41233-g-2",
+                name: "穹之奏鳴曲寶石修理",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 100,
+                    gold: 55000,
+                    gems: [
+                        {
+                            name: "鑽石",
+                            requiredSize: 10,
+                        },
+                        {
+                            name: "尖晶石",
+                            requiredSize: 10,
+                        },
+                        {
+                            name: "海藍寶石",
+                            requiredSize: 10,
+                        },
+                    ],
+                },
+                abilities: [
+                    {
+                        id: "durability_max",
+                        value: 4,
+                    },
+                ],
+                progress: [5],
+            },
+            {
+                id: "41233-g-3",
+                name: "穹之奏鳴曲寶石改造",
+                npc: ["雷納德", "奈麗絲", "卡絲妮亞", "梅麗絲", "佛格斯", "艾頓"],
+                required: {
+                    ep: 100,
+                    gold: 90000,
+                    gems: [
+                        {
+                            name: "鑽石",
+                            requiredSize: 10,
+                        },
+                        {
+                            name: "尖晶石",
+                            requiredSize: 10,
+                        },
+                        {
+                            name: "碧玉",
+                            requiredSize: 10,
+                        },
+                    ],
+                },
+                abilities: [
+                    {
+                        id: "attack_max",
+                        value: 3,
+                    },
+                    {
+                        id: "critical",
+                        value: 3,
+                    },
+                ],
+                progress: [5],
+            },
+        ],
+        weaponCategory: "melee_physical",
     },
 ];
