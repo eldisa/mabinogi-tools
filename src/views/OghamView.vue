@@ -128,7 +128,8 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                 <!-- 示意圖 -->
                 <div v-if="activeCombo?.inGameImg" class="mt-5">
                     <p class="text-center font-semibold text-gray-300 mb-1">組合技能使用畫面</p>
-                    <img :src="imgUrl(activeCombo.inGameImg)" alt="組合技能" class="combo-img" />
+                    <!-- key：換圖時重建元素，避免大檔 webp 載入前仍顯示舊圖 -->
+                    <img :key="activeCombo.inGameImg" :src="imgUrl(activeCombo.inGameImg)" alt="組合技能" class="combo-img" />
                 </div>
 
                 <!-- 點數效果按鈕 -->
