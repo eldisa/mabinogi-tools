@@ -28,6 +28,7 @@ const groups = [
             { icon: "House",      title: "農場模型查詢", description: "查詢農場模型資料與相關資訊",                           path: "/farmModel" },
             { icon: "MagicStick", title: "魔法陣查詢",   description: "查詢各職業魔法陣（強化）的效果與類型",                 path: "/magic-circle" },
             { icon: "MagicStick", title: "聚能查詢",     description: "查詢各武器聚能等級與黑暗聚能效果",                     path: "/erg" },
+            { icon: "TrendCharts", title: "阿卡那覺醒經驗", description: "覺醒 1–50 級經驗表，依每週副本通關次數計算所需週數",   path: "/arcana-awakening-exp" },
             { icon: "MagicStick", title: "符文",         description: "查詢各祕法的符文組合技與詞條效果",                     path: "/ogham" },
         ],
     },
