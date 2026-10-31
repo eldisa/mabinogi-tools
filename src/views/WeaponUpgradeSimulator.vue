@@ -787,6 +787,8 @@ import { infoForG27Weapon } from "../data/infoForG27Weapon";
 import { upgradeForG27Weapons } from "../data/upgradeForG27Weapons";
 import { infoForCatWeapon } from "../data/infoForCatWeapon";
 import { upgradeForCatWeapons } from "../data/upgradeForCatWeapons";
+import { infoForFierceWeapon } from "../data/infoForFierceWeapon";
+import { upgradeForFierceWeapons } from "../data/upgradeForFierceWeapons";
 import {
     abilitiesMap,
     abilitiesValueWithPercentArray,
@@ -1062,8 +1064,8 @@ const quickPresets: QuickPreset[] = [
         },
     },
 ];
-const weaponInfos = [...infoForG27Weapon, ...infoForCatWeapon];
-const weaponUpgrades = [...upgradeForG27Weapons, ...upgradeForCatWeapons];
+const weaponInfos = [...infoForG27Weapon, ...infoForCatWeapon, ...infoForFierceWeapon];
+const weaponUpgrades = [...upgradeForG27Weapons, ...upgradeForCatWeapons, ...upgradeForFierceWeapons];
 const upgradeableWeapons: number[] = weaponUpgrades.map((item) => item.weaponId);
 
 const weaponStatus = ref(weaponInfos.find((item) => item.id === selectedWeaponId.value));
@@ -1122,12 +1124,13 @@ const toOptions = (infos: typeof weaponInfos): Option[] =>
     infos
         .filter((weapon) => upgradeableWeapons.includes(weapon.id))
         .map((item) => ({
-            label: item.name.tw || item.name.en,
+            label: (item.name.tw || item.name.en) + ("alias" in item ? `（${item.alias}）` : ""),
             value: item.id,
         }));
 const weaponGroups = [
     { label: "靈魂級", options: toOptions(infoForG27Weapon) },
     { label: "貓武級", options: toOptions(infoForCatWeapon) },
+    { label: "兇猛級", options: toOptions(infoForFierceWeapon) },
 ];
 
 const roundTo = (value: number, digits: number = 2): number => {

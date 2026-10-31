@@ -7,6 +7,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Assault",
             tw: "暗夜使者突襲",
         },
+        alias: "單手劍",
         status: [
             {
                 id: "attack_min",
@@ -51,6 +52,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Enforcer",
             tw: "暗夜使者執行者",
         },
+        alias: "單手錘",
         status: [
             {
                 id: "attack_min",
@@ -95,6 +97,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Viking",
             tw: "暗夜使者掠奪者",
         },
+        alias: "單手斧",
         status: [
             {
                 id: "attack_min",
@@ -144,6 +147,7 @@ export const infoForCatWeapon = [
             en: "Ruin Absolute Bow",
             tw: "終焉毀滅之弓",
         },
+        alias: "大弓",
         status: [
             {
                 id: "attack_min",
@@ -171,12 +175,17 @@ export const infoForCatWeapon = [
                 max: 33,
             },
             {
+                id: "attack_range",
+                min: 2000,
+                max: 2000,
+            },
+            {
                 id: "lance_piercing",
                 min: 2,
                 max: 2,
             },
             {
-                id: "magnum_shot_damage",
+                id: "magnum_shot_damage_add",
                 min: 100,
                 max: 100,
             },
@@ -198,6 +207,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Predator",
             tw: "暗夜使者捕食者",
         },
+        alias: "弓",
         status: [
             {
                 id: "attack_min",
@@ -225,6 +235,11 @@ export const infoForCatWeapon = [
                 max: 25,
             },
             {
+                id: "attack_range",
+                min: 2100,
+                max: 2100,
+            },
+            {
                 id: "lance_piercing",
                 min: 2,
                 max: 2,
@@ -237,6 +252,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Rogue",
             tw: "暗夜使者惡徒",
         },
+        alias: "弩",
         status: [
             {
                 id: "attack_min",
@@ -264,6 +280,11 @@ export const infoForCatWeapon = [
                 max: 30,
             },
             {
+                id: "attack_range",
+                min: 1900,
+                max: 1900,
+            },
+            {
                 id: "lance_piercing",
                 min: 2,
                 max: 2,
@@ -276,6 +297,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Elemento",
             tw: "暗夜使者元素師",
         },
+        alias: "魔杖",
         status: [
             {
                 id: "attack_min",
@@ -320,6 +342,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Technician",
             tw: "暗夜使者技術者",
         },
+        alias: "鋼瓶",
         status: [
             {
                 id: "attack_min",
@@ -374,6 +397,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Trickster",
             tw: "暗夜使者詐欺師",
         },
+        alias: "手把",
         status: [
             {
                 id: "attack_min",
@@ -433,6 +457,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Observer Scythe",
             tw: "暗夜使者觀測者鐮刀",
         },
+        alias: "鐮刀",
         status: [
             {
                 id: "attack_min",
@@ -477,6 +502,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Warlord",
             tw: "暗夜使者指揮官",
         },
+        alias: "雙手劍",
         status: [
             {
                 id: "attack_min",
@@ -521,6 +547,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Berserker",
             tw: "暗夜使者狂戰士",
         },
+        alias: "雙手斧",
         status: [
             {
                 id: "attack_min",
@@ -565,6 +592,7 @@ export const infoForCatWeapon = [
             en: "Ruin Overload Staff",
             tw: "終焉超載集魔杖",
         },
+        alias: "大杖",
         status: [
             {
                 id: "attack_min",
@@ -619,6 +647,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Inquisitor",
             tw: "暗夜使者審問者",
         },
+        alias: "集魔杖",
         status: [
             {
                 id: "attack_min",
@@ -668,6 +697,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Spearhead",
             tw: "暗夜使者先鋒",
         },
+        alias: "騎槍",
         status: [
             {
                 id: "attack_min",
@@ -712,6 +742,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Vagabond",
             tw: "暗夜使者流浪者",
         },
+        alias: "拳套",
         status: [
             {
                 id: "attack_min",
@@ -766,6 +797,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Vanquisher",
             tw: "暗夜使者征服者",
         },
+        alias: "雙槍",
         status: [
             {
                 id: "attack_min",
@@ -793,6 +825,11 @@ export const infoForCatWeapon = [
                 max: 30,
             },
             {
+                id: "attack_range",
+                min: 800,
+                max: 800,
+            },
+            {
                 id: "max_bullet",
                 min: 80,
                 max: 80,
@@ -815,6 +852,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Infiltrator",
             tw: "暗夜使者潛入者",
         },
+        alias: "手裏劍",
         status: [
             {
                 id: "attack_min",
@@ -864,6 +902,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Phantom",
             tw: "暗夜使者遊魂",
         },
+        alias: "鎖鏈鐮刃",
         status: [
             {
                 id: "attack_min",
@@ -903,6 +942,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Vanguard",
             tw: "暗夜使者前鋒",
         },
+        alias: "盾牌",
         status: [
             {
                 id: "defense",
@@ -937,6 +977,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Moderator",
             tw: "暗夜使者調解者",
         },
+        alias: "盾牌鋼瓶",
         status: [
             {
                 id: "balance",
@@ -981,6 +1022,7 @@ export const infoForCatWeapon = [
             en: "Nightbringer Savior",
             tw: "暗夜使者救贖者",
         },
+        alias: "治癒魔杖",
         status: [
             {
                 id: "attack_min",
