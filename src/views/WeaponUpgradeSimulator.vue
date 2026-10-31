@@ -25,7 +25,11 @@
                                     class="w-full sm:w-[280px]"
                                     filterable
                                 >
-                                    <el-option-group v-for="group in weaponGroups" :key="group.label" :label="group.label">
+                                    <el-option-group
+                                        v-for="group in weaponGroups"
+                                        :key="group.label"
+                                        :label="group.label"
+                                    >
                                         <el-option
                                             v-for="item in group.options"
                                             :key="item.value"
@@ -281,7 +285,11 @@
                                         class="w-full"
                                         filterable
                                     >
-                                        <el-option-group v-for="group in weaponGroups" :key="group.label" :label="group.label">
+                                        <el-option-group
+                                            v-for="group in weaponGroups"
+                                            :key="group.label"
+                                            :label="group.label"
+                                        >
                                             <el-option
                                                 v-for="item in group.options"
                                                 :key="item.value"
@@ -450,9 +458,19 @@
                                                 <div class="flex flex-col py-2 w-full">
                                                     <span class="font-medium text-gray-100">
                                                         {{ upgrade.name }}
-                                                        <el-popover v-if="upgrade.npc?.length" trigger="click" :width="280">
+                                                        <el-popover
+                                                            v-if="upgrade.npc?.length"
+                                                            trigger="click"
+                                                            :width="280"
+                                                        >
                                                             <template #reference>
-                                                                <el-icon class="info-icon" aria-label="可改造 NPC" @click.prevent><InfoFilled /></el-icon>
+                                                                <el-icon
+                                                                    class="info-icon"
+                                                                    aria-label="可改造 NPC"
+                                                                    @click.prevent
+                                                                >
+                                                                    <InfoFilled />
+                                                                </el-icon>
                                                             </template>
                                                             NPC：{{ upgrade.npc.join("、") }}
                                                         </el-popover>
@@ -864,6 +882,7 @@ const quickPresets: QuickPreset[] = [
             attack_max: 1,
             attack_min: 0.5,
             attack_range: 0.01,
+            aim_ratio_bonus: 1,
         },
     },
     // 魔法系 - 銳利優先
@@ -876,6 +895,7 @@ const quickPresets: QuickPreset[] = [
         abilityWeights: {
             lance_piercing: 70,
             magic_damage: 1,
+            elemental_damage: 1,
         },
     },
     // 魔法系 - 大傷優先
@@ -887,6 +907,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["magic_staff", "magic_wand"],
         abilityWeights: {
             magic_damage: 1,
+            elemental_damage: 1,
         },
     },
     // 鍊金系 - 銳利優先

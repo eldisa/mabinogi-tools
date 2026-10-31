@@ -489,6 +489,8 @@ export const abilitiesValueWithPercentArray: string[] = [
     "item_durability_loss_dec_rate",
     "healing_skill",
     "sb_barrier_damage_reduce",
+    "elemental_damage",
+    "aim_ratio_bonus",
 ];
 
 export const abilitiesValueWithRangeArray: string[] = [
