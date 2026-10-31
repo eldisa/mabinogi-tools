@@ -266,6 +266,7 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     muliasReflectionTrace: "只乘在 7 個秘法技能的最終增加傷害，重擊/風車/猛擊不吃；基礎 +10% 不隨遺物等級變，遺物每級再 +0.5%，這裡顯示遺物 +1 級的效益，固定以覆蓋率 100% 計算。",
     muliasJudgementStrike: "只影響審判重擊這個技能，其餘技能不吃這項加成。",
     manualWindmillBase30: "「裝備」分頁的套裝勾選（風車基礎倍率 +30%，莊嚴騎士）。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
+    chargeMasterTitle: "突擊大師稱號：突擊傷害 +15%，與突擊套裝 ×1.15 各自獨立相乘，也會影響盾擊衝鋒借用的突擊傷害。顯示開啟 vs 關閉的整體價值。",
     manualChargeEnhance: "突擊最終倍率 ×1.15。選擇神聖／兇猛哨兵／貓盾／靈魂解放者系列盾牌時已內建，這時開啟或關閉勾選都沒有差別（效益為 0）；沒選盾牌時才看得出價值。這裡顯示開啟 vs 關閉的整體價值，3 項各自獨立測試（不是同時開 3 個疊加）。",
     manualSmashEnhance: "「裝備」分頁的套裝勾選，目前沒有對應裝備資料自動帶出。這裡顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關，3 項各自獨立測試（不是同時開 3 個疊加）。",
     erg: "效果依武器種類而定：單手斧風車基礎倍率 +100%；雙手劍沒有聚能加成。重擊的單手武器聚能（+60%）只有單手劍才有，本計算器沒有單手劍所以不計。",
@@ -294,7 +295,7 @@ const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "技能倍率／細工／銳利", ids: ["smashReforge", "windmillReforge", "chargeReforge", "sharpLevel"] },
     { label: "生存屬性", ids: ["defense", "maxHp"] },
     { label: "穆利亞斯的遺物", ids: ["muliasSacrificeRegen", "muliasReflectionTrace", "muliasJudgementStrike"] },
-    { label: "套裝效果（裝備分頁）", ids: ["manualWindmillBase30", "manualChargeEnhance", "manualSmashEnhance"] },
+    { label: "套裝效果（裝備分頁）", ids: ["manualWindmillBase30", "manualChargeEnhance", "chargeMasterTitle", "manualSmashEnhance"] },
     { label: "攻擊係數（戰場序曲／狀態支援／力量團聚／藥水）", ids: ["battlefield", "statusSupport", "strengthGather", "physicalPotion"] },
     { label: "buff 覆蓋率", ids: ["rageCoverage", "reflectionCoverage"] },
     {
@@ -1310,6 +1311,10 @@ onMounted(() => {
                                 <el-checkbox v-model="settings.manualSmashEnhanceActive" />
                                 <span class="switch-label">重擊套裝 +15%</span>
                             </div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.chargeMasterTitleActive" />
+                                <span class="switch-label">突擊大師稱號（突擊傷害 +15%，與突擊套裝 ×1.15 各自獨立相乘；盾擊衝鋒借用的突擊傷害也會吃到）</span>
+                            </div>
 
                             <div class="field-section-label">連續技卡片（只能裝備一張，秘法技能不吃加成）</div>
                             <div class="field-row">
@@ -1498,6 +1503,8 @@ onMounted(() => {
                                 <span class="switch-label">犧牲懲戒</span>
                                 <el-checkbox v-model="settings.showRadiantJudgement" />
                                 <span class="switch-label">光輝斷罪</span>
+                                <el-checkbox v-model="settings.showRepentance" />
+                                <span class="switch-label">懺悔（覺醒，未開放）</span>
                                 <el-checkbox v-model="settings.showSmashSkill" />
                                 <span class="switch-label">重擊</span>
                                 <el-checkbox v-model="settings.showWindmillSkill" />

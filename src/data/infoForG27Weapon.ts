@@ -1596,4 +1596,48 @@ export const infoForG27Weapon = [
             },
         ],
     },
+    {
+        id: 41233,
+        name: {
+            en: "Sun and Moon's Sword ",
+            tw: "穹之奏鳴曲",
+        },
+        status: [
+            {
+                id: "attack_min",
+                min: 200,
+                max: 200,
+            },
+            {
+                id: "attack_max",
+                min: 310,
+                max: 310,
+            },
+            {
+                id: "critical",
+                min: 75,
+                max: 75,
+            },
+            {
+                id: "balance",
+                min: 85,
+                max: 85,
+            },
+            {
+                id: "durability_max",
+                min: 40,
+                max: 40,
+            },
+            {
+                id: "lance_piercing",
+                min: 1,
+                max: 1,
+            },
+            {
+                id: "smash_final_damage",
+                min: 25,
+                max: 25,
+            },
+        ],
+    },
 ];

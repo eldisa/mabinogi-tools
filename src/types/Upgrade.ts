@@ -23,6 +23,7 @@ export interface CraftsManUpgradeAbility {
 export interface UpgradeMethod {
     id: string;
     name: string;
+    npc?: string[]; // 可進行此改造的 NPC
     required: Required;
     abilities: UpgradeAbility[] | CraftsManUpgradeAbility[]; // 升級能力
     progress: number[]; // 可在哪階段使用此改造，1,2,3,4,5,6(寶石改)

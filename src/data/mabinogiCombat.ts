@@ -164,13 +164,15 @@ export interface AttackCoefficientState {
     battleCryActive: boolean;
     /** 細工樂器演奏效果等級，0~25（21~25 為突破限定） */
     battleCryReforgeLevel: number;
+    /** 其他乘在攻擊係數上的倍率（例：鍊金屬性共鳴 ×1.03），預設 1 */
+    coefficientMultiplier?: number;
 }
 
 export function calculateAttackCoefficient(state: AttackCoefficientState): number {
     let coefficient = 1;
     if (state.physicalPotionActive) coefficient *= 1.2;
     if (state.tripleEnchantActive) coefficient *= 1.1;
-    return coefficient;
+    return coefficient * (state.coefficientMultiplier ?? 1);
 }
 
 /** 戰吼% = 31.2 + 細工樂器演奏效果等級 × 0.2 */

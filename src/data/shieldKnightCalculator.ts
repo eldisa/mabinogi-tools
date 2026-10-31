@@ -1052,7 +1052,8 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         sumReforgeLevels(settings.reforge, "charge") * REFORGE_PER_LEVEL.charge +
         (hasMagicCircle("charge_damage") ? 60 : 0) +
         oghamTotals.charge;
-    const chargeMultiplier = tags.has("charge_enhance") ? 1.15 : 1;
+    // 突擊大師稱號：突擊傷害 +15%，與突擊套裝 ×1.15 是各自獨立的乘區（hatsu 的算式為 (1+套裝+稱號)×(1+另一組套裝)，這裡假設稱號與 ×1.15 不同組）
+    const chargeMultiplier = (1 + (settings.chargeMasterTitleActive ? 0.15 : 0)) * (tags.has("charge_enhance") ? 1.15 : 1);
 
     // 猛擊 = (層數基礎+魔法陣+單手精靈武器20%) × (1+猛擊最終傷害增加) × (1+猛擊套裝+猛擊套裝象徵+連續技卡片)
     const mengJiBase =
@@ -1172,7 +1173,8 @@ export type SkillId =
     | "radiant-judgement"
     | "smash-hit"
     | "windmill-hit"
-    | "meng-ji";
+    | "meng-ji"
+    | "repentance";
 
 /** 全部技能的顯示順序＋名稱＋技能圖示 ID（對應 src/utils/image.ts 的 getSkillIcon），供各分頁共用 */
 export const ALL_SKILL_META: { id: SkillId; label: string; imageId: number }[] = [
@@ -1186,6 +1188,8 @@ export const ALL_SKILL_META: { id: SkillId; label: string; imageId: number }[] =
     { id: "smash-hit", label: "重擊", imageId: 20002 },
     { id: "windmill-hit", label: "風車", imageId: 22001 },
     { id: "meng-ji", label: "猛擊", imageId: 20019 },
+    // 覺醒技能（新增、尚未開放），skillNames.ts 沒有資料也沒有圖示，暫用犧牲懲戒的圖示
+    { id: "repentance", label: "懺悔（覺醒）", imageId: 59085 },
 ];
 
 export type SkillUsageCounts = Record<SkillId, number>;
@@ -1256,6 +1260,8 @@ export interface ArcaneSharedParams {
     talentProtectionReduction: number;
     /** 才能額外傷害%（精靈武器弱點分析／實體化） */
     talentExtraDamagePercent: number;
+    /** 覺醒技能必定暴擊：用完整的暴擊傷害%（不是依暴擊率換算的期望值，也不受「暴擊顯示模式」影響） */
+    awakeningCriticalDamagePercent: number;
     /** 歐甘對各秘法技能倍率的調整（沒開符文版本時全部為 0） */
     ogham: OghamArcaneAdjust;
 }
@@ -1454,6 +1460,32 @@ export function calculateSacrificePunishment(finalStats: FinalStats, currentSacr
         cooldownText: `無 CD（犧牲滿 ${SACRIFICE_CAP} 才能施放）`,
         locked,
         lockedReason: locked ? `犧牲需達 ${SACRIFICE_CAP} 才能使用（目前 ${currentSacrifice}）` : undefined,
+    };
+}
+
+/**
+ * 懺悔（Repentance／참회）：新增的覺醒技能（大招），尚未開放。基礎傷害 35000% + 防禦力（加護力）10000% + 最大生命值 4000%，
+ * 範圍以施放者為中心半徑 12m，冷卻 5 分鐘；必定暴擊，不借用才能技能，不吃時間扭曲、連擊、轟擊／爆閃、精靈實體化加成，
+ * 目前沒有職業被動、盾牌減傷加成。一般地區以外的地下城／任務只能使用 1 次。
+ */
+export function calculateRepentance(finalStats: FinalStats, shared: ArcaneSharedParams): SkillDamageResult {
+    const terms = [
+        makeTerm("基礎傷害", 35000, finalStats.maxDamage),
+        makeTerm("加護力", 10000, finalStats.defensePower),
+        makeTerm("最大生命", 4000, finalStats.maxHp),
+    ];
+    const rawDamage = sumTerms(terms);
+    const finalDamage = finalizeArcaneSkill("repentance", finalStats, 0, rawDamage, { ...shared, criticalDamagePercent: shared.awakeningCriticalDamagePercent });
+    return {
+        skillId: "repentance",
+        name: "懺悔（覺醒）",
+        terms,
+        rawDamage,
+        passiveLabel: "覺醒技能必定暴擊",
+        passiveMultiplier: 1,
+        finalDamage,
+        sacrificeGain: 0,
+        cooldownText: "CD 5 分鐘，範圍半徑 12m；一般地區以外的地下城／任務只能使用 1 次（尚未開放）",
     };
 }
 
@@ -1673,6 +1705,7 @@ export function calculateAllSkills(
         calculateJudgementStrike(finalStats, windmillDamage, windmillTargetDamage, nobleOathEnabled, judgementStrikeBaseBonus, shared),
         calculateSacrificePunishment(finalStats, currentSacrifice, shared),
         calculateRadiantJudgement(finalStats, windmillDamage, windmillTargetDamage, nobleOathEnabled, radiantJudgementStage, shared),
+        calculateRepentance(finalStats, shared),
     ];
 }
 
@@ -1749,6 +1782,7 @@ export function calculateSkillsForSettings(
                 protectionReduction: calcResult.protectionReduction,
                 talentProtectionReduction: calcResult.talentProtectionReduction,
                 talentExtraDamagePercent: calcResult.talentExtraDamagePercent,
+                awakeningCriticalDamagePercent: calcResult.criticalDamagePercent,
                 ogham: oghamArcaneAdjust(settings),
             },
         ),
@@ -1865,6 +1899,7 @@ function calculateTotalOutputWithLevers(
                 protectionReduction: levers.protectionReduction,
                 talentProtectionReduction: levers.talentProtectionReduction,
                 talentExtraDamagePercent: levers.talentExtraDamagePercent,
+                awakeningCriticalDamagePercent: levers.criticalDamagePercent,
                 ogham: oghamArcaneAdjust(settings),
             },
         ),
@@ -1927,6 +1962,7 @@ export interface DamageEfficiencyItem {
         | "weaponExtraDamage"
         | "manualWindmillBase30"
         | "manualChargeEnhance"
+        | "chargeMasterTitle"
         | "manualSmashEnhance";
     label: string;
     unit: string;
@@ -2130,6 +2166,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             | "physicalPotion"
             | "manualWindmillBase30"
             | "manualChargeEnhance"
+            | "chargeMasterTitle"
             | "manualSmashEnhance";
         label: string;
         unit?: string;
@@ -2209,6 +2246,7 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
         { id: "physicalPotion", label: "物理攻擊力增加藥水（×1.2）", isOn: settings.attackCoefficient.physicalPotionActive, set: (on) => ({ ...settings, attackCoefficient: { ...settings.attackCoefficient, physicalPotionActive: on } }) },
         { id: "manualWindmillBase30", label: "風車基礎倍率 +30%", isOn: settings.manualWindmillBase30Active, set: (on) => ({ ...settings, manualWindmillBase30Active: on }) },
         { id: "manualChargeEnhance", label: "突擊最終倍率 ×1.15", isOn: settings.manualChargeEnhanceActive, set: (on) => ({ ...settings, manualChargeEnhanceActive: on }) },
+        { id: "chargeMasterTitle", label: "突擊大師稱號（突擊傷害 +15%）", isOn: settings.chargeMasterTitleActive, set: (on) => ({ ...settings, chargeMasterTitleActive: on }) },
         { id: "manualSmashEnhance", label: "重擊套裝 +15%", isOn: settings.manualSmashEnhanceActive, set: (on) => ({ ...settings, manualSmashEnhanceActive: on }) },
     ];
     const toggleResults = togglePairs.map((p) => {
@@ -2452,6 +2490,8 @@ export interface ShieldKnightSettings {
     raceSkillActive: boolean;
     /** 突擊最終倍率 ×1.15（charge_enhance）：除了「無 / 其他」與鍋子，可選的盾牌都內建；這個手動勾選給沒選盾牌或其他來源用（效果不疊加） */
     manualChargeEnhanceActive: boolean;
+    /** 突擊大師稱號：突擊傷害 +15%（盾擊衝鋒借用的突擊傷害也會吃到） */
+    chargeMasterTitleActive: boolean;
     /** 重擊套裝 +15%（smash_enhance，加進重擊最後一格），目前沒有已知裝備資料來源，先開放手動勾選 */
     manualSmashEnhanceActive: boolean;
     /** 風車套裝 +30%（莊嚴騎士，windmill_enhance，最終乘算），手動勾選；欄位名沿用舊存檔的 Base30 */
@@ -2504,6 +2544,8 @@ export interface ShieldKnightSettings {
     showSmashSkill: boolean;
     showWindmillSkill: boolean;
     showMengJiSkill: boolean;
+    /** 懺悔（覺醒技能，尚未開放）的技能卡片顯示開關，預設關閉 */
+    showRepentance: boolean;
     /** 技能傷害區是否顯示突擊卡片（顯示用，不進總輸出） */
     showChargeSkill: boolean;
     mengJiStack: 1 | 2 | 3 | 4 | 5;
@@ -2511,7 +2553,7 @@ export interface ShieldKnightSettings {
     skillUsageCounts: SkillUsageCounts;
 }
 
-/** 全部 10 個技能 skillId → 顯示開關欄位名稱的對照，供 UI 篩選用 */
+/** 全部 11 個技能 skillId → 顯示開關欄位名稱的對照，供 UI 篩選用 */
 export const SKILL_VISIBILITY_SETTING_KEYS: Record<SkillId, keyof ShieldKnightSettings> = {
     "holy-sanctuary": "showHolySanctuary",
     "instant-taunt": "showInstantTaunt",
@@ -2523,6 +2565,7 @@ export const SKILL_VISIBILITY_SETTING_KEYS: Record<SkillId, keyof ShieldKnightSe
     "smash-hit": "showSmashSkill",
     "windmill-hit": "showWindmillSkill",
     "meng-ji": "showMengJiSkill",
+    repentance: "showRepentance",
 };
 
 export function createDefaultSettings(): ShieldKnightSettings {
@@ -2537,6 +2580,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         characterBuildId: "holy_knight",
         raceSkillActive: false,
         manualChargeEnhanceActive: false,
+        chargeMasterTitleActive: false,
         manualSmashEnhanceActive: false,
         manualWindmillBase30Active: false,
         comboCardSkillId: "none",
@@ -2632,6 +2676,7 @@ export function createDefaultSettings(): ShieldKnightSettings {
         showSmashSkill: true,
         showWindmillSkill: true,
         showMengJiSkill: true,
+        showRepentance: false,
         showChargeSkill: true,
         mengJiStack: 1,
         skillUsageCounts: createDefaultSkillUsageCounts(),

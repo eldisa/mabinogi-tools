@@ -25,12 +25,14 @@
                                     class="w-full sm:w-[280px]"
                                     filterable
                                 >
-                                    <el-option
-                                        v-for="item in op"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    />
+                                    <el-option-group v-for="group in weaponGroups" :key="group.label" :label="group.label">
+                                        <el-option
+                                            v-for="item in group.options"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value"
+                                        />
+                                    </el-option-group>
                                 </el-select>
                             </el-form-item>
                             <div class="flex-grow flex justify-center items-center mt-4">
@@ -196,7 +198,15 @@
                     >
                         <el-table-column prop="name" label="名稱" width="300" align="center">
                             <template #default="{ row }">
-                                <span class="block text-center w-full">{{ row.name }}</span>
+                                <span class="block text-center w-full">
+                                    {{ row.name }}
+                                    <el-popover v-if="row.npc?.length" trigger="click" :width="280">
+                                        <template #reference>
+                                            <el-icon class="info-icon" aria-label="可改造 NPC"><InfoFilled /></el-icon>
+                                        </template>
+                                        NPC：{{ row.npc.join("、") }}
+                                    </el-popover>
+                                </span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="abilities" label="影響" min-width="150" align="center">
@@ -271,12 +281,14 @@
                                         class="w-full"
                                         filterable
                                     >
-                                        <el-option
-                                            v-for="item in op"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value"
-                                        />
+                                        <el-option-group v-for="group in weaponGroups" :key="group.label" :label="group.label">
+                                            <el-option
+                                                v-for="item in group.options"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value"
+                                            />
+                                        </el-option-group>
                                     </el-select>
                                 </el-form-item>
 
@@ -436,7 +448,15 @@
                                                 class="w-full upgrade-radio"
                                             >
                                                 <div class="flex flex-col py-2 w-full">
-                                                    <span class="font-medium text-gray-100">{{ upgrade.name }}</span>
+                                                    <span class="font-medium text-gray-100">
+                                                        {{ upgrade.name }}
+                                                        <el-popover v-if="upgrade.npc?.length" trigger="click" :width="280">
+                                                            <template #reference>
+                                                                <el-icon class="info-icon" aria-label="可改造 NPC" @click.prevent><InfoFilled /></el-icon>
+                                                            </template>
+                                                            NPC：{{ upgrade.npc.join("、") }}
+                                                        </el-popover>
+                                                    </span>
                                                     <div
                                                         class="text-xs text-gray-300 mt-1"
                                                         v-html="renderAbilities(upgrade.abilities)"
@@ -627,6 +647,15 @@
 </template>
 
 <style>
+.info-icon {
+    margin-left: 0.3rem;
+    vertical-align: middle;
+    color: #6b7280;
+    cursor: pointer;
+}
+.info-icon:hover {
+    color: #fcd34d;
+}
 /* 這裡的 CSS 樣式與上一個頁面相同，請保留 */
 /* 調整表格內部 InputNumber 的顏色 */
 .el-table .el-input-number {
@@ -756,6 +785,8 @@ import { ref, computed, watch, nextTick } from "vue";
 import { Option } from "../types";
 import { infoForG27Weapon } from "../data/infoForG27Weapon";
 import { upgradeForG27Weapons } from "../data/upgradeForG27Weapons";
+import { infoForCatWeapon } from "../data/infoForCatWeapon";
+import { upgradeForCatWeapons } from "../data/upgradeForCatWeapons";
 import {
     abilitiesMap,
     abilitiesValueWithPercentArray,
@@ -1031,17 +1062,19 @@ const quickPresets: QuickPreset[] = [
         },
     },
 ];
-const upgradeableWeapons: number[] = upgradeForG27Weapons.map((item) => item.weaponId);
+const weaponInfos = [...infoForG27Weapon, ...infoForCatWeapon];
+const weaponUpgrades = [...upgradeForG27Weapons, ...upgradeForCatWeapons];
+const upgradeableWeapons: number[] = weaponUpgrades.map((item) => item.weaponId);
 
-const weaponStatus = ref(infoForG27Weapon.find((item) => item.id === selectedWeaponId.value));
+const weaponStatus = ref(weaponInfos.find((item) => item.id === selectedWeaponId.value));
 
 const upgradeList = computed(() => {
-    return upgradeForG27Weapons.find((item) => item.weaponId === selectedWeaponId.value)?.methods || [];
+    return weaponUpgrades.find((item) => item.weaponId === selectedWeaponId.value)?.methods || [];
 });
 
 // 取得當前武器的分類
 const currentWeaponCategory = computed(() => {
-    return upgradeForG27Weapons.find((item) => item.weaponId === selectedWeaponId.value)?.weaponCategory;
+    return weaponUpgrades.find((item) => item.weaponId === selectedWeaponId.value)?.weaponCategory;
 });
 
 // 根據武器分類篩選可用的快速配置
@@ -1085,12 +1118,17 @@ const isCraftmanSelected = computed(
 );
 
 // 使用 map 創建 options，確保下拉選單能動態顯示
-const op: Option[] = infoForG27Weapon
-    .filter((weapon) => upgradeableWeapons.includes(weapon.id))
-    .map((item) => ({
-        label: item.name.tw || item.name.en,
-        value: item.id,
-    }));
+const toOptions = (infos: typeof weaponInfos): Option[] =>
+    infos
+        .filter((weapon) => upgradeableWeapons.includes(weapon.id))
+        .map((item) => ({
+            label: item.name.tw || item.name.en,
+            value: item.id,
+        }));
+const weaponGroups = [
+    { label: "靈魂級", options: toOptions(infoForG27Weapon) },
+    { label: "貓武級", options: toOptions(infoForCatWeapon) },
+];
 
 const roundTo = (value: number, digits: number = 2): number => {
     const factor = Math.pow(10, digits);
@@ -1246,7 +1284,7 @@ watch(
         form.value.selectedUpgradeArray = ["", "", "", "", "", ""];
         form.value.before = {};
         form.value.after = {};
-        const newStatus = infoForG27Weapon.find((item) => item.id === newId);
+        const newStatus = weaponInfos.find((item) => item.id === newId);
         if (newStatus) {
             weaponStatus.value = newStatus;
 

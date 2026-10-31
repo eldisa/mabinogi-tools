@@ -48,6 +48,7 @@ const groups = [
         items: [
             { icon: "TrendCharts",  title: "頂裝差距",     description: "比較與頂裝之間的差距",                   path: "/gear-gap" },
             { icon: "Headset",      title: "音樂計算機",   description: "計算音樂技能的傷害加成與樂器配置",       path: "/music-calculator" },
+            { icon: "DataAnalysis", title: "煉金術傷害計算器", description: "水炮／火焰噴射／高壓火爆等鍊金技能傷害、裝備比較與傷害效益", path: "/alchemy-calculator" },
         ],
     },
     {
@@ -62,8 +63,7 @@ const groups = [
     },
 ];
 
-const abandonedFeatures = [
-    { icon: "DataAnalysis", title: "煉金術傷害計算器", description: "等待大佬提供公式和資料", path: "/alchemy-calculator" },
+const abandonedFeatures: { icon: string; title: string; description: string; path: string }[] = [
     { icon: "Lightning",    title: "魔法傷害計算器",   description: "等待大佬提供公式和資料", path: "/magic-calculator" },
 ];
 
@@ -118,7 +118,7 @@ const navigateTo = (path: string) => {
             </div>
         </section>
 
-        <section class="features abandoned-section">
+        <section v-if="abandonedFeatures.length" class="features abandoned-section">
             <h2 class="section-title abandoned-title">棄坑中 💤</h2>
             <div class="feature-grid">
                 <div

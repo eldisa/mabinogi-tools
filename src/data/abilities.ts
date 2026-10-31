@@ -125,6 +125,16 @@ export const abilitiesMap: Record<string, string> = {
     wound_min: "最小負傷率",
     max_bullet: "最大彈藥數量",
     splash_radius: "攻擊範圍",
+    splash_damage: "擴散傷害比例",
+    aim_ratio_bonus: "瞄準率矯正",
+    elemental_damage: "屬性傷害",
+    marionette_magic_protect: "人偶魔法保護",
+    knuckle_reset_cooldown_on_critical: "暴擊發動時連續技冷卻時間初始化機率",
+    crash_fragment_damage: "爆裂箭碎片傷害增加",
+    crash_fragment_range: "爆裂箭碎片範圍增加",
+    lightning_road_cooldown: "雷氣鎖鏈冷卻時間減少",
+    meteor_strike_cooldown: "火石狂熱冷卻時間減少",
+    shuriken_charging: "手裏劍突擊傷害增加",
     attack_speed_set: "攻擊速度套裝效果",
     attack_speed: "攻擊速度", // 和套裝是在不同的乘區
     bomb_expert_set: "暴發抵抗",
@@ -442,6 +452,8 @@ export const abilitiesValueWithPercentArray: string[] = [
     "marionette_charge_stun",
     "magnum_shot_damage",
     "crash_shot_damage",
+    "crash_fragment_damage",
+    "shuriken_charging",
     "final_shot_damage",
     "bolt_compose",
     "AlchemyElementalBonus",
@@ -486,6 +498,7 @@ export const abilitiesValueWithRangeArray: string[] = [
     "attack_range_2",
     "stamped_move_range",
     "dashpunch_attack_range",
+    "crash_fragment_range",
 ];
 
 export const abilitiesValueWithTimeArray: string[] = [
@@ -495,6 +508,8 @@ export const abilitiesValueWithTimeArray: string[] = [
     "hydra_time",
     "chain_cylinder_cooldown",
     "lightning_road_charging",
+    "lightning_road_cooldown",
+    "meteor_strike_cooldown",
     "shadow_stealth_time",
     "death_marker_time",
 ];
