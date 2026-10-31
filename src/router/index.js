@@ -26,6 +26,7 @@ import MusicCalculator from '../views/MusicCalculator.vue';
 import MagicCircleView from '../views/MagicCircleView.vue';
 import OghamView from '../views/OghamView.vue';
 import ErgView from '../views/ErgView.vue';
+import ArcanaAwakeningExp from '../views/ArcanaAwakeningExp.vue';
 import OghamSimulatorView from '../views/OghamSimulatorView.vue';
 import GachaSimulatorView from '../views/GachaSimulatorView.vue';
 import ArmorBreakTraining from '../views/ArmorBreakTraining.vue';
@@ -189,6 +190,11 @@ const routes = [
             path: '/erg',
             name: '聚能查詢',
             component: ErgView,
+        },
+        {
+            path: '/arcana-awakening-exp',
+            name: '阿卡那覺醒經驗',
+            component: ArcanaAwakeningExp,
         },
         {
             path: '/ogham',

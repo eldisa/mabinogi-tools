@@ -23,3 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 *.txt
+
+# Build cache
+*.tsbuildinfo
+
+# 爬蟲輸出（spider/ 產生，推到後端用）
+/data/
+
+# Claude Code 本機設定
+.claude/
+.claudeignore

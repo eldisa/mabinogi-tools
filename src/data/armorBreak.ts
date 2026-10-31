@@ -52,8 +52,6 @@ export const CONDITIONS: Condition[] = [
     { id: 803, name: "崩潰的波動", advanced: true, cls: "聖詠", optional: true, valueKind: "prot" }, // 10+遺物×0.5 s
     { id: 1176, name: "不協調感", advanced: true, cls: "聖詠", optional: true, valueKind: "prot", seconds: 180 },
     { id: 339, name: "憤怒衝擊", advanced: true, optional: true, valueKind: "atk", seconds: 7 }, // 近戰技能傷害
-    { id: 1145, name: "觸媒效應", advanced: true, cls: "鍊金", optional: true, valueKind: "prot", seconds: 300 },
-    { id: 1147, name: "召喚噩夢", advanced: true, cls: "鍊金", optional: true, valueKind: "prot", seconds: 120, note: "最終傷害 +0.9594%" },
 ];
 
 // 技能名稱取自 src/data/skillNames.ts 的繁中（tw）欄位；寵物 id 該表查無名稱
@@ -81,8 +79,6 @@ export const SOURCES: Source[] = [
     { id: 1026, kind: "self", conditions: [1026] },
     { id: 803, kind: "self", conditions: [803], note: "聖詠技能；持續 10 秒、CD 5 分鐘" },
     { id: 339, kind: "self", conditions: [339] },
-    { id: 1145, kind: "self", conditions: [1145], note: "鍊金技能" },
-    { id: 1147, kind: "self", conditions: [1147], note: "鍊金技能" },
 ];
 
 export const condById = new Map(CONDITIONS.map((c) => [c.id, c]));
@@ -168,10 +164,6 @@ export const skillValue = (st: ValueSettings, skillId: number, condId: number): 
             return { pct: 0, fixed: Math.ceil(st.dissonanceStacks * st.dissonance) };
         case 339: // 憤怒衝擊（近戰技能傷害）
             return { pct: 15 + st.rageCircle * 0.3 + (st.rageSet ? 2 : 0), fixed: 0 };
-        case 1145: // 觸媒效應（保護＋魔保）
-            return { pct: 0, fixed: 3.68 };
-        case 1147: // 召喚噩夢（保護＋魔保；最終傷害另計，不入 value）
-            return { pct: 0, fixed: 1.845 };
         // ===== 寵物／其他（保護＋魔保 或 增傷）=====
         case 50226: // 水炸彈投擲 → 594 跑跑卡丁車水球
             return { pct: 0, fixed: 3 };
@@ -205,14 +197,14 @@ export const STAT_GROUPS: StatGroup[] = [
         label: "物理保護減少",
         iconId: 1164,
         kind: "prot",
-        conds: [1164, 1093, 10001, 578, 803, 1176, 1145, 1147, 392, 464, 594, 912],
+        conds: [1164, 1093, 10001, 578, 803, 1176, 392, 464, 594, 912],
     },
     {
         key: "magic",
         label: "魔法保護減少",
         iconId: 1165,
         kind: "prot",
-        conds: [1165, 1094, 10002, 578, 803, 1176, 1145, 1147, 392, 464, 594, 912],
+        conds: [1165, 1094, 10002, 578, 803, 1176, 392, 464, 594, 912],
     },
     { key: "atk", label: "所受傷害增加", iconId: 1166, kind: "atk", conds: [1166, 521, 1026, 1138] },
     { key: "melee", label: "近戰技能傷害", iconId: 339, kind: "atk", conds: [339] },

@@ -179,6 +179,7 @@ export const abilitiesMap: Record<string, string> = {
     bash_move_range: "猛擊移動距離",
     windmill_attack_range: "旋風擺蓮腿攻擊範圍",
     magnum_shot_damage: "穿心箭最終傷害增加",
+    magnum_shot_damage_add: "穿心箭傷害增加", // 大小弓：加在技能傷害上，非最終傷害
     crash_shot_damage: "爆裂箭最終傷害增加",
     final_shot_damage: "終極射擊傷害增加",
     bolt_compose: "組合魔法傷害增加",
@@ -439,6 +440,7 @@ export const abilitiesValueWithPercentArray: string[] = [
     "commerce_discount",
     "bash_damage",
     "magnum_shot_damage",
+    "magnum_shot_damage_add",
     "crash_shot_damage",
     "final_shot_damage",
     "bolt_compose",
@@ -487,6 +489,8 @@ export const abilitiesValueWithPercentArray: string[] = [
     "item_durability_loss_dec_rate",
     "healing_skill",
     "sb_barrier_damage_reduce",
+    "elemental_damage",
+    "aim_ratio_bonus",
 ];
 
 export const abilitiesValueWithRangeArray: string[] = [

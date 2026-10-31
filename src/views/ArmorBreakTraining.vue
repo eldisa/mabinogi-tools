@@ -129,10 +129,11 @@ const mode = ref<"scratch" | "random">("scratch"); // 從0到1 / 隨機出題；
 const teammates = useLocalStorage<string[]>("armor-break:teammates", []);
 const TEAMMATES = [
     { key: "聖詠", label: "聖詠者" },
-    { key: "鍊金", label: "鍊金" },
 ] as const;
-// 清除已移除的「聖盾」舊勾選
-if (teammates.value.includes("聖盾")) teammates.value = teammates.value.filter((k) => k !== "聖盾");
+// 清除已移除的「聖盾」「鍊金」舊勾選（版本更新後已無對應的破防狀態）
+const REMOVED_TEAMMATES = ["聖盾", "鍊金"];
+if (teammates.value.some((k) => REMOVED_TEAMMATES.includes(k)))
+    teammates.value = teammates.value.filter((k) => !REMOVED_TEAMMATES.includes(k));
 const classOk = (c?: Condition) => !c?.cls || teammates.value.includes(c.cls);
 const toggleTeammate = (key: string) => {
     const s = new Set(teammates.value);
