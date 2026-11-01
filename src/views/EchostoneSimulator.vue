@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import { ECHOSTONE_OPTIONS, LEVEL_PROB_TABLE, type EchostoneOption } from "../data/echostoneOptions";
+import { sortByTalent, talentOfSkill, talentTabs } from "../data/skillTalent";
 
 // ===== Types =====
 interface AwakeningResult {
@@ -46,6 +47,8 @@ const lastPolish = ref<PolishLog | null>(null);
 // Pool / target state
 const targets        = ref<TargetEntry[]>([]);
 const filterText     = ref("");
+const ALL_TALENTS    = "全部";
+const talentFilter   = ref(ALL_TALENTS);
 const showStoneCard  = ref(true);
 const showPoolCard   = ref(true);
 const showTargetCard = ref(true);
@@ -53,9 +56,13 @@ const showTargetCard = ref(true);
 // ===== Computed =====
 const options = computed<EchostoneOption[]>(() => ECHOSTONE_OPTIONS[selectedColor.value] ?? []);
 
+const poolTalentTabs = computed(() => talentTabs(options.value));
+
 const filteredPool = computed(() => {
     const q = filterText.value.trim();
-    return q ? options.value.filter(o => o.name.includes(q)) : options.value;
+    return sortByTalent(options.value).filter(
+        o => (talentFilter.value === ALL_TALENTS || talentOfSkill(o.skillId) === talentFilter.value) && (!q || o.name.includes(q)),
+    );
 });
 
 const totalProb = computed(() => options.value.reduce((s, o) => s + o.prob, 0));
@@ -212,6 +219,7 @@ function selectColor(id: string) {
     resetAll();
     targets.value = [];
     filterText.value = "";
+    talentFilter.value = ALL_TALENTS;
 }
 </script>
 
@@ -410,6 +418,13 @@ function selectColor(id: string) {
                         </span>
                     </div>
 
+                    <el-radio-group v-model="talentFilter" size="small" class="mb-3 flex-wrap" aria-label="詞條分類">
+                        <el-radio-button :value="ALL_TALENTS">{{ ALL_TALENTS }} {{ options.length }}</el-radio-button>
+                        <el-radio-button v-for="t in poolTalentTabs" :key="t.name" :value="t.name">
+                            {{ t.name }} {{ t.count }}
+                        </el-radio-button>
+                    </el-radio-group>
+
                     <el-table
                         :data="filteredPool"
                         size="small"
@@ -422,6 +437,12 @@ function selectColor(id: string) {
                         <el-table-column width="32" align="center">
                             <template #default="{ row }">
                                 <span v-if="isTargeted(row.name)" class="text-yellow-400 text-base">✓</span>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column label="分類" width="64" align="center">
+                            <template #default="{ row }">
+                                <span class="text-xs text-gray-400">{{ talentOfSkill(row.skillId) }}</span>
                             </template>
                         </el-table-column>
 
