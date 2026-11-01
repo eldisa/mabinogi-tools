@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import reforgeDataRaw from "../../scripts/mabi_reforge_slim_with_race.json";
 import { sortByTalent, talentOfSkill, talentTabs } from "../data/skillTalent";
+import { RATING_LABEL, recommendsFor } from "../data/reforgeRecommend";
 import * as echarts from "echarts/core";
 import { LineChart } from "echarts/charts";
 import { GridComponent, TooltipComponent, MarkLineComponent, MarkPointComponent } from "echarts/components";
@@ -324,9 +325,17 @@ const activePool = computed((): ReforgeEntry[] => {
 
 const poolTalentTabs = computed(() => talentTabs(activePool.value));
 
+// 陸服整理的推薦詞條：依目前部位置頂並標示評價
+const poolRecommends = computed(() => recommendsFor(selectedEquipType.value?.categoryKey ?? ""));
+const recommendOf = (name: string) => poolRecommends.value.get(name);
+const RATING_TAG_TYPE = { 3: "danger", 2: "warning", 1: "primary", 0: "info" } as const;
+
 const filteredPool = computed((): ReforgeEntry[] => {
     const q = filterText.value.trim();
-    return sortByTalent(activePool.value).filter(
+    const rank = (e: ReforgeEntry) => recommendOf(e.name)?.rating ?? -1;
+    return sortByTalent(activePool.value)
+        .sort((a, b) => rank(b) - rank(a))
+        .filter(
         (e) =>
             (talentFilter.value === ALL_TALENTS || talentOfSkill(e.skillId) === talentFilter.value) &&
             (!q || e.name.includes(q)),
@@ -1058,6 +1067,24 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                                 <span :class="isTargeted(row.name) ? 'text-yellow-300 font-semibold' : ''">
                                     {{ row.name }}
                                 </span>
+                                <template v-if="recommendOf(row.name)">
+                                    <el-tag
+                                        :type="RATING_TAG_TYPE[recommendOf(row.name)!.rating]"
+                                        size="small"
+                                        effect="dark"
+                                        class="ml-1.5"
+                                    >
+                                        {{ RATING_LABEL[recommendOf(row.name)!.rating] }}
+                                    </el-tag>
+                                    <div
+                                        v-for="rec in recommendOf(row.name)!.items"
+                                        :key="rec.who"
+                                        class="text-xs text-gray-400 mt-0.5"
+                                    >
+                                        {{ rec.who }}・{{ RATING_LABEL[rec.rating] }}
+                                        <span v-if="rec.note" class="text-gray-500">（{{ rec.note }}）</span>
+                                    </div>
+                                </template>
                             </template>
                         </el-table-column>
 
