@@ -3,7 +3,55 @@ import json
 import math
 import os
 
-def parse_mabi_reforge(file_path):
+# 詞條名稱 → 技能 ID 的人工別名表
+# 用於彌補 skillNames.ts 與細工/回音詞條命名不一致的少數案例（詞序相反、用字差異等）
+SKILL_ALIASES = {
+    "精通斧": 23013,  # 精通斧頭
+    "連續技能 : 突拳": 24101,
+    "連續技能:突拳": 24101,
+    "連續技能 : 導電拳擊": 24102,
+    "連續技能:導電拳擊": 24102,
+    "連續技能 : 狂暴拳擊": 24103,
+    "連續技能:狂暴拳擊": 24103,
+    "連續技能 : 螺旋勾拳": 24201,
+    "連續技能:螺旋勾拳": 24201,
+    "連續技能 : 翻跟斗": 24202,  # 技能表作「翻筋斗」
+    "連續技能:翻跟斗": 24202,
+    "連續技能 : 飛踢": 24301,
+    "連續技能:飛踢": 24301,
+    "連續技能 : 猛烈突擊": 24302,
+    "連續技能:猛烈突擊": 24302,
+    "手裏劍精通": 26000,  # 精通手裏劍
+    "戰鬥占星術": 27207,  # 精通戰鬥占星術
+    "訓練野生動物": 10026,  # 野生動物訓練
+    "變身精通": 56001,  # 精通變身
+}
+
+
+def load_skill_index(skill_names_ts_path):
+    """從 skillNames.ts 解析出 (技能ID, 繁中名稱) 清單，依名稱長度由長到短排序，
+    讓最長（最具體）的技能名稱優先比對，避免短名稱誤判。"""
+    with open(skill_names_ts_path, "r", encoding="utf-8") as f:
+        src = f.read()
+    entries = []
+    for m in re.finditer(r'id:\s*(\d+),\s*name:\s*\{[^}]*?tw:\s*"([^"]*)"', src, re.S):
+        entries.append((int(m.group(1)), m.group(2)))
+    for name, skill_id in SKILL_ALIASES.items():
+        entries.append((skill_id, name))
+    entries.sort(key=lambda e: -len(e[1]))
+    return entries
+
+
+def find_skill_id(name, skill_index, min_len=2):
+    """僅回傳「明顯跟技能相關」的比對結果：詞條名稱以某技能名稱為前綴，
+    且詞條名稱不等於技能名稱本身（純屬性如「力量」不視為技能相關）。"""
+    for skill_id, tw in skill_index:
+        if len(tw) >= min_len and name != tw and name.startswith(tw):
+            return skill_id
+    return None
+
+
+def parse_mabi_reforge(file_path, skill_index):
     """解析格式：將一般區間上限設為 maxLevel，最終極限設為 maxLevelBreak"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -40,13 +88,17 @@ def parse_mabi_reforge(file_path):
         # 3. 根據公式再次確認突破上限 (無條件進位)
         limit_break_calc = math.ceil(normal_max * 1.25)
         
-        data[name] = {
+        entry = {
             "name": name,
             "maxLevel": normal_max,      # 輸出為 20
             "maxLevelBreak": limit_break_calc, # 輸出為 25[cite: 7, 11]
             "stepValue": float(max_val) / final_limit if final_limit != 0 else 0,
             "unit": unit.strip()
         }
+        skill_id = find_skill_id(name, skill_index)
+        if skill_id is not None:
+            entry["skillId"] = skill_id
+        data[name] = entry
     return data
 
 def generate_complete_slim_library():
@@ -84,6 +136,8 @@ def generate_complete_slim_library():
         "human_elf": ["爆裂箭", "精通遠距離", "穿心箭", "支援箭"]
     }
 
+    skill_index = load_skill_index(os.path.join('..', 'src', 'data', 'skillNames.ts'))
+
     full_library = {}
     category_name_pools = {cat: [] for cat in file_groups}  # 名稱列表（用於 race 過濾）
     category_data = {cat: {} for cat in file_groups}        # 各部位專屬的完整 entry data
@@ -92,7 +146,7 @@ def generate_complete_slim_library():
     for category, files in file_groups.items():
         for filename in files:
             if not os.path.exists(filename): continue
-            file_data = parse_mabi_reforge(filename)
+            file_data = parse_mabi_reforge(filename, skill_index)
 
             for name, attr in file_data.items():
                 full_library[name] = attr                    # 仍保留共用 library（供 heavy extra 查詢）

@@ -10865,7 +10865,9 @@ export const skillNames: SkillName[] = [
     {
         id: 59088,
         name: {
+            us: "Virtuous Oath",
             kr: "고결한 서약",
+            tw: "高潔誓約",
         },
     },
     {

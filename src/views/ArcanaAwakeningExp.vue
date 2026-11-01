@@ -45,7 +45,7 @@ const tableRows = awakeningCumExp.map((cum, i) => ({
         <div class="max-w-3xl mx-auto">
             <header class="mb-6 text-center pt-8 pb-2">
                 <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 tracking-wide font-serif drop-shadow-lg">
-                    阿卡那覺醒經驗
+                    秘法覺醒經驗
                 </h1>
                 <p class="text-base text-gray-400 mt-3">依每週副本通關次數，計算到目標覺醒等級所需經驗與週數</p>
                 <p class="text-xs text-gray-500 mt-1">資料來自韓服（拉瓦努的瑪奇）</p>

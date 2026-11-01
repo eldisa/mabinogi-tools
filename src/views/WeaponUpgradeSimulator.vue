@@ -852,7 +852,7 @@ const quickPresets: QuickPreset[] = [
         name: "銳利優先",
         description: "物理武器銳利最大化",
         category: "universal",
-        weaponCategories: ["melee_physical", "ranged_physical"],
+        weaponCategories: ["melee_physical"],
         abilityWeights: {
             lance_piercing: 70,
             attack_max: 1,
@@ -879,6 +879,21 @@ const quickPresets: QuickPreset[] = [
         category: "universal",
         weaponCategories: ["ranged_physical"],
         abilityWeights: {
+            attack_max: 1,
+            attack_min: 0.5,
+            attack_range: 0.01,
+            aim_ratio_bonus: 1,
+        },
+    },
+    // 物理遠程 - 銳利優先
+    {
+        id: "crit-ranged",
+        name: "銳利優先",
+        description: "遠程物理武器銳利最大化",
+        category: "universal",
+        weaponCategories: ["ranged_physical"],
+        abilityWeights: {
+            lance_piercing: 70,
             attack_max: 1,
             attack_min: 0.5,
             attack_range: 0.01,

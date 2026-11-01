@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { InfoFilled } from "@element-plus/icons-vue";
 import { oghamArcanas, type OghamComboEffect } from "../data/ogham";
 import { simWords } from "../data/oghamSim";
+import { oghamReforgeEquiv } from "../data/oghamReforgeEquiv";
 
 const baseUrl = import.meta.env.BASE_URL;
 const imgUrl = (p?: string | null) => (p ? baseUrl + p : "");
@@ -73,7 +74,14 @@ const onArcanaChange = () => {
     if (!pts.includes(activePoint.value)) activePoint.value = pts[pts.length - 1] ?? 9;
 };
 
-const categoryColor = (cat: OghamComboEffect["category"]): string =>
+// 滿級效果換算成同效果細工/月餅詞條的等級，例：重擊 50% ÷ 10%/級 = 5 級
+const reforgeEquiv = (row: OghamComboEffect) =>
+    (oghamReforgeEquiv[row.option] ?? []).map((e) => ({
+        ...e,
+        level: Math.round((parseFloat(row.base) / e.step) * 10) / 10,
+    }));
+
+const categoryColor =(cat: OghamComboEffect["category"]): string =>
     cat === "祕法" ? "text-red-400" : cat === "主要才能" ? "text-blue-400" : "text-green-400";
 </script>
 
@@ -219,6 +227,16 @@ const categoryColor = (cat: OghamComboEffect["category"]): string =>
                     <el-table-column label="滿級的效果" width="110" align="right">
                         <template #default="{ row }">
                             <span class="font-semibold text-accent">{{ row.base }}</span>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="對應的細工/月餅" min-width="190">
+                        <template #default="{ row }">
+                            <div v-for="e in reforgeEquiv(row)" :key="e.name" class="text-sm text-gray-300">
+                                <span class="text-xs text-gray-500">[{{ e.src }}]</span>
+                                {{ e.name }}
+                                <span class="font-semibold text-accent whitespace-nowrap">{{ e.level }} 級</span>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

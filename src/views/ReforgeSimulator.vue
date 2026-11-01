@@ -2,6 +2,8 @@
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import reforgeDataRaw from "../../scripts/mabi_reforge_slim_with_race.json";
+import { sortByTalent, talentOfSkill, talentTabs } from "../data/skillTalent";
+import { RATING_LABEL, recommendsFor } from "../data/reforgeRecommend";
 import * as echarts from "echarts/core";
 import { LineChart } from "echarts/charts";
 import { GridComponent, TooltipComponent, MarkLineComponent, MarkPointComponent } from "echarts/components";
@@ -15,6 +17,7 @@ interface ReforgeEntry {
     maxLevelBreak: number; // explicit in new data (= ceil(maxLevel * 1.25))
     stepValue: number; // value per level
     unit: string;
+    skillId?: number; // 明顯對應到特定技能時才有值，對照 skillNames.ts
 }
 
 interface ReforgeData {
@@ -256,6 +259,8 @@ const selectedToolIdx = ref<number | null>(null);
 const doubleBreakthrough = ref<boolean>(false);
 const activityMode = ref<boolean>(false);
 const filterText = ref<string>("");
+const ALL_TALENTS = "全部";
+const talentFilter = ref<string>(ALL_TALENTS);
 const selectedTargets = ref<TargetEntry[]>([]); // max 3
 const costPerRoll = ref<number>(0);
 
@@ -318,10 +323,23 @@ const activePool = computed((): ReforgeEntry[] => {
     return basePool;
 });
 
+const poolTalentTabs = computed(() => talentTabs(activePool.value));
+
+// 陸服整理的推薦詞條：依目前部位置頂並標示評價
+const poolRecommends = computed(() => recommendsFor(selectedEquipType.value?.categoryKey ?? ""));
+const recommendOf = (name: string) => poolRecommends.value.get(name);
+const RATING_TAG_TYPE = { 3: "danger", 2: "warning", 1: "primary", 0: "info" } as const;
+
 const filteredPool = computed((): ReforgeEntry[] => {
     const q = filterText.value.trim();
-    if (!q) return activePool.value;
-    return activePool.value.filter((e) => e.name.includes(q));
+    const rank = (e: ReforgeEntry) => recommendOf(e.name)?.rating ?? -1;
+    return sortByTalent(activePool.value)
+        .sort((a, b) => rank(b) - rank(a))
+        .filter(
+        (e) =>
+            (talentFilter.value === ALL_TALENTS || talentOfSkill(e.skillId) === talentFilter.value) &&
+            (!q || e.name.includes(q)),
+    );
 });
 
 // ===== Target Selection =====
@@ -413,6 +431,7 @@ const selectCategory = (cat: "防具" | "武器" | null) => {
 const selectEquipType = (eq: EquipmentType) => {
     selectedEquipType.value = eq;
     selectedTargets.value = [];
+    talentFilter.value = ALL_TALENTS;
 };
 
 // el-select handlers
@@ -1013,6 +1032,13 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                         </span>
                     </div>
 
+                    <el-radio-group v-model="talentFilter" size="small" class="mb-3 flex-wrap" aria-label="詞條分類">
+                        <el-radio-button :value="ALL_TALENTS">{{ ALL_TALENTS }} {{ activePool.length }}</el-radio-button>
+                        <el-radio-button v-for="t in poolTalentTabs" :key="t.name" :value="t.name">
+                            {{ t.name }} {{ t.count }}
+                        </el-radio-button>
+                    </el-radio-group>
+
                     <el-table
                         :data="filteredPool"
                         size="small"
@@ -1030,11 +1056,35 @@ watch([simResult, rollCount, lastRoll], updateDistChart, { flush: "post" });
                             </template>
                         </el-table-column>
 
+                        <el-table-column label="分類" width="64" align="center">
+                            <template #default="{ row }">
+                                <span class="text-xs text-gray-400">{{ talentOfSkill(row.skillId) }}</span>
+                            </template>
+                        </el-table-column>
+
                         <el-table-column label="詞條名稱" min-width="170">
                             <template #default="{ row }">
                                 <span :class="isTargeted(row.name) ? 'text-yellow-300 font-semibold' : ''">
                                     {{ row.name }}
                                 </span>
+                                <template v-if="recommendOf(row.name)">
+                                    <el-tag
+                                        :type="RATING_TAG_TYPE[recommendOf(row.name)!.rating]"
+                                        size="small"
+                                        effect="dark"
+                                        class="ml-1.5"
+                                    >
+                                        {{ RATING_LABEL[recommendOf(row.name)!.rating] }}
+                                    </el-tag>
+                                    <div
+                                        v-for="rec in recommendOf(row.name)!.items"
+                                        :key="rec.who"
+                                        class="text-xs text-gray-400 mt-0.5"
+                                    >
+                                        {{ rec.who }}・{{ RATING_LABEL[rec.rating] }}
+                                        <span v-if="rec.note" class="text-gray-500">（{{ rec.note }}）</span>
+                                    </div>
+                                </template>
                             </template>
                         </el-table-column>
 

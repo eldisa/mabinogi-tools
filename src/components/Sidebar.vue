@@ -54,7 +54,7 @@ const menuGroups = ref([
             { name: "貿易計算機", path: "/trade-calculator", icon: markRaw(Van) },
             { name: "物價", path: "/price-check", icon: markRaw(Coin), note: "測試中・資料來自韓服" },
             { name: "聚能查詢", path: "/erg", icon: markRaw(MagicStick) },
-            { name: "阿卡那覺醒經驗", path: "/arcana-awakening-exp", icon: markRaw(TrendCharts), note: "資料來自韓服" },
+            { name: "秘法覺醒經驗", path: "/arcana-awakening-exp", icon: markRaw(TrendCharts), note: "資料來自韓服" },
             { name: "符文", path: "/ogham", icon: markRaw(MagicStick), note: "暫譯・台服未實裝" },
         ],
     },

@@ -410,7 +410,7 @@ export const oghamArcanas: OghamArcana[] = [
         effectTable: [
             {
                 category: "祕法",
-                option: "龍焰 火 最大傷害倍率增加",
+                option: "龍焰 最大傷害倍率增加",
                 optionKo: "익스플로전 런지 파이어 최대 대미지 배율 증가",
                 base: "250%",
                 special: true,
@@ -419,7 +419,7 @@ export const oghamArcanas: OghamArcana[] = [
             },
             {
                 category: "祕法",
-                option: "暗雷連結 電擊 最大傷害倍率增加",
+                option: "暗雷連結 最大傷害倍率增加",
                 optionKo: "라이트닝 체인 전격 최대 대미지 배율 증가",
                 base: "20%",
                 special: true,
@@ -428,7 +428,7 @@ export const oghamArcanas: OghamArcana[] = [
             },
             {
                 category: "祕法",
-                option: "寒冰送葬 每秒 冰 最大傷害倍率增加",
+                option: "寒冰送葬 每秒 最大傷害倍率增加",
                 optionKo: "스노우 스톰 초당 아이스 최대 대미지 배율 증가",
                 base: "35%",
                 special: true,
@@ -437,7 +437,7 @@ export const oghamArcanas: OghamArcana[] = [
             },
             {
                 category: "祕法",
-                option: "潛伏點火 火 最大傷害倍率增加",
+                option: "潛伏點火 最大傷害倍率增加",
                 optionKo: "레이턴트 이그니션 파이어 최대 대미지 배율 증가",
                 base: "300%",
                 special: true,
@@ -997,15 +997,6 @@ export const oghamArcanas: OghamArcana[] = [
             },
             {
                 category: "祕法",
-                option: "超載爆發 爆炸傷害倍率增加",
-                optionKo: "오버 드라이브 폭발 대미지 배율 증가",
-                base: "20%",
-                special: true,
-                skillName: "超載爆發",
-                skillIcon: "oghamImage/img-1762278449645.webp",
-            },
-            {
-                category: "祕法",
                 option: "湮滅一槍 大爆炸傷害倍率增加",
                 optionKo: "어나이얼레이션 대폭발 대미지 배율 증가",
                 base: "40%",
@@ -1161,14 +1152,6 @@ export const oghamArcanas: OghamArcana[] = [
             },
             {
                 category: "主要才能",
-                option: "拉近 傷害倍率增加",
-                optionKo: "클로져 대미지 배율 증가",
-                base: "100%",
-                skillName: "拉近",
-                skillIcon: "oghamImage/img-1762278308617.webp",
-            },
-            {
-                category: "主要才能",
                 option: "退遠 每發 傷害倍率增加",
                 optionKo: "파 어웨이 1발당 대미지 배율 증가",
                 base: "8%",
@@ -1281,7 +1264,7 @@ export const oghamArcanas: OghamArcana[] = [
             },
             {
                 category: "祕法",
-                option: "地裂螺旋 (水 鍊金術 效果) 技能 技能 最終 傷害倍率增加",
+                option: "地裂螺旋 (水 鍊金術 效果) 最終 傷害倍率增加",
                 optionKo: "스파이럴 이럽션 (물 연금술 효과) 스킬 스킬 최종 대미지 배율 증가",
                 base: "1%",
                 special: true,
@@ -1434,7 +1417,7 @@ export const oghamArcanas: OghamArcana[] = [
             },
             {
                 category: "祕法",
-                option: "壯麗終曲 콜로서스, 피에로, 에코 人偶 追加 傷害倍率增加",
+                option: "壯麗終曲 3種人偶的傷害倍率增加",
                 optionKo: "그랜드 피날레 콜로서스, 피에로, 에코 마리오네트 추가 대미지 배율 증가",
                 base: "300%",
                 special: true,

@@ -193,7 +193,7 @@ const routes = [
         },
         {
             path: '/arcana-awakening-exp',
-            name: '阿卡那覺醒經驗',
+            name: '秘法覺醒經驗',
             component: ArcanaAwakeningExp,
         },
         {

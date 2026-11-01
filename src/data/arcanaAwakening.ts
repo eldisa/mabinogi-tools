@@ -1,4 +1,4 @@
-// 阿卡那覺醒經驗（韓服資料，來源：mabi.labanyu.com/arcana/awakening-exp）
+// 秘法覺醒經驗（韓服資料，來源：mabi.labanyu.com/arcana/awakening-exp）
 
 export const AWAKENING_MAX_LEVEL = 50;
 
