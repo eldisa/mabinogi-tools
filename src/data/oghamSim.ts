@@ -709,7 +709,7 @@ export const simOptions: SimOption[] = [
     },
     {
         id: 34,
-        name: "地裂螺旋 (水 鍊金術 效果) 技能 技能 最終 傷害倍率增加",
+        name: "地裂螺旋 (水 鍊金術 效果) 最終 傷害倍率增加",
         value: 1,
         maxLevel: 10,
         percent: true,
@@ -742,7 +742,7 @@ export const simOptions: SimOption[] = [
     },
     {
         id: 37,
-        name: "壯麗終章 콜로서스, 피에로, 에코 人偶 追加 傷害倍率增加",
+        name: "壯麗終章 3種人偶的傷害倍率增加",
         value: 300,
         maxLevel: 10,
         percent: true,
