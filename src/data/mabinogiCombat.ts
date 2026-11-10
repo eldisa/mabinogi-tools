@@ -207,6 +207,29 @@ export function calculateFinalMaxDamage(
     return base * battlefieldMultiplier * battleCryMultiplier * statusSupportMultiplier * strengthGatherMultiplier;
 }
 
+/**
+ * 遊戲面板會顯示的最大傷害整數：每一步都無條件捨去（玩家實測：1924 → 攻擊水 2308 → 狀態支援 2640 → 戰場 29.48% 3573）。
+ * 順序採實測的 攻擊水 → 狀態支援 → 戰場，之後的戰吼、力量團聚接在後面（順序未實測）。
+ * 只用來顯示，技能傷害與總輸出仍用連續的 calculateFinalMaxDamage（避免階梯式結果讓效益量測失真）。
+ */
+export function calculateFinalMaxDamageGameValue(
+    cleanMaxDamage: number,
+    dirtyTotal: number,
+    constantAttackPower: number,
+    coefficientState: AttackCoefficientState,
+): number {
+    const coefficient = calculateAttackCoefficient(coefficientState);
+    let value = Math.floor((cleanMaxDamage + dirtyTotal) * coefficient + constantAttackPower);
+    const steps = [
+        (coefficientState.statusSupportActive ? 12 : 0) / 100,
+        (coefficientState.battlefieldActive ? coefficientState.battlefieldPercent : 0) / 100,
+        calculateBattleCryPercent(coefficientState) / 100,
+        (coefficientState.strengthGatherActive ? 15 : 0) / 100,
+    ];
+    for (const rate of steps) value = Math.floor(value * (1 + rate * coefficient));
+    return value;
+}
+
 // ═══════════════════════════════════════════════════════
 //  暴擊傷害（加總）
 // ═══════════════════════════════════════════════════════

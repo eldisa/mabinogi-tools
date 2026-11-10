@@ -25,6 +25,7 @@ import {
     calculateCleanMaxDamage,
     calculateConstantAttackPower,
     calculateFinalMaxDamage,
+    calculateFinalMaxDamageGameValue,
     calculateCriticalDamagePercent,
     calculateCriticalRatePercent,
     calculateCriticalDamageExpected,
@@ -856,6 +857,8 @@ export interface CalculationResult {
     cleanMaxDamage: number;
     /** 髒髒最大傷害總和 */
     dirtyMaxDamageTotal: number;
+    /** 遊戲面板會顯示的最終最大傷害（每一步無條件捨去），只用來顯示；計算一律用連續的 finalStats.maxDamage */
+    finalMaxDamageGameValue: number;
     /** 常數攻擊力（精靈武器攻擊力強化/秘法同步/盾牌固定加成，不吃攻擊係數，直接加在最終最大傷害公式裡） */
     constantAttackPower: number;
     /** 暴擊傷害%（暴擊當下的傷害倍率，基礎100%起跳的加總） */
@@ -1143,6 +1146,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         abilities,
         cleanMaxDamage,
         dirtyMaxDamageTotal: dirty.total,
+        finalMaxDamageGameValue: calculateFinalMaxDamageGameValue(cleanMaxDamage, effectiveDirtyTotal, constantAttackPower, settings.attackCoefficient),
         constantAttackPower,
         weaponExtraDamagePercent,
         criticalDamagePercent,

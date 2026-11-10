@@ -492,7 +492,7 @@ function buildSummaryText(): string {
     const c = calcResult.value;
     const lines = [
         "【聖盾騎士傷害計算器】",
-        `最大傷害：${fmtInt(finalStats.value.maxDamage)}　暴擊率：${fmtRatio(c.criticalRatePercent)}%　暴擊傷害：${fmtRatio(c.criticalDamagePercent)}%`,
+        `最大傷害：${fmtInt(c.finalMaxDamageGameValue)}　暴擊率：${fmtRatio(c.criticalRatePercent)}%　暴擊傷害：${fmtRatio(c.criticalDamagePercent)}%`,
         `通用額外傷害：${fmtMultiplier(c.generalExtraDamageMultiplier)}　秘法額外傷害：+${fmtRatio(c.arcaneExtraDamagePercent)}%`,
         `才能增加傷害：${fmtMultiplier(c.talentIncreaseDamageMultiplier)}　最終增加傷害：${fmtMultiplier(c.finalIncreaseDamageMultiplier)}`,
         `總輸出：${fmtInt(totalOutput.value)}　標準戰鬥力：${fmtInt(standardPower.value)}`,
@@ -542,7 +542,7 @@ const RESULT_DETAILS: Record<string, string> = {
     constantAttackPower:
         "常數攻擊力 = 一代宗師（+30）+ 精靈武器攻擊力強化（依武器種類）（兩者都先從面板扣掉再加回這裡）+ 秘法同步獎勵（聖盾無此加成，恆為 0）+ 盾牌固定加成（如鍋子 +40），不吃攻擊係數（髒髒總和才吃）。",
     finalMaxDamage:
-        "最終最大傷害 = ((乾淨最大傷害 + 髒髒總和) × 攻擊係數 + 常數攻擊力) × (1+戰場%×係數) × (1+特殊樂譜%×係數) × (1+狀態支援%×係數) × (1+力量團聚%×係數)。",
+        "最終最大傷害 = ((乾淨最大傷害 + 髒髒總和) × 攻擊係數 + 常數攻擊力) × (1+戰場%×係數) × (1+特殊樂譜%×係數) × (1+狀態支援%×係數) × (1+力量團聚%×係數)。這裡顯示的是遊戲面板的整數（每一步無條件捨去：攻擊水 → 狀態支援 → 戰場 → 戰吼 → 團聚），技能傷害與總輸出用未捨去的連續值計算。",
     maxHp: "最大生命值 = 角色基本數值.最大生命值 + 聖水HP加總（若「我的面板含聖水」未勾選）+ 盾牌固定HP（如靈魂解放者盾牌+1000）+ 高潔誓約加成（若數值基準=原始面板）。",
     defense:
         "防禦 = 角色基本數值.防禦 + 聖水防禦加總（若「我的面板含聖水」未勾選）+ 高潔誓約加成（若數值基準=原始面板）。備註：防禦和血量有許多疊加方式，且每個條件都遠比大傷複雜，所以聖水部分的加乘只會算進高潔誓約，建議自行填寫面板。",
@@ -2159,7 +2159,7 @@ onMounted(() => {
                                 {{ RESULT_DETAILS.finalMaxDamage }}
                             </el-popover>
                         </span>
-                        <span class="result-value">{{ fmtInt(finalStats.maxDamage) }}</span>
+                        <span class="result-value">{{ fmtInt(calcResult.finalMaxDamageGameValue) }}</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">
