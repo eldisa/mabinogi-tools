@@ -538,9 +538,9 @@ const skillImageId = (skillId: (typeof ALL_SKILL_META)[number]["id"]): number =>
 /** 最終面板每個條目點擊 info 顯示的詳細說明（公式結構，非即時代入數值） */
 const RESULT_DETAILS: Record<string, string> = {
     cleanMaxDamage: "乾淨最大傷害 = 面板最大傷害 − 髒髒總和（宗師／變身／寵物／辦桌／活動加成／聖水大傷）。",
-    dirtyMaxDamageTotal: "髒髒總和 = 一代宗師 + 變身（含細工等級）+ 寵物加成 + 辦桌 + 活動加成 + 聖水大傷，這些來源在「角色與攻擊力」分頁設定，不吃攻擊係數（藥水/三項注魔）。",
+    dirtyMaxDamageTotal: "髒髒總和 = 變身（含細工等級）+ 寵物加成 + 辦桌 + 活動加成 + 聖水大傷，這些來源在「角色與攻擊力」分頁設定，不吃攻擊係數（藥水/三項注魔）。",
     constantAttackPower:
-        "常數攻擊力 = 精靈武器攻擊力強化（依武器種類，先從面板扣掉再加回這裡）+ 秘法同步獎勵（聖盾無此加成，恆為 0）+ 盾牌固定加成（如鍋子 +40），跟髒髒總和一樣不吃攻擊係數，但兩者是不同來源、分開加總。",
+        "常數攻擊力 = 一代宗師（+30）+ 精靈武器攻擊力強化（依武器種類）（兩者都先從面板扣掉再加回這裡）+ 秘法同步獎勵（聖盾無此加成，恆為 0）+ 盾牌固定加成（如鍋子 +40），跟髒髒總和一樣不吃攻擊係數，但兩者是不同來源、分開加總。",
     finalMaxDamage:
         "最終最大傷害 = (乾淨最大傷害 × 攻擊係數 + 髒髒總和 + 常數攻擊力) × (1+戰場%×係數) × (1+特殊樂譜%×係數) × (1+狀態支援%×係數) × (1+力量團聚%×係數)。",
     maxHp: "最大生命值 = 角色基本數值.最大生命值 + 聖水HP加總（若「我的面板含聖水」未勾選）+ 盾牌固定HP（如靈魂解放者盾牌+1000）+ 高潔誓約加成（若數值基準=原始面板）。",
@@ -1073,10 +1073,6 @@ onMounted(() => {
                                 面板未記入：以下欄位會從面板最大傷害扣除，算出乾淨最大傷害（照舊）。面板已計入：面板最大傷害已經含這些加成，以下欄位改為唯讀參考，不參與計算。
                             </div>
                             <div class="field-row">
-                                <el-checkbox v-model="settings.dirtyMaxDamage.masterGradeActive" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" />
-                                <span class="switch-label">一代宗師已滿（+30）</span>
-                            </div>
-                            <div class="field-row">
                                 <label class="field-label">寵物加成</label>
                                 <el-checkbox-group v-model="settings.dirtyMaxDamage.petIds" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty">
                                     <el-checkbox v-for="p in PET_BONUS_OPTIONS" :key="p.id" :value="p.id" :label="`${p.label} (+${p.bonus})`" />
@@ -1127,6 +1123,10 @@ onMounted(() => {
                             </div>
 
                             <div class="field-section-label">常數攻擊力</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.dirtyMaxDamage.masterGradeActive" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" />
+                                <span class="switch-label">一代宗師已滿（+30）</span>
+                            </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.spiritWeaponAttackActive" />
                                 <span class="switch-label">精靈武器攻擊力強化（依武器種類：雙手劍+50，單手斧+40）</span>

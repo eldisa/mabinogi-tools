@@ -10,7 +10,7 @@
  */
 
 // ═══════════════════════════════════════════════════════
-//  髒髒最大傷害（宗師／變身／寵物／辦桌／活動加成）
+//  髒髒最大傷害（變身／寵物／辦桌／活動加成／聖水）；一代宗師屬於常數攻擊力，見下方
 // ═══════════════════════════════════════════════════════
 
 export type MasterGradeWeaponCategory = "dual_gun" | "other";
@@ -67,8 +67,6 @@ export function calculateTransformationDirtyDamage(transformationId: string, ref
 }
 
 export interface DirtyMaxDamageState {
-    masterGradeActive: boolean;
-    masterGradeCategory: MasterGradeWeaponCategory;
     transformationId: string;
     /** 變身細工等級 0~33（27~33 突破限定） */
     transformationReforgeLevel: number;
@@ -80,7 +78,6 @@ export interface DirtyMaxDamageState {
 }
 
 export interface DirtyMaxDamageResult {
-    masterGrade: number;
     transformation: number;
     pets: number;
     banquet: number;
@@ -90,13 +87,12 @@ export interface DirtyMaxDamageResult {
 }
 
 export function calculateDirtyMaxDamage(state: DirtyMaxDamageState): DirtyMaxDamageResult {
-    const masterGrade = state.masterGradeActive ? MASTER_GRADE_BONUS[state.masterGradeCategory] : 0;
     const transformation = calculateTransformationDirtyDamage(state.transformationId, state.transformationReforgeLevel);
     const pets = state.petIds.reduce((sum, id) => sum + (PET_BONUS_OPTIONS.find((p) => p.id === id)?.bonus ?? 0), 0);
     const banquet = state.banquetBonus;
     const event = state.eventBonus;
     const holyWater = state.holyWaterMaxDamage;
-    return { masterGrade, transformation, pets, banquet, event, holyWater, total: masterGrade + transformation + pets + banquet + event + holyWater };
+    return { transformation, pets, banquet, event, holyWater, total: transformation + pets + banquet + event + holyWater };
 }
 
 /** 乾淨最大傷害 = 面板最大傷害（無狀態，未計入聖水） − 髒髒最大傷害總和（含聖水大傷） */
@@ -105,7 +101,7 @@ export function calculateCleanMaxDamage(panelMaxDamage: number, dirtyTotal: numb
 }
 
 // ═══════════════════════════════════════════════════════
-//  常數攻擊力（職業附加傷害／精靈武器攻擊力強化，不吃攻擊係數）
+//  常數攻擊力（一代宗師／職業附加傷害／精靈武器攻擊力強化，不吃攻擊係數）
 // ═══════════════════════════════════════════════════════
 
 export type SpiritWeaponAttackType = "bow" | "two_hand_sword" | "lance" | "one_hand_axe" | "other";
@@ -130,6 +126,9 @@ export const ARCANA_SYNC_BONUS: Record<ArcanaSyncBonusClass, number> = {
 };
 
 export interface ConstantAttackPowerState {
+    /** 一代宗師已滿（雙槍職業 12，其餘 30） */
+    masterGradeActive?: boolean;
+    masterGradeCategory?: MasterGradeWeaponCategory;
     spiritWeaponActive: boolean;
     spiritWeaponType: SpiritWeaponAttackType;
     arcanaSyncClass: ArcanaSyncBonusClass;
@@ -140,7 +139,8 @@ export interface ConstantAttackPowerState {
 export function calculateConstantAttackPower(state: ConstantAttackPowerState): number {
     const spiritWeapon = state.spiritWeaponActive ? SPIRIT_WEAPON_ATTACK_BONUS[state.spiritWeaponType] : 0;
     const arcanaSync = ARCANA_SYNC_BONUS[state.arcanaSyncClass];
-    return spiritWeapon + arcanaSync + (state.extraFlat ?? 0);
+    const masterGrade = state.masterGradeActive ? MASTER_GRADE_BONUS[state.masterGradeCategory ?? "other"] : 0;
+    return masterGrade + spiritWeapon + arcanaSync + (state.extraFlat ?? 0);
 }
 
 // ═══════════════════════════════════════════════════════

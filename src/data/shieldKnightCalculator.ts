@@ -20,6 +20,7 @@
  */
 
 import {
+    MASTER_GRADE_BONUS,
     calculateDirtyMaxDamage,
     calculateCleanMaxDamage,
     calculateConstantAttackPower,
@@ -727,7 +728,7 @@ export interface MuliasRelicSettings {
 // ═══════════════════════════════════════════════════════
 
 export interface DirtyMaxDamageSettings {
-    /** 一代宗師已滿，聖盾騎士固定 +30 */
+    /** 一代宗師已滿，聖盾騎士固定 +30（屬於常數攻擊力，欄位仍放在這裡是為了相容舊存檔；「面板已計入」時不參與計算） */
     masterGradeActive: boolean;
     petIds: string[];
     banquetBonus: number;
@@ -931,8 +932,6 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
 
     // ── 最終最大傷害 ──
     const dirty = calculateDirtyMaxDamage({
-        masterGradeActive: settings.dirtyMaxDamage.masterGradeActive,
-        masterGradeCategory: "other",
         transformationId: settings.dirtyMaxDamage.transformationActive ? build.transformationId : "none",
         transformationReforgeLevel: settings.transformationReforgeLevel,
         petIds: settings.dirtyMaxDamage.petIds,
@@ -946,10 +945,13 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
     // 精靈武器攻擊力強化通常已包含在無狀態面板內：從面板扣掉（不吃攻擊係數）、最後再加回常數攻擊力；
     // 面板已計入模式下整組不參與，維持留在面板裡吃係數（同髒髒的規則）
     const spiritWeaponPart = settings.spiritWeaponAttackActive && !settings.dirtyMaxDamage.panelAlreadyIncludesDirty ? SPIRIT_WEAPON_ATTACK_BONUS[spiritWeaponType] : 0;
+    // 一代宗師已滿（+30）屬於常數攻擊力：和精靈武器強化一樣先從面板扣掉（不吃攻擊係數），最後再加回常數攻擊力；面板已計入模式下整組不參與
+    const masterGradePart = settings.dirtyMaxDamage.masterGradeActive && !settings.dirtyMaxDamage.panelAlreadyIncludesDirty ? MASTER_GRADE_BONUS.other : 0;
     const oghamTotals = calculateOghamTotals(settings);
     // 歐甘的精通斧頭最大傷害算在乾淨最大傷害上（和面板一樣吃攻擊係數）；面板大傷若已含就不要再選這個詞條
-    const cleanMaxDamage = calculateCleanMaxDamage(settings.panelMaxDamage, effectiveDirtyTotal + spiritWeaponPart) + oghamTotals.axemastery;
+    const cleanMaxDamage = calculateCleanMaxDamage(settings.panelMaxDamage, effectiveDirtyTotal + spiritWeaponPart + masterGradePart) + oghamTotals.axemastery;
     const constantAttackPower = calculateConstantAttackPower({
+        masterGradeActive: masterGradePart > 0,
         spiritWeaponActive: spiritWeaponPart > 0,
         spiritWeaponType,
         arcanaSyncClass: "none",
@@ -2139,8 +2141,6 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     // ── 聚能／黑暗聚能：整個開關的價值（開啟 vs 關閉，跟目前實際是否勾選無關，方便評估要不要點聚能） ──
     const build = getCharacterBuild(settings.characterBuildId);
     const transformationMaxDamage = calculateDirtyMaxDamage({
-        masterGradeActive: false,
-        masterGradeCategory: "other",
         transformationId: build.transformationId,
         transformationReforgeLevel: settings.transformationReforgeLevel,
         petIds: [],
