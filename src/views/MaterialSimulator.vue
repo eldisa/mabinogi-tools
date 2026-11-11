@@ -101,6 +101,9 @@
                                     <el-checkbox v-if="neededMode" v-model="editStockPrice">
                                         編輯庫存和價格
                                     </el-checkbox>
+                                    <el-checkbox v-if="neededMode" v-model="showIntermediates">
+                                        顯示加工物
+                                    </el-checkbox>
                                     <el-checkbox v-model="showG27Materials">顯示 G27 素材</el-checkbox>
                                     <el-checkbox v-model="showNonG27Materials">顯示非 G27 素材</el-checkbox>
                                     <el-checkbox v-if="!neededMode" v-model="showOnlyTokenMaterials">
@@ -231,6 +234,15 @@
                                                     >
                                                         <el-icon><InfoFilled /></el-icon>
                                                     </el-tooltip>
+                                                    <!-- 加工物（中階）標記 -->
+                                                    <el-tag
+                                                        v-if="row.isCraft"
+                                                        size="small"
+                                                        type="success"
+                                                        effect="plain"
+                                                    >
+                                                        加工
+                                                    </el-tag>
                                                     <!-- 取得方式改用 info 標籤：點擊切換 購買／珠子兌換 -->
                                                     <el-tooltip
                                                         v-if="isTokenMaterial(row.id)"
@@ -379,7 +391,8 @@
                                             align="right"
                                         >
                                             <template #default="{ row }">
-                                                {{ getCostDisplay(row) }}
+                                                <span v-if="row.isCraft" class="text-gray-400">自製</span>
+                                                <template v-else>{{ getCostDisplay(row) }}</template>
                                             </template>
                                         </el-table-column>
 
@@ -1059,6 +1072,8 @@ const showTokenCount = ref(false);
 const hideFullStock = ref(false);
 // 需求模式：切換「檢視（庫存／所需＋小計）」與「編輯（庫存＋單價）」兩種欄位
 const editStockPrice = ref(false);
+// 需求模式：是否把中階加工品也列為可編輯列（填庫存驅動下層淨算）
+const showIntermediates = ref(false);
 const showG27Materials = ref(true);
 const showNonG27Materials = ref(true);
 const G27MaterialIds = new Set(G27bossDropsUsage.map((e) => e.id));
@@ -1160,7 +1175,7 @@ const filteredMaterialPrices = computed(() => {
 const computeMaterialTotals = (
     targetIds: number[],
     stockLookup: Map<number, MaterialPriceEntry>,
-): Map<number, number> => {
+): { leaves: Map<number, number>; crafts: Map<number, number> } => {
     const gross = new Map<number, number>();
     for (const id of targetIds) gross.set(id, (gross.get(id) ?? 0) + 1);
 
@@ -1183,11 +1198,13 @@ const computeMaterialTotals = (
     order.reverse();
 
     const leafTotals = new Map<number, number>();
+    const craftTotals = new Map<number, number>(); // 中階加工品的毛需求（扣自身庫存前）
     for (const id of order) {
         const grossReq = gross.get(id) ?? 0;
         if (grossReq <= 0) continue;
         const item = craftItemLookup.get(id);
         if (item?.source.type === "craft") {
+            craftTotals.set(id, (craftTotals.get(id) ?? 0) + grossReq);
             const net = Math.max(0, grossReq - (stockLookup.get(id)?.stock ?? 0));
             for (const mat of item.source.materials) {
                 gross.set(mat.id, (gross.get(mat.id) ?? 0) + net * mat.amount);
@@ -1196,7 +1213,7 @@ const computeMaterialTotals = (
             leafTotals.set(id, (leafTotals.get(id) ?? 0) + grossReq);
         }
     }
-    return leafTotals;
+    return { leaves: leafTotals, crafts: craftTotals };
 };
 
 const selectedCraftTargetIds = computed(() =>
@@ -1209,10 +1226,10 @@ const craftResult = computed(() => {
     return { trees: craftTarget.map((target) => buildCraftTree(target, materials, 1, "")) };
 });
 const displayData = computed(() => craftResult.value.trees);
+// 單次 MRP 結果：葉材料與中階加工品共用，避免重複計算
+const mrpTotals = computed(() => computeMaterialTotals(selectedCraftTargetIds.value, materialPriceMap.value));
 const materialMap = computed(() =>
-    Array.from(computeMaterialTotals(selectedCraftTargetIds.value, materialPriceMap.value).entries()).map(
-        ([id, total]) => ({ id, total }),
-    ),
+    Array.from(mrpTotals.value.leaves.entries()).map(([id, total]) => ({ id, total })),
 );
 
 const materialUsageData = ref<MaterialUsage[]>(G27bossDropsUsage);
@@ -1222,10 +1239,13 @@ const dataInPreviewTable = computed(() => displayData.value[selectedDisplayDataI
 
 const materialSummaryTable = computed(() => {
     let tokenTotal = 0;
+    const craftTotals = mrpTotals.value.crafts;
     let result = materials
         .map((item) => {
             const { id, name, source } = item;
-            const total = materialMap.value.find((ele) => ele.id === id)?.total || 0;
+            const isCraft = craftTotals.has(id);
+            // 葉材料取 leaves 的毛需求；中階加工品取 crafts 的毛需求（扣自身庫存前）
+            const total = isCraft ? (craftTotals.get(id) ?? 0) : materialMap.value.find((ele) => ele.id === id)?.total || 0;
 
             const stock = materialPrices.value.find((e) => e.id === id)?.stock ?? 0;
             return {
@@ -1236,6 +1256,7 @@ const materialSummaryTable = computed(() => {
                 owned: stock,
                 shortage: Math.max(0, total - stock),
                 source,
+                isCraft,
             };
         })
         .filter((ele) => ele.total > 0);
@@ -1261,6 +1282,7 @@ const materialSummaryTable = computed(() => {
                 owned: tokenStock,
                 shortage: Math.max(0, tokenTotal - tokenStock),
                 source: tokenData.source,
+                isCraft: false,
             });
         }
     }
@@ -1311,22 +1333,24 @@ const buildCraftTree = (
 // 用於在 Total 表標示：某基礎材料因持有中階（如高純度力量結晶）而被扣減前的原始量。
 const reductionRaw = computed(() => {
     const targetIds = selectedCraftTargetIds.value;
-    // 原始總量＝傳空庫存，不做任何中階扣減
-    const originalAcc = computeMaterialTotals(targetIds, new Map());
+    // 原始總量＝傳空庫存，不做任何中階扣減（葉材料與中階皆納入，供兩者標示扣減）
+    const orig = computeMaterialTotals(targetIds, new Map());
+    const originalAcc = new Map<number, number>([...orig.leaves, ...orig.crafts]);
 
-    // 走訪製作樹，收集每個葉材料上游「有持有(stock>0)的中階材料」及其持有量
+    // 走訪製作樹，收集每個材料（含中階）上游「有持有(stock>0)的中階材料」及其持有量
     const sources = new Map<number, Map<number, number>>();
     const walk = (item: CraftableItem, held: Array<{ id: number; stock: number }>) => {
         if (item.source.type !== "craft") return;
         for (const mat of item.source.materials) {
+            if (held.length) {
+                let m = sources.get(mat.id);
+                if (!m) sources.set(mat.id, (m = new Map()));
+                for (const h of held) m.set(h.id, h.stock);
+            }
             const matched = materialsMap.get(mat.id);
             if (matched && matched.source.type === "craft") {
                 const stock = materialPriceMap.value.get(mat.id)?.stock ?? 0;
                 walk(matched, stock > 0 ? [...held, { id: mat.id, stock }] : held);
-            } else if (held.length) {
-                let m = sources.get(mat.id);
-                if (!m) sources.set(mat.id, (m = new Map()));
-                for (const h of held) m.set(h.id, h.stock);
             }
         }
     };
@@ -1426,7 +1450,8 @@ const sortedData = computed(() => {
 
 const filteredSortedData = computed(() => {
     const q = materialPriceFilter.value.trim();
-    return sortedData.value.filter((row) => {
+    const rows = sortedData.value.filter((row) => {
+        if (row.isCraft && !showIntermediates.value) return false;
         if (q && !getMaterialName(row.id).includes(q)) return false;
         if (hideFullStock.value) {
             const stock = materialPrices.value.find((e) => e.id === row.id)?.stock ?? 0;
@@ -1437,6 +1462,8 @@ const filteredSortedData = computed(() => {
         if (!isG27 && !showNonG27Materials.value) return false;
         return true;
     });
+    // 加工物排最下（穩定排序，不動其餘相對順序）
+    return [...rows].sort((a, b) => Number(!!a.isCraft) - Number(!!b.isCraft));
 });
 
 // 合併後的「材料」分頁：需求規劃模式（選了武器且開啟「只顯示目標需要」）vs 全材料維護模式
@@ -1524,6 +1551,8 @@ const totalCostSummary = computed(() => {
     let hasUnset = false;
 
     for (const row of sortedData.value) {
+        // 中階加工品不計入總成本（其成本已由下層葉材料代表，避免重複計）
+        if (row.isCraft) continue;
         // 珠子自備時跳過 TOKEN_ID，否則由珠子行的 shortage × price 計入總成本
         if (row.id === TOKEN_ID && selfProvideTokens.value) continue;
 
