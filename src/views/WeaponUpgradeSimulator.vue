@@ -42,7 +42,7 @@
                             <div class="flex-grow flex justify-center items-center mt-4">
                                 <img
                                     :src="`${baseUrl}itemImage/${selectedWeaponId}.png`"
-                                    class="w-1/2 h-1/2 object-contain rounded-lg shadow-lg"
+                                    class="w-1/2 h-1/2 object-contain drop-shadow-lg"
                                 />
                             </div>
                         </div>
@@ -303,7 +303,7 @@
                                 <div class="flex justify-center py-4">
                                     <img
                                         :src="`${baseUrl}itemImage/${selectedWeaponId}.png`"
-                                        class="w-32 h-32 object-contain rounded-lg shadow-lg"
+                                        class="w-32 h-32 object-contain drop-shadow-lg"
                                         alt="武器圖片"
                                     />
                                 </div>
