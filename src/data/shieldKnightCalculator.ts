@@ -20,10 +20,12 @@
  */
 
 import {
+    MASTER_GRADE_BONUS,
     calculateDirtyMaxDamage,
     calculateCleanMaxDamage,
     calculateConstantAttackPower,
     calculateFinalMaxDamage,
+    calculateFinalMaxDamageGameValue,
     calculateCriticalDamagePercent,
     calculateCriticalRatePercent,
     calculateCriticalDamageExpected,
@@ -727,7 +729,7 @@ export interface MuliasRelicSettings {
 // ═══════════════════════════════════════════════════════
 
 export interface DirtyMaxDamageSettings {
-    /** 一代宗師已滿，聖盾騎士固定 +30 */
+    /** 一代宗師已滿，聖盾騎士固定 +30（屬於常數攻擊力，欄位仍放在這裡是為了相容舊存檔；「面板已計入」時不參與計算） */
     masterGradeActive: boolean;
     petIds: string[];
     banquetBonus: number;
@@ -851,10 +853,12 @@ export interface AbilityValues {
 export interface CalculationResult {
     finalStats: FinalStats;
     abilities: AbilityValues;
-    /** 乾淨最大傷害（面板輸入扣掉髒髒總和） */
+    /** 乾淨最大傷害（面板輸入扣掉面板內不吃係數的常數部分：宗師、精靈武器強化） */
     cleanMaxDamage: number;
     /** 髒髒最大傷害總和 */
     dirtyMaxDamageTotal: number;
+    /** 遊戲面板會顯示的最終最大傷害（每一步無條件捨去），只用來顯示；計算一律用連續的 finalStats.maxDamage */
+    finalMaxDamageGameValue: number;
     /** 常數攻擊力（精靈武器攻擊力強化/秘法同步/盾牌固定加成，不吃攻擊係數，直接加在最終最大傷害公式裡） */
     constantAttackPower: number;
     /** 暴擊傷害%（暴擊當下的傷害倍率，基礎100%起跳的加總） */
@@ -931,8 +935,6 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
 
     // ── 最終最大傷害 ──
     const dirty = calculateDirtyMaxDamage({
-        masterGradeActive: settings.dirtyMaxDamage.masterGradeActive,
-        masterGradeCategory: "other",
         transformationId: settings.dirtyMaxDamage.transformationActive ? build.transformationId : "none",
         transformationReforgeLevel: settings.transformationReforgeLevel,
         petIds: settings.dirtyMaxDamage.petIds,
@@ -940,16 +942,20 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         eventBonus: settings.dirtyMaxDamage.eventBonus,
         holyWaterMaxDamage: sumHolyWater(settings.holyWater, "maxDamage"),
     });
-    // 面板已計入髒髒加成時，髒髒欄位只作唯讀參考，不參與乾淨/最終最大傷害計算（避免重複扣/加）
+    // 髒髒加成（變身／寵物／辦桌／活動／聖水）是非常態的狀態，不在無狀態面板內：另外加在乾淨值上，一起吃攻擊係數；
+    // 面板已計入這些加成時，髒髒欄位只作唯讀參考，不參與計算（避免重複加）
     const effectiveDirtyTotal = settings.dirtyMaxDamage.panelAlreadyIncludesDirty ? 0 : dirty.total;
     const spiritWeaponType: SpiritWeaponAttackType = settings.weaponType === "two_hand_sword" ? "two_hand_sword" : "one_hand_axe";
     // 精靈武器攻擊力強化通常已包含在無狀態面板內：從面板扣掉（不吃攻擊係數）、最後再加回常數攻擊力；
     // 面板已計入模式下整組不參與，維持留在面板裡吃係數（同髒髒的規則）
     const spiritWeaponPart = settings.spiritWeaponAttackActive && !settings.dirtyMaxDamage.panelAlreadyIncludesDirty ? SPIRIT_WEAPON_ATTACK_BONUS[spiritWeaponType] : 0;
+    // 一代宗師已滿（+30）屬於常數攻擊力：和精靈武器強化一樣先從面板扣掉（不吃攻擊係數），最後再加回常數攻擊力；面板已計入模式下整組不參與
+    const masterGradePart = settings.dirtyMaxDamage.masterGradeActive && !settings.dirtyMaxDamage.panelAlreadyIncludesDirty ? MASTER_GRADE_BONUS.other : 0;
     const oghamTotals = calculateOghamTotals(settings);
     // 歐甘的精通斧頭最大傷害算在乾淨最大傷害上（和面板一樣吃攻擊係數）；面板大傷若已含就不要再選這個詞條
-    const cleanMaxDamage = calculateCleanMaxDamage(settings.panelMaxDamage, effectiveDirtyTotal + spiritWeaponPart) + oghamTotals.axemastery;
+    const cleanMaxDamage = calculateCleanMaxDamage(settings.panelMaxDamage, spiritWeaponPart + masterGradePart) + oghamTotals.axemastery;
     const constantAttackPower = calculateConstantAttackPower({
+        masterGradeActive: masterGradePart > 0,
         spiritWeaponActive: spiritWeaponPart > 0,
         spiritWeaponType,
         arcanaSyncClass: "none",
@@ -1140,6 +1146,7 @@ export function calculateAll(settings: ShieldKnightSettings): CalculationResult 
         abilities,
         cleanMaxDamage,
         dirtyMaxDamageTotal: dirty.total,
+        finalMaxDamageGameValue: calculateFinalMaxDamageGameValue(cleanMaxDamage, effectiveDirtyTotal, constantAttackPower, settings.attackCoefficient),
         constantAttackPower,
         weaponExtraDamagePercent,
         criticalDamagePercent,
@@ -2137,17 +2144,6 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
     });
 
     // ── 聚能／黑暗聚能：整個開關的價值（開啟 vs 關閉，跟目前實際是否勾選無關，方便評估要不要點聚能） ──
-    const build = getCharacterBuild(settings.characterBuildId);
-    const transformationMaxDamage = calculateDirtyMaxDamage({
-        masterGradeActive: false,
-        masterGradeCategory: "other",
-        transformationId: build.transformationId,
-        transformationReforgeLevel: settings.transformationReforgeLevel,
-        petIds: [],
-        banquetBonus: 0,
-        eventBonus: 0,
-        holyWaterMaxDamage: 0,
-    }).total;
     const togglePairs: {
         id:
             | "erg"
@@ -2181,10 +2177,9 @@ export function calculateDamageEfficiency(settings: ShieldKnightSettings): Damag
             id: "transformation",
             label: "變身",
             isOn: settings.dirtyMaxDamage.transformationActive,
-            // 面板大傷已含變身加成：關閉時要從面板扣掉變身那一份，才是「沒變身」的狀態
+            // 變身是另外加在面板上的髒髒加成，開關即可
             set: (on) => ({
                 ...settings,
-                panelMaxDamage: on ? settings.panelMaxDamage : settings.panelMaxDamage - transformationMaxDamage,
                 dirtyMaxDamage: { ...settings.dirtyMaxDamage, transformationActive: on },
             }),
         },

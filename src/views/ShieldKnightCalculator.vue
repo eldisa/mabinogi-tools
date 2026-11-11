@@ -287,7 +287,7 @@ const EFFICIENCY_DETAILS: Record<string, string> = {
     reflectionCoverage:
         "省察的痕跡覆蓋率：觸發中時，平均有多少比例的秘法技能施放吃得到加成（只影響 7 個秘法技能）。這裡固定以觸發中計算，顯示覆蓋率 +10 個百分點的效益。",
     raceSkill: "「裝備」分頁的種族特殊技能（人類 +5%／巨人 +15%，併入才能增加傷害）。顯示開啟 vs 關閉的整體價值，跟目前是否勾選無關；精靈的弓術種族技能對聖盾無效，效益為 0。",
-    transformation: "面板大傷已含變身的固定加成，這裡以「面板扣掉變身那一份」當作沒變身來比較開啟 vs 關閉的價值；角色型態沒有變身（黑暗騎士）則為 0。數值約等於變身提供的大傷（受攻擊係數放大）。",
+    transformation: "變身的固定加成是另外加在面板上的髒髒大傷（吃攻擊係數），這裡比較開啟 vs 關閉的價值；角色型態沒有變身（黑暗騎士）則為 0。",
 };
 const EFFICIENCY_CATEGORIES: { label: string; ids: string[] }[] = [
     { label: "攻擊力／暴擊", ids: ["maxDamage", "criticalDamage", "criticalRate"] },
@@ -492,7 +492,7 @@ function buildSummaryText(): string {
     const c = calcResult.value;
     const lines = [
         "【聖盾騎士傷害計算器】",
-        `最大傷害：${fmtInt(finalStats.value.maxDamage)}　暴擊率：${fmtRatio(c.criticalRatePercent)}%　暴擊傷害：${fmtRatio(c.criticalDamagePercent)}%`,
+        `最大傷害：${fmtInt(c.finalMaxDamageGameValue)}　暴擊率：${fmtRatio(c.criticalRatePercent)}%　暴擊傷害：${fmtRatio(c.criticalDamagePercent)}%`,
         `通用額外傷害：${fmtMultiplier(c.generalExtraDamageMultiplier)}　秘法額外傷害：+${fmtRatio(c.arcaneExtraDamagePercent)}%`,
         `才能增加傷害：${fmtMultiplier(c.talentIncreaseDamageMultiplier)}　最終增加傷害：${fmtMultiplier(c.finalIncreaseDamageMultiplier)}`,
         `總輸出：${fmtInt(totalOutput.value)}　標準戰鬥力：${fmtInt(standardPower.value)}`,
@@ -537,12 +537,12 @@ const skillImageId = (skillId: (typeof ALL_SKILL_META)[number]["id"]): number =>
 
 /** 最終面板每個條目點擊 info 顯示的詳細說明（公式結構，非即時代入數值） */
 const RESULT_DETAILS: Record<string, string> = {
-    cleanMaxDamage: "乾淨最大傷害 = 面板最大傷害 − 髒髒總和（宗師／變身／寵物／辦桌／活動加成／聖水大傷）。",
-    dirtyMaxDamageTotal: "髒髒總和 = 一代宗師 + 變身（含細工等級）+ 寵物加成 + 辦桌 + 活動加成 + 聖水大傷，這些來源在「角色與攻擊力」分頁設定，不吃攻擊係數（藥水/三項注魔）。",
+    cleanMaxDamage: "乾淨最大傷害 = 面板最大傷害 − 面板內不吃攻擊係數的常數部分（一代宗師、精靈武器強化）。髒髒總和不在無狀態面板內，不扣。",
+    dirtyMaxDamageTotal: "髒髒總和 = 變身（含細工等級）+ 寵物加成 + 辦桌 + 活動加成 + 聖水大傷，這些非常態的加成不在無狀態面板內，另外加在乾淨最大傷害上，一起吃攻擊係數（藥水/三項注魔）；來源在「角色與攻擊力」分頁設定。",
     constantAttackPower:
-        "常數攻擊力 = 精靈武器攻擊力強化（依武器種類，先從面板扣掉再加回這裡）+ 秘法同步獎勵（聖盾無此加成，恆為 0）+ 盾牌固定加成（如鍋子 +40），跟髒髒總和一樣不吃攻擊係數，但兩者是不同來源、分開加總。",
+        "常數攻擊力 = 一代宗師（+30）+ 精靈武器攻擊力強化（依武器種類）（兩者都先從面板扣掉再加回這裡）+ 秘法同步獎勵（聖盾無此加成，恆為 0）+ 盾牌固定加成（如鍋子 +40），不吃攻擊係數（髒髒總和才吃）。",
     finalMaxDamage:
-        "最終最大傷害 = (乾淨最大傷害 × 攻擊係數 + 髒髒總和 + 常數攻擊力) × (1+戰場%×係數) × (1+特殊樂譜%×係數) × (1+狀態支援%×係數) × (1+力量團聚%×係數)。",
+        "最終最大傷害 = ((乾淨最大傷害 + 髒髒總和) × 攻擊係數 + 常數攻擊力) × (1+戰場%×係數) × (1+特殊樂譜%×係數) × (1+狀態支援%×係數) × (1+力量團聚%×係數)。這裡顯示的是遊戲面板的整數（每一步無條件捨去：攻擊水 → 狀態支援 → 戰場 → 戰吼 → 團聚），技能傷害與總輸出用未捨去的連續值計算。",
     maxHp: "最大生命值 = 角色基本數值.最大生命值 + 聖水HP加總（若「我的面板含聖水」未勾選）+ 盾牌固定HP（如靈魂解放者盾牌+1000）+ 高潔誓約加成（若數值基準=原始面板）。",
     defense:
         "防禦 = 角色基本數值.防禦 + 聖水防禦加總（若「我的面板含聖水」未勾選）+ 高潔誓約加成（若數值基準=原始面板）。備註：防禦和血量有許多疊加方式，且每個條件都遠比大傷複雜，所以聖水部分的加乘只會算進高潔誓約，建議自行填寫面板。",
@@ -1070,11 +1070,7 @@ onMounted(() => {
                                 </el-radio-group>
                             </div>
                             <div class="field-hint">
-                                面板未記入：以下欄位會從面板最大傷害扣除，算出乾淨最大傷害（照舊）。面板已計入：面板最大傷害已經含這些加成，以下欄位改為唯讀參考，不參與計算。
-                            </div>
-                            <div class="field-row">
-                                <el-checkbox v-model="settings.dirtyMaxDamage.masterGradeActive" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" />
-                                <span class="switch-label">一代宗師已滿（+30）</span>
+                                面板未記入（預設）：面板沒有含這些非常態加成，以下欄位會另外加在面板上，和面板一樣吃攻擊係數。面板已計入：面板最大傷害已經含這些加成，以下欄位改為唯讀參考，不參與計算。
                             </div>
                             <div class="field-row">
                                 <label class="field-label">寵物加成</label>
@@ -1127,6 +1123,10 @@ onMounted(() => {
                             </div>
 
                             <div class="field-section-label">常數攻擊力</div>
+                            <div class="field-row">
+                                <el-checkbox v-model="settings.dirtyMaxDamage.masterGradeActive" :disabled="settings.dirtyMaxDamage.panelAlreadyIncludesDirty" />
+                                <span class="switch-label">一代宗師已滿（+30）</span>
+                            </div>
                             <div class="field-row">
                                 <el-checkbox v-model="settings.spiritWeaponAttackActive" />
                                 <span class="switch-label">精靈武器攻擊力強化（依武器種類：雙手劍+50，單手斧+40）</span>
@@ -2159,7 +2159,7 @@ onMounted(() => {
                                 {{ RESULT_DETAILS.finalMaxDamage }}
                             </el-popover>
                         </span>
-                        <span class="result-value">{{ fmtInt(finalStats.maxDamage) }}</span>
+                        <span class="result-value">{{ fmtInt(calcResult.finalMaxDamageGameValue) }}</span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">

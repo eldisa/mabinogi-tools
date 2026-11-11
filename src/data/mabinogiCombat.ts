@@ -10,7 +10,7 @@
  */
 
 // ═══════════════════════════════════════════════════════
-//  髒髒最大傷害（宗師／變身／寵物／辦桌／活動加成）
+//  髒髒最大傷害（變身／寵物／辦桌／活動加成／聖水）；一代宗師屬於常數攻擊力，見下方
 // ═══════════════════════════════════════════════════════
 
 export type MasterGradeWeaponCategory = "dual_gun" | "other";
@@ -67,8 +67,6 @@ export function calculateTransformationDirtyDamage(transformationId: string, ref
 }
 
 export interface DirtyMaxDamageState {
-    masterGradeActive: boolean;
-    masterGradeCategory: MasterGradeWeaponCategory;
     transformationId: string;
     /** 變身細工等級 0~33（27~33 突破限定） */
     transformationReforgeLevel: number;
@@ -80,7 +78,6 @@ export interface DirtyMaxDamageState {
 }
 
 export interface DirtyMaxDamageResult {
-    masterGrade: number;
     transformation: number;
     pets: number;
     banquet: number;
@@ -90,22 +87,24 @@ export interface DirtyMaxDamageResult {
 }
 
 export function calculateDirtyMaxDamage(state: DirtyMaxDamageState): DirtyMaxDamageResult {
-    const masterGrade = state.masterGradeActive ? MASTER_GRADE_BONUS[state.masterGradeCategory] : 0;
     const transformation = calculateTransformationDirtyDamage(state.transformationId, state.transformationReforgeLevel);
     const pets = state.petIds.reduce((sum, id) => sum + (PET_BONUS_OPTIONS.find((p) => p.id === id)?.bonus ?? 0), 0);
     const banquet = state.banquetBonus;
     const event = state.eventBonus;
     const holyWater = state.holyWaterMaxDamage;
-    return { masterGrade, transformation, pets, banquet, event, holyWater, total: masterGrade + transformation + pets + banquet + event + holyWater };
+    return { transformation, pets, banquet, event, holyWater, total: transformation + pets + banquet + event + holyWater };
 }
 
-/** 乾淨最大傷害 = 面板最大傷害（無狀態，未計入聖水） − 髒髒最大傷害總和（含聖水大傷） */
-export function calculateCleanMaxDamage(panelMaxDamage: number, dirtyTotal: number): number {
-    return panelMaxDamage - dirtyTotal;
+/**
+ * 乾淨最大傷害 = 面板最大傷害（無狀態，未計入聖水與髒髒加成） − 面板裡不吃攻擊係數的常數部分（一代宗師、精靈武器強化）。
+ * 髒髒最大傷害（變身／寵物／辦桌／活動加成／聖水）不在無狀態面板內，不扣，另外加上去並和乾淨值一起吃攻擊係數。
+ */
+export function calculateCleanMaxDamage(panelMaxDamage: number, constantInPanel: number): number {
+    return panelMaxDamage - constantInPanel;
 }
 
 // ═══════════════════════════════════════════════════════
-//  常數攻擊力（職業附加傷害／精靈武器攻擊力強化，不吃攻擊係數）
+//  常數攻擊力（一代宗師／職業附加傷害／精靈武器攻擊力強化，不吃攻擊係數）
 // ═══════════════════════════════════════════════════════
 
 export type SpiritWeaponAttackType = "bow" | "two_hand_sword" | "lance" | "one_hand_axe" | "other";
@@ -130,6 +129,9 @@ export const ARCANA_SYNC_BONUS: Record<ArcanaSyncBonusClass, number> = {
 };
 
 export interface ConstantAttackPowerState {
+    /** 一代宗師已滿（雙槍職業 12，其餘 30） */
+    masterGradeActive?: boolean;
+    masterGradeCategory?: MasterGradeWeaponCategory;
     spiritWeaponActive: boolean;
     spiritWeaponType: SpiritWeaponAttackType;
     arcanaSyncClass: ArcanaSyncBonusClass;
@@ -140,7 +142,8 @@ export interface ConstantAttackPowerState {
 export function calculateConstantAttackPower(state: ConstantAttackPowerState): number {
     const spiritWeapon = state.spiritWeaponActive ? SPIRIT_WEAPON_ATTACK_BONUS[state.spiritWeaponType] : 0;
     const arcanaSync = ARCANA_SYNC_BONUS[state.arcanaSyncClass];
-    return spiritWeapon + arcanaSync + (state.extraFlat ?? 0);
+    const masterGrade = state.masterGradeActive ? MASTER_GRADE_BONUS[state.masterGradeCategory ?? "other"] : 0;
+    return masterGrade + spiritWeapon + arcanaSync + (state.extraFlat ?? 0);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -182,11 +185,11 @@ export function calculateBattleCryPercent(state: AttackCoefficientState): number
 }
 
 /**
- * 最終最大傷害 = (乾淨最大傷害 × 攻擊係數 + 髒髒總和 + 常數攻擊力)
+ * 最終最大傷害 = ((乾淨最大傷害 + 髒髒總和) × 攻擊係數 + 常數攻擊力)
  *              × (1 + 戰場% × 攻擊係數) × (1 + 特殊樂譜效果% × 攻擊係數)
  *              × (1 + 狀態支援% × 攻擊係數) × (1 + 力量團聚% × 攻擊係數)
  *
- * 髒髒最大傷害與常數攻擊力不吃攻擊係數（藥水/三注魔）；戰場/特殊樂譜效果/狀支/團聚
+ * 髒髒最大傷害（非常態的加成，所以另外列出）和乾淨值一樣吃攻擊係數（藥水/三注魔），只有常數攻擊力不吃；戰場/特殊樂譜效果/狀支/團聚
  * 這 4 個 buff 各自的百分比在加回 1 之前，都要再各自乘上一次攻擊係數。
  */
 export function calculateFinalMaxDamage(
@@ -196,12 +199,35 @@ export function calculateFinalMaxDamage(
     coefficientState: AttackCoefficientState,
 ): number {
     const coefficient = calculateAttackCoefficient(coefficientState);
-    const base = cleanMaxDamage * coefficient + dirtyTotal + constantAttackPower;
+    const base = (cleanMaxDamage + dirtyTotal) * coefficient + constantAttackPower;
     const battlefieldMultiplier = 1 + ((coefficientState.battlefieldActive ? coefficientState.battlefieldPercent : 0) / 100) * coefficient;
     const battleCryMultiplier = 1 + (calculateBattleCryPercent(coefficientState) / 100) * coefficient;
     const statusSupportMultiplier = 1 + ((coefficientState.statusSupportActive ? 12 : 0) / 100) * coefficient;
     const strengthGatherMultiplier = 1 + ((coefficientState.strengthGatherActive ? 15 : 0) / 100) * coefficient;
     return base * battlefieldMultiplier * battleCryMultiplier * statusSupportMultiplier * strengthGatherMultiplier;
+}
+
+/**
+ * 遊戲面板會顯示的最大傷害整數：每一步都無條件捨去（玩家實測：1924 → 攻擊水 2308 → 狀態支援 2640 → 戰場 29.48% 3573）。
+ * 順序採實測的 攻擊水 → 狀態支援 → 戰場，之後的戰吼、力量團聚接在後面（順序未實測）。
+ * 只用來顯示，技能傷害與總輸出仍用連續的 calculateFinalMaxDamage（避免階梯式結果讓效益量測失真）。
+ */
+export function calculateFinalMaxDamageGameValue(
+    cleanMaxDamage: number,
+    dirtyTotal: number,
+    constantAttackPower: number,
+    coefficientState: AttackCoefficientState,
+): number {
+    const coefficient = calculateAttackCoefficient(coefficientState);
+    let value = Math.floor((cleanMaxDamage + dirtyTotal) * coefficient + constantAttackPower);
+    const steps = [
+        (coefficientState.statusSupportActive ? 12 : 0) / 100,
+        (coefficientState.battlefieldActive ? coefficientState.battlefieldPercent : 0) / 100,
+        calculateBattleCryPercent(coefficientState) / 100,
+        (coefficientState.strengthGatherActive ? 15 : 0) / 100,
+    ];
+    for (const rate of steps) value = Math.floor(value * (1 + rate * coefficient));
+    return value;
 }
 
 // ═══════════════════════════════════════════════════════

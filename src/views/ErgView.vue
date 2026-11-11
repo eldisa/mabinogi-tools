@@ -4,6 +4,7 @@ import {
     ergGrades,
     ergWeapons,
     ergEffects,
+    ergExp,
     ergExpBetween,
     ergSMaterials,
     ergBreakRate,
@@ -35,6 +36,17 @@ const breakthroughs = computed(() => {
     const list: number[] = [];
     for (let lv = Math.ceil(fromLevel.value / 5) * 5; lv < toLevel.value; lv += 5) list.push(lv);
     return list;
+});
+// 經驗表：exp 為升到下一級所需，total 為累積至該級升級所需（Lv.50 為滿級合計）
+const expGrade = ref<ErgGrade>("S");
+const expRows = computed(() => {
+    const list = ergExp[expGrade.value];
+    let total = 0;
+    return Array.from({ length: ERG_MAX_LEVEL }, (_, i) => {
+        const exp = list[i] as number | undefined;
+        total += exp ?? 0;
+        return { lv: i + 1, exp, total };
+    });
 });
 const matWeapon = ref(ergWeapons[0].name);
 // 目前只收錄 S 等級材料；第 n 次突破在 Lv.5n
@@ -220,6 +232,31 @@ const matTotal = computed(() => {
                                 黑暗聚能不需突破，直接升級
                             </p>
                         </template>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="經驗表" name="exp">
+                        <label class="flex flex-col gap-1 text-sm text-gray-400 mb-4">
+                            等級
+                            <el-select v-model="expGrade" style="width: 140px">
+                                <el-option v-for="g in ergGrades" :key="g.value" :label="g.label" :value="g.value" />
+                            </el-select>
+                        </label>
+                        <table class="w-full text-sm text-right">
+                            <thead class="text-gray-400 border-b border-gray-700">
+                                <tr>
+                                    <th scope="col" class="py-2 px-3 text-left">Lv.</th>
+                                    <th scope="col" class="py-2 px-3">經驗</th>
+                                    <th scope="col" class="py-2 px-3">累積經驗</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="r in expRows" :key="r.lv" class="border-b border-gray-800 text-gray-200">
+                                    <td class="py-1.5 px-3 text-left">{{ r.lv }}</td>
+                                    <td class="py-1.5 px-3">{{ r.exp?.toLocaleString() ?? "-" }}</td>
+                                    <td class="py-1.5 px-3 text-accent">{{ r.total.toLocaleString() }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </el-tab-pane>
                 </el-tabs>
             </el-card>
