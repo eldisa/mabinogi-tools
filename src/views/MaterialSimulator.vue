@@ -113,8 +113,12 @@
                                     <el-checkbox v-model="showTokenCount">顯示珠子需求數</el-checkbox>
                                 </template>
                             </div>
-                            <!-- 需求規劃模式：選了武器且開啟「只顯示目標需要」 -->
-                            <div v-if="neededMode" class="mt-4 overflow-x-auto overflow-y-auto">
+                            <!-- 需求規劃模式：首次用到才建，之後以 v-show 保留，避免每次切換重建上百列 -->
+                            <div
+                                v-if="neededEverShown"
+                                v-show="neededMode"
+                                class="mt-4 overflow-x-auto overflow-y-auto"
+                            >
                                 <!-- 手機版 -->
                                 <div v-if="layoutStore.isMobile">
                                     <div class="md:hidden space-y-3 p-4">
@@ -411,8 +415,12 @@
                                 </div>
                             </div>
 
-                            <!-- 全材料維護模式 -->
-                            <div v-else class="mt-4 overflow-x-auto overflow-y-auto">
+                            <!-- 全材料維護模式：同上，首次用到才建、之後保留 -->
+                            <div
+                                v-if="maintEverShown"
+                                v-show="!neededMode"
+                                class="mt-4 overflow-x-auto overflow-y-auto"
+                            >
                                 <el-table
                                     :data="filteredMaterialPrices"
                                     border
@@ -510,6 +518,14 @@
                                         </template>
                                     </el-table-column>
                                 </el-table>
+                            </div>
+                            <!-- 首次建表時的 loading；建好後不再出現，之後切換即時 -->
+                            <div
+                                v-if="!activeTableReady"
+                                class="mt-4 flex items-center justify-center py-16 text-gray-400"
+                            >
+                                <el-icon class="is-loading mr-2"><Loading /></el-icon>
+                                載入中…
                             </div>
 
                             <!-- 總成本 summary（僅需求模式顯示） -->
@@ -827,7 +843,7 @@ import { materials, G27bossDropsUsage } from "../data/materials";
 import { defaultMaterialPrices, type MaterialPriceEntry, type AcquisitionMethod } from "../data/materialPrices";
 import { G27Weapons } from "../data/productionForG27Weapon";
 import { ElTooltip, ElIcon, ElMessage } from "element-plus";
-import { InfoFilled, QuestionFilled } from "@element-plus/icons-vue";
+import { InfoFilled, QuestionFilled, Loading } from "@element-plus/icons-vue";
 import { useLayoutStore } from "../stores/layout";
 import { useAuthStore } from "../stores/auth";
 import { fetchMaterialStock, saveMaterialStock, type MaterialAccountMap } from "../api/materialStock";
@@ -1468,6 +1484,22 @@ const filteredSortedData = computed(() => {
 
 // 合併後的「材料」分頁：需求規劃模式（選了武器且開啟「只顯示目標需要」）vs 全材料維護模式
 const neededMode = computed(() => showOnlyNeeded.value && selectedWeapons.value.length > 0);
+
+// 需求表與全材料表原本用 v-if 互斥切換＝每次都銷毀重建上百列（卡 ~760ms）。改成
+// 「首次用到才建、之後以 v-show 保留」：每張表只建一次，之後切換只是顯示/隱藏，瞬間完成
+//（等同合併前各自分頁的行為）。首建延後一拍並顯示載入中，連第一次也不凍結。
+const neededEverShown = ref(neededMode.value);
+const maintEverShown = ref(!neededMode.value);
+const activeTableReady = computed(() => (neededMode.value ? neededEverShown.value : maintEverShown.value));
+let mountTimer: ReturnType<typeof setTimeout> | undefined;
+watch(neededMode, (v) => {
+    if (v ? neededEverShown.value : maintEverShown.value) return; // 已建過 → v-show 即時切換
+    if (mountTimer) clearTimeout(mountTimer);
+    mountTimer = setTimeout(() => {
+        if (v) neededEverShown.value = true;
+        else maintEverShown.value = true;
+    }, 0);
+});
 
 // 遞迴取得材料的「最便宜」單價與其製作成本是否完整（用於估算成本）：
 // - 市價(entry.price>0)恆可靠
