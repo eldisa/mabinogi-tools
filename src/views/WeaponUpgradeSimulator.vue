@@ -1064,6 +1064,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["healing_wand"],
         abilityWeights: {
             healing_skill: 1,
+            manause_revised: 0.01, // 沒有治癒改造的階段改選魔力消耗減少
         },
     },
     {
@@ -1074,6 +1075,7 @@ const quickPresets: QuickPreset[] = [
         weaponCategories: ["healing_wand"],
         abilityWeights: {
             party_healing_skill: 1,
+            manause_revised: 0.01, // 沒有治癒改造的階段改選魔力消耗減少
         },
     },
     // 盾牌系
