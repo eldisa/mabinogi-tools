@@ -98,6 +98,9 @@
                                 <template v-if="!layoutStore.isMobile">
                                     <el-divider direction="vertical" />
                                     <el-checkbox v-if="neededMode" v-model="hideFullStock">隱藏數量充足</el-checkbox>
+                                    <el-checkbox v-if="neededMode" v-model="editStockPrice">
+                                        編輯庫存和價格
+                                    </el-checkbox>
                                     <el-checkbox v-model="showG27Materials">顯示 G27 素材</el-checkbox>
                                     <el-checkbox v-model="showNonG27Materials">顯示非 G27 素材</el-checkbox>
                                     <el-checkbox v-if="!neededMode" v-model="showOnlyTokenMaterials">
@@ -216,7 +219,7 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column prop="name" label="名稱" width="280" fixed="left" sortable>
+                                        <el-table-column prop="name" label="名稱" width="240" fixed="left" sortable>
                                             <template #default="{ row }">
                                                 <div class="flex items-center space-x-2">
                                                     <span>{{ row.name }}</span>
@@ -228,6 +231,40 @@
                                                     >
                                                         <el-icon><InfoFilled /></el-icon>
                                                     </el-tooltip>
+                                                    <!-- 取得方式改用 info 標籤：點擊切換 購買／珠子兌換 -->
+                                                    <el-tooltip
+                                                        v-if="isTokenMaterial(row.id)"
+                                                        effect="dark"
+                                                        placement="top"
+                                                        content="點擊切換取得方式（購買／珠子兌換）"
+                                                    >
+                                                        <el-tag
+                                                            size="small"
+                                                            :type="
+                                                                (materialPriceMap.get(row.id)?.method ?? 'buy') ===
+                                                                'token'
+                                                                    ? 'warning'
+                                                                    : 'info'
+                                                            "
+                                                            class="cursor-pointer"
+                                                            @click="
+                                                                setMaterialMethod(
+                                                                    row.id,
+                                                                    (materialPriceMap.get(row.id)?.method ?? 'buy') ===
+                                                                        'token'
+                                                                        ? 'buy'
+                                                                        : 'token',
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                (materialPriceMap.get(row.id)?.method ?? "buy") ===
+                                                                "token"
+                                                                    ? "珠子兌換"
+                                                                    : "購買"
+                                                            }}
+                                                        </el-tag>
+                                                    </el-tooltip>
                                                     <span
                                                         v-if="showTokenCount && getRowTokenCount(row.id) > 0"
                                                         class="text-xs text-yellow-400 whitespace-nowrap"
@@ -238,15 +275,26 @@
                                             </template>
                                         </el-table-column>
 
+                                        <!-- 檢視模式：庫存／所需 合併一欄，格式 {現有}/{所需} -->
                                         <el-table-column
+                                            v-if="!editStockPrice"
                                             prop="total"
-                                            label="所需數量"
+                                            label="庫存／所需"
                                             width="130"
                                             align="center"
                                             sortable
                                         >
                                             <template #default="{ row }">
-                                                <span>{{ row.total }}</span>
+                                                <span
+                                                    :class="
+                                                        (materialPriceMap.get(row.id)?.stock ?? 0) >= row.total
+                                                            ? 'text-green-400'
+                                                            : 'text-red-400'
+                                                    "
+                                                >
+                                                    {{ materialPriceMap.get(row.id)?.stock ?? 0 }}
+                                                </span>
+                                                <span class="text-gray-500">/ {{ row.total }}</span>
                                                 <el-tooltip v-if="reductionInfoById.get(row.id)" placement="top">
                                                     <template #content>
                                                         <div class="text-xs leading-relaxed">
@@ -277,7 +325,8 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column label="庫存" width="160" align="center">
+                                        <!-- 編輯模式：庫存 + 單價 -->
+                                        <el-table-column v-if="editStockPrice" label="庫存" width="160" align="center">
                                             <template #default="{ row }">
                                                 <el-input-number
                                                     :model-value="materialPriceMap.get(row.id)?.stock ?? 0"
@@ -290,31 +339,12 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column label="缺少" width="100" align="center">
-                                            <template #default="{ row }">
-                                                {{
-                                                    Math.max(0, row.total - (materialPriceMap.get(row.id)?.stock ?? 0))
-                                                }}
-                                            </template>
-                                        </el-table-column>
-
-                                        <el-table-column label="取得方式" width="150" align="center">
-                                            <template #default="{ row }">
-                                                <el-select
-                                                    v-if="isTokenMaterial(row.id)"
-                                                    :model-value="materialPriceMap.get(row.id)?.method ?? 'buy'"
-                                                    size="small"
-                                                    style="width: 120px"
-                                                    @update:model-value="(v: AcquisitionMethod) => setMaterialMethod(row.id, v)"
-                                                >
-                                                    <el-option value="buy" label="購買" />
-                                                    <el-option value="token" label="珠子兌換" />
-                                                </el-select>
-                                                <span v-else class="text-gray-400 text-sm">購買</span>
-                                            </template>
-                                        </el-table-column>
-
-                                        <el-table-column label="價格（金幣）" width="170" align="center">
+                                        <el-table-column
+                                            v-if="editStockPrice"
+                                            label="單價（金幣）"
+                                            width="170"
+                                            align="center"
+                                        >
                                             <template #default="{ row }">
                                                 <el-input
                                                     :model-value="
@@ -341,7 +371,13 @@
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column label="小計（金幣）" width="150" align="right">
+                                        <!-- 檢視模式：小計 -->
+                                        <el-table-column
+                                            v-if="!editStockPrice"
+                                            label="小計（金幣）"
+                                            width="150"
+                                            align="right"
+                                        >
                                             <template #default="{ row }">
                                                 {{ getCostDisplay(row) }}
                                             </template>
@@ -1021,6 +1057,8 @@ const showTokenCount = ref(false);
 
 // Total tab 篩選
 const hideFullStock = ref(false);
+// 需求模式：切換「檢視（庫存／所需＋小計）」與「編輯（庫存＋單價）」兩種欄位
+const editStockPrice = ref(false);
 const showG27Materials = ref(true);
 const showNonG27Materials = ref(true);
 const G27MaterialIds = new Set(G27bossDropsUsage.map((e) => e.id));
