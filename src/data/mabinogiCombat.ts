@@ -98,9 +98,10 @@ export function calculateDirtyMaxDamage(state: DirtyMaxDamageState): DirtyMaxDam
 /**
  * 乾淨最大傷害 = 面板最大傷害（無狀態，未計入聖水與髒髒加成） − 面板裡不吃攻擊係數的常數部分（一代宗師、精靈武器強化）。
  * 髒髒最大傷害（變身／寵物／辦桌／活動加成／聖水）不在無狀態面板內，不扣，另外加上去並和乾淨值一起吃攻擊係數。
+ * 面板小於常數部分時（例如面板還沒填）不會是負值，下限 0。
  */
 export function calculateCleanMaxDamage(panelMaxDamage: number, constantInPanel: number): number {
-    return panelMaxDamage - constantInPanel;
+    return Math.max(0, panelMaxDamage - constantInPanel);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -219,14 +220,16 @@ export function calculateFinalMaxDamageGameValue(
     coefficientState: AttackCoefficientState,
 ): number {
     const coefficient = calculateAttackCoefficient(coefficientState);
-    let value = Math.floor((cleanMaxDamage + dirtyTotal) * coefficient + constantAttackPower);
+    // 浮點誤差：數學上剛好是整數的結果（如 2500×1.144=2860）可能算成 2859.9999…，加一個極小量再捨去
+    const floorGame = (x: number) => Math.floor(x + 1e-9);
+    let value = floorGame((cleanMaxDamage + dirtyTotal) * coefficient + constantAttackPower);
     const steps = [
         (coefficientState.statusSupportActive ? 12 : 0) / 100,
         (coefficientState.battlefieldActive ? coefficientState.battlefieldPercent : 0) / 100,
         calculateBattleCryPercent(coefficientState) / 100,
         (coefficientState.strengthGatherActive ? 15 : 0) / 100,
     ];
-    for (const rate of steps) value = Math.floor(value * (1 + rate * coefficient));
+    for (const rate of steps) value = floorGame(value * (1 + rate * coefficient));
     return value;
 }
 
