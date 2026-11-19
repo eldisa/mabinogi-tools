@@ -6969,6 +6969,14 @@
         {
           "id": "MP",
           "value": 100
+        },
+        {
+          "id": "WoundhealingUp",
+          "value": 5
+        },
+        {
+          "id": "HealingUp",
+          "value": 18
         }
       ]
     },
@@ -7555,6 +7563,14 @@
         {
           "id": "MP",
           "value": 110
+        },
+        {
+          "id": "WoundhealingUp",
+          "value": 5
+        },
+        {
+          "id": "HealingUp",
+          "value": 18
         }
       ]
     },
@@ -11334,6 +11350,14 @@
         {
           "id": "MP",
           "value": 100
+        },
+        {
+          "id": "WoundhealingUp",
+          "value": 7
+        },
+        {
+          "id": "HealingUp",
+          "value": 20
         }
       ]
     },
@@ -17996,7 +18020,17 @@
       "locale": {
         "include": null,
         "exclude": []
-      }
+      },
+      "abilities": [
+        {
+          "id": "WoundhealingUp",
+          "value": 5
+        },
+        {
+          "id": "HealingUp",
+          "value": 17
+        }
+      ]
     },
     {
       "ID": "9114",
@@ -25230,6 +25264,14 @@
         {
           "id": "WIL",
           "value": -10
+        },
+        {
+          "id": "WoundhealingUp",
+          "value": 10
+        },
+        {
+          "id": "HealingUp",
+          "value": 20
         }
       ]
     },
@@ -39991,6 +40033,10 @@
         {
           "id": "buff_bonus",
           "value": 3
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 3
         }
       ]
     },
@@ -40023,6 +40069,10 @@
         },
         {
           "id": "buff_bonus",
+          "value": 3
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 3
         }
       ]
@@ -40057,6 +40107,10 @@
         {
           "id": "buff_bonus",
           "value": 3
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 3
         }
       ]
     },
@@ -40090,6 +40144,10 @@
         },
         {
           "id": "buff_bonus",
+          "value": 3
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 3
         }
       ]
@@ -40736,6 +40794,10 @@
         {
           "id": "buff_bonus",
           "value": 2
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 2
         }
       ]
     },
@@ -40775,6 +40837,10 @@
         {
           "id": "buff_bonus",
           "value": 2
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 2
         }
       ]
     },
@@ -40804,6 +40870,10 @@
       "abilities": [
         {
           "id": "buff_bonus",
+          "value": 8
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 8
         }
       ]
@@ -40839,6 +40909,10 @@
         },
         {
           "id": "buff_bonus",
+          "value": 2
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 2
         }
       ]
@@ -42963,7 +43037,17 @@
       "locale": {
         "include": null,
         "exclude": []
-      }
+      },
+      "abilities": [
+        {
+          "id": "WoundhealingUp",
+          "value": 5
+        },
+        {
+          "id": "HealingUp",
+          "value": 15
+        }
+      ]
     },
     {
       "ID": "10690",
@@ -43674,6 +43758,10 @@
         {
           "id": "buff_bonus",
           "value": 3
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 3
         }
       ]
     },
@@ -43963,6 +44051,10 @@
         },
         {
           "id": "buff_bonus",
+          "value": 2
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 2
         }
       ]
@@ -45435,6 +45527,10 @@
         {
           "id": "buff_bonus",
           "value": 4
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 4
         }
       ]
     },
@@ -46342,6 +46438,10 @@
         {
           "id": "buff_bonus",
           "value": 2
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 2
         }
       ]
     },
@@ -46599,6 +46699,14 @@
         {
           "id": "move_speed",
           "value": 2
+        },
+        {
+          "id": "WoundhealingUp",
+          "value": 5
+        },
+        {
+          "id": "HealingUp",
+          "value": 17
         }
       ]
     },
@@ -46765,6 +46873,10 @@
         {
           "id": "move_speed",
           "value": 1
+        },
+        {
+          "id": "HealingUp",
+          "value": 10
         }
       ]
     },
@@ -46998,6 +47110,10 @@
         },
         {
           "id": "buff_bonus",
+          "value": 3
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 3
         }
       ]
@@ -48006,6 +48122,10 @@
         {
           "id": "MulMagicBoltMasteryBonusRate",
           "value": 1
+        },
+        {
+          "id": "WoundhealingUp",
+          "value": 3
         }
       ]
     },
@@ -48401,6 +48521,14 @@
         {
           "id": "MP",
           "value": 30
+        },
+        {
+          "id": "WoundhealingUp",
+          "value": 3
+        },
+        {
+          "id": "HealingUp",
+          "value": 10
         }
       ]
     },
@@ -49914,6 +50042,10 @@
         {
           "id": "buff_bonus",
           "value": 7
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 7
         }
       ]
     },
@@ -49944,6 +50076,10 @@
         {
           "id": "buff_bonus",
           "value": 8
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 8
         }
       ]
     },
@@ -49973,6 +50109,10 @@
       "abilities": [
         {
           "id": "buff_bonus",
+          "value": 9
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 9
         }
       ]
@@ -50269,6 +50409,10 @@
         {
           "id": "buff_bonus",
           "value": 7
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 7
         }
       ]
     },
@@ -50298,6 +50442,10 @@
       "abilities": [
         {
           "id": "buff_bonus",
+          "value": 7
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 7
         }
       ]
@@ -50329,6 +50477,10 @@
         {
           "id": "buff_bonus",
           "value": 7
+        },
+        {
+          "id": "musicbuff_bonus",
+          "value": 7
         }
       ]
     },
@@ -50358,6 +50510,10 @@
       "abilities": [
         {
           "id": "buff_bonus",
+          "value": 5
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 5
         }
       ]
@@ -58600,6 +58756,10 @@
         },
         {
           "id": "buff_bonus",
+          "value": 8
+        },
+        {
+          "id": "musicbuff_bonus",
           "value": 8
         }
       ]
