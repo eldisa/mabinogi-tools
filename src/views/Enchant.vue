@@ -497,18 +497,19 @@ const displayData = computed(() => {
     } else if (condition === "ability" && ability) {
         // 依能力搜尋
         filteredResult = enchants.filter((item) => {
-            const abilityEffect = item.effect.find((e) => e.id === ability);
-            if (!abilityEffect) return false;
+            // 同一能力可能有多行（不同條件），任一行符合即可
+            const abilityEffects = item.effect.filter((e) => e.id === ability);
+            if (!abilityEffects.length) return false;
 
             // 如果有設定數值條件
             if (value !== null) {
                 switch (valueOp) {
                     case "gte":
-                        return abilityEffect.max >= value;
+                        return abilityEffects.some((e) => e.max >= value);
                     case "lte":
-                        return abilityEffect.min <= value;
+                        return abilityEffects.some((e) => e.min <= value);
                     case "eq":
-                        return abilityEffect.min <= value && value <= abilityEffect.max;
+                        return abilityEffects.some((e) => e.min <= value && value <= e.max);
                     default:
                         return true;
                 }
