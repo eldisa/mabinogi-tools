@@ -7531,7 +7531,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["衣服", "衣物"],
         effect: [
-            { id: "Defence", min: 1, max: 1 },
+            { id: "defense", min: 1, max: 1 },
             { id: "STR", min: 10, max: 10 },
             { id: "DEX", min: -8, max: -8 },
         ],
@@ -9702,8 +9702,8 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["手把"],
         effect: [
-            { id: "marionette_damage_min", min: 10, max: 10 },
-            { id: "marionette_damage_max", min: 20, max: 20 },
+            { id: "marionette_attack_min", min: 10, max: 10 },
+            { id: "marionette_attack_max", min: 20, max: 20 },
             { id: "HP", min: -50, max: -50 },
         ],
         personalize: false,
@@ -15955,7 +15955,7 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["武器", "衣服", "手套", "鞋子", "飾品", "頭部裝備"],
         effect: [
-            { id: "fast_attack", min: 1, max: 3 },
+            { id: "attack_speed_set", min: 1, max: 3 },
             { id: "WIL", min: 1, max: 10 },
             { id: "LUK", min: 10, max: 10 },
         ],
@@ -20425,8 +20425,8 @@ export const enchants: Enchant[] = [
         type: "prefix",
         limit: ["手把"],
         effect: [
-            { id: "marionette_damage_min", min: 10, max: 10 },
-            { id: "marionette_damage_max", min: 20, max: 20 },
+            { id: "marionette_attack_min", min: 10, max: 10 },
+            { id: "marionette_attack_max", min: 20, max: 20 },
             { id: "HP", min: -50, max: -50 },
         ],
         personalize: false,
@@ -21901,7 +21901,7 @@ export const enchants: Enchant[] = [
         limit: ["腳部裝備"],
         effect: [
             { id: "attack_max", min: 15, max: 15 },
-            { id: "MagicAttack", min: 15, max: 15 },
+            { id: "magic_attack", min: 15, max: 15 },
             { id: "all_alchemy_damage", min: 15, max: 15 },
             { id: "music_buff_bonus", min: 2, max: 2 },
             { id: "music_buff_duration", min: 5, max: 5 },
@@ -31088,7 +31088,7 @@ export const enchants: Enchant[] = [
         type: "suffix",
         limit: ["服裝"],
         effect: [
-            { id: "fast_attack", min: 2, max: 3 },
+            { id: "attack_speed_set", min: 2, max: 3 },
             { id: "DEX", min: 5, max: 10 },
         ],
         personalize: false,
@@ -31925,7 +31925,7 @@ export const enchants: Enchant[] = [
         effect: [
             { id: "attack_min", min: 10, max: 10 },
             { id: "attack_max", min: 20, max: 35 },
-            { id: "fast_attack", min: 3, max: 6 },
+            { id: "attack_speed_set", min: 3, max: 6 },
         ],
         personalize: true,
     },
@@ -34182,8 +34182,8 @@ export const enchants: Enchant[] = [
         type: "suffix",
         limit: ["手把"],
         effect: [
-            { id: "marionette_damage_max", min: 35, max: 35 },
-            { id: "marionette_control_critical", min: 5, max: 10 },
+            { id: "marionette_attack_max", min: 35, max: 35 },
+            { id: "marionette_critical", min: 5, max: 10 },
             { id: "STR", min: 25, max: 35 },
             { id: "LUK", min: 25, max: 25 },
             { id: "SP", min: 50, max: 50 },
@@ -39411,8 +39411,8 @@ export const enchants: Enchant[] = [
         type: "suffix",
         limit: ["手把"],
         effect: [
-            { id: "marionette_damage_max", min: 35, max: 35 },
-            { id: "marionette_control_critical", min: 10, max: 10 },
+            { id: "marionette_attack_max", min: 35, max: 35 },
+            { id: "marionette_critical", min: 10, max: 10 },
             { id: "STR", min: 35, max: 35 },
             { id: "LUK", min: 25, max: 25 },
             { id: "SP", min: 50, max: 50 },
@@ -40611,8 +40611,8 @@ export const enchants: Enchant[] = [
         type: "suffix",
         limit: ["手把"],
         effect: [
-            { id: "marionette_damage_max", min: 35, max: 35 },
-            { id: "marionette_control_critical", min: 10, max: 10 },
+            { id: "marionette_attack_max", min: 35, max: 35 },
+            { id: "marionette_critical", min: 10, max: 10 },
             { id: "STR", min: 35, max: 35 },
             { id: "LUK", min: 25, max: 25 },
             { id: "SP", min: 50, max: 50 },
